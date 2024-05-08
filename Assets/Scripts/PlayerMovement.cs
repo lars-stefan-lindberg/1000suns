@@ -154,10 +154,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     #region Collisions
 
     private float _frameLeftGrounded = float.MinValue;
-    private bool _grounded;
+    public bool _grounded;
     private float _landedSqueezeX = 1.25f;
-    private float _landedSqueezeY = 0.7f;
-    private float _landedSqueezeTime = 0.1f;
+    private float _landedSqueezeY = 0.65f;
+    private float _landedSqueezeTime = 0.15f;
 
     private void CheckCollisions()
     {
