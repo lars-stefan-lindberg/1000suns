@@ -171,7 +171,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         if (ceilingHit)
         {
             Debug.Log("Player hit the ceiling.");
-            _frameVelocity.y = Mathf.Min(0, _frameVelocity.y);
+            Debug.Log("velocity before:" + _frameVelocity.y);
+            //_frameVelocity.y = Mathf.Min(0, _frameVelocity.y);
+            _frameVelocity.y = _frameVelocity.y * _stats.CeilingBounceBackSpeed;
+            Debug.Log("velocity after:" + _frameVelocity.y);
         }
 
         // Landed on the Ground

@@ -53,6 +53,9 @@ public class ScriptableStats : ScriptableObject
     [Tooltip("The player's capacity to gain fall speed. a.k.a. In Air Gravity")]
     public float FallAcceleration = 110;
 
+    [Tooltip("Bounce back when hitting the ceiling")]
+    public float CeilingBounceBackSpeed = 0.5f;
+
     [Tooltip("The gravity multiplier added when jump is released early")]
     public float JumpEndEarlyGravityModifier = 3;
 
