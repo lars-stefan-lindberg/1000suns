@@ -200,7 +200,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.transform.CompareTag("Ground"))
+        if (collision.transform.CompareTag("Ground") && _grounded)
         {
             DustParticleMgr.obj.CreateDust();
         }
