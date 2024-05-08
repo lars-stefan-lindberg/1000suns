@@ -47,6 +47,9 @@ public class ScriptableStats : ScriptableObject
     [Tooltip("The maximum vertical movement speed")]
     public float MaxFallSpeed = 40;
 
+    [Tooltip("The maximum vertical movement speed")]
+    public float MinimumFallAnimationSpeed = 2.0f;
+
     [Tooltip("The player's capacity to gain fall speed. a.k.a. In Air Gravity")]
     public float FallAcceleration = 110;
 

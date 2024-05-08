@@ -314,6 +314,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private void HandleGravity()
     {
+        _animator.SetBool("isFalling", _frameVelocity.y < -_stats.MinimumFallAnimationSpeed);
         if (_grounded && _frameVelocity.y <= 0f)
         {
             _frameVelocity.y = _stats.GroundingForce;
