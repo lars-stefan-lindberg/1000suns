@@ -15,7 +15,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     private bool _cachedQueryStartInColliders;
 
     //[Header("Dependecies")]
-    //public GameObject buildPowerJumpAnimation;
+    public GameObject buildPowerJumpAnimation;
 
     private float _time;
     private bool _jumpHeldInput; 
@@ -76,7 +76,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             {
                 _buildingUpPowerJump = true;
                 _buildUpPowerJumpTime = 0;
-                //buildPowerJumpAnimation.GetComponent<BuildPowerJumpAnimationMgr>().Play();
+                buildPowerJumpAnimation.GetComponent<BuildPowerJumpAnimationMgr>().Play();
             }
         }
         else if(_movementInput.y >= 0)
@@ -288,7 +288,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     {
         _buildUpPowerJumpTime = 0;
         _buildingUpPowerJump = false;
-        //buildPowerJumpAnimation.GetComponent<BuildPowerJumpAnimationMgr>().Stop();
+        buildPowerJumpAnimation.GetComponent<BuildPowerJumpAnimationMgr>().Stop();
     }
 
     #endregion

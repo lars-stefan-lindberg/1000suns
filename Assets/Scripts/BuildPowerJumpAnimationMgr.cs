@@ -4,9 +4,8 @@ using UnityEngine;
 
 public class BuildPowerJumpAnimationMgr : MonoBehaviour
 {
+    public GameObject playerAnchor;
     private ParticleSystem _particleSystem;
-
-    private const float playerOffset = 0.82f;
 
     private void Start()
     {
@@ -24,10 +23,9 @@ public class BuildPowerJumpAnimationMgr : MonoBehaviour
         if (_particleSystem.isPlaying) _particleSystem.Stop();
     }
 
-    // Update is called once per frame
     void Update()
     {
         ParticleSystem.ShapeModule shape = _particleSystem.shape;
-        shape.position = new Vector2(Player.obj.transform.position.x, Player.obj.transform.position.y - playerOffset);
+        shape.position = new Vector2(playerAnchor.transform.position.x, playerAnchor.transform.position.y);
     }
 }
