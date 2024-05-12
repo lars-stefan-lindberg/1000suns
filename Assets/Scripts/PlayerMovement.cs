@@ -3,7 +3,6 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
 public class PlayerMovement : MonoBehaviour, IPlayerController
 {
     [SerializeField] private ScriptableStats _stats;
@@ -30,7 +29,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     private void Awake()
     {
         _rigidBody = GetComponent<Rigidbody2D>();
-        _collider = GetComponent<BoxCollider2D>();
+        _collider = GetComponentInChildren<BoxCollider2D>();
         _animator = GetComponentInChildren<Animator>();
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         _powerJumpForce = _stats.JumpPower * 2f;
@@ -52,10 +51,14 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             _spriteRenderer.flipX = false;
     }
 
+    public bool isFalling = false;
     private void UpdateAnimator()
     {
         _animator.SetBool("isGrounded", _grounded);
         _animator.SetBool("isMoving", _movementInput.x != 0 || _movementInput.y != 0);
+        Debug.Log("frame velocity y:" + _frameVelocity.y);
+        isFalling = _frameVelocity.y < -_stats.MinimumFallAnimationSpeed;
+        _animator.SetBool("isFalling", isFalling);
     }
 
     public void OnMovement(InputAction.CallbackContext value)
@@ -170,11 +173,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         // Hit a Ceiling
         if (ceilingHit)
         {
-            Debug.Log("Player hit the ceiling.");
-            Debug.Log("velocity before:" + _frameVelocity.y);
             //_frameVelocity.y = Mathf.Min(0, _frameVelocity.y);
             _frameVelocity.y = _frameVelocity.y * _stats.CeilingBounceBackSpeed;
-            Debug.Log("velocity after:" + _frameVelocity.y);
         }
 
         // Landed on the Ground
@@ -187,7 +187,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             _numberOfAirJumps = 0;
             _airJumpToConsume = false;
             _powerJumpExecuted = false;
-            StartCoroutine(JumpSqueeze(_landedSqueezeX, _landedSqueezeY, _landedSqueezeTime));
             GroundedChanged?.Invoke(true, Mathf.Abs(_frameVelocity.y));            
         }
         // Left the Ground
@@ -203,9 +202,14 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.transform.CompareTag("Ground") && _grounded)
+        var contact = collision.GetContact(0);
+        var contactPoint = contact.point;
+        var ownCenter = contact.otherCollider.bounds.center;
+
+        if (collision.transform.CompareTag("Ground") && contactPoint.y < ownCenter.y) //Ground hit
         {
             DustParticleMgr.obj.CreateDust();
+            //StartCoroutine(JumpSqueeze(_landedSqueezeX, _landedSqueezeY, _landedSqueezeTime));
         }
     }
 
@@ -317,7 +321,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private void HandleGravity()
     {
-        _animator.SetBool("isFalling", _frameVelocity.y < -_stats.MinimumFallAnimationSpeed);
         if (_grounded && _frameVelocity.y <= 0f)
         {
             _frameVelocity.y = _stats.GroundingForce;

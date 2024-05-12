@@ -16,7 +16,7 @@ public class Player : MonoBehaviour
         if (transform.position.y < GameMgr.DEAD_ZONE)
         {
             Debug.Log("Player died.");
-            Destroy(gameObject);
+            //Destroy(gameObject);
         }
     }
 

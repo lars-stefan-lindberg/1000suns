@@ -34,10 +34,10 @@ public class ScriptableStats : ScriptableObject
     [Tooltip("A constant downward force applied while grounded. Helps on slopes"), Range(0f, -10f)]
     public float GroundingForce = -1.5f;
 
-    [Tooltip("The detection distance for grounding detection"), Range(0f, 0.5f)]
+    [Tooltip("The detection distance for grounding detection"), Range(0f, 1.5f)]
     public float GrounderDistance = 0.05f;
 
-    [Tooltip("The detection distance for roof detection"), Range(0f, 0.5f)]
+    [Tooltip("The detection distance for roof detection"), Range(0f, 1.5f)]
     public float RoofDistance = 0.05f;
 
     [Header("JUMP")]
