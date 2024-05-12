@@ -29,7 +29,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     private void Awake()
     {
         _rigidBody = GetComponent<Rigidbody2D>();
-        _collider = GetComponentInChildren<BoxCollider2D>();
+        _collider = GetComponent<BoxCollider2D>();
         _animator = GetComponentInChildren<Animator>();
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         _powerJumpForce = _stats.JumpPower * 2f;
@@ -51,21 +51,17 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             _spriteRenderer.flipX = false;
     }
 
-    public bool isFalling = false;
-    private bool _squeeze = false;
+    private bool _isFalling = false;
     private void UpdateAnimator()
     {
         _animator.SetBool("isGrounded", _grounded);
         _animator.SetBool("isMoving", _movementInput.x != 0 || _movementInput.y != 0);
-        isFalling = _frameVelocity.y < -_stats.MinimumFallAnimationSpeed;
-        _animator.SetBool("isFalling", isFalling);
-        if(_landed && _squeeze) {
-            StartCoroutine(JumpSqueeze(_landedSqueezeX, _landedSqueezeY, _landedSqueezeTime));
-            _squeeze = false;
-        }
+        _isFalling = _frameVelocity.y < -_stats.MinimumFallAnimationSpeed;
+        _animator.SetBool("isFalling", _isFalling);
         if (_landed)
         {
             DustParticleMgr.obj.CreateDust();
+            StartCoroutine(JumpSqueeze(_landedSqueezeX, _landedSqueezeY, _landedSqueezeTime));
             _landed = false;
         }
     }
@@ -166,10 +162,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     #region Collisions
 
     private float _frameLeftGrounded = float.MinValue;
-    public bool _grounded;
+    private bool _grounded;
     private float _landedSqueezeX = 1.25f;
     private float _landedSqueezeY = 0.65f;
-    private float _landedSqueezeTime = 0.15f;
+    private float _landedSqueezeTime = 0.08f;
     private bool _landed = false;
 
     private void CheckCollisions()
@@ -183,7 +179,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         // Hit a Ceiling
         if (ceilingHit)
         {
-            //_frameVelocity.y = Mathf.Min(0, _frameVelocity.y);
             _frameVelocity.y = _frameVelocity.y * _stats.CeilingBounceBackSpeed;
         }
 
@@ -260,7 +255,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private float _jumpSqueezeX = 0.8f;
     private float _jumpSqueezeY = 1.2f;
-    private float _jumpSqueezeTime = 0.05f;
+    private float _jumpSqueezeTime = 0.08f;
 
     private void ExecuteRegularJump()
     {
