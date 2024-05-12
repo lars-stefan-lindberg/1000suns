@@ -56,9 +56,13 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     {
         _animator.SetBool("isGrounded", _grounded);
         _animator.SetBool("isMoving", _movementInput.x != 0 || _movementInput.y != 0);
-        Debug.Log("frame velocity y:" + _frameVelocity.y);
         isFalling = _frameVelocity.y < -_stats.MinimumFallAnimationSpeed;
         _animator.SetBool("isFalling", isFalling);
+        if(_createDust)
+        {
+            DustParticleMgr.obj.CreateDust();
+            _createDust = false;
+        }
     }
 
     public void OnMovement(InputAction.CallbackContext value)
@@ -161,6 +165,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     private float _landedSqueezeX = 1.25f;
     private float _landedSqueezeY = 0.65f;
     private float _landedSqueezeTime = 0.15f;
+    private bool _createDust = false;
 
     private void CheckCollisions()
     {
@@ -187,6 +192,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             _numberOfAirJumps = 0;
             _airJumpToConsume = false;
             _powerJumpExecuted = false;
+            _createDust = true;
             GroundedChanged?.Invoke(true, Mathf.Abs(_frameVelocity.y));            
         }
         // Left the Ground
@@ -198,19 +204,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         }
 
         Physics2D.queriesStartInColliders = _cachedQueryStartInColliders; ;
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        var contact = collision.GetContact(0);
-        var contactPoint = contact.point;
-        var ownCenter = contact.otherCollider.bounds.center;
-
-        if (collision.transform.CompareTag("Ground") && contactPoint.y < ownCenter.y) //Ground hit
-        {
-            DustParticleMgr.obj.CreateDust();
-            //StartCoroutine(JumpSqueeze(_landedSqueezeX, _landedSqueezeY, _landedSqueezeTime));
-        }
     }
 
     #endregion
