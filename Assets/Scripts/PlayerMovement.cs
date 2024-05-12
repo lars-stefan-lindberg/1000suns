@@ -52,16 +52,21 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     }
 
     public bool isFalling = false;
+    private bool _squeeze = false;
     private void UpdateAnimator()
     {
         _animator.SetBool("isGrounded", _grounded);
         _animator.SetBool("isMoving", _movementInput.x != 0 || _movementInput.y != 0);
         isFalling = _frameVelocity.y < -_stats.MinimumFallAnimationSpeed;
         _animator.SetBool("isFalling", isFalling);
-        if(_createDust)
+        if(_landed && _squeeze) {
+            StartCoroutine(JumpSqueeze(_landedSqueezeX, _landedSqueezeY, _landedSqueezeTime));
+            _squeeze = false;
+        }
+        if (_landed)
         {
             DustParticleMgr.obj.CreateDust();
-            _createDust = false;
+            _landed = false;
         }
     }
 
@@ -165,7 +170,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     private float _landedSqueezeX = 1.25f;
     private float _landedSqueezeY = 0.65f;
     private float _landedSqueezeTime = 0.15f;
-    private bool _createDust = false;
+    private bool _landed = false;
 
     private void CheckCollisions()
     {
@@ -192,7 +197,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             _numberOfAirJumps = 0;
             _airJumpToConsume = false;
             _powerJumpExecuted = false;
-            _createDust = true;
+            _landed = true;
             GroundedChanged?.Invoke(true, Mathf.Abs(_frameVelocity.y));            
         }
         // Left the Ground
