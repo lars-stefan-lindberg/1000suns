@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PushPowerUpAnimationMgr : MonoBehaviour
 {
+    public GameObject player;
     private ParticleSystem _particleSystem;
 
     private void Start()
@@ -22,10 +23,9 @@ public class PushPowerUpAnimationMgr : MonoBehaviour
         if (_particleSystem.isPlaying) _particleSystem.Stop();
     }
 
-    // Update is called once per frame
     void Update()
     {
         ParticleSystem.ShapeModule shape = _particleSystem.shape;
-        shape.position = Player.obj.transform.position;
+        shape.position = new Vector2(player.transform.position.x, player.transform.position.y);
     }
 }

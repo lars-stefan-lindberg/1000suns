@@ -12,18 +12,24 @@ public class PlayerPush : MonoBehaviour
 
     public float defaultPower = 10;
 
-    //[Header("Dependecies")]
-    //public GameObject pushPowerUpAnimation;
+    [Header("Dependecies")]
+    public GameObject pushPowerUpAnimation;
 
     private float _buildUpPower = 0;
     private bool _buildingUpPower = false;
     private float _buildUpPowerTime = 0;
+    private SpriteRenderer _playerSpriteRenderer;
 
     private bool CanBuildPower =>
         _buildingUpPower &&
         _buildUpPower < maxForce &&
         _buildUpPower <= StaminaMgr.obj.GetCurrentStamina();
 
+
+    private void Awake()
+    {
+        _playerSpriteRenderer = GetComponentInChildren<SpriteRenderer>();
+    }
 
     public void OnShoot(InputAction.CallbackContext context)
     {
@@ -53,25 +59,28 @@ public class PlayerPush : MonoBehaviour
 
     private void FixedUpdate()
     {
-        
-        //if (CanBuildPower)
-        //{
-        //    _buildUpPowerTime += Time.deltaTime;
-        //    _buildUpPower = defaultPower * (Mathf.Round(_buildUpPowerTime) + 2);
-        //}
-        //if(_buildingUpPower)
-        //{
-        //    pushPowerUpAnimation.GetComponent<PushPowerUpAnimationMgr>().Play();
-        //} else
-        //{
-        //    pushPowerUpAnimation.GetComponent<PushPowerUpAnimationMgr>().Stop();
-        //}
+
+        if (CanBuildPower)
+        {
+            _buildUpPowerTime += Time.deltaTime;
+            _buildUpPower = defaultPower * (Mathf.Round(_buildUpPowerTime) + 2);
+        }
+        if (_buildingUpPower)
+        {
+            pushPowerUpAnimation.GetComponent<PushPowerUpAnimationMgr>().Play();
+        }
+        else
+        {
+            pushPowerUpAnimation.GetComponent<PushPowerUpAnimationMgr>().Stop();
+        }
     }
 
     void Push(float power)
     {
-        int playerFacingDirection = transform.localScale.x > 0 ? 1 : -1;
-        
+        //int playerFacingDirection = transform.localScale.x > 0 ? 1 : -1;
+        int playerFacingDirection = _playerSpriteRenderer.flipX ? -1 : 1;
+
+
         ProjectileManager.obj.shootProjectile(
             new Vector3(gameObject.transform.position.x + (playerOffset * playerFacingDirection) , gameObject.transform.position.y, gameObject.transform.position.z),
             playerFacingDirection,
