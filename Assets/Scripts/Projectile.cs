@@ -6,13 +6,13 @@ public class Projectile : MonoBehaviour
     public int deadZone = 4;
 
     private ParticleSystem _pushEffect;
-    private Rigidbody2D _rigidBody;
+    public Rigidbody2D rigidBody;
     private float _horizontalSpawnLocation;
 
     void Awake()
     {
         _pushEffect = GetComponent<ParticleSystem>();
-        _rigidBody = GetComponent<Rigidbody2D>();
+        rigidBody = GetComponent<Rigidbody2D>();
         _horizontalSpawnLocation = transform.position.x;
     }
 
@@ -31,7 +31,7 @@ public class Projectile : MonoBehaviour
 
         //horizontalDirection = -1 -> Left facing
         //horizontalDirection = 1 -> Right facing
-        _rigidBody.velocity = new Vector2(power * horizontalDirection, 0);
+        rigidBody.velocity = new Vector2(power * horizontalDirection, 0);
     }
 
     private void maybeRotateParticleEffect(int playerFacingDirection)
