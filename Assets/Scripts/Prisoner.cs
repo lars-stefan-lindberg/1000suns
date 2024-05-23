@@ -30,6 +30,8 @@ public class Prisoner : MonoBehaviour
     public bool hasBeenHit = false;
     public float hasBeenHitDuration = 0.5f;
     public float hasBeenHitTimeCount = 0f;
+    public float recoveryDuration = 0.5f;
+    public float recoveryTimeCount = 0f;
     public Vector2 horizontalMoveSpeedDuringHit;
     public bool isRecovering = false;
     public float recoveryMovementStopMultiplier = 0.4f;
@@ -80,6 +82,7 @@ public class Prisoner : MonoBehaviour
 
     private void applyGotHitState(float hitPower, bool hitFromTheLeft)
     {
+        _animator.SetTrigger("hit");
         damagePower = hitPower;
         hasBeenHit = true;
         hasBeenHitTimeCount = hasBeenHitDuration;
@@ -110,8 +113,7 @@ public class Prisoner : MonoBehaviour
             new Vector3(groundLineCastPosition.x, groundLineCastPosition.y - isGroundedCheckOffset, groundLineCastPosition.z),
             groundLayer);
 
-        //Only perform other collision checks if grounded
-        if (isGrounded && !isTurning)
+        if (isGrounded && !isTurning && !hasBeenHit)
         {
             //Check ahead if no ground ahead
             Vector2 groundLineAheadCastPosition = _collider.transform.position - _collider.transform.right * enemyWidth * groundAheadCheck;
@@ -140,6 +142,8 @@ public class Prisoner : MonoBehaviour
 
         if (hasBeenHit)
         {
+            isTurning = false;
+            turnAroundTimer = timeToTurnAround;
             hasBeenHitTimeCount -= Time.deltaTime;
             GracefulGravityChange();
 
@@ -147,6 +151,7 @@ public class Prisoner : MonoBehaviour
             {
                 hasBeenHit = false;
                 isRecovering = true;
+                recoveryTimeCount = recoveryDuration;
                 _rigidBody.gravityScale = _defaultGravity;
             }
         }
@@ -156,7 +161,12 @@ public class Prisoner : MonoBehaviour
                 _rigidBody.velocity.x == horizontalMoveSpeedDuringHit.x ?
                 horizontalMoveSpeedDuringHit.x : _rigidBody.velocity.x;
             GracefulMovementStop(currentVelocity);
-            if (_rigidBody.velocity.x == 0) isRecovering = false;
+            if (_rigidBody.velocity.x == 0)
+            {
+                recoveryTimeCount -= Time.deltaTime;
+                if (recoveryTimeCount < 0)
+                    isRecovering = false;
+            }
         }
 
         if (!hasBeenHit && !isRecovering && isGrounded)
@@ -165,14 +175,14 @@ public class Prisoner : MonoBehaviour
         }
 
         //Update animator
-        Debug.Log("velocity:" + _rigidBody.velocity.x);
-        isMoving = Mathf.Abs(_rigidBody.velocity.x) > 0.01;
+        Debug.Log("velocity:" + Mathf.Abs(_rigidBody.velocity.x));
         _animator.SetBool("isGrounded", isGrounded);
+        _animator.SetBool("isHit", hasBeenHit);
+        _animator.SetBool("isRecovering", isRecovering);
         _animator.SetBool("isMoving", Mathf.Abs(_rigidBody.velocity.x) > 0.01);
         //_animator.SetBool("isMoving", isMoving);
     }
 
-    public bool isMoving = false;
     public bool isTurning = false;
 
     void FixedUpdate()
