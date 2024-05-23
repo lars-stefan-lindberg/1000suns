@@ -37,12 +37,15 @@ public class Prisoner : MonoBehaviour
     public float damagePower; //When hit by projectile stores and uses the power fo the hit
     public float forceMultiplier = 40f;  //How "hard" a projectile will hit the enemy
 
+    public float timeToTurnAround = 0.5f;
+    public float turnAroundTimer = 1f;
+
     private void Start()
     {
         _rigidBody = GetComponent<Rigidbody2D>();
         _animator = GetComponentInChildren<Animator>();
         collider = GetComponent<BoxCollider2D>();
-        if (getRandomMovement() == 1) FlipHorizontal();
+        //if (getRandomMovement() == 1) FlipHorizontal();
         enemyWidth = collider.bounds.extents.x;
     }
 
@@ -105,7 +108,7 @@ public class Prisoner : MonoBehaviour
             groundLayer);
 
         //Only perform other collision checks if grounded
-        if (isGrounded)
+        if (isGrounded && !isTurning)
         {
             //Check ahead if no ground ahead
             Vector2 groundLineAheadCastPosition = collider.transform.position - collider.transform.right * enemyWidth * groundAheadCheck;
@@ -114,15 +117,15 @@ public class Prisoner : MonoBehaviour
                 groundLineAheadCastPosition,
                 new Vector3(groundLineAheadCastPosition.x, groundLineAheadCastPosition.y + Vector2.down.y, collider.transform.position.z),
             Color.magenta);
-            if (!isGroundFloorAhead)
-            {
-                FlipHorizontal();
-            }
 
             //Wall check
-            if (Physics2D.Raycast(collider.transform.position, new Vector3(-collider.transform.right.x, 0, 0), frontCheck, groundLayer))
-                FlipHorizontal();
+            bool isWallAhead = Physics2D.Raycast(collider.transform.position, new Vector3(-collider.transform.right.x, 0, 0), frontCheck, groundLayer);
 
+            if (isWallAhead || !isGroundFloorAhead)
+            {
+                isTurning = true;
+                turnAroundTimer = 0;
+            }
             //Collision with another enemy, but only if not already hit
             //_otherHit = Physics2D.Raycast(collider.transform.position, new Vector3(-collider.transform.right.x, 0, 0), frontCheck);
             //if (_otherHit.transform != null)
@@ -159,18 +162,38 @@ public class Prisoner : MonoBehaviour
         }
 
         //Update animator
+        Debug.Log("velocity:" + _rigidBody.velocity.x);
+        isMoving = Mathf.Abs(_rigidBody.velocity.x) > 0.01;
         _animator.SetBool("isGrounded", isGrounded);
-        _animator.SetBool("isMoving", _rigidBody.velocity.x != 0);
+        _animator.SetBool("isMoving", Mathf.Abs(_rigidBody.velocity.x) > 0.01);
+        //_animator.SetBool("isMoving", isMoving);
     }
+
+    public bool isMoving = false;
+    public bool isTurning = false;
 
     void FixedUpdate()
     {
+        if (turnAroundTimer <= timeToTurnAround && isTurning)
+        {
+            _rigidBody.velocity = new Vector2(0, 0);
+            turnAroundTimer += Time.deltaTime;
+        } else if(turnAroundTimer >= timeToTurnAround && isTurning)
+        {
+            isTurning = false;
+            FlipHorizontal();
+        }
+        
         if (!hasBeenHit && !isRecovering && isGrounded)
         {
-            Vector2 currentVelocity = _rigidBody.velocity;
-            currentVelocity.x = -collider.transform.right.x * speed;
-            _rigidBody.velocity = currentVelocity;
+            if (!isTurning)
+            {
+                Vector2 currentVelocity = _rigidBody.velocity;
+                currentVelocity.x = -collider.transform.right.x * speed;
+                _rigidBody.velocity = currentVelocity;
+            }
         }
+        
 
         if (collider.transform.position.y < GameMgr.DEAD_ZONE)
         {
