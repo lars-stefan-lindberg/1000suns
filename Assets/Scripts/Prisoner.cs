@@ -41,6 +41,7 @@ public class Prisoner : MonoBehaviour
 
     public float timeToTurnAround = 0.5f;
     public float turnAroundTimer = 1.3f;
+    public bool isTurning = false;
 
     private void Start()
     {
@@ -118,10 +119,6 @@ public class Prisoner : MonoBehaviour
             //Check ahead if no ground ahead
             Vector2 groundLineAheadCastPosition = _collider.transform.position - _collider.transform.right * enemyWidth * groundAheadCheck;
             isGroundFloorAhead = Physics2D.Linecast(groundLineAheadCastPosition, groundLineAheadCastPosition + Vector2.down, groundLayer);
-            Debug.DrawLine(
-                groundLineAheadCastPosition,
-                new Vector3(groundLineAheadCastPosition.x, groundLineAheadCastPosition.y + Vector2.down.y, _collider.transform.position.z),
-            Color.magenta);
 
             //Wall check
             bool isWallAhead = Physics2D.Raycast(_collider.transform.position, new Vector3(-_collider.transform.right.x, 0, 0), frontCheck, groundLayer);
@@ -175,15 +172,12 @@ public class Prisoner : MonoBehaviour
         }
 
         //Update animator
-        Debug.Log("velocity:" + Mathf.Abs(_rigidBody.velocity.x));
         _animator.SetBool("isGrounded", isGrounded);
         _animator.SetBool("isHit", hasBeenHit);
         _animator.SetBool("isRecovering", isRecovering);
         _animator.SetBool("isMoving", Mathf.Abs(_rigidBody.velocity.x) > 0.01);
         //_animator.SetBool("isMoving", isMoving);
     }
-
-    public bool isTurning = false;
 
     void FixedUpdate()
     {
