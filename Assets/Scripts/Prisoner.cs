@@ -38,7 +38,7 @@ public class Prisoner : MonoBehaviour
     public float forceMultiplier = 40f;  //How "hard" a projectile will hit the enemy
 
     public float timeToTurnAround = 0.5f;
-    public float turnAroundTimer = 1f;
+    public float turnAroundTimer = 1.1f;
 
     private void Start()
     {
