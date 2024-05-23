@@ -5,7 +5,7 @@ using UnityEngine;
 public class Prisoner : MonoBehaviour
 {
     private Rigidbody2D _rigidBody;
-    private BoxCollider2D collider;
+    private BoxCollider2D _collider;
     private Animator _animator;
     public LayerMask groundLayer;
 
@@ -38,15 +38,15 @@ public class Prisoner : MonoBehaviour
     public float forceMultiplier = 40f;  //How "hard" a projectile will hit the enemy
 
     public float timeToTurnAround = 0.5f;
-    public float turnAroundTimer = 1.1f;
+    public float turnAroundTimer = 1.3f;
 
     private void Start()
     {
         _rigidBody = GetComponent<Rigidbody2D>();
         _animator = GetComponentInChildren<Animator>();
-        collider = GetComponent<BoxCollider2D>();
+        _collider = GetComponent<BoxCollider2D>();
         //if (getRandomMovement() == 1) FlipHorizontal();
-        enemyWidth = collider.bounds.extents.x;
+        enemyWidth = _collider.bounds.extents.x;
     }
 
     private int getRandomMovement()
@@ -96,8 +96,11 @@ public class Prisoner : MonoBehaviour
 
     void Update()
     {
+        if (_animator.GetCurrentAnimatorStateInfo(0).IsName("prisoner_spawn"))
+            return;
+
         //Check if grounded
-        Vector3 groundLineCastPosition = collider.transform.position;
+        Vector3 groundLineCastPosition = _collider.transform.position;
         //Debug.DrawLine(
         //    groundLineCastPosition,
         //    new Vector3(groundLineCastPosition.x, groundLineCastPosition.y - isGroundedCheckOffset, groundLineCastPosition.z),
@@ -111,15 +114,15 @@ public class Prisoner : MonoBehaviour
         if (isGrounded && !isTurning)
         {
             //Check ahead if no ground ahead
-            Vector2 groundLineAheadCastPosition = collider.transform.position - collider.transform.right * enemyWidth * groundAheadCheck;
+            Vector2 groundLineAheadCastPosition = _collider.transform.position - _collider.transform.right * enemyWidth * groundAheadCheck;
             isGroundFloorAhead = Physics2D.Linecast(groundLineAheadCastPosition, groundLineAheadCastPosition + Vector2.down, groundLayer);
             Debug.DrawLine(
                 groundLineAheadCastPosition,
-                new Vector3(groundLineAheadCastPosition.x, groundLineAheadCastPosition.y + Vector2.down.y, collider.transform.position.z),
+                new Vector3(groundLineAheadCastPosition.x, groundLineAheadCastPosition.y + Vector2.down.y, _collider.transform.position.z),
             Color.magenta);
 
             //Wall check
-            bool isWallAhead = Physics2D.Raycast(collider.transform.position, new Vector3(-collider.transform.right.x, 0, 0), frontCheck, groundLayer);
+            bool isWallAhead = Physics2D.Raycast(_collider.transform.position, new Vector3(-_collider.transform.right.x, 0, 0), frontCheck, groundLayer);
 
             if (isWallAhead || !isGroundFloorAhead)
             {
@@ -174,6 +177,9 @@ public class Prisoner : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (_animator.GetCurrentAnimatorStateInfo(0).IsName("prisoner_spawn"))
+            return;
+
         if (turnAroundTimer <= timeToTurnAround && isTurning)
         {
             _rigidBody.velocity = new Vector2(0, 0);
@@ -189,13 +195,13 @@ public class Prisoner : MonoBehaviour
             if (!isTurning)
             {
                 Vector2 currentVelocity = _rigidBody.velocity;
-                currentVelocity.x = -collider.transform.right.x * speed;
+                currentVelocity.x = -_collider.transform.right.x * speed;
                 _rigidBody.velocity = currentVelocity;
             }
         }
         
 
-        if (collider.transform.position.y < GameMgr.DEAD_ZONE)
+        if (_collider.transform.position.y < GameMgr.DEAD_ZONE)
         {
             Debug.Log("Enemy died.");
             Destroy(gameObject);
