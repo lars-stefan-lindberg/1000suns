@@ -194,8 +194,9 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         Physics2D.queriesStartInColliders = false;
 
         // Ground and Ceiling
-        bool groundHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, ~_stats.PlayerLayer);
-        bool ceilingHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.up, _stats.RoofDistance, ~_stats.PlayerLayer);
+        LayerMask mask = LayerMask.GetMask("Ground");
+        bool groundHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, mask);
+        bool ceilingHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.up, _stats.RoofDistance, mask);
 
         // Hit a Ceiling
         if (ceilingHit)

@@ -6,8 +6,9 @@ public class Player : MonoBehaviour
 {
     public static Player obj;
 
-    [Header("Dependecies")]
+    [Header("Dependencies")]
     public Rigidbody2D rigidBody;
+    public Collider2D playerCollider;
 
     void Awake()
     {
