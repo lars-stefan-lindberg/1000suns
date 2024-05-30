@@ -43,8 +43,9 @@ public class Projectile : MonoBehaviour
         shapeModule.rotation = new Vector3(playerFacingDirection == -1 ? 0f : 180f, _pushEffect.shape.rotation.y, _pushEffect.shape.rotation.z);
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        Destroy(gameObject);
+        if(collision.transform.CompareTag("Enemy") || collision.transform.CompareTag("Block") || collision.transform.CompareTag("Ground"))
+            Destroy(gameObject);
     }
 }

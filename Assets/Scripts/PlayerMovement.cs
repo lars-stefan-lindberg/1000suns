@@ -323,7 +323,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         {
             //Change horizontal movement while dashing
             _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, dashDecelerationTime * Time.fixedDeltaTime);
-            Debug.Log("velocity:" + _frameVelocity.x);
             if(_frameVelocity.x == 0)
             {
                 _isFallDashing = false;

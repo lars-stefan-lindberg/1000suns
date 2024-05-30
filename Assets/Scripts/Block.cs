@@ -11,11 +11,17 @@ public class Block : MonoBehaviour
         _rigidBody = GetComponent<Rigidbody2D>();
     }
 
+    public float forcePushPower = 20f;
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.transform.CompareTag("Player"))
         {
             _rigidBody.bodyType = RigidbodyType2D.Static;
+        }
+        else if (collision.transform.CompareTag("Projectile"))
+        {
+            bool hitFromTheLeft = collision.transform.position.x < _rigidBody.position.x;
+            _rigidBody.velocity = new Vector2(hitFromTheLeft ? forcePushPower : -forcePushPower, 0);
         }
     }
 

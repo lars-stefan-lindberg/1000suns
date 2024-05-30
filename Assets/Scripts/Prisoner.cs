@@ -61,7 +61,7 @@ public class Prisoner : MonoBehaviour
         return (randomNumber == 0) ? -1 : 1;
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.transform.CompareTag("Projectile"))
         {
@@ -70,7 +70,11 @@ public class Prisoner : MonoBehaviour
             bool hitFromTheLeft = projectile.rigidBody.position.x < _rigidBody.position.x;
             applyGotHitState(projectile.power, hitFromTheLeft);
         }
-        else if (collision.transform.CompareTag("Enemy"))
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.transform.CompareTag("Enemy"))
         {
             Prisoner prisoner = collision.gameObject.GetComponent<Prisoner>();
             if (prisoner.hasBeenHit && !hasBeenHit)

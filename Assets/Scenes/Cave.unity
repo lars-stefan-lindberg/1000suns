@@ -6483,11 +6483,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1657636802850301417, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -9.875
+      value: -10.5
       objectReference: {fileID: 0}
     - target: {fileID: 1657636802850301417, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -5.25
+      value: -6.5
       objectReference: {fileID: 0}
     - target: {fileID: 1657636802850301417, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
       propertyPath: m_LocalPosition.z
@@ -38020,7 +38020,7 @@ GameObject:
   - component: {fileID: 1981078555}
   m_Layer: 2
   m_Name: Block
-  m_TagString: Untagged
+  m_TagString: Block
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -38177,6 +38177,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d27911ef18e8b41cebdc5a850922ebb0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  forcePushPower: 20
   deceleration: 20
 --- !u!1 &2027267393
 GameObject:
