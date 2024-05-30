@@ -26,4 +26,12 @@ public class Block : MonoBehaviour
             _rigidBody.bodyType = RigidbodyType2D.Dynamic;
         }
     }
+    public float deceleration = 1f;
+    private void Update()
+    {
+        if (_rigidBody.velocity.x != 0)
+        {
+            _rigidBody.velocity = new Vector2(Mathf.MoveTowards(_rigidBody.velocity.x, 0, deceleration * Time.deltaTime), _rigidBody.velocity.y);
+        }
+    }
 }
