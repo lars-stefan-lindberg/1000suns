@@ -5,8 +5,9 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour, IPlayerController
 {
+    public static PlayerMovement obj;
+
     [SerializeField] private ScriptableStats _stats;
-    private Rigidbody2D _rigidBody;
     private SpriteRenderer _spriteRenderer;
     public GameObject anchor;
     private BoxCollider2D _collider;
@@ -28,11 +29,16 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private void Awake()
     {
-        _rigidBody = GetComponent<Rigidbody2D>();
+        obj = this;
         _collider = GetComponent<BoxCollider2D>();
         _animator = GetComponentInChildren<Animator>();
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         _powerJumpForce = _stats.JumpPower * 2f;
+    }
+
+    private void OnDestroy()
+    {
+        obj = null;
     }
 
     private void Update()
@@ -51,13 +57,18 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             _spriteRenderer.flipX = false;
     }
 
-    private bool _isFalling = false;
+    public bool isFacingLeft()
+    {
+        return _spriteRenderer.flipX;
+    }
+
+    public bool isFalling = false;
     private void UpdateAnimator()
     {
-        _animator.SetBool("isGrounded", _grounded);
+        _animator.SetBool("isGrounded", isGrounded);
         _animator.SetBool("isMoving", _movementInput.x != 0 || _movementInput.y != 0);
-        _isFalling = _frameVelocity.y < -_stats.MinimumFallAnimationSpeed;
-        _animator.SetBool("isFalling", _isFalling);
+        isFalling = _frameVelocity.y < -_stats.MinimumFallAnimationSpeed;
+        _animator.SetBool("isFalling", isFalling);
         if (_landed)
         {
             DustParticleMgr.obj.CreateDust();
@@ -70,7 +81,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     {
         _movementInput = value.ReadValue<Vector2>();
 
-        if (_movementInput.y < 0 && _grounded && !_buildingUpPowerJump) //Pressing down
+        if (_movementInput.y < 0 && isGrounded && !_buildingUpPowerJump) //Pressing down
         {
             if(StaminaMgr.obj.HasEnoughStamina(new StaminaMgr.PowerJump()))
             {
@@ -89,7 +100,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         {
             if (!PowerJumpMaxCharged)
             {
-                if (_grounded)
+                if (isGrounded)
                     _jumpToConsume = true;
                 else
                 {
@@ -162,7 +173,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     #region Collisions
 
     private float _frameLeftGrounded = float.MinValue;
-    private bool _grounded;
+    public bool isGrounded;
     private float _landedSqueezeX = 1.25f;
     private float _landedSqueezeY = 0.65f;
     private float _landedSqueezeTime = 0.08f;
@@ -183,9 +194,9 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         }
 
         // Landed on the Ground
-        if (!_grounded && groundHit)
+        if (!isGrounded && groundHit)
         {
-            _grounded = true;
+            isGrounded = true;
             _coyoteUsable = true;
             _bufferedJumpUsable = true;
             _endedJumpEarly = false;
@@ -196,9 +207,9 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             GroundedChanged?.Invoke(true, Mathf.Abs(_frameVelocity.y));            
         }
         // Left the Ground
-        else if (_grounded && !groundHit)
+        else if (isGrounded && !groundHit)
         {
-            _grounded = false;
+            isGrounded = false;
             _frameLeftGrounded = _time;
             GroundedChanged?.Invoke(false, 0);
         }
@@ -225,11 +236,11 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     private const int MAX_NUMBER_OF_AIR_JUMPS = 1;
 
     private bool PowerJumpMaxCharged => _buildUpPowerJumpTime >= POWER_JUMP_MAX_CHARGED_TIME;
-    private bool CanUseJump => (_grounded || CanUseCoyote) && _jumpToConsume;
+    private bool CanUseJump => (isGrounded || CanUseCoyote) && _jumpToConsume;
     private bool HasBufferedJump => _bufferedJumpUsable && _time < _timeJumpWasPressed + _stats.JumpBuffer;
-    private bool CanUseCoyote => _coyoteUsable && !_grounded && _time < _frameLeftGrounded + _stats.CoyoteTime;
+    private bool CanUseCoyote => _coyoteUsable && !isGrounded && _time < _frameLeftGrounded + _stats.CoyoteTime;
     private bool CanUseAirJump =>
-        !_grounded &&
+        !isGrounded &&
         _time > _frameLeftGrounded + _stats.CoyoteTime &&
         _numberOfAirJumps < MAX_NUMBER_OF_AIR_JUMPS &&
         _airJumpToConsume &&
@@ -237,7 +248,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private void HandleJump()
     {
-        if (!_endedJumpEarly && !_grounded && !_jumpHeldInput && _rigidBody.velocity.y > 0) _endedJumpEarly = true;
+        if (!_endedJumpEarly && !isGrounded && !_jumpHeldInput && Player.obj.rigidBody.velocity.y > 0) _endedJumpEarly = true;
 
         if (!_jumpToConsume && !CanUseAirJump && !HasBufferedJump) return;
 
@@ -299,7 +310,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     {
         if (_movementInput.x == 0)
         {
-            var deceleration = _grounded ? _stats.GroundDeceleration : _stats.AirDeceleration;
+            var deceleration = isGrounded ? _stats.GroundDeceleration : _stats.AirDeceleration;
             _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, deceleration * Time.fixedDeltaTime);
         }
         else
@@ -314,7 +325,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private void HandleGravity()
     {
-        if (_grounded && _frameVelocity.y <= 0f)
+        if (isGrounded && _frameVelocity.y <= 0f)
         {
             _frameVelocity.y = _stats.GroundingForce;
         }
@@ -332,7 +343,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     #endregion
 
-    private void ApplyMovement() => _rigidBody.velocity = _frameVelocity;
+    private void ApplyMovement() => Player.obj.rigidBody.velocity = _frameVelocity;
 
     private void OnDrawGizmos()
     {

@@ -6,6 +6,9 @@ public class Player : MonoBehaviour
 {
     public static Player obj;
 
+    [Header("Dependecies")]
+    public Rigidbody2D rigidBody;
+
     void Awake()
     {
         obj = this;

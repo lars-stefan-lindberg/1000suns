@@ -11,6 +11,7 @@ public class PlayerPush : MonoBehaviour
     public float powerBuildUpPerFixedUpdate = 1;
 
     public float defaultPower = 10;
+    public float pushTiltPower = 2000;
 
     [Header("Dependecies")]
     public GameObject pushPowerUpAnimation;
@@ -48,6 +49,13 @@ public class PlayerPush : MonoBehaviour
                 StaminaMgr.Push push = new();
                 push.SetEffort(_buildUpPower); //TODO: This is just luck for now, that power equals effort
                 StaminaMgr.obj.ExecutePower(push);
+
+                if(!PlayerMovement.obj.isGrounded && !PlayerMovement.obj.isFalling)
+                {
+                    float power = PlayerMovement.obj.isFacingLeft() ? pushTiltPower : -pushTiltPower;
+                    Player.obj.rigidBody.AddForce(new Vector2(power, 0));
+                }
+
 
                 Push(_buildUpPower);
             }
