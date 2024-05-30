@@ -22,6 +22,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     private bool _jumpHeldInput; 
     private Vector2 _movementInput;
 
+    public bool _isFallDashing = false;
+    public float dashDecelerationTime = 160f;
+    public float initialDashSpeed = 40f;
+
     #region Interface
     public event Action<bool, float> GroundedChanged;
     public event Action Jumped;
@@ -60,6 +64,12 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public bool isFacingLeft()
     {
         return _spriteRenderer.flipX;
+    }
+
+    public void ExecuteFallDash()
+    {
+        _isFallDashing = true;
+        _frameVelocity.x = isFacingLeft() ? initialDashSpeed : -initialDashSpeed;
     }
 
     public bool isFalling = false;
@@ -308,14 +318,26 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private void HandleDirection()
     {
-        if (_movementInput.x == 0)
+        if (_isFallDashing)
         {
-            var deceleration = isGrounded ? _stats.GroundDeceleration : _stats.AirDeceleration;
-            _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, deceleration * Time.fixedDeltaTime);
-        }
-        else
+            //Change horizontal movement while dashing
+            _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, dashDecelerationTime * Time.fixedDeltaTime);
+            Debug.Log("velocity:" + _frameVelocity.x);
+            if(_frameVelocity.x == 0)
+            {
+                _isFallDashing = false;
+            }
+        } else
         {
-            _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, _movementInput.x * _stats.MaxSpeed, _stats.Acceleration * Time.fixedDeltaTime);
+            if (_movementInput.x == 0)
+            {
+                var deceleration = isGrounded ? _stats.GroundDeceleration : _stats.AirDeceleration;
+                _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, deceleration * Time.fixedDeltaTime);
+            }
+            else
+            {
+                _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, _movementInput.x * _stats.MaxSpeed, _stats.Acceleration * Time.fixedDeltaTime);
+            }
         }
     }
 
@@ -331,13 +353,21 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         }
         else
         {
-            var inAirGravity = _stats.FallAcceleration;
-            if (_powerJumpExecuted)
-                inAirGravity *= _powerJumpAirGravityModifer;
-            if (_endedJumpEarly && _frameVelocity.y > 0)
-                inAirGravity *= _stats.JumpEndEarlyGravityModifier;
+            if (_isFallDashing)
+            {
+                //Just keep horizontal movement
+                _frameVelocity.y = 0;
+            }
+            else
+            {
+                var inAirGravity = _stats.FallAcceleration;
+                if (_powerJumpExecuted)
+                    inAirGravity *= _powerJumpAirGravityModifer;
+                if (_endedJumpEarly && _frameVelocity.y > 0)
+                    inAirGravity *= _stats.JumpEndEarlyGravityModifier;
 
-            _frameVelocity.y = Mathf.MoveTowards(_frameVelocity.y, -_stats.MaxFallSpeed, inAirGravity * Time.fixedDeltaTime);
+                _frameVelocity.y = Mathf.MoveTowards(_frameVelocity.y, -_stats.MaxFallSpeed, inAirGravity * Time.fixedDeltaTime);
+            }
         }
     }
 

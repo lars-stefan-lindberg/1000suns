@@ -12,6 +12,7 @@ public class PlayerPush : MonoBehaviour
 
     public float defaultPower = 10;
     public float pushTiltPower = 2000;
+    public float fallTiltPower = 10000;
 
     [Header("Dependecies")]
     public GameObject pushPowerUpAnimation;
@@ -20,6 +21,8 @@ public class PlayerPush : MonoBehaviour
     private bool _buildingUpPower = false;
     private float _buildUpPowerTime = 0;
     private SpriteRenderer _playerSpriteRenderer;
+    public float dashStopMultiplier = 0.4f;
+    public float horizontalDashSpeed = 1f;
 
     private bool CanBuildPower =>
         _buildingUpPower &&
@@ -54,8 +57,8 @@ public class PlayerPush : MonoBehaviour
                 {
                     float power = PlayerMovement.obj.isFacingLeft() ? pushTiltPower : -pushTiltPower;
                     Player.obj.rigidBody.AddForce(new Vector2(power, 0));
-                }
-
+                } else if(PlayerMovement.obj.isFalling)
+                    PlayerMovement.obj.ExecuteFallDash();
 
                 Push(_buildUpPower);
             }
