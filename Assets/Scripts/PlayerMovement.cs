@@ -38,7 +38,9 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _animator = GetComponentInChildren<Animator>();
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         _powerJumpForce = _stats.JumpPower * 2f;
-    }
+        _groundLayerMasks = LayerMask.GetMask(new[] { "Ground", "JumpThroughs" });
+        _ceilingLayerMasks = LayerMask.GetMask("Ground");
+}
 
     private void OnDestroy()
     {
@@ -188,15 +190,16 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     private float _landedSqueezeY = 0.65f;
     private float _landedSqueezeTime = 0.08f;
     private bool _landed = false;
+    private LayerMask _groundLayerMasks;
+    private LayerMask _ceilingLayerMasks;
 
     private void CheckCollisions()
     {
         Physics2D.queriesStartInColliders = false;
 
         // Ground and Ceiling
-        LayerMask mask = LayerMask.GetMask("Ground");
-        bool groundHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, mask);
-        bool ceilingHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.up, _stats.RoofDistance, mask);
+        bool groundHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, _groundLayerMasks);
+        bool ceilingHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
 
         // Hit a Ceiling
         if (ceilingHit)

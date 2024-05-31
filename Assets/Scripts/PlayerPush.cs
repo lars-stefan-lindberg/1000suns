@@ -60,6 +60,7 @@ public class PlayerPush : MonoBehaviour
                 } else if(PlayerMovement.obj.isFalling)
                     PlayerMovement.obj.ExecuteFallDash();
 
+                FloatyPlatform.obj.MovePlatform();
                 Push(_buildUpPower);
             }
             
