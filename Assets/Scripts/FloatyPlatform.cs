@@ -1,41 +1,71 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class FloatyPlatform : MonoBehaviour
 {
-    public static FloatyPlatform obj;
-
-    private BoxCollider2D _collider;
+    public BoxCollider2D _collider;
     private Rigidbody2D _rigidBody;
 
-    public float landedCastDistance = 0.02f;
-    public float platformDistance = 20f;
+    public float blockingCastDistance = 0.1f;
     public float pushPower = 10f;
-    public float xCoordinateToMoveTo = 0;
     public float deceleration = 20f;
-    private LayerMask _landedCastLayerMask;
+    private LayerMask _blockingCastLayerMask;
     public bool movePlatform = false;
+
+    public bool blockedToTheRight = false;
+    public bool blockedToTheLeft = false;
+
+    private static readonly string[] colliderTags = { "Player", "Block", "Enemy", "Ground" };
 
     private void Awake()
     {
-        obj = this;
-        _collider = GetComponentInChildren<BoxCollider2D>();
-        _rigidBody = GetComponentInChildren<Rigidbody2D>();
-        _landedCastLayerMask = LayerMask.GetMask("Default");
+        _collider = GetComponent<BoxCollider2D>();
+        _rigidBody = GetComponent<Rigidbody2D>();
+        _blockingCastLayerMask = LayerMask.GetMask(new[] { "Ground", "Default", "JumpThroughs" });
     }
 
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.transform.CompareTag("Player"))
+        {
+            PlayerMovement.obj.isOnPlatform = true;
+            PlayerMovement.obj.platformRigidBody = _rigidBody;
+            PlayerPush.obj.platform = this;
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.transform.CompareTag("Player"))
+        {
+            PlayerMovement.obj.isOnPlatform = false;
+            PlayerMovement.obj.platformRigidBody = null;
+            PlayerPush.obj.platform = null;
+        }
+    }
+
+    public bool somethingToTheRight = false;
+    public bool somethingToTheLeft = false;
     private void Update()
     {
-        bool somethingLanded = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.up, landedCastDistance, _landedCastLayerMask);
+        somethingToTheRight = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.right, blockingCastDistance, _blockingCastLayerMask);
+        somethingToTheLeft = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.left, blockingCastDistance, _blockingCastLayerMask);
+
+        if (somethingToTheRight && _rigidBody.velocity.x > 0)
+            movePlatform = false;
+        if (somethingToTheLeft && _rigidBody.velocity.x < 0)
+            movePlatform = false;
 
         if(movePlatform)
         {
-            transform.position = new Vector3(Mathf.MoveTowards(transform.position.x, xCoordinateToMoveTo, deceleration * Time.deltaTime), transform.position.y, transform.position.z);
-            //transform.position = new Vector3(-15, transform.position.y, transform.position.z);
-            //_rigidBody.velocity = new Vector2(Mathf.MoveTowards(_rigidBody.velocity.x, 0, deceleration * Time.deltaTime), _rigidBody.velocity.y);
+            _rigidBody.velocity = new Vector2(Mathf.MoveTowards(_rigidBody.velocity.x, 0, deceleration * Time.deltaTime), _rigidBody.velocity.y);
+        } else
+        {
+            _rigidBody.velocity = new Vector2(0, 0);
         }
-        if(transform.position.x == xCoordinateToMoveTo)
+        if(_rigidBody.velocity.x == 0)
         {
             movePlatform = false;
         }
@@ -44,17 +74,12 @@ public class FloatyPlatform : MonoBehaviour
     public void MovePlatform()
     {
         movePlatform = true;
-        //_rigidBody.velocity = new Vector2(PlayerMovement.obj.isFacingLeft() ? pushPower : -pushPower, 0);
-        xCoordinateToMoveTo = transform.position.x + (PlayerMovement.obj.isFacingLeft() ? platformDistance : -platformDistance);
+        _rigidBody.velocity = new Vector2(PlayerMovement.obj.isFacingLeft() ? pushPower : -pushPower, 0);
     }
 
-    private void OnDestroy()
+    private void OnDrawGizmosSelected()
     {
-        obj = null;
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireCube(_collider.bounds.center, new Vector2(_collider.size.x * (1 + blockingCastDistance), _collider.size.y));
     }
-
-    //Created move function
-    //When to initiate move function?
-    //- PlayerPush needs to know if Player is on a SPECIFIC platform -> Call move function
-    //- How to set that Player is on platform? Cast in player object?
 }

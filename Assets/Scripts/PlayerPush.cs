@@ -6,6 +6,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerPush : MonoBehaviour
 {
+    public static PlayerPush obj;
+
     public int playerOffset = 1;
     public float maxForce = 40;
     public float powerBuildUpPerFixedUpdate = 1;
@@ -24,6 +26,8 @@ public class PlayerPush : MonoBehaviour
     public float dashStopMultiplier = 0.4f;
     public float horizontalDashSpeed = 1f;
 
+    public FloatyPlatform platform;
+
     private bool CanBuildPower =>
         _buildingUpPower &&
         _buildUpPower < maxForce &&
@@ -32,6 +36,7 @@ public class PlayerPush : MonoBehaviour
 
     private void Awake()
     {
+        obj = this;
         _playerSpriteRenderer = GetComponentInChildren<SpriteRenderer>();
     }
 
@@ -60,7 +65,8 @@ public class PlayerPush : MonoBehaviour
                 } else if(PlayerMovement.obj.isFalling)
                     PlayerMovement.obj.ExecuteFallDash();
 
-                FloatyPlatform.obj.MovePlatform();
+                if(platform != null)
+                    platform.MovePlatform();
                 Push(_buildUpPower);
             }
             
@@ -99,5 +105,8 @@ public class PlayerPush : MonoBehaviour
             power);
     }
 
-
+    private void OnDestroy()
+    {
+        obj = null;
+    }
 }

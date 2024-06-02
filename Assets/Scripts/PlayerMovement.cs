@@ -26,6 +26,9 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public float dashDecelerationTime = 160f;
     public float initialDashSpeed = 40f;
 
+    public bool isOnPlatform = false;
+    public Rigidbody2D platformRigidBody;
+
     #region Interface
     public event Action<bool, float> GroundedChanged;
     public event Action Jumped;
@@ -40,11 +43,23 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _powerJumpForce = _stats.JumpPower * 2f;
         _groundLayerMasks = LayerMask.GetMask(new[] { "Ground", "JumpThroughs" });
         _ceilingLayerMasks = LayerMask.GetMask("Ground");
-}
+    }
 
     private void OnDestroy()
     {
         obj = null;
+    }
+
+    private void FixedUpdate()
+    {
+        CheckCollisions();
+
+        BuildUpPowerJump();
+        HandleJump();
+        HandleDirection();
+        HandleGravity();
+
+        ApplyMovement();
     }
 
     private void Update()
@@ -140,18 +155,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             _movementInput.x = Mathf.Abs(_movementInput.x) < _stats.HorizontalDeadZoneThreshold ? 0 : Mathf.Sign(_movementInput.x);
             _movementInput.y = Mathf.Abs(_movementInput.y) < _stats.VerticalDeadZoneThreshold ? 0 : Mathf.Sign(_movementInput.y);
         }
-    }
-
-    private void FixedUpdate()
-    {
-        CheckCollisions();
-
-        BuildUpPowerJump();
-        HandleJump();
-        HandleDirection();
-        HandleGravity();
-
-        ApplyMovement();
     }
 
     private void BuildUpPowerJump()
@@ -335,11 +338,13 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             if (_movementInput.x == 0)
             {
                 var deceleration = isGrounded ? _stats.GroundDeceleration : _stats.AirDeceleration;
-                _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, deceleration * Time.fixedDeltaTime);
+                _frameVelocity.x = isOnPlatform ?
+                    platformRigidBody.velocity.x :
+                    Mathf.MoveTowards(_frameVelocity.x, 0, deceleration * Time.fixedDeltaTime);
             }
             else
             {
-                _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, _movementInput.x * _stats.MaxSpeed, _stats.Acceleration * Time.fixedDeltaTime);
+                _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, (_movementInput.x * _stats.MaxSpeed) + (isOnPlatform ? platformRigidBody.velocity.x : 0), _stats.Acceleration * Time.fixedDeltaTime);
             }
         }
     }
