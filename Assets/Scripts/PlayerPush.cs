@@ -60,6 +60,7 @@ public class PlayerPush : MonoBehaviour
 
                 if(!PlayerMovement.obj.isGrounded && !PlayerMovement.obj.isFalling)
                 {
+                    //Tilt player slightly when in air
                     float power = PlayerMovement.obj.isFacingLeft() ? pushTiltPower : -pushTiltPower;
                     Player.obj.rigidBody.AddForce(new Vector2(power, 0));
                 } else if(PlayerMovement.obj.isFalling)
@@ -95,9 +96,7 @@ public class PlayerPush : MonoBehaviour
 
     void Push(float power)
     {
-        //int playerFacingDirection = transform.localScale.x > 0 ? 1 : -1;
         int playerFacingDirection = _playerSpriteRenderer.flipX ? -1 : 1;
-
 
         ProjectileManager.obj.shootProjectile(
             new Vector3(gameObject.transform.position.x + (playerOffset * playerFacingDirection) , gameObject.transform.position.y, gameObject.transform.position.z),

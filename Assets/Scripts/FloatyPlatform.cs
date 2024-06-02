@@ -8,28 +8,34 @@ public class FloatyPlatform : MonoBehaviour
     public BoxCollider2D _collider;
     private Rigidbody2D _rigidBody;
 
+    public float idleMoveSpeed;
+    private float _idleVerticalTargetPosition;
+    public bool isPlayerOnPlatform = false;
+    public float startingVerticalPosition;
+    public float idleVerticalDistance = 0.25f;
+
     public float blockingCastDistance = 0.1f;
     public float pushPower = 10f;
     public float deceleration = 20f;
     private LayerMask _blockingCastLayerMask;
     public bool movePlatform = false;
 
-    public bool blockedToTheRight = false;
-    public bool blockedToTheLeft = false;
-
-    private static readonly string[] colliderTags = { "Player", "Block", "Enemy", "Ground" };
+    private float _idleTargetVerticalPosition = 0;
 
     private void Awake()
     {
         _collider = GetComponent<BoxCollider2D>();
         _rigidBody = GetComponent<Rigidbody2D>();
         _blockingCastLayerMask = LayerMask.GetMask(new[] { "Ground", "Default", "JumpThroughs" });
+        startingVerticalPosition = transform.position.y;
+        _idleVerticalTargetPosition = startingVerticalPosition - idleVerticalDistance;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if(collision.transform.CompareTag("Player"))
         {
+            isPlayerOnPlatform = true;
             PlayerMovement.obj.isOnPlatform = true;
             PlayerMovement.obj.platformRigidBody = _rigidBody;
             PlayerPush.obj.platform = this;
@@ -40,6 +46,7 @@ public class FloatyPlatform : MonoBehaviour
     {
         if (collision.transform.CompareTag("Player"))
         {
+            isPlayerOnPlatform = false;
             PlayerMovement.obj.isOnPlatform = false;
             PlayerMovement.obj.platformRigidBody = null;
             PlayerPush.obj.platform = null;
@@ -58,7 +65,7 @@ public class FloatyPlatform : MonoBehaviour
         if (somethingToTheLeft && _rigidBody.velocity.x < 0)
             movePlatform = false;
 
-        if(movePlatform)
+        if (movePlatform)
         {
             _rigidBody.velocity = new Vector2(Mathf.MoveTowards(_rigidBody.velocity.x, 0, deceleration * Time.deltaTime), _rigidBody.velocity.y);
         } else
@@ -69,6 +76,18 @@ public class FloatyPlatform : MonoBehaviour
         {
             movePlatform = false;
         }
+
+        if (!isPlayerOnPlatform && _rigidBody.velocity.x == 0)
+            MoveIdlePlatform();
+    }
+
+    private void MoveIdlePlatform()
+    {
+        if (transform.position.y >= startingVerticalPosition)
+            _idleTargetVerticalPosition = _idleVerticalTargetPosition;
+        if (transform.position.y <= _idleVerticalTargetPosition)
+            _idleTargetVerticalPosition = startingVerticalPosition;
+        transform.position = new Vector2(transform.position.x, Mathf.MoveTowards(transform.position.y, _idleTargetVerticalPosition, idleMoveSpeed * Time.deltaTime));
     }
 
     public void MovePlatform()
