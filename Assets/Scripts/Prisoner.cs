@@ -43,6 +43,9 @@ public class Prisoner : MonoBehaviour
     public float turnAroundTimer = 1.3f;
     public bool isTurning = false;
 
+    public bool isStatic = false;
+    public bool isImmuneToForcePush = false;
+
     private void Start()
     {
         _rigidBody = GetComponent<Rigidbody2D>();
@@ -87,19 +90,21 @@ public class Prisoner : MonoBehaviour
 
     private void applyGotHitState(float hitPower, bool hitFromTheLeft)
     {
-        _animator.SetTrigger("hit");
-        damagePower = hitPower;
-        hasBeenHit = true;
-        hasBeenHitTimeCount = hasBeenHitDuration;
-        _rigidBody.gravityScale = 0;
-        _rigidBody.velocity = new Vector2(0, 0);
+        if(!isImmuneToForcePush) {
+            _animator.SetTrigger("hit");
+            damagePower = hitPower;
+            hasBeenHit = true;
+            hasBeenHitTimeCount = hasBeenHitDuration;
+            _rigidBody.gravityScale = 0;
+            _rigidBody.velocity = new Vector2(0, 0);
 
-        if (hitFromTheLeft)
-            _rigidBody.AddForce(new Vector2(damagePower * forceMultiplier, 0));
-        else
-            _rigidBody.AddForce(new Vector2(damagePower * -forceMultiplier, 0));
+            if (hitFromTheLeft)
+                _rigidBody.AddForce(new Vector2(damagePower * forceMultiplier, 0));
+            else
+                _rigidBody.AddForce(new Vector2(damagePower * -forceMultiplier, 0));
 
-        horizontalMoveSpeedDuringHit = _rigidBody.velocity;
+            horizontalMoveSpeedDuringHit = _rigidBody.velocity;
+        }
     }
 
     void Update()
@@ -126,7 +131,6 @@ public class Prisoner : MonoBehaviour
 
             //Wall check
             bool isWallAhead = Physics2D.Raycast(_collider.transform.position, new Vector3(-_collider.transform.right.x, 0, 0), frontCheck, groundLayer);
-
             if (isWallAhead || !isGroundFloorAhead)
             {
                 isTurning = true;
@@ -200,7 +204,7 @@ public class Prisoner : MonoBehaviour
         
         if (!hasBeenHit && !isRecovering && isGrounded)
         {
-            if (!isTurning)
+            if (!isTurning && !isStatic)
             {
                 Vector2 currentVelocity = _rigidBody.velocity;
                 currentVelocity.x = -_collider.transform.right.x * speed;
@@ -225,7 +229,7 @@ public class Prisoner : MonoBehaviour
         _rigidBody.gravityScale = Mathf.MoveTowards(_rigidBody.gravityScale, _defaultGravity, gravityAcceleration * Time.fixedDeltaTime);
     }
     private void GracefulSpeedChange()
-    {
+    {        
         speed = Mathf.MoveTowards(speed, _defaultSpeed, speedAcceleration * Time.fixedDeltaTime);
     }
 
