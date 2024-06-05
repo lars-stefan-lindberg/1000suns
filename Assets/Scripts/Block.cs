@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Block : MonoBehaviour
@@ -32,6 +33,7 @@ public class Block : MonoBehaviour
             _rigidBody.bodyType = RigidbodyType2D.Dynamic;
         }
     }
+
     public float deceleration = 1f;
     private void Update()
     {
