@@ -12,7 +12,7 @@ public class PlayerPush : MonoBehaviour
     public float maxForce = 40;
     public float powerBuildUpPerFixedUpdate = 1;
 
-    public float defaultPower = 10;
+    public float defaultPower = 20;
     public float pushTiltPower = 2000;
     public float fallTiltPower = 10000;
 
@@ -22,6 +22,7 @@ public class PlayerPush : MonoBehaviour
     private float _buildUpPower = 0;
     private bool _buildingUpPower = false;
     private float _buildUpPowerTime = 0;
+    public float minBuildUpPowerTime = 0.5f;
     private SpriteRenderer _playerSpriteRenderer;
     public float dashStopMultiplier = 0.4f;
     public float horizontalDashSpeed = 1f;
@@ -52,12 +53,13 @@ public class PlayerPush : MonoBehaviour
         }
         if(context.canceled) {
             //Need to check that we are building power before we can push. If not the push will be executed on button release.
-            if(_buildingUpPower)
+            if(_buildingUpPower && _buildUpPowerTime >= minBuildUpPowerTime)
             {
                 StaminaMgr.Push push = new();
                 push.SetEffort(_buildUpPower); //TODO: This is just luck for now, that power equals effort
                 StaminaMgr.obj.ExecutePower(push);
 
+                //Should tilt the player slightly backwards in air
                 if(!PlayerMovement.obj.isGrounded && !PlayerMovement.obj.isFalling)
                 {
                     //Tilt player slightly when in air
@@ -78,11 +80,11 @@ public class PlayerPush : MonoBehaviour
 
     private void FixedUpdate()
     {
-
         if (CanBuildPower)
         {
             _buildUpPowerTime += Time.deltaTime;
-            _buildUpPower = defaultPower * (Mathf.Round(_buildUpPowerTime) + 2);
+            //_buildUpPower = defaultPower * (Mathf.Round(_buildUpPowerTime) + 2);
+            _buildUpPower = defaultPower; //Only one power available for now
         }
         if (_buildingUpPower)
         {
