@@ -9,6 +9,7 @@ public class BreakableWall : MonoBehaviour
     private Animator _visibleLayerAnimator;
     private SpriteRenderer _spriteRenderer;
     private BoxCollider2D _collider;
+    public ParticleSystem breakAnimation;
 
     public bool breakWall = false;
     public bool shakeWall = false;
@@ -41,6 +42,7 @@ public class BreakableWall : MonoBehaviour
             _collider.enabled = false;
             _fadeSprite = true;
             breakWall = false;
+            breakAnimation.Emit(6);
         }
         if(_fadeSprite) {
             _spriteRenderer.color = new Color(_spriteRenderer.color.r, _spriteRenderer.color.b, _spriteRenderer.color.g, Mathf.MoveTowards(_spriteRenderer.color.a, 0, fadeMultiplier * Time.deltaTime));
