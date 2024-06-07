@@ -8,6 +8,7 @@ public class Projectile : MonoBehaviour
     private ParticleSystem _pushEffect;
     public Rigidbody2D rigidBody;
     private float _horizontalSpawnLocation;
+    public bool isPoweredUp = false; //To break walls
 
     void Awake()
     {
@@ -23,9 +24,10 @@ public class Projectile : MonoBehaviour
         }
     }
 
-    public void shoot(int horizontalDirection, float power)
+    public void shoot(int horizontalDirection, float power, bool isPoweredUp)
     {
         this.power = power;
+        this.isPoweredUp = isPoweredUp;
         maybeRotateParticleEffect(horizontalDirection);
         _pushEffect.Emit(5);
 

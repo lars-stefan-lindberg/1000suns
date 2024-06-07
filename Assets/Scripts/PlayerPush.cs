@@ -106,7 +106,8 @@ public class PlayerPush : MonoBehaviour
         ProjectileManager.obj.shootProjectile(
             new Vector3(gameObject.transform.position.x + (playerOffset * playerFacingDirection) , gameObject.transform.position.y, gameObject.transform.position.z),
             playerFacingDirection,
-            power);
+            power,
+            Player.obj.hasForcePushPowerUp);
     }
 
     private void OnDestroy()
