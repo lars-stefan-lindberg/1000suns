@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -87,6 +88,12 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     {
         _isFallDashing = true;
         _frameVelocity.x = isFacingLeft() ? initialDashSpeed : -initialDashSpeed;
+    }
+
+    public void ExecuteForcePushJump() {
+        _isForcePushJumping = true;
+        forcePushJumpOnGroundTimer = 0;
+        _frameVelocity.x = isFacingLeft() ? initialForcePushJumpSpeed : -initialForcePushJumpSpeed;
     }
 
     public bool isFalling = false;
@@ -221,6 +228,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             _airJumpToConsume = false;
             _powerJumpExecuted = false;
             _landed = true;
+            jumpedWhileForcePushJumping = false;
             GroundedChanged?.Invoke(true, Mathf.Abs(_frameVelocity.y));            
         }
         // Left the Ground
@@ -237,6 +245,13 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     #endregion
 
     #region Jumping
+    public bool canUseForcePushJump = false;
+    public bool _isForcePushJumping = false;
+    public bool jumpedWhileForcePushJumping = false;
+    public float jumpedWhileForcePushJumpingModifier = 0.6f;
+    public float initialForcePushJumpSpeed = 30f;
+    public float forcePushJumpOnGroundDuration = 0.01f;
+    public float forcePushJumpOnGroundTimer = 0f;
     private bool _jumpToConsume;
     private float _timeJumpWasPressed;
     private bool _endedJumpEarly;
@@ -291,6 +306,9 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         DustParticleMgr.obj.CreateDust();
         StartCoroutine(JumpSqueeze(_jumpSqueezeX, _jumpSqueezeY, _jumpSqueezeTime));
         _jumpToConsume = false;
+        if(_isForcePushJumping) {
+            jumpedWhileForcePushJumping = true;
+        }
     }
 
     private void ExecuteAirJump()
@@ -325,6 +343,12 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private void HandleDirection()
     {
+        if (_isForcePushJumping) {
+            forcePushJumpOnGroundTimer += Time.fixedDeltaTime;
+            if(forcePushJumpOnGroundTimer > forcePushJumpOnGroundDuration)
+                _isForcePushJumping = false;
+        }
+        
         if (_isFallDashing)
         {
             //Change horizontal movement while dashing
@@ -335,16 +359,21 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             }
         } else
         {
-            if (_movementInput.x == 0)
-            {
-                var deceleration = isGrounded ? _stats.GroundDeceleration : _stats.AirDeceleration;
-                _frameVelocity.x = isOnPlatform ?
-                    platformRigidBody.velocity.x :
-                    Mathf.MoveTowards(_frameVelocity.x, 0, deceleration * Time.fixedDeltaTime);
-            }
-            else
-            {
-                _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, (_movementInput.x * _stats.MaxSpeed) + (isOnPlatform ? platformRigidBody.velocity.x : 0), _stats.Acceleration * Time.fixedDeltaTime);
+            if(jumpedWhileForcePushJumping) {
+                //Time to defy physics and keep horizontal velocity
+                
+            } else {
+                if (_movementInput.x == 0)
+                {
+                    var deceleration = isGrounded ? _stats.GroundDeceleration : _stats.AirDeceleration;
+                    _frameVelocity.x = isOnPlatform ?
+                        platformRigidBody.velocity.x :
+                        Mathf.MoveTowards(_frameVelocity.x, 0, deceleration * Time.fixedDeltaTime);
+                }
+                else
+                {
+                    _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, (_movementInput.x * _stats.MaxSpeed) + (isOnPlatform ? platformRigidBody.velocity.x : 0), _stats.Acceleration * Time.fixedDeltaTime);
+                }
             }
         }
     }
@@ -371,6 +400,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
                 var inAirGravity = _stats.FallAcceleration;
                 if (_powerJumpExecuted)
                     inAirGravity *= _powerJumpAirGravityModifer;
+                if (jumpedWhileForcePushJumping)
+                    inAirGravity *= jumpedWhileForcePushJumpingModifier;
                 if (_endedJumpEarly && _frameVelocity.y > 0)
                     inAirGravity *= _stats.JumpEndEarlyGravityModifier;
 

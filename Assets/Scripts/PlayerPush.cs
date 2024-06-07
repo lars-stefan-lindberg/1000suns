@@ -70,6 +70,9 @@ public class PlayerPush : MonoBehaviour
 
                 if(platform != null)
                     platform.MovePlatform();
+
+                if(PlayerMovement.obj.isGrounded && !PlayerMovement.obj.isFalling && PlayerMovement.obj.canUseForcePushJump) 
+                    PlayerMovement.obj.ExecuteForcePushJump();
                 Push(_buildUpPower);
             }
             
