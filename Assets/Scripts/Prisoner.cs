@@ -131,18 +131,22 @@ public class Prisoner : MonoBehaviour
 
             //Wall check
             bool isWallAhead = Physics2D.Raycast(_collider.transform.position, new Vector3(-_collider.transform.right.x, 0, 0), frontCheck, groundLayer);
-            if (isWallAhead || !isGroundFloorAhead)
+
+            //Collision with another enemy, but only if not already hit
+            _otherHit = Physics2D.Raycast(_collider.transform.position, new Vector3(-_collider.transform.right.x, 0, 0), frontCheck);
+            bool isEnemyAhead = false;
+            if (_otherHit.transform != null)
+               if (_otherHit.transform.CompareTag("Enemy") && !hasBeenHit)
+               {
+                   isEnemyAhead = true;
+               }
+
+            if (isWallAhead || !isGroundFloorAhead || isEnemyAhead)
             {
                 isTurning = true;
                 turnAroundTimer = 0;
             }
-            //Collision with another enemy, but only if not already hit
-            //_otherHit = Physics2D.Raycast(collider.transform.position, new Vector3(-collider.transform.right.x, 0, 0), frontCheck);
-            //if (_otherHit.transform != null)
-            //    if (_otherHit.transform.CompareTag("Enemy") && !hasBeenHit)
-            //    {
-            //        FlipHorizontal();
-            //    }
+            
         }
 
         if (hasBeenHit)
