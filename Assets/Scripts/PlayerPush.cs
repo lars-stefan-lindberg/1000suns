@@ -71,7 +71,7 @@ public class PlayerPush : MonoBehaviour
                 if(platform != null)
                     platform.MovePlatform();
 
-                if(PlayerMovement.obj.isGrounded && !PlayerMovement.obj.isFalling && PlayerMovement.obj.canUseForcePushJump) 
+                if(PlayerMovement.obj.isGrounded && !PlayerMovement.obj.isFalling && Player.obj.hasPowerUp) 
                     PlayerMovement.obj.ExecuteForcePushJump();
                 Push(_buildUpPower);
             }
@@ -107,7 +107,8 @@ public class PlayerPush : MonoBehaviour
             new Vector3(gameObject.transform.position.x + (playerOffset * playerFacingDirection) , gameObject.transform.position.y, gameObject.transform.position.z),
             playerFacingDirection,
             power,
-            Player.obj.hasForcePushPowerUp);
+            Player.obj.hasPowerUp);
+        Player.obj.hasPowerUp = false;
     }
 
     private void OnDestroy()

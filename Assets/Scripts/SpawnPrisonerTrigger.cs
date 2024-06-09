@@ -8,7 +8,7 @@ public class SpawnPrisonerTrigger : MonoBehaviour
     private bool isSpawned = false;
 
     private void OnTriggerExit2D(Collider2D collider) {
-        if(collider.transform.CompareTag("Block") && !isSpawned) {
+        if(collider.transform.CompareTag("Block") && !isSpawned && prisoner != null) {
             prisoner.SetActive(true);
             isSpawned = true;
         }

@@ -245,7 +245,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     #endregion
 
     #region Jumping
-    public bool canUseForcePushJump = false;
     public bool _isForcePushJumping = false;
     public bool jumpedWhileForcePushJumping = false;
     public float jumpedWhileForcePushJumpingModifier = 0.6f;
@@ -345,7 +344,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     {
         if (_isForcePushJumping) {
             forcePushJumpOnGroundTimer += Time.fixedDeltaTime;
-            if(forcePushJumpOnGroundTimer > forcePushJumpOnGroundDuration)
+            if(forcePushJumpOnGroundTimer > forcePushJumpOnGroundDuration) 
                 _isForcePushJumping = false;
         }
         

@@ -9,7 +9,7 @@ public class Player : MonoBehaviour
     [Header("Dependencies")]
     public Rigidbody2D rigidBody;
     public Collider2D playerCollider;
-    public bool hasForcePushPowerUp = false;
+    public bool hasPowerUp = false;
 
     void Awake()
     {
