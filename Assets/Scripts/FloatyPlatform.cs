@@ -19,6 +19,11 @@ public class FloatyPlatform : MonoBehaviour
     public float deceleration = 20f;
     private LayerMask _blockingCastLayerMask;
     public bool movePlatform = false;
+    public bool isFallingPlatform = false;
+    public float timeBeforeFall = 1f;
+    public float timeFallingBeforeDestroy = 7f;
+    public float fallTimer = 0f;
+    private bool _startFallCountDown = false;
 
     private float _idleTargetVerticalPosition = 0;
 
@@ -36,7 +41,6 @@ public class FloatyPlatform : MonoBehaviour
         if(collision.transform.CompareTag("Player"))
         {
             isPlayerOnPlatform = true;
-            PlayerMovement.obj.isOnPlatform = true;
             PlayerMovement.obj.platformRigidBody = _rigidBody;
             PlayerPush.obj.platform = this;
         }
@@ -47,7 +51,6 @@ public class FloatyPlatform : MonoBehaviour
         if (collision.transform.CompareTag("Player"))
         {
             isPlayerOnPlatform = false;
-            PlayerMovement.obj.isOnPlatform = false;
             PlayerMovement.obj.platformRigidBody = null;
             PlayerPush.obj.platform = null;
         }
@@ -57,6 +60,15 @@ public class FloatyPlatform : MonoBehaviour
     public bool somethingToTheLeft = false;
     private void Update()
     {
+        if(_startFallCountDown)
+            fallTimer += Time.deltaTime;
+        if(fallTimer >= timeFallingBeforeDestroy)
+            this.gameObject.SetActive(false);
+        if(isFallingPlatform && fallTimer >= timeBeforeFall) {
+            _rigidBody.bodyType = RigidbodyType2D.Dynamic;
+            _rigidBody.gravityScale = 1;
+            return;
+        }
         somethingToTheRight = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.right, blockingCastDistance, _blockingCastLayerMask);
         somethingToTheLeft = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.left, blockingCastDistance, _blockingCastLayerMask);
 
@@ -67,6 +79,8 @@ public class FloatyPlatform : MonoBehaviour
 
         if (movePlatform)
         {
+            if(isFallingPlatform)
+                _startFallCountDown = true;
             _rigidBody.velocity = new Vector2(Mathf.MoveTowards(_rigidBody.velocity.x, 0, deceleration * Time.deltaTime), _rigidBody.velocity.y);
         } else
         {

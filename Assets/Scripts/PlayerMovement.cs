@@ -42,7 +42,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _animator = GetComponentInChildren<Animator>();
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         _powerJumpForce = _stats.JumpPower * 2f;
-        _groundLayerMasks = LayerMask.GetMask(new[] { "Ground", "JumpThroughs" });
+        _groundLayerMasks = LayerMask.GetMask("Ground");
+        _platformLayerMasks = LayerMask.GetMask("JumpThroughs");
         _ceilingLayerMasks = LayerMask.GetMask("Ground");
     }
 
@@ -201,6 +202,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     private float _landedSqueezeTime = 0.08f;
     private bool _landed = false;
     private LayerMask _groundLayerMasks;
+    private LayerMask _platformLayerMasks;
     private LayerMask _ceilingLayerMasks;
 
     private void CheckCollisions()
@@ -209,12 +211,18 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
         // Ground and Ceiling
         bool groundHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, _groundLayerMasks);
+        bool platformHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, _platformLayerMasks);
         bool ceilingHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
+
+        if(platformHit) {
+            groundHit = true;
+            isOnPlatform = true;
+        }
 
         // Hit a Ceiling
         if (ceilingHit)
         {
-            _frameVelocity.y = _frameVelocity.y * _stats.CeilingBounceBackSpeed;
+            _frameVelocity.y *= _stats.CeilingBounceBackSpeed;
         }
 
         // Landed on the Ground
@@ -235,6 +243,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         else if (isGrounded && !groundHit)
         {
             isGrounded = false;
+            isOnPlatform = false;
             _frameLeftGrounded = _time;
             GroundedChanged?.Invoke(false, 0);
         }
@@ -320,6 +329,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private void ExecuteJump(float jumpPower)
     {
+        isOnPlatform = false;
         _endedJumpEarly = false;
         _timeJumpWasPressed = 0;
         _bufferedJumpUsable = false;
@@ -365,13 +375,13 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
                 if (_movementInput.x == 0)
                 {
                     var deceleration = isGrounded ? _stats.GroundDeceleration : _stats.AirDeceleration;
-                    _frameVelocity.x = isOnPlatform ?
+                    _frameVelocity.x = isOnPlatform && platformRigidBody != null ?
                         platformRigidBody.velocity.x :
                         Mathf.MoveTowards(_frameVelocity.x, 0, deceleration * Time.fixedDeltaTime);
                 }
                 else
                 {
-                    _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, (_movementInput.x * _stats.MaxSpeed) + (isOnPlatform ? platformRigidBody.velocity.x : 0), _stats.Acceleration * Time.fixedDeltaTime);
+                    _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, (_movementInput.x * _stats.MaxSpeed) + (isOnPlatform && platformRigidBody != null ? platformRigidBody.velocity.x : 0), _stats.Acceleration * Time.fixedDeltaTime);
                 }
             }
         }
@@ -383,6 +393,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private void HandleGravity()
     {
+        if(isOnPlatform && platformRigidBody != null) {
+            _frameVelocity.y = platformRigidBody.velocity.y;
+            return;
+        }
         if (isGrounded && _frameVelocity.y <= 0f)
         {
             _frameVelocity.y = _stats.GroundingForce;
