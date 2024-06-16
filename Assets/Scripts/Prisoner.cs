@@ -46,6 +46,9 @@ public class Prisoner : MonoBehaviour
     public bool isStatic = false;
     public bool isImmuneToForcePush = false;
 
+    public float playerCastDistance = 0;
+    public float attackSpeed = 40f;
+
     private void Start()
     {
         _rigidBody = GetComponent<Rigidbody2D>();
@@ -86,6 +89,16 @@ public class Prisoner : MonoBehaviour
                 applyGotHitState(prisoner.damagePower, hitFromTheLeft);
             }
         }
+        if (collision.transform.CompareTag("Player")) {
+            //Freeze player
+            _animator.SetTrigger("eat");
+            isStatic = true;
+            _rigidBody.velocity = new Vector2(0,0);
+
+
+            //collision.gameObject.SetActive(false);
+        }
+
     }
 
     private void applyGotHitState(float hitPower, bool hitFromTheLeft)
@@ -178,9 +191,20 @@ public class Prisoner : MonoBehaviour
             }
         }
 
-        if (!hasBeenHit && !isRecovering && isGrounded)
+        if (!hasBeenHit && !isRecovering && isGrounded && !isStatic)
         {
             GracefulSpeedChange();
+        }
+
+        if(!isStatic) {
+            Debug.DrawRay(transform.position, (IsFacingRight() ? Vector3.left : Vector3.right) * playerCastDistance, Color.red);
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, (IsFacingRight() ? Vector3.left : Vector3.right), playerCastDistance);
+
+            if(hit.transform != null) {
+                if(hit.transform.CompareTag("Player")) {
+                    Attack();
+                }
+            }
         }
 
         //Update animator
@@ -189,6 +213,11 @@ public class Prisoner : MonoBehaviour
         _animator.SetBool("isRecovering", isRecovering);
         _animator.SetBool("isMoving", Mathf.Abs(_rigidBody.velocity.x) > 0.01);
         //_animator.SetBool("isMoving", isMoving);
+    }
+
+    private void Attack()
+    {
+        _rigidBody.AddForce(new Vector2(IsFacingRight() ? -attackSpeed : attackSpeed, 0));
     }
 
     void FixedUpdate()
@@ -242,6 +271,10 @@ public class Prisoner : MonoBehaviour
         Vector3 currentRotation = transform.eulerAngles;
         currentRotation.y += 180;
         transform.eulerAngles = currentRotation;
+    }
+
+    private bool IsFacingRight() {
+        return _rigidBody.velocity.y > 0;
     }
 
     //private void OnDrawGizmos()
