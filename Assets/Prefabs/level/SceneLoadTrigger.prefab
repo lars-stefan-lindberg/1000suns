@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3692831275169937849}
   - component: {fileID: 5385474625340697582}
   - component: {fileID: 2966756286449915058}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: SceneLoadTrigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -90,5 +90,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2462a8d3fee9343f6a10ed29e8a95a8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _scenesToLoad: []
+  _scenesToLoad:
+  - _sceneAsset: {fileID: 102900000, guid: 8feb3ad35aaaa4fd1a504ab603d595ac, type: 3}
+    _sceneName: TestRoom1
+  - _sceneAsset: {fileID: 102900000, guid: 155237d3cf78e4326a503d97f26fbbb0, type: 3}
+    _sceneName: TestRoom3
   _scenesToUnload: []

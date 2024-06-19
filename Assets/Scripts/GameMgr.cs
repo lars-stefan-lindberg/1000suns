@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class GameMgr : MonoBehaviour
 {
-    public static float DEAD_ZONE = -25;
+    public static float DEAD_ZONE = -200;
 }
