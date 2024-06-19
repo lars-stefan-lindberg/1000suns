@@ -274,7 +274,7 @@ public class Prisoner : MonoBehaviour
     }
 
     private bool IsFacingRight() {
-        return _rigidBody.velocity.y > 0;
+        return _rigidBody.velocity.x < 0;
     }
 
     //private void OnDrawGizmos()
