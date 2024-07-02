@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class BabyPrisoner : MonoBehaviour
@@ -15,12 +16,20 @@ public class BabyPrisoner : MonoBehaviour
     public float frontCheck = 0.51f;
 
     public float speed = 0f;
+    public float alertSpeed = 4f;
     public float maxSpeed = 3;
     public float speedAcceleration = 1f;
 
     public float timeToTurnAround = 0.5f;
     public float turnAroundTimer = 1.3f;
     public bool isTurning = false;
+
+    public bool isAlerted = false;
+
+    public float playerCastDistance = 0;
+
+    public float originHorizontalPos;
+    public float maxTravellingDistance = 5f;
 
     [Header("Dependencies")]
     public LayerMask groundLayer;
@@ -32,6 +41,7 @@ public class BabyPrisoner : MonoBehaviour
         _rigidBody = GetComponent<Rigidbody2D>();
         _animator = GetComponentInChildren<Animator>();
         _enemyWidth = _collider.bounds.extents.x;
+        originHorizontalPos = transform.position.x;
     }
 
     void Update()
@@ -47,32 +57,53 @@ public class BabyPrisoner : MonoBehaviour
             new Vector3(groundLineCastPosition.x, groundLineCastPosition.y - isGroundedCheckOffset, groundLineCastPosition.z),
             groundLayer);
 
-        if (isGrounded && !isTurning)
-        {
-            //Check ahead if no ground ahead
-            Vector2 groundLineAheadCastPosition = _collider.transform.position - _collider.transform.right * _enemyWidth * groundAheadCheck;
-            isGroundFloorAhead = Physics2D.Linecast(groundLineAheadCastPosition, groundLineAheadCastPosition + Vector2.down, groundLayer);
+        // if (isGrounded && !isTurning)
+        // {
+        //     //Check ahead if no ground ahead
+        //     Vector2 groundLineAheadCastPosition = _collider.transform.position - _collider.transform.right * _enemyWidth * groundAheadCheck;
+        //     isGroundFloorAhead = Physics2D.Linecast(groundLineAheadCastPosition, groundLineAheadCastPosition + Vector2.down, groundLayer);
 
-            //Wall check
-            bool isWallAhead = Physics2D.Raycast(_collider.transform.position, new Vector3(-_collider.transform.right.x, 0, 0), frontCheck, groundLayer);
+        //     //Wall check
+        //     bool isWallAhead = Physics2D.Raycast(_collider.transform.position, new Vector3(-_collider.transform.right.x, 0, 0), frontCheck, groundLayer);
 
-            if (isWallAhead || !isGroundFloorAhead)
+        //     if (isWallAhead || !isGroundFloorAhead)
+        //     {
+        //         isTurning = true;
+        //         turnAroundTimer = 0;
+        //     }
+            
+        // }
+
+        if(!isTurning && !isAlerted) {
+            float currentHorizontalPos = transform.position.x;
+            if(((currentHorizontalPos >= (originHorizontalPos + maxTravellingDistance)) && !IsFacingLeft()) || 
+                ((currentHorizontalPos <= (originHorizontalPos - maxTravellingDistance)) && IsFacingLeft())) 
             {
                 isTurning = true;
                 turnAroundTimer = 0;
             }
-            
+
         }
 
-        if (isGrounded)
+        if (isGrounded && !isAlerted)
         {
             GracefulSpeedChange();
         }
+        // Debug.DrawRay(transform.position, (IsFacingLeft() ? Vector3.left : Vector3.right) * playerCastDistance, Color.red);
+        // RaycastHit2D hit = Physics2D.Raycast(transform.position, (IsFacingLeft() ? Vector3.left : Vector3.right), playerCastDistance);
+
+        // if(!isAlerted) {
+        //     if(hit.transform != null) {
+        //         if(hit.transform.CompareTag("Player")) {
+        //             Alert();
+        //         }
+        //     }
+        // }
 
         //Update animator
         _animator.SetBool("isGrounded", isGrounded);
         _animator.SetBool("isMoving", Mathf.Abs(_rigidBody.velocity.x) > 0.01);
-        //_animator.SetBool("isMoving", isMoving);
+        _animator.SetBool("isAlerted", isAlerted);
     }
 
 
@@ -97,13 +128,41 @@ public class BabyPrisoner : MonoBehaviour
                 _rigidBody.velocity = currentVelocity;
             }
         }
-        
+    }
 
-        // if (_collider.transform.position.y < GameMgr.DEAD_ZONE)
-        // {
-        //     Debug.Log("Enemy died.");
-        //     Destroy(gameObject);
-        // }
+    void OnTriggerEnter2D(Collider2D other) {
+        if(other.gameObject.CompareTag("BabyPrisonerFinishLine")) {
+            speed = 0;
+        }
+    }
+
+    private bool IsFacingLeft() {
+        return _rigidBody.velocity.x < 0;
+    }
+
+    public float alertRunDuration = 1.5f;
+    public void Alert() {
+        speed = 0;
+        isAlerted = true;
+        if(IsFacingLeft()) 
+            FlipHorizontal();
+        StartCoroutine(AlertRunDelay(alertRunDuration));
+    }
+
+    private IEnumerator AlertRunDelay(float alertRunDelay) {
+        yield return new WaitForSeconds(alertRunDelay);
+        _animator.SetBool("isAlerted", isAlerted);
+        speed = alertSpeed;
+    }
+
+    public void Despawn() {
+        _animator.SetTrigger("despawn");
+        StartCoroutine(DelayedSetInactive(1f));
+    }
+
+    private IEnumerator DelayedSetInactive(float delay) {
+        yield return new WaitForSeconds(delay);
+        gameObject.SetActive(false);
     }
 
     private void FlipHorizontal()

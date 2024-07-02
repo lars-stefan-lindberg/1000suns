@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -112,8 +111,24 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         }
     }
 
+    public bool freezePlayer = false;
+
+    public void Freeze(float freezeDuration) {
+        freezePlayer = true;
+        _movementInput = new Vector2(0,0);
+        StartCoroutine(FreezeDuration(freezeDuration));
+    }
+
+    private IEnumerator FreezeDuration(float freezeDuration) {
+        yield return new WaitForSeconds(freezeDuration);
+        freezePlayer = false;
+    }
+
     public void OnMovement(InputAction.CallbackContext value)
     {
+        if(freezePlayer) {
+            return;
+        }
         _movementInput = value.ReadValue<Vector2>();
 
         if (_movementInput.y < 0 && isGrounded && !_buildingUpPowerJump) //Pressing down
@@ -131,6 +146,9 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     public void OnJump(InputAction.CallbackContext context)
     {
+        if(freezePlayer) {
+            return;
+        }
         if (context.performed)
         {
             if (!PowerJumpMaxCharged)
@@ -352,6 +370,11 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private void HandleDirection()
     {
+        if(freezePlayer) {
+            _frameVelocity.x = 0;
+            return;
+        }
+
         if (_isForcePushJumping) {
             forcePushJumpOnGroundTimer += Time.fixedDeltaTime;
             if(forcePushJumpOnGroundTimer > forcePushJumpOnGroundDuration) 
