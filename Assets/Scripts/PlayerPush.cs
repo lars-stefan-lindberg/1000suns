@@ -8,6 +8,8 @@ public class PlayerPush : MonoBehaviour
 {
     public static PlayerPush obj;
 
+    private Animator _animator;
+
     public int playerOffset = 1;
     public float maxForce = 40;
     public float powerBuildUpPerFixedUpdate = 1;
@@ -39,6 +41,7 @@ public class PlayerPush : MonoBehaviour
     {
         obj = this;
         _playerSpriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        _animator = GetComponentInChildren<Animator>();
     }
 
     public void OnShoot(InputAction.CallbackContext context)
@@ -99,16 +102,22 @@ public class PlayerPush : MonoBehaviour
         }
     }
 
+    public float projectileDelay = 0.3f;
     void Push(float power)
     {
-        int playerFacingDirection = _playerSpriteRenderer.flipX ? -1 : 1;
+        _animator.SetTrigger("forcePush");
+        StartCoroutine(DelayedProjectile(projectileDelay, power));
+        Player.obj.hasPowerUp = false;
+    }
 
+    private IEnumerator DelayedProjectile(float delay, float power) {
+        yield return new WaitForSeconds(delay);
+        int playerFacingDirection = _playerSpriteRenderer.flipX ? -1 : 1;
         ProjectileManager.obj.shootProjectile(
             new Vector3(gameObject.transform.position.x + (playerOffset * playerFacingDirection) , gameObject.transform.position.y, gameObject.transform.position.z),
             playerFacingDirection,
             power,
             Player.obj.hasPowerUp);
-        Player.obj.hasPowerUp = false;
     }
 
     private void OnDestroy()
