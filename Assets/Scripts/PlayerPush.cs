@@ -67,16 +67,17 @@ public class PlayerPush : MonoBehaviour
                 {
                     //Tilt player slightly when in air
                     float power = PlayerMovement.obj.isFacingLeft() ? pushTiltPower : -pushTiltPower;
-                    Player.obj.rigidBody.AddForce(new Vector2(power, 0));
+                    //Player.obj.rigidBody.AddForce(new Vector2(power, 0));
                 } else if(PlayerMovement.obj.isFalling)
                     PlayerMovement.obj.ExecuteFallDash();
 
                 if(platform != null)
-                    platform.MovePlatform();
+                    StartCoroutine(DelayedMovePlatform(projectileDelay));
 
                 if(PlayerMovement.obj.isGrounded && !PlayerMovement.obj.isFalling && Player.obj.hasPowerUp) 
-                    PlayerMovement.obj.ExecuteForcePushJump();
-                Push(_buildUpPower);
+                    ForcePushJump(_buildUpPower);
+                else
+                    ForcePush(_buildUpPower);
             }
             
             _buildUpPower = defaultPower;
@@ -103,14 +104,27 @@ public class PlayerPush : MonoBehaviour
     }
 
     public float projectileDelay = 0.3f;
-    void Push(float power)
-    {
-        _animator.SetTrigger("forcePush");
-        StartCoroutine(DelayedProjectile(projectileDelay, power));
-        Player.obj.hasPowerUp = false;
+
+    void ForcePushJump(float power) {
+        Push(power, true);
     }
 
-    private IEnumerator DelayedProjectile(float delay, float power) {
+    void ForcePush(float power) {
+        Push(power, false);
+    }
+
+    void Push(float power, bool forcePushJump)
+    {
+        _animator.SetTrigger("forcePush");
+        StartCoroutine(DelayedProjectile(projectileDelay, power, forcePushJump));
+    }
+
+    private IEnumerator DelayedMovePlatform(float delay) {
+        yield return new WaitForSeconds(delay);
+        platform.MovePlatform();
+    }
+
+    private IEnumerator DelayedProjectile(float delay, float power, bool forcePushJump) {
         yield return new WaitForSeconds(delay);
         int playerFacingDirection = _playerSpriteRenderer.flipX ? -1 : 1;
         ProjectileManager.obj.shootProjectile(
@@ -118,6 +132,9 @@ public class PlayerPush : MonoBehaviour
             playerFacingDirection,
             power,
             Player.obj.hasPowerUp);
+        if(forcePushJump)
+            PlayerMovement.obj.ExecuteForcePushJump();
+        Player.obj.hasPowerUp = false;
     }
 
     private void OnDestroy()
