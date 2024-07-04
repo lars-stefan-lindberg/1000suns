@@ -12,6 +12,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public GameObject anchor;
     private BoxCollider2D _collider;
     private Animator _animator;
+    private PlayerInput _playerInput;
     private Vector2 _frameVelocity;
     private bool _cachedQueryStartInColliders;
 
@@ -44,6 +45,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _groundLayerMasks = LayerMask.GetMask("Ground");
         _platformLayerMasks = LayerMask.GetMask("JumpThroughs");
         _ceilingLayerMasks = LayerMask.GetMask("Ground");
+        _playerInput = GetComponentInChildren<PlayerInput>();
     }
 
     private void OnDestroy()
@@ -111,24 +113,19 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         }
     }
 
-    public bool freezePlayer = false;
-
     public void Freeze(float freezeDuration) {
-        freezePlayer = true;
+        _playerInput.currentActionMap.Disable();
         _movementInput = new Vector2(0,0);
         StartCoroutine(FreezeDuration(freezeDuration));
     }
 
     private IEnumerator FreezeDuration(float freezeDuration) {
         yield return new WaitForSeconds(freezeDuration);
-        freezePlayer = false;
+        _playerInput.currentActionMap.Enable();
     }
 
     public void OnMovement(InputAction.CallbackContext value)
     {
-        if(freezePlayer) {
-            return;
-        }
         _movementInput = value.ReadValue<Vector2>();
 
         if (_movementInput.y < 0 && isGrounded && !_buildingUpPowerJump) //Pressing down
@@ -146,9 +143,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     public void OnJump(InputAction.CallbackContext context)
     {
-        if(freezePlayer) {
-            return;
-        }
         if (context.performed)
         {
             if (!PowerJumpMaxCharged)
@@ -389,11 +383,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private void HandleDirection()
     {
-        if(freezePlayer) {
-            _frameVelocity.x = 0;
-            return;
-        }
-
         if (_isForcePushJumping) {
             forcePushJumpOnGroundTimer += Time.fixedDeltaTime;
             if(forcePushJumpOnGroundTimer > forcePushJumpOnGroundDuration) 
