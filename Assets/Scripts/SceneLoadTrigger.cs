@@ -10,19 +10,14 @@ public class SceneLoadTrigger : MonoBehaviour
     [SerializeField] private SceneField[] _scenesToLoad;
     [SerializeField] private SceneField[] _scenesToUnload;
 
-    private GameObject _player;
-    private void Awake() {
-        _player = GameObject.FindGameObjectWithTag("Player");
-    }
-
     private void OnTriggerEnter2D(Collider2D collision) {
-        if(collision.gameObject == _player) {
+        if(collision.CompareTag("Player")) {
             LoadScenes();
             UnloadScenes();
         }
     }
 
-    private void LoadScenes() {
+    public void LoadScenes() {
         for(int i = 0; i < _scenesToLoad.Length; i++) 
         {
             bool isSceneLoaded = false;

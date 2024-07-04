@@ -10,19 +10,23 @@ public class Player : MonoBehaviour
     public Rigidbody2D rigidBody;
     public Collider2D playerCollider;
     public bool hasPowerUp = false;
+    public float spawnFreezeDuration = 1.4f;
+
+    private Animator _animator;
 
     void Awake()
     {
         obj = this;
+        _animator = GetComponentInChildren<Animator>();
     }
 
-    private void Update()
-    {
-        if (transform.position.y < GameMgr.DEAD_ZONE)
-        {
-            Debug.Log("Player died.");
-            //Destroy(gameObject);
-        }
+    public void PlayGenericDeathAnimation() {
+        _animator.SetTrigger("genericDeath");
+    }
+
+    public void PlaySpawn() {
+        PlayerMovement.obj.Freeze(spawnFreezeDuration);
+        _animator.SetTrigger("spawn");
     }
 
     void OnDestroy()

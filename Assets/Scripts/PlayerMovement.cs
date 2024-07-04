@@ -215,6 +215,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private float _frameLeftGrounded = float.MinValue;
     public bool isGrounded;
+    public bool startingOnGround = true;
     private float _landedSqueezeX = 1.25f;
     private float _landedSqueezeY = 0.65f;
     private float _landedSqueezeTime = 0.08f;
@@ -223,12 +224,30 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     private LayerMask _platformLayerMasks;
     private LayerMask _ceilingLayerMasks;
 
+    private bool _startingOnGroundFalseCoroutineStarted;
+    private IEnumerator SetStartingOnGroundToFalse() {
+        yield return new WaitForSeconds(0.1f);
+        startingOnGround = false;
+    }
+
+    public void SetStartingOnGround() {
+        startingOnGround = true;
+        _startingOnGroundFalseCoroutineStarted = false;
+    }
+
     private void CheckCollisions()
     {
         Physics2D.queriesStartInColliders = false;
 
         // Ground and Ceiling
         bool groundHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, _groundLayerMasks);
+        if(startingOnGround) {
+            groundHit = true;
+            if(!_startingOnGroundFalseCoroutineStarted) {
+                _startingOnGroundFalseCoroutineStarted = true;
+                StartCoroutine(SetStartingOnGroundToFalse());
+            }
+        }
         bool platformHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, _platformLayerMasks);
         bool ceilingHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
 
@@ -266,7 +285,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             GroundedChanged?.Invoke(false, 0);
         }
 
-        Physics2D.queriesStartInColliders = _cachedQueryStartInColliders; ;
+        Physics2D.queriesStartInColliders = _cachedQueryStartInColliders;
     }
 
     #endregion

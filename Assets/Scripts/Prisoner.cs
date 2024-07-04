@@ -90,13 +90,9 @@ public class Prisoner : MonoBehaviour
             }
         }
         if (collision.transform.CompareTag("Player")) {
-            //Freeze player
-            _animator.SetTrigger("eat");
+            //Kill player
             isStatic = true;
             _rigidBody.velocity = new Vector2(0,0);
-
-
-            //collision.gameObject.SetActive(false);
         }
 
     }
@@ -243,13 +239,6 @@ public class Prisoner : MonoBehaviour
                 currentVelocity.x = -_collider.transform.right.x * speed;
                 _rigidBody.velocity = currentVelocity;
             }
-        }
-        
-
-        if (_collider.transform.position.y < GameMgr.DEAD_ZONE)
-        {
-            Debug.Log("Enemy died.");
-            Destroy(gameObject);
         }
     }
 
