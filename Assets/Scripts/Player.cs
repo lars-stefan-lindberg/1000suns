@@ -24,6 +24,10 @@ public class Player : MonoBehaviour
         _animator.SetTrigger("genericDeath");
     }
 
+    public void PlayShadowDeathAnimation() {
+        _animator.SetTrigger("shadowDeath");
+    }
+
     public void PlaySpawn() {
         PlayerMovement.obj.Freeze(spawnFreezeDuration);
         _animator.SetTrigger("spawn");

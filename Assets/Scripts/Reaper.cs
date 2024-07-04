@@ -11,13 +11,20 @@ public class Reaper : MonoBehaviour
         obj = this;
     }
 
-    public void KillPlayer() {
-        PlayerMovement.obj.Freeze(deathAnimationTime);
+    public float genericDeathAnimationTime = 0.8f;
+    public float shadowDeathAnimationTime = 0.8f;
+    public void KillPlayerGeneric() {
+        PlayerMovement.obj.Freeze(genericDeathAnimationTime);
         Player.obj.PlayGenericDeathAnimation();
-        StartCoroutine(afterDeathAnimation(deathAnimationTime));
+        StartCoroutine(afterDeathAnimation(genericDeathAnimationTime));
     }
 
-    public float deathAnimationTime = 0.8f;
+    public void KillPlayerShadow() {
+        PlayerMovement.obj.Freeze(shadowDeathAnimationTime);
+        Player.obj.PlayShadowDeathAnimation();
+        StartCoroutine(afterDeathAnimation(shadowDeathAnimationTime));
+    }
+
 
     private IEnumerator afterDeathAnimation(float waitingTime) {
         yield return new WaitForSeconds(waitingTime);

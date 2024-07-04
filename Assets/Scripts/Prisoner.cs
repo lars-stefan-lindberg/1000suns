@@ -90,7 +90,7 @@ public class Prisoner : MonoBehaviour
             }
         }
         if (collision.transform.CompareTag("Player")) {
-            //Kill player
+            Reaper.obj.KillPlayerShadow();
             isStatic = true;
             _rigidBody.velocity = new Vector2(0,0);
         }
