@@ -32,15 +32,26 @@ public class LevelManager : MonoBehaviour
             GameObject[] sceneGameObjects = scene.GetRootGameObjects();
             GameObject playerSpawnPoint = sceneGameObjects.First(gameObject => gameObject.CompareTag("PlayerSpawnPoint"));
             _playerSpawningCollider = playerSpawnPoint.GetComponent<Collider2D>();
+            
+            GameObject sceneLoadTriggerGameObject = sceneGameObjects.First(gameObject => gameObject.CompareTag("SceneLoadTrigger"));
+            SceneLoadTrigger sceneLoadTrigger = sceneLoadTriggerGameObject.GetComponent<SceneLoadTrigger>();
 
             Player.obj.transform.position = _playerSpawningCollider.transform.position;
+            AdjustSpawnFaceDirection(sceneLoadTrigger.transform.position.x, playerSpawnPoint.transform.position.x);
             Player.obj.gameObject.SetActive(true);
             Player.obj.PlaySpawn();
             PlayerMovement.obj.SetStartingOnGround();
+            PlayerMovement.obj.isGrounded = true;
 
-            GameObject sceneLoadTriggerGameObject = sceneGameObjects.First(gameObject => gameObject.CompareTag("SceneLoadTrigger"));
-            SceneLoadTrigger sceneLoadTrigger = sceneLoadTriggerGameObject.GetComponent<SceneLoadTrigger>();
             sceneLoadTrigger.LoadScenes();
         }
+    }
+
+    private void AdjustSpawnFaceDirection(float sceneLoadTriggerPosition, float playerSpawnPointPosition) {
+        bool isLeftSideOfScreen = sceneLoadTriggerPosition - playerSpawnPointPosition >= 0;
+            if(isLeftSideOfScreen && PlayerMovement.obj.isFacingLeft())
+                PlayerMovement.obj.FlipPlayer();
+            else if(!isLeftSideOfScreen && !PlayerMovement.obj.isFacingLeft())
+                PlayerMovement.obj.FlipPlayer();
     }
 }

@@ -8998,6 +8998,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1786451341}
   - component: {fileID: 1786451340}
+  - component: {fileID: 1786451342}
   m_Layer: 0
   m_Name: Virtual Camera
   m_TagString: Untagged
@@ -9060,6 +9061,18 @@ Transform:
   - {fileID: 1135300934}
   m_Father: {fileID: 1742645686}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1786451342
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1786451339}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a8a05de0ac134f4f9d01bef6b9da077, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1278349168228084760
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9176,6 +9189,10 @@ PrefabInstance:
     - target: {fileID: 7993252989760826933, guid: 371789a1a5f2142329879a47aef51de8, type: 3}
       propertyPath: m_Offset.x
       value: 1.3676357
+      objectReference: {fileID: 0}
+    - target: {fileID: 7993252989760826933, guid: 371789a1a5f2142329879a47aef51de8, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

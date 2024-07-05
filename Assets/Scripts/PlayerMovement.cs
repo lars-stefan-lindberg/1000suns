@@ -81,6 +81,11 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             _spriteRenderer.flipX = false;
     }
 
+    public void FlipPlayer()
+    {
+        _spriteRenderer.flipX = !_spriteRenderer.flipX;
+    }
+
     public bool isFacingLeft()
     {
         return _spriteRenderer.flipX;
@@ -113,14 +118,17 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         }
     }
 
+    private bool _freezePlayer = false;
     public void Freeze(float freezeDuration) {
         _playerInput.currentActionMap.Disable();
+        _freezePlayer = true;
         _movementInput = new Vector2(0,0);
         StartCoroutine(FreezeDuration(freezeDuration));
     }
 
     private IEnumerator FreezeDuration(float freezeDuration) {
         yield return new WaitForSeconds(freezeDuration);
+        _freezePlayer = false;
         _playerInput.currentActionMap.Enable();
     }
 
@@ -456,7 +464,12 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     #endregion
 
-    private void ApplyMovement() => Player.obj.rigidBody.velocity = _frameVelocity;
+    private void ApplyMovement() {
+        if (_freezePlayer)
+            Player.obj.rigidBody.velocity = new Vector2(0,0);
+        else 
+            Player.obj.rigidBody.velocity = _frameVelocity;
+    } 
 
     private void OnDrawGizmos()
     {
