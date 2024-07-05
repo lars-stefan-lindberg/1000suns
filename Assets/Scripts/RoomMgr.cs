@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+//Room size: X: 40, Y: 22.5
 public class RoomMgr : MonoBehaviour
 {
     public GameObject virtualCamera;
@@ -10,10 +11,10 @@ public class RoomMgr : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.CompareTag("Player") && !other.isTrigger)
+        if(other.CompareTag("Player"))
         {
-            virtualCamera.SetActive(true);
             SceneManager.SetActiveScene(SceneManager.GetSceneByName(currentScene));
+            virtualCamera.SetActive(true);
         }
     }
 
