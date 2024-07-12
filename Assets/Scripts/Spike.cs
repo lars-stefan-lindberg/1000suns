@@ -33,11 +33,12 @@ public class Spike : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision) {
         if(collision.transform.CompareTag("Player")) {
             Reaper.obj.KillPlayerGeneric();
-        } else
-        {
-            _rigidBody.gravityScale = 0;
-            _collider.enabled = false;
-        }
-
+        } else if(collision.transform.CompareTag("Enemy")) {
+            Prisoner prisoner = collision.gameObject.GetComponent<Prisoner>();
+            Reaper.obj.KillPrisoner(prisoner);
+        } 
+        _rigidBody.velocity = Vector3.zero;
+        _rigidBody.gravityScale = 0;
+        _collider.enabled = false;
     }
 }

@@ -118,6 +118,8 @@ public class Prisoner : MonoBehaviour
 
     void Update()
     {
+        if(_killed) 
+            return;
         if (_animator.GetCurrentAnimatorStateInfo(0).IsName("prisoner_spawn"))
             return;
 
@@ -218,6 +220,8 @@ public class Prisoner : MonoBehaviour
 
     void FixedUpdate()
     {
+        if(_killed)
+            return;
         if (_animator.GetCurrentAnimatorStateInfo(0).IsName("prisoner_spawn"))
             return;
 
@@ -264,6 +268,20 @@ public class Prisoner : MonoBehaviour
 
     private bool IsFacingRight() {
         return _rigidBody.velocity.x < 0;
+    }
+
+    public float deathAnimationTime = 0.8f;
+    private bool _killed = false;
+    public void Kill() {
+        _killed = true;
+        _rigidBody.velocity = Vector3.zero;
+        _animator.SetTrigger("death");
+        StartCoroutine(AfterDeathAnimation(deathAnimationTime));
+    }
+
+    private IEnumerator AfterDeathAnimation(float deathAnimationWaitingTime) {
+        yield return new WaitForSeconds(deathAnimationWaitingTime);
+        Destroy(gameObject);
     }
 
     //private void OnDrawGizmos()

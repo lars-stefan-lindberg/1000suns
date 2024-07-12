@@ -25,6 +25,9 @@ public class Reaper : MonoBehaviour
         StartCoroutine(afterDeathAnimation(shadowDeathAnimationTime));
     }
 
+    public void KillPrisoner(Prisoner prisoner) {
+        prisoner.Kill();
+    }
 
     private IEnumerator afterDeathAnimation(float waitingTime) {
         yield return new WaitForSeconds(waitingTime);
