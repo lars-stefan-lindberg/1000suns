@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class FallingPlatform : MonoBehaviour
@@ -19,7 +18,7 @@ public class FallingPlatform : MonoBehaviour
     private bool _falling = false;
     private Vector2 _startingPosition;
 
-    private Color _fadeOutStartColor;
+    private Color _fadeStartColor;
     [Range(0.1f, 10f), SerializeField] private float _fadeSpeed = 5f;
 
     private void Awake()
@@ -27,7 +26,7 @@ public class FallingPlatform : MonoBehaviour
         _rigidBody = GetComponent<Rigidbody2D>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _startingPosition = transform.position;
-        _fadeOutStartColor = new Color(_spriteRenderer.color.r, _spriteRenderer.color.g, _spriteRenderer.color.b, 0);
+        _fadeStartColor = new Color(_spriteRenderer.color.r, _spriteRenderer.color.g, _spriteRenderer.color.b, 0);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -80,14 +79,14 @@ public class FallingPlatform : MonoBehaviour
         _rigidBody.velocity = new Vector3(0,0,0);
         _rigidBody.gravityScale = 0;
         _rigidBody.bodyType = RigidbodyType2D.Kinematic;
-        _fadeOutStartColor.a = 0;
-        _spriteRenderer.color = _fadeOutStartColor;
+        _fadeStartColor.a = 0;
+        _spriteRenderer.color = _fadeStartColor;
     }
 
     private IEnumerator FadeInSprite() {
         while(_spriteRenderer.color.a < 1f) {
-            _fadeOutStartColor.a += Time.deltaTime * _fadeSpeed;
-            _spriteRenderer.color = _fadeOutStartColor;
+            _fadeStartColor.a += Time.deltaTime * _fadeSpeed;
+            _spriteRenderer.color = _fadeStartColor;
             yield return null;
         }
     }
