@@ -29,6 +29,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     public bool isOnPlatform = false;
     public Rigidbody2D platformRigidBody;
+    public JumpThroughPlatform jumpThroughPlatform;
 
     #region Interface
     public event Action<bool, float> GroundedChanged;
@@ -107,7 +108,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     private void UpdateAnimator()
     {
         _animator.SetBool("isGrounded", isGrounded);
-        _animator.SetBool("isMoving", _movementInput.x != 0 || _movementInput.y != 0);
+        _animator.SetBool("isMoving", _movementInput.x != 0);
         isFalling = _frameVelocity.y < -_stats.MinimumFallAnimationSpeed;
         _animator.SetBool("isFalling", isFalling);
         if (_landed)
@@ -153,6 +154,11 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     {
         if (context.performed)
         {
+            if(jumpThroughPlatform != null &&
+                _movementInput.y < 0) {
+                jumpThroughPlatform.PassThrough();
+                return;
+            }
             if (!PowerJumpMaxCharged)
             {
                 if (isGrounded)
@@ -243,6 +249,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
         // Ground and Ceiling
         bool groundHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, _groundLayerMasks);
+        
+        //Corner case when spawning
         if(startingOnGround) {
             groundHit = true;
             if(!_startingOnGroundFalseCoroutineStarted) {
@@ -250,6 +258,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
                 StartCoroutine(SetStartingOnGroundToFalse());
             }
         }
+ 
         bool platformHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, _platformLayerMasks);
         bool ceilingHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
 
