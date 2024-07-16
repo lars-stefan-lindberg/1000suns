@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Prisoner : MonoBehaviour
 {
+    public GameObject prisonerSoul;
+    public Transform prisonerSoulTarget;
     private Rigidbody2D _rigidBody;
     private BoxCollider2D _collider;
     private Animator _animator;
@@ -44,6 +46,7 @@ public class Prisoner : MonoBehaviour
     public bool isTurning = false;
 
     public bool isStatic = false;
+    public bool isSpawningSoul = false;
     public bool isImmuneToForcePush = false;
 
     public float playerCastDistance = 0;
@@ -270,18 +273,23 @@ public class Prisoner : MonoBehaviour
         return _rigidBody.velocity.x < 0;
     }
 
-    public float deathAnimationTime = 0.8f;
     private bool _killed = false;
-    public void Kill() {
+
+    [ContextMenu("InitiateKill")]
+    public void InitiateKill() {
         _killed = true;
         _rigidBody.velocity = Vector3.zero;
         _animator.SetTrigger("death");
-        StartCoroutine(AfterDeathAnimation(deathAnimationTime));
     }
 
-    private IEnumerator AfterDeathAnimation(float deathAnimationWaitingTime) {
-        yield return new WaitForSeconds(deathAnimationWaitingTime);
-        Destroy(gameObject);
+    public void Kill() {
+        if(isSpawningSoul) {
+            GameObject prisonerSoul = Instantiate(this.prisonerSoul, transform.position, transform.rotation);
+            prisonerSoul.GetComponent<PrisonerSoul>().Target = prisonerSoulTarget;
+            gameObject.SetActive(false);
+        } else {
+            Destroy(gameObject);
+        }
     }
 
     //private void OnDrawGizmos()

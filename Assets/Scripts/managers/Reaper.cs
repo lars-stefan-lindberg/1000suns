@@ -26,7 +26,7 @@ public class Reaper : MonoBehaviour
     }
 
     public void KillPrisoner(Prisoner prisoner) {
-        prisoner.Kill();
+        prisoner.InitiateKill();
     }
 
     private IEnumerator afterDeathAnimation(float waitingTime) {
