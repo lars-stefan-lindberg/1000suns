@@ -32,7 +32,7 @@ public class AudioManager : MonoBehaviour
 
     private void playSound(AudioClip clip)
     {
-        //_audioSource.PlayOneShot(clip);
+        _audioSource.PlayOneShot(clip);
     }
 
     void OnDestroy()
