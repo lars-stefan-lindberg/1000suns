@@ -269,7 +269,7 @@ public class Prisoner : MonoBehaviour
         transform.eulerAngles = currentRotation;
     }
 
-    private bool IsFacingRight() {
+    public bool IsFacingRight() {
         return _rigidBody.velocity.x < 0;
     }
 

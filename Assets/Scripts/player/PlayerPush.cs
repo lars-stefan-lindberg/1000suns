@@ -121,7 +121,7 @@ public class PlayerPush : MonoBehaviour
 
     private IEnumerator DelayedMovePlatform(float delay) {
         yield return new WaitForSeconds(delay);
-        platform.MovePlatform();
+        platform.MovePlatform(PlayerMovement.obj.isFacingLeft());
     }
 
     private IEnumerator DelayedProjectile(float delay, float power, bool forcePushJump) {

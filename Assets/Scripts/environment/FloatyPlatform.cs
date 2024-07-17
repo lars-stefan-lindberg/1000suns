@@ -44,6 +44,10 @@ public class FloatyPlatform : MonoBehaviour
             PlayerMovement.obj.platformRigidBody = _rigidBody;
             PlayerPush.obj.platform = this;
         }
+        if(collision.transform.CompareTag("Enemy")) {
+            Prisoner prisoner = collision.gameObject.GetComponent<Prisoner>();
+            MovePlatform(!prisoner.IsFacingRight());
+        }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
@@ -104,10 +108,10 @@ public class FloatyPlatform : MonoBehaviour
         transform.position = new Vector2(transform.position.x, Mathf.MoveTowards(transform.position.y, _idleTargetVerticalPosition, idleMoveSpeed * Time.deltaTime));
     }
 
-    public void MovePlatform()
+    public void MovePlatform(bool isFacingLeft)
     {
         movePlatform = true;
-        _rigidBody.velocity = new Vector2(PlayerMovement.obj.isFacingLeft() ? pushPower : -pushPower, 0);
+        _rigidBody.velocity = new Vector2(isFacingLeft ? pushPower : -pushPower, 0);
     }
 
     private void OnDrawGizmosSelected()
