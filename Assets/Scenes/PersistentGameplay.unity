@@ -580,6 +580,7 @@ MonoBehaviour:
   playerCollider: {fileID: 0}
   hasPowerUp: 0
   spawnFreezeDuration: 1.4
+  surface: 1
 --- !u!4 &650861884 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1657636802850301417, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
@@ -6346,12 +6347,24 @@ MonoBehaviour:
   - {fileID: 8300000, guid: db12c31bb472549ce9ad043f6a31b206, type: 3}
   - {fileID: 8300000, guid: 83f96357576014ac1848bef6f88f6bdb, type: 3}
   - {fileID: 8300000, guid: c0166d0755ab94f3987bb5b6e94fb044, type: 3}
-  land:
+  landOnRoots:
+  - {fileID: 8300000, guid: 63182e0b445fb4e5a9532f85751d7589, type: 3}
+  - {fileID: 8300000, guid: de5e5348e9eaa4be19e73d1a06633fc0, type: 3}
+  - {fileID: 8300000, guid: 8057cfbe10b4449638baabb75c921e59, type: 3}
+  stepOnRoots:
+  - {fileID: 8300000, guid: b99e602bb3f2b4ddb923f8897950cddc, type: 3}
+  - {fileID: 8300000, guid: 29ec1e2c004e24667882116cd8cbda7c, type: 3}
+  - {fileID: 8300000, guid: a1f68f5539ad04167bf03e5fbbae4510, type: 3}
+  - {fileID: 8300000, guid: a00848006f9e846c98d77d2344fee762, type: 3}
+  - {fileID: 8300000, guid: c09d0a5063f9648f2afa7d144fd9c07a, type: 3}
+  - {fileID: 8300000, guid: 01f6290f24c524543870e421ef0d69eb, type: 3}
+  - {fileID: 8300000, guid: d51998cf3dbe84689aa4799dffce7fd2, type: 3}
+  landOnRock:
   - {fileID: 8300000, guid: 3f0a2503341344ff9a8661b9fb9b04b9, type: 3}
   - {fileID: 8300000, guid: 805229922046946c38ba9e374d919ac4, type: 3}
   - {fileID: 8300000, guid: 1de73f49f359d4ce2ac28a2998210ff0, type: 3}
   - {fileID: 8300000, guid: fce9b4d0e6d224bb484453dfa0eb0121, type: 3}
-  step:
+  stepOnRock:
   - {fileID: 8300000, guid: d2c3569a05f404e4da60703aa232f806, type: 3}
   - {fileID: 8300000, guid: 461c4b8a79e204a678a6833f38457bc8, type: 3}
   - {fileID: 8300000, guid: d75f5d2e4306345ee8bd95842145a8f9, type: 3}

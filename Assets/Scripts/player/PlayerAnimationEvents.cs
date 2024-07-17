@@ -5,6 +5,6 @@ using UnityEngine;
 public class PlayerAnimationEvents : MonoBehaviour
 {
     public void PlayRunStep() {
-        AudioManager.obj.PlayStep(gameObject.transform);
+        AudioManager.obj.PlayStep(Player.obj.surface, gameObject.transform);
     }
 }

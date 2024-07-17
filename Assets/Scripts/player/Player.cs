@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -11,13 +12,29 @@ public class Player : MonoBehaviour
     public Collider2D playerCollider;
     public bool hasPowerUp = false;
     public float spawnFreezeDuration = 1.4f;
+    public Surface surface = Surface.Rock;
 
     private Animator _animator;
+    private LayerMask _groundLayerMasks;
 
     void Awake()
     {
         obj = this;
         _animator = GetComponentInChildren<Animator>();
+        _groundLayerMasks = LayerMask.GetMask("Ground");
+    }
+
+    void OnCollisionEnter2D(Collision2D other) {
+        Debug.Log("Collision detected. Gameobject mask:" + other.gameObject.layer.ToString());
+        if((_groundLayerMasks.value & (1 << other.gameObject.layer)) != 0) {
+            Debug.Log("Landed on Ground");
+            string surfaceTag = other.gameObject.tag;
+            Debug.Log("landed on surface: " + surfaceTag);
+            if(surfaceTag == "Rock")
+                surface = Surface.Rock;
+            else if(surfaceTag == "Roots")
+                surface = Surface.Roots;
+        }
     }
 
     public void PlayGenericDeathAnimation() {

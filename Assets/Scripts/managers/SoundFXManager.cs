@@ -7,8 +7,10 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioSource soundFXObject;
 
     public AudioClip[] jump;
-    public AudioClip[] land;
-    public AudioClip[] step;
+    public AudioClip[] landOnRoots;
+    public AudioClip[] stepOnRoots;
+    public AudioClip[] landOnRock;
+    public AudioClip[] stepOnRock;
 
     void Start() {
         obj = this;
@@ -18,12 +20,18 @@ public class AudioManager : MonoBehaviour
         PlayRandomSound(jump, spawnTransform, 1f);
     }
 
-    public void PlayLand(Transform spawnTransform) {
-        PlayRandomSound(land, spawnTransform, 1f);
+    public void PlayLand(Surface surface, Transform spawnTransform) {
+        if(surface == Surface.Roots)
+            PlayRandomSound(landOnRoots, spawnTransform, 1f);
+        else if(surface == Surface.Rock)
+            PlayRandomSound(landOnRock, spawnTransform, 1f);
     }
 
-    public void PlayStep(Transform spawnTransform) {
-        PlayRandomSound(step, spawnTransform, 1f);
+    public void PlayStep(Surface surface, Transform spawnTransform) {
+        if(surface == Surface.Roots)
+            PlayRandomSound(stepOnRoots, spawnTransform, 1f);
+        else if(surface == Surface.Rock)
+            PlayRandomSound(stepOnRock, spawnTransform, 1f);
     }
 
     public void PlaySound(AudioClip clip, Transform spawnTransform, float volume)

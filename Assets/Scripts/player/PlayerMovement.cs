@@ -114,7 +114,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         if (_landed)
         {
             DustParticleMgr.obj.CreateDust();
-            AudioManager.obj.PlayLand(gameObject.transform);
+            AudioManager.obj.PlayLand(Player.obj.surface, gameObject.transform);
             StartCoroutine(JumpSqueeze(_landedSqueezeX, _landedSqueezeY, _landedSqueezeTime));
             _landed = false;
         }
