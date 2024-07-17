@@ -114,7 +114,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         if (_landed)
         {
             DustParticleMgr.obj.CreateDust();
-            AudioManager.obj.PlayLand();
+            AudioManager.obj.PlayLand(gameObject.transform);
             StartCoroutine(JumpSqueeze(_landedSqueezeX, _landedSqueezeY, _landedSqueezeTime));
             _landed = false;
         }
@@ -361,7 +361,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     {
         ExecuteJump(_stats.JumpPower);
         DustParticleMgr.obj.CreateDust();
-        AudioManager.obj.PlayJump();
+        AudioManager.obj.PlayJump(gameObject.transform);
         StartCoroutine(JumpSqueeze(_jumpSqueezeX, _jumpSqueezeY, _jumpSqueezeTime));
         _jumpToConsume = false;
         if(_isForcePushJumping) {

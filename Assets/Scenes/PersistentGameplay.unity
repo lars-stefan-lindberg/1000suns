@@ -209,7 +209,7 @@ GameObject:
   - component: {fileID: 246179532}
   - component: {fileID: 246179531}
   m_Layer: 0
-  m_Name: Audio Source
+  m_Name: MusicManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -224,7 +224,7 @@ AudioSource:
   m_GameObject: {fileID: 246179530}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 2966220554816448027, guid: 1434f9127746d41ef8bc9d09bf5de702, type: 2}
   m_audioClip: {fileID: 8300000, guid: a8ae8f8405f3f4f19b4d9e4eebd8c162, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -324,7 +324,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1285203678}
+  m_Father: {fileID: 301671912}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &301671911
 GameObject:
@@ -360,7 +360,9 @@ Transform:
   - {fileID: 2101111515}
   - {fileID: 1924666374}
   - {fileID: 1447792680}
+  - {fileID: 824360835}
   - {fileID: 1742499143}
+  - {fileID: 246179532}
   m_Father: {fileID: 1285203678}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &461766509
@@ -633,6 +635,51 @@ Rigidbody2D:
   m_CorrespondingSourceObject: {fileID: 6644931415762059624, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
   m_PrefabInstance: {fileID: 1260214224}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &824360834
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 824360835}
+  - component: {fileID: 824360836}
+  m_Layer: 0
+  m_Name: SoundMixerManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &824360835
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 824360834}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 301671912}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &824360836
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 824360834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a1b88db0a385426096bac32710ac661, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioMixer: {fileID: 24100000, guid: 1434f9127746d41ef8bc9d09bf5de702, type: 2}
 --- !u!1001 &873550524
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1182,7 +1229,6 @@ Transform:
   - {fileID: 650861884}
   - {fileID: 519420032}
   - {fileID: 2125610242}
-  - {fileID: 246179532}
   - {fileID: 301671912}
   - {fileID: 1228479017}
   m_Father: {fileID: 0}
@@ -6294,9 +6340,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e63929c16d16c43cda1b9a15f96176b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jump: {fileID: 8300000, guid: db12c31bb472549ce9ad043f6a31b206, type: 3}
-  land: {fileID: 8300000, guid: 63182e0b445fb4e5a9532f85751d7589, type: 3}
-  step: {fileID: 8300000, guid: b99e602bb3f2b4ddb923f8897950cddc, type: 3}
+  soundFXObject: {fileID: 4122111361939833699, guid: d86aab11421af4cbe88c39f411bd0f1f, type: 3}
+  jump:
+  - {fileID: 8300000, guid: 9dbf8ff3a4fe647d19d57cdb70937ee8, type: 3}
+  - {fileID: 8300000, guid: db12c31bb472549ce9ad043f6a31b206, type: 3}
+  - {fileID: 8300000, guid: 83f96357576014ac1848bef6f88f6bdb, type: 3}
+  - {fileID: 8300000, guid: c0166d0755ab94f3987bb5b6e94fb044, type: 3}
+  land:
+  - {fileID: 8300000, guid: 3f0a2503341344ff9a8661b9fb9b04b9, type: 3}
+  - {fileID: 8300000, guid: 805229922046946c38ba9e374d919ac4, type: 3}
+  - {fileID: 8300000, guid: 1de73f49f359d4ce2ac28a2998210ff0, type: 3}
+  - {fileID: 8300000, guid: fce9b4d0e6d224bb484453dfa0eb0121, type: 3}
+  step:
+  - {fileID: 8300000, guid: d2c3569a05f404e4da60703aa232f806, type: 3}
+  - {fileID: 8300000, guid: 461c4b8a79e204a678a6833f38457bc8, type: 3}
+  - {fileID: 8300000, guid: d75f5d2e4306345ee8bd95842145a8f9, type: 3}
+  - {fileID: 8300000, guid: f1da9833e9d1f45b5b7ded3cd34316a0, type: 3}
+  - {fileID: 8300000, guid: 195b0b197e3a0458fa82ee528d676f2f, type: 3}
+  - {fileID: 8300000, guid: 889615506f6f44eb7be8a7f26c107c68, type: 3}
+  - {fileID: 8300000, guid: 35460c4c8b0494017922606d050f1dfc, type: 3}
 --- !u!1 &1819809117 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1596984163503937720, guid: ac673057cc2d4482fb56b57092ab0c08, type: 3}
