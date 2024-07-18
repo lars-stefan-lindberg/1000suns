@@ -25,11 +25,8 @@ public class Player : MonoBehaviour
     }
 
     void OnCollisionEnter2D(Collision2D other) {
-        Debug.Log("Collision detected. Gameobject mask:" + other.gameObject.layer.ToString());
         if((_groundLayerMasks.value & (1 << other.gameObject.layer)) != 0) {
-            Debug.Log("Landed on Ground");
             string surfaceTag = other.gameObject.tag;
-            Debug.Log("landed on surface: " + surfaceTag);
             if(surfaceTag == "Rock")
                 surface = Surface.Rock;
             else if(surfaceTag == "Roots")
