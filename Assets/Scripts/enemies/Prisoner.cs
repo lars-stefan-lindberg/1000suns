@@ -278,7 +278,8 @@ public class Prisoner : MonoBehaviour
     [ContextMenu("InitiateKill")]
     public void InitiateKill() {
         _killed = true;
-        _rigidBody.velocity = Vector3.zero;
+        _rigidBody.bodyType = RigidbodyType2D.Static;
+        _collider.enabled = false;
         _animator.SetTrigger("death");
     }
 
