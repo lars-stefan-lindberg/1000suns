@@ -12,7 +12,7 @@ public class Block : MonoBehaviour
         _rigidBody = GetComponent<Rigidbody2D>();
     }
 
-    public float forcePushPower = 20f;
+    public float basePushPower = 7f;
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.transform.CompareTag("Player"))
@@ -21,8 +21,10 @@ public class Block : MonoBehaviour
         }
         else if (collision.transform.CompareTag("Projectile"))
         {
+            Projectile projectile = collision.gameObject.GetComponent<Projectile>();
             bool hitFromTheLeft = collision.transform.position.x < _rigidBody.position.x;
-            _rigidBody.velocity = new Vector2(hitFromTheLeft ? forcePushPower : -forcePushPower, 0);
+            float power = basePushPower * projectile.power;
+            _rigidBody.velocity = new Vector2(hitFromTheLeft ? power : -power, 0);
         }
     }
 
