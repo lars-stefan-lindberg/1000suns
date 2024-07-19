@@ -39,7 +39,7 @@ public class Prisoner : MonoBehaviour
     public float recoveryMovementStopMultiplier = 0.4f;
 
     public float damagePower; //When hit by projectile stores and uses the power fo the hit
-    public float forceMultiplier = 40f;  //How "hard" a projectile will hit the enemy
+    public float forceMultiplier = 7f;  //How "hard" a projectile will hit the enemy
 
     public float timeToTurnAround = 0.5f;
     public float turnAroundTimer = 1.3f;
