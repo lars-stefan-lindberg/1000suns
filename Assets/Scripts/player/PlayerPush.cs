@@ -30,6 +30,8 @@ public class PlayerPush : MonoBehaviour
     
     public FloatyPlatform platform;
 
+    bool CanUseForcePushJump => PlayerMovement.obj.isGrounded && !PlayerMovement.obj.isFalling && Player.obj.hasPowerUp && _buildUpPower >= maxForce;
+
     private void Awake()
     {
         obj = this;
@@ -63,7 +65,7 @@ public class PlayerPush : MonoBehaviour
                 if(platform != null)
                     StartCoroutine(DelayedMovePlatform(projectileDelay, _buildUpPower));
 
-                if(PlayerMovement.obj.isGrounded && !PlayerMovement.obj.isFalling && Player.obj.hasPowerUp) 
+                if(CanUseForcePushJump) 
                     ForcePushJump(_buildUpPower);
                 else
                     ForcePush(_buildUpPower);
@@ -119,9 +121,10 @@ public class PlayerPush : MonoBehaviour
             playerFacingDirection,
             power,
             Player.obj.hasPowerUp);
-        if(forcePushJump)
-            PlayerMovement.obj.ExecuteForcePushJump();
-        Player.obj.hasPowerUp = false;
+        if(forcePushJump) {
+           PlayerMovement.obj.ExecuteForcePushJump();
+           Player.obj.hasPowerUp = false;
+        }
     }
 
     private void OnDestroy()
