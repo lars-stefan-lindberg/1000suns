@@ -61,7 +61,7 @@ public class PlayerPush : MonoBehaviour
                     PlayerMovement.obj.ExecuteFallDash();
 
                 if(platform != null)
-                    StartCoroutine(DelayedMovePlatform(projectileDelay));
+                    StartCoroutine(DelayedMovePlatform(projectileDelay, _buildUpPower));
 
                 if(PlayerMovement.obj.isGrounded && !PlayerMovement.obj.isFalling && Player.obj.hasPowerUp) 
                     ForcePushJump(_buildUpPower);
@@ -106,9 +106,9 @@ public class PlayerPush : MonoBehaviour
         StartCoroutine(DelayedProjectile(projectileDelay, power, forcePushJump));
     }
 
-    private IEnumerator DelayedMovePlatform(float delay) {
+    private IEnumerator DelayedMovePlatform(float delay, float power) {
         yield return new WaitForSeconds(delay);
-        platform.MovePlatform(PlayerMovement.obj.isFacingLeft());
+        platform.MovePlatform(PlayerMovement.obj.isFacingLeft(), power);
     }
 
     private IEnumerator DelayedProjectile(float delay, float power, bool forcePushJump) {

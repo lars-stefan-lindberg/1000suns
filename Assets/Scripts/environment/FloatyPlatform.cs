@@ -15,7 +15,7 @@ public class FloatyPlatform : MonoBehaviour
     public float idleVerticalDistance = 0.25f;
 
     public float blockingCastDistance = 0.1f;
-    public float pushPower = 10f;
+    public float basePushPower = 5f;
     public float deceleration = 20f;
     private LayerMask _blockingCastLayerMask;
     public bool movePlatform = false;
@@ -26,6 +26,7 @@ public class FloatyPlatform : MonoBehaviour
     private bool _startFallCountDown = false;
 
     private float _idleTargetVerticalPosition = 0;
+    private float _prisonerPushPower = 2f;
 
     private void Awake()
     {
@@ -46,7 +47,7 @@ public class FloatyPlatform : MonoBehaviour
         }
         if(collision.transform.CompareTag("Enemy")) {
             Prisoner prisoner = collision.gameObject.GetComponent<Prisoner>();
-            MovePlatform(!prisoner.IsFacingRight());
+            MovePlatform(!prisoner.IsFacingRight(), _prisonerPushPower);
         }
     }
 
@@ -108,10 +109,11 @@ public class FloatyPlatform : MonoBehaviour
         transform.position = new Vector2(transform.position.x, Mathf.MoveTowards(transform.position.y, _idleTargetVerticalPosition, idleMoveSpeed * Time.deltaTime));
     }
 
-    public void MovePlatform(bool isFacingLeft)
+    public void MovePlatform(bool isFacingLeft, float force)
     {
         movePlatform = true;
-        _rigidBody.velocity = new Vector2(isFacingLeft ? pushPower : -pushPower, 0);
+        float power = force * basePushPower;
+        _rigidBody.velocity = new Vector2(isFacingLeft ? power : -power, 0);
     }
 
     private void OnDrawGizmosSelected()
