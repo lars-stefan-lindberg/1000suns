@@ -9,12 +9,15 @@ public class PlayerPush : MonoBehaviour
     public static PlayerPush obj;
 
     private Animator _animator;
+    private SpriteRenderer _playerSpriteRenderer;
+
+    public float minBuildUpPowerTime = 0.5f;
 
     public int playerOffset = 1;
-    public float maxForce = 40;
-    public float powerBuildUpPerFixedUpdate = 1;
+    public float maxForce = 3;
+    public float powerBuildUpPerFixedUpdate = 1.1f;
 
-    public float defaultPower = 20;
+    public float defaultPower = 1;
     public float pushTiltPower = 2000;
     public float fallTiltPower = 10000;
 
@@ -24,18 +27,8 @@ public class PlayerPush : MonoBehaviour
     private float _buildUpPower = 0;
     private bool _buildingUpPower = false;
     private float _buildUpPowerTime = 0;
-    public float minBuildUpPowerTime = 0.5f;
-    private SpriteRenderer _playerSpriteRenderer;
-    public float dashStopMultiplier = 0.4f;
-    public float horizontalDashSpeed = 1f;
-
+    
     public FloatyPlatform platform;
-
-    private bool CanBuildPower =>
-        _buildingUpPower &&
-        _buildUpPower < maxForce &&
-        _buildUpPower <= StaminaMgr.obj.GetCurrentStamina();
-
 
     private void Awake()
     {
@@ -58,16 +51,12 @@ public class PlayerPush : MonoBehaviour
             //Need to check that we are building power before we can push. If not the push will be executed on button release.
             if(_buildingUpPower && _buildUpPowerTime >= minBuildUpPowerTime)
             {
-                StaminaMgr.Push push = new();
-                push.SetEffort(_buildUpPower); //TODO: This is just luck for now, that power equals effort
-                StaminaMgr.obj.ExecutePower(push);
-
                 //Should tilt the player slightly backwards in air
                 if(!PlayerMovement.obj.isGrounded && !PlayerMovement.obj.isFalling)
                 {
                     //Tilt player slightly when in air
                     float power = PlayerMovement.obj.isFacingLeft() ? pushTiltPower : -pushTiltPower;
-                    //Player.obj.rigidBody.AddForce(new Vector2(power, 0));
+                    Player.obj.rigidBody.AddForce(new Vector2(power, 0));
                 } else if(PlayerMovement.obj.isFalling)
                     PlayerMovement.obj.ExecuteFallDash();
 
@@ -87,12 +76,10 @@ public class PlayerPush : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (CanBuildPower)
-        {
-            _buildUpPowerTime += Time.deltaTime;
-            //_buildUpPower = defaultPower * (Mathf.Round(_buildUpPowerTime) + 2);
-            _buildUpPower = defaultPower; //Only one power available for now
-        }
+        _buildUpPowerTime += Time.deltaTime;
+        Debug.Log("build up power: " + _buildUpPower);
+        if(_buildUpPower < maxForce && _buildUpPowerTime > minBuildUpPowerTime)
+            _buildUpPower *= powerBuildUpPerFixedUpdate;
         if (_buildingUpPower)
         {
             pushPowerUpAnimation.GetComponent<PushPowerUpAnimationMgr>().Play();
@@ -103,7 +90,7 @@ public class PlayerPush : MonoBehaviour
         }
     }
 
-    public float projectileDelay = 0.3f;
+    public float projectileDelay = 0.1f;
 
     void ForcePushJump(float power) {
         Push(power, true);

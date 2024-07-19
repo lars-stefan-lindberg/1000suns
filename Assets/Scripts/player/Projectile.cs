@@ -3,6 +3,7 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
     public float power;
+    [SerializeField] private float movingSpeed = 10f;
     public int deadZone = 4;
 
     public Rigidbody2D rigidBody;
@@ -29,12 +30,13 @@ public class Projectile : MonoBehaviour
 
         //horizontalDirection = -1 -> Left facing
         //horizontalDirection = 1 -> Right facing
-        rigidBody.velocity = new Vector2(power * horizontalDirection, 0);
+        rigidBody.velocity = new Vector2(movingSpeed * horizontalDirection, 0);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.transform.CompareTag("Enemy") || collision.transform.CompareTag("Block") || collision.transform.CompareTag("Ground"))
+        if(collision.transform.CompareTag("Enemy") || collision.transform.CompareTag("Block") || collision.transform.CompareTag("Ground")
+            || collision.transform.CompareTag("Orb") || collision.transform.CompareTag("FloatingPlatform") || collision.transform.CompareTag("FallingPlatform"))
             Destroy(gameObject);
     }
 }

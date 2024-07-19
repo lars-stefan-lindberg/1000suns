@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Orb : MonoBehaviour
@@ -6,32 +5,32 @@ public class Orb : MonoBehaviour
     private BoxCollider2D _collider;
     private Rigidbody2D _rigidBody;
 
-    public float idleMoveSpeed;
+    [SerializeField] private float idleMoveSpeed;
+    [SerializeField] private float idleVerticalDistance = 0.25f;
+    [SerializeField] private float basePushPower = 5f;
+    [SerializeField] private float deceleration = 20f;
     private float _idleVerticalTargetPosition;
     private float _idleTargetVerticalPosition = 0;
-    public float startingVerticalPosition;
-    public float idleVerticalDistance = 0.25f;
-    public float pushPower = 10f;
-    public float deceleration = 20f;
-    public bool moveHorizontally = false;
+    private float _startingVerticalPosition;
+    private bool _moveHorizontally = false;
 
     void Awake()
     {
         _collider = GetComponent<BoxCollider2D>();
         _rigidBody = GetComponent<Rigidbody2D>();
-        startingVerticalPosition = transform.position.y;
-        _idleVerticalTargetPosition = startingVerticalPosition - idleVerticalDistance;
+        _startingVerticalPosition = transform.position.y;
+        _idleVerticalTargetPosition = _startingVerticalPosition - idleVerticalDistance;
     }
 
     void Update()
     {
-        if(moveHorizontally)
+        if(_moveHorizontally)
             _rigidBody.velocity = new Vector2(Mathf.MoveTowards(_rigidBody.velocity.x, 0, deceleration * Time.deltaTime), _rigidBody.velocity.y);
         else
             _rigidBody.velocity = new Vector2(0, 0);
         if(_rigidBody.velocity.x == 0)
         {
-            moveHorizontally = false;
+            _moveHorizontally = false;
             MoveVertical();
         }
     }
@@ -41,7 +40,7 @@ public class Orb : MonoBehaviour
         {
             Projectile projectile = other.gameObject.GetComponent<Projectile>();
             bool hitFromTheLeft = projectile.rigidBody.position.x < _rigidBody.position.x;
-            MoveHorizontal(hitFromTheLeft);
+            MoveHorizontal(projectile.power, hitFromTheLeft);
         }
     }
 
@@ -50,21 +49,22 @@ public class Orb : MonoBehaviour
             Prisoner prisoner = other.gameObject.GetComponent<Prisoner>();
             Reaper.obj.KillPrisoner(prisoner);
         } else
-            moveHorizontally = false;
+            _moveHorizontally = false;
     }
 
     private void MoveVertical()
     {
-        if (transform.position.y >= startingVerticalPosition)
+        if (transform.position.y >= _startingVerticalPosition)
             _idleTargetVerticalPosition = _idleVerticalTargetPosition;
         if (transform.position.y <= _idleVerticalTargetPosition)
-            _idleTargetVerticalPosition = startingVerticalPosition;
+            _idleTargetVerticalPosition = _startingVerticalPosition;
         transform.position = new Vector2(transform.position.x, Mathf.MoveTowards(transform.position.y, _idleTargetVerticalPosition, idleMoveSpeed * Time.deltaTime));
     }
 
-    private void MoveHorizontal(bool moveRight)
+    private void MoveHorizontal(float force, bool moveRight)
     {
-        moveHorizontally = true;
-        _rigidBody.velocity = new Vector2(moveRight ? pushPower : -pushPower, 0);
+        _moveHorizontally = true;
+        float power = basePushPower * force;
+        _rigidBody.velocity = new Vector2(moveRight ? power : -power, 0);
     }
 }
