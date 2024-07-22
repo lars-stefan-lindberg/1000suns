@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -15,6 +13,7 @@ public class PlayerPush : MonoBehaviour
 
     public int playerOffset = 1;
     public float maxForce = 3;
+    public float powerUpMaxForce = 4;
     public float powerBuildUpPerFixedUpdate = 1.1f;
 
     public float defaultPower = 1;
@@ -30,7 +29,7 @@ public class PlayerPush : MonoBehaviour
     
     public FloatyPlatform platform;
 
-    bool CanUseForcePushJump => PlayerMovement.obj.isGrounded && !PlayerMovement.obj.isFalling && Player.obj.hasPowerUp && _buildUpPower >= maxForce;
+    bool CanUseForcePushJump => PlayerMovement.obj.isGrounded && Player.obj.hasPowerUp && _buildUpPower >= maxForce;
 
     private void Awake()
     {
@@ -62,11 +61,13 @@ public class PlayerPush : MonoBehaviour
                 } else if(PlayerMovement.obj.isFalling)
                     PlayerMovement.obj.ExecuteFallDash();
 
-                if(platform != null)
-                    StartCoroutine(DelayedMovePlatform(projectileDelay, _buildUpPower));
+                if(platform != null) {
+                    float power = Player.obj.hasPowerUp ? powerUpMaxForce : _buildUpPower;
+                    StartCoroutine(DelayedMovePlatform(projectileDelay, power));
+                }
 
                 if(CanUseForcePushJump) 
-                    ForcePushJump(_buildUpPower);
+                    ForcePushJump(powerUpMaxForce);
                 else
                     ForcePush(_buildUpPower);
             }
