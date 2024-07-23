@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: b2e692c94183844a5ba067a9dc748458
+guid: a77b8b13ad1e84f4586b5ef2ed409bea
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -69,7 +69,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 256
+    maxTextureSize: 512
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
@@ -123,253 +123,379 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: power_up_animation_0
+      name: power_up_animation_dark_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 16
+        width: 15
         height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.5333334, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 224ca1125ba254bb7962d878b7a551ea
-      internalID: -1584485953
+      spriteID: 0e73a315fe3c24952a7339e186b4f83f
+      internalID: -2113765371
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: power_up_animation_1
+      name: power_up_animation_dark_1
       rect:
         serializedVersion: 2
-        x: 16
+        x: 15
         y: 0
-        width: 16
+        width: 15
         height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.5333334, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c1bc20fc65dd64ea3874913d1a15aca7
-      internalID: -1503791204
+      spriteID: 4e416e57edb734c59a08455af722c514
+      internalID: -323117168
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: power_up_animation_2
+      name: power_up_animation_dark_2
       rect:
         serializedVersion: 2
-        x: 32
+        x: 30
         y: 0
-        width: 16
+        width: 15
         height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.5333334, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e1742da27316c42c9a798e3f170fca9e
-      internalID: -127532619
+      spriteID: 2d464621e98474aa68bd16d33a8aa98d
+      internalID: 1706138137
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: power_up_animation_3
+      name: power_up_animation_dark_3
       rect:
         serializedVersion: 2
-        x: 48
+        x: 45
         y: 0
-        width: 16
+        width: 15
         height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.5333334, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ff141d045f2394124bdf512ee3f59698
-      internalID: -1712437748
+      spriteID: 0a9fa4ec52687405c8bc4b4d6ad572cf
+      internalID: -1651139121
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: power_up_animation_4
+      name: power_up_animation_dark_4
       rect:
         serializedVersion: 2
-        x: 64
+        x: 60
         y: 0
-        width: 16
+        width: 15
         height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.5333334, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f3d4a6748ee0e43248d64a2e18338ea9
-      internalID: 654958558
+      spriteID: 201a0c66cc2dc446395de77a205cfa21
+      internalID: 1290535531
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: power_up_animation_5
+      name: power_up_animation_dark_5
       rect:
         serializedVersion: 2
-        x: 80
+        x: 75
         y: 0
-        width: 16
+        width: 15
         height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.5333334, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1e11694aee0064a22816d6960b565ed1
-      internalID: -210090799
+      spriteID: 509c9fec6d9fb4fe38bee040452b3b17
+      internalID: -976555172
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: power_up_animation_6
+      name: power_up_animation_dark_6
       rect:
         serializedVersion: 2
-        x: 96
+        x: 90
         y: 0
-        width: 16
+        width: 15
         height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.5333334, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 648b62b6291114f6e97a30d64b8aea2d
-      internalID: -1959346434
+      spriteID: 3291c6941205a4079b563fbac7b4afd8
+      internalID: 1967470935
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: power_up_animation_7
+      name: power_up_animation_dark_7
       rect:
         serializedVersion: 2
-        x: 112
+        x: 105
         y: 0
-        width: 16
+        width: 15
         height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.5333334, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8f1158b06d76d46a482d6bd933aefbc3
-      internalID: 1788437241
+      spriteID: cf061d7d13597422fa0bf79cb9afb973
+      internalID: -1279599899
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: power_up_animation_8
+      name: power_up_animation_dark_8
       rect:
         serializedVersion: 2
-        x: 128
+        x: 120
         y: 0
-        width: 16
+        width: 15
         height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.5333334, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8c8fb05ec731f450f8587b19ba77aeb3
-      internalID: -414541980
+      spriteID: 113ab60581e954355acbd7e8cfa4ff7a
+      internalID: -1259195736
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: power_up_animation_9
+      name: power_up_animation_dark_9
       rect:
         serializedVersion: 2
-        x: 144
+        x: 135
         y: 0
-        width: 16
+        width: 15
         height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.5333334, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 33f9fc818682c4afdb86b7cec28cdc36
-      internalID: -130627878
+      spriteID: f4aaa94c8ed554451a0e226ed870a3c4
+      internalID: -2117147269
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: power_up_animation_10
+      name: power_up_animation_dark_10
       rect:
         serializedVersion: 2
-        x: 160
+        x: 150
         y: 0
-        width: 16
+        width: 15
         height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.5333334, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: efc425b4dca54485bb6b96957bfd19f3
-      internalID: -616113741
+      spriteID: 8b009475857ee4fb2b11c722ed3d0820
+      internalID: -977794860
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: power_up_animation_11
+      name: power_up_animation_dark_11
       rect:
         serializedVersion: 2
-        x: 176
+        x: 165
         y: 0
-        width: 16
+        width: 15
         height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.5333334, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9351c7412bc7245b795626a3b6c9f7f2
-      internalID: -310994521
+      spriteID: 02a138c6d2be044dbbd6af86e2755db2
+      internalID: 1968753092
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: power_up_animation_dark_12
+      rect:
+        serializedVersion: 2
+        x: 180
+        y: 0
+        width: 15
+        height: 16
+      alignment: 9
+      pivot: {x: 0.5333334, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f9eb78dcb5a7c4f68af332d330cd8f9e
+      internalID: 253016451
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: power_up_animation_dark_13
+      rect:
+        serializedVersion: 2
+        x: 195
+        y: 0
+        width: 15
+        height: 16
+      alignment: 9
+      pivot: {x: 0.5333334, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2b72c640b10c94bcf82d339cf1cff174
+      internalID: -773901131
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: power_up_animation_dark_14
+      rect:
+        serializedVersion: 2
+        x: 210
+        y: 0
+        width: 15
+        height: 16
+      alignment: 9
+      pivot: {x: 0.5333334, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 80fb1cd8a0e0e41bdbdea4e03d7fb37a
+      internalID: -1829575480
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: power_up_animation_dark_15
+      rect:
+        serializedVersion: 2
+        x: 225
+        y: 0
+        width: 15
+        height: 16
+      alignment: 9
+      pivot: {x: 0.5333334, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 473f42ccb7ae0410fbd81b70f36e04ca
+      internalID: 110134531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: power_up_animation_dark_16
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 0
+        width: 15
+        height: 16
+      alignment: 9
+      pivot: {x: 0.5333334, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ccf1be42266ec45f2a07ce12b9740564
+      internalID: -1202795985
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: power_up_animation_dark_17
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 0
+        width: 15
+        height: 16
+      alignment: 9
+      pivot: {x: 0.5333334, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 39ce293d9b9a6423995fd0864719d115
+      internalID: 1940275799
       vertices: []
       indices: 
       edges: []
@@ -385,18 +511,24 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      power_up_animation_0: -1584485953
-      power_up_animation_1: -1503791204
-      power_up_animation_10: -616113741
-      power_up_animation_11: -310994521
-      power_up_animation_2: -127532619
-      power_up_animation_3: -1712437748
-      power_up_animation_4: 654958558
-      power_up_animation_5: -210090799
-      power_up_animation_6: -1959346434
-      power_up_animation_7: 1788437241
-      power_up_animation_8: -414541980
-      power_up_animation_9: -130627878
+      power_up_animation_dark_0: -2113765371
+      power_up_animation_dark_1: -323117168
+      power_up_animation_dark_10: -977794860
+      power_up_animation_dark_11: 1968753092
+      power_up_animation_dark_12: 253016451
+      power_up_animation_dark_13: -773901131
+      power_up_animation_dark_14: -1829575480
+      power_up_animation_dark_15: 110134531
+      power_up_animation_dark_16: -1202795985
+      power_up_animation_dark_17: 1940275799
+      power_up_animation_dark_2: 1706138137
+      power_up_animation_dark_3: -1651139121
+      power_up_animation_dark_4: 1290535531
+      power_up_animation_dark_5: -976555172
+      power_up_animation_dark_6: 1967470935
+      power_up_animation_dark_7: -1279599899
+      power_up_animation_dark_8: -1259195736
+      power_up_animation_dark_9: -2117147269
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
