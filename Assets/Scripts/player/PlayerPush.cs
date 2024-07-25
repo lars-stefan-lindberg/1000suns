@@ -20,7 +20,7 @@ public class PlayerPush : MonoBehaviour
     public float pushTiltPower = 2000;
     public float fallTiltPower = 10000;
 
-    [Header("Dependecies")]
+    [Header("Dependencies")]
     public GameObject pushPowerUpAnimation;
 
     private float _buildUpPower = 0;
@@ -89,15 +89,19 @@ public class PlayerPush : MonoBehaviour
 
     private void FixedUpdate()
     {
+        //Charge animation
+        if(_buildingUpPower && _buildUpPower < maxForce)
+            pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().Charge();
+        else if(_buildUpPower >= maxForce)
+            pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().FullyCharged();
+        else
+            pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().Cancel();
+
         if(_buildingUpPower) {
             _buildUpPowerTime += Time.deltaTime;
-            if(_buildUpPower < maxForce && _buildUpPowerTime > minBuildUpPowerTime)
+            if(_buildUpPower < maxForce && _buildUpPowerTime > minBuildUpPowerTime) {
                 _buildUpPower *= powerBuildUpPerFixedUpdate;
-            pushPowerUpAnimation.GetComponent<PushPowerUpAnimationMgr>().Play();
-        }
-        else
-        {
-            pushPowerUpAnimation.GetComponent<PushPowerUpAnimationMgr>().Stop();
+            }
         }
     }
 
