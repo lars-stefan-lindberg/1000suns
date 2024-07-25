@@ -77,14 +77,22 @@ public class PlayerPush : MonoBehaviour
         }
     }
 
+    public bool IsFullyCharged() {
+        return _buildUpPower >= maxForce;
+    }
+
+    public void ResetBuiltUpPower() {
+        _buildingUpPower = false;
+        _buildUpPower = defaultPower;
+        _buildUpPowerTime = 0;
+    }
+
     private void FixedUpdate()
     {
-        _buildUpPowerTime += Time.deltaTime;
-        Debug.Log("build up power: " + _buildUpPower);
-        if(_buildUpPower < maxForce && _buildUpPowerTime > minBuildUpPowerTime)
-            _buildUpPower *= powerBuildUpPerFixedUpdate;
-        if (_buildingUpPower)
-        {
+        if(_buildingUpPower) {
+            _buildUpPowerTime += Time.deltaTime;
+            if(_buildUpPower < maxForce && _buildUpPowerTime > minBuildUpPowerTime)
+                _buildUpPower *= powerBuildUpPerFixedUpdate;
             pushPowerUpAnimation.GetComponent<PushPowerUpAnimationMgr>().Play();
         }
         else
@@ -123,7 +131,7 @@ public class PlayerPush : MonoBehaviour
             power,
             Player.obj.hasPowerUp);
         if(forcePushJump) {
-           PlayerMovement.obj.ExecuteForcePushJump();
+           PlayerMovement.obj.ExecuteForcePushJumpWithProjectile();
            Player.obj.hasPowerUp = false;
         }
     }

@@ -101,6 +101,14 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public void ExecuteForcePushJump() {
         _isForcePushJumping = true;
         forcePushJumpOnGroundTimer = 0;
+        _frameVelocity.x = isFacingLeft() ? -initialForcePushJumpSpeed : initialForcePushJumpSpeed;
+        PlayerPush.obj.ResetBuiltUpPower();
+        Player.obj.hasPowerUp = false;
+    }
+
+    public void ExecuteForcePushJumpWithProjectile() {
+        _isForcePushJumping = true;
+        forcePushJumpOnGroundTimer = 0;
         _frameVelocity.x = isFacingLeft() ? initialForcePushJumpSpeed : -initialForcePushJumpSpeed;
     }
 
@@ -162,6 +170,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             }
             if (!PowerJumpMaxCharged)
             {
+                if(_movementInput.x != 0 && PlayerPush.obj.IsFullyCharged() && Player.obj.hasPowerUp) {
+                    _jumpToConsume = true;
+                    ExecuteForcePushJump();
+                }
                 if (isGrounded)
                     _jumpToConsume = true;
                 else
