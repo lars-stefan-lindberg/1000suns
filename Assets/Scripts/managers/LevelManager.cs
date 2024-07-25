@@ -38,6 +38,7 @@ public class LevelManager : MonoBehaviour
 
             Player.obj.transform.position = _playerSpawningCollider.transform.position;
             AdjustSpawnFaceDirection(sceneLoadTrigger.transform.position.x, playerSpawnPoint.transform.position.x);
+            Player.obj.hasPowerUp = false;
             Player.obj.gameObject.SetActive(true);
             Player.obj.PlaySpawn();
             PlayerMovement.obj.SetStartingOnGround();
