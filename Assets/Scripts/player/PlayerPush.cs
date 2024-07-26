@@ -72,8 +72,7 @@ public class PlayerPush : MonoBehaviour
                     ForcePush(_buildUpPower);
             }
             
-            _buildUpPower = defaultPower;
-            _buildingUpPower = false;
+            ResetBuiltUpPower();
         }
     }
 
@@ -85,6 +84,7 @@ public class PlayerPush : MonoBehaviour
         _buildingUpPower = false;
         _buildUpPower = defaultPower;
         _buildUpPowerTime = 0;
+        pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().Cancel();
     }
 
     private void FixedUpdate()
@@ -92,10 +92,12 @@ public class PlayerPush : MonoBehaviour
         //Charge animation
         if(_buildingUpPower && _buildUpPower < maxForce)
             pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().Charge();
-        else if(_buildUpPower >= maxForce)
-            pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().FullyCharged();
-        else
-            pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().Cancel();
+        else if(_buildUpPower >= maxForce) {
+            if(Player.obj.hasPowerUp)
+                pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().FullyChargedPoweredUp();
+            else
+                pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().FullyCharged();
+        }
 
         if(_buildingUpPower) {
             _buildUpPowerTime += Time.deltaTime;
