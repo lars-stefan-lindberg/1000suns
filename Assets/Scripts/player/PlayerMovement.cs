@@ -98,6 +98,13 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _frameVelocity.x = isFacingLeft() ? initialDashSpeed : -initialDashSpeed;
     }
 
+    public void TriggerForcePushAnimation() {
+        if(_movementInput.x != 0 && isGrounded)
+            _animator.SetTrigger("forcePushWhileRunning");
+        else
+            _animator.SetTrigger("forcePush");
+    }
+
     public void ExecuteForcePushJump() {
         _isForcePushJumping = true;
         forcePushJumpOnGroundTimer = 0;

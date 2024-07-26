@@ -119,7 +119,7 @@ public class PlayerPush : MonoBehaviour
 
     void Push(float power, bool forcePushJump)
     {
-        _animator.SetTrigger("forcePush");
+        PlayerMovement.obj.TriggerForcePushAnimation();
         StartCoroutine(DelayedProjectile(projectileDelay, power, forcePushJump));
     }
 
