@@ -155,6 +155,14 @@ PrefabInstance:
       propertyPath: currentScene._sceneAsset
       value: 
       objectReference: {fileID: 102900000, guid: 35ac7eee6a1724c8692419d08a984fe8, type: 3}
+    - target: {fileID: 3263073179217399136, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
+      propertyPath: m_Size.y
+      value: 22.51205
+      objectReference: {fileID: 0}
+    - target: {fileID: 3263073179217399136, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
+      propertyPath: m_Offset.y
+      value: 3.0899982
+      objectReference: {fileID: 0}
     - target: {fileID: 4266296263437843612, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
       propertyPath: m_LocalPosition.x
       value: 372.09
@@ -226,6 +234,62 @@ PrefabInstance:
     - target: {fileID: 5485852476149521394, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
       propertyPath: m_Points.m_Paths.Array.data[0].Array.data[3].y
       value: -7.625
+      objectReference: {fileID: 0}
+    - target: {fileID: 5681790624678113852, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
+      propertyPath: _scenesToLoad.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5681790624678113852, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
+      propertyPath: _scenesToUnload.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5681790624678113852, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
+      propertyPath: _scenesToLoad.Array.data[0]._sceneName
+      value: C2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5681790624678113852, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
+      propertyPath: _scenesToLoad.Array.data[1]._sceneName
+      value: C3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5681790624678113852, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
+      propertyPath: _scenesToLoad.Array.data[2]._sceneName
+      value: C5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5681790624678113852, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
+      propertyPath: _scenesToLoad.Array.data[3]._sceneName
+      value: C6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5681790624678113852, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
+      propertyPath: _scenesToLoad.Array.data[0]._sceneAsset
+      value: 
+      objectReference: {fileID: 102900000, guid: a8e552052d25042e482b833aa1826bf6, type: 3}
+    - target: {fileID: 5681790624678113852, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
+      propertyPath: _scenesToLoad.Array.data[1]._sceneAsset
+      value: 
+      objectReference: {fileID: 102900000, guid: 11ef7ecf6b58a480f832b94198911f5a, type: 3}
+    - target: {fileID: 5681790624678113852, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
+      propertyPath: _scenesToLoad.Array.data[2]._sceneAsset
+      value: 
+      objectReference: {fileID: 102900000, guid: a7db6dfbc64e04c96abd13e9a1515e5b, type: 3}
+    - target: {fileID: 5681790624678113852, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
+      propertyPath: _scenesToLoad.Array.data[3]._sceneAsset
+      value: 
+      objectReference: {fileID: 102900000, guid: 1d472bc374df041449d7452f01a6ea44, type: 3}
+    - target: {fileID: 5681790624678113852, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
+      propertyPath: _scenesToUnload.Array.data[0]._sceneName
+      value: C1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5681790624678113852, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
+      propertyPath: _scenesToUnload.Array.data[0]._sceneAsset
+      value: 
+      objectReference: {fileID: 102900000, guid: 66a80f4954e9b4192bf4800b9e46bedd, type: 3}
+    - target: {fileID: 6109798224940277559, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 7.5350037
+      objectReference: {fileID: 0}
+    - target: {fileID: 6109798224940277559, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -4.4000015
       objectReference: {fileID: 0}
     - target: {fileID: 7321372629859366080, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
       propertyPath: m_Enabled
@@ -1380,7 +1444,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 768139353}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 45e653bab7fb20e499bda25e1b646fea, type: 3}
   m_Name: 
