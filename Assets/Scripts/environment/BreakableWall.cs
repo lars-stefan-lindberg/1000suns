@@ -12,6 +12,8 @@ public class BreakableWall : MonoBehaviour
     public ParticleSystem breakAnimation;
     public ParticleSystem shakeAnimation;
 
+    public bool unbreakable = false;
+    public GameObject otherBreakableWall;
     public bool breakWall = false;
     public bool shakeWall = false;
     public float fadeMultiplier = 0.1f;
@@ -31,8 +33,11 @@ public class BreakableWall : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collider) {
         if(collider.transform.CompareTag("Projectile")){
             var projectile = collider.gameObject.GetComponent<Projectile>();
-            if(projectile.isPoweredUp)
+            if(projectile.power >= PlayerPush.obj.maxForce && !unbreakable) {
+                if(otherBreakableWall != null)
+                    otherBreakableWall.SetActive(false);
                 breakWall = true;
+            }
             else
                 shakeWall = true;
         }
