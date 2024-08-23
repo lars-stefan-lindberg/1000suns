@@ -192,14 +192,14 @@ public class Prisoner : MonoBehaviour
             }
         }
 
-        if (!hasBeenHit && !isRecovering && isGrounded && !isStatic)
+        if (!hasBeenHit && !isRecovering && isGrounded && !isStatic && !isTurning)
         {
             GracefulSpeedChange();
         }
 
-        if(!isStatic) {
-            Debug.DrawRay(transform.position, (IsFacingRight() ? Vector3.left : Vector3.right) * playerCastDistance, Color.red);
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, (IsFacingRight() ? Vector3.left : Vector3.right), playerCastDistance);
+        if(!isStatic && !hasBeenHit && !isRecovering && isGrounded) {
+            Debug.DrawRay(transform.position, (IsFacingRight() ? Vector3.right : Vector3.left) * playerCastDistance, Color.red);
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, IsFacingRight() ? Vector3.right : Vector3.left, playerCastDistance);
 
             if(hit.transform != null) {
                 if(hit.transform.CompareTag("Player")) {
@@ -218,7 +218,7 @@ public class Prisoner : MonoBehaviour
 
     private void Attack()
     {
-        _rigidBody.AddForce(new Vector2(IsFacingRight() ? -attackSpeed : attackSpeed, 0));
+        _rigidBody.AddForce(new Vector2(IsFacingRight() ? attackSpeed : -attackSpeed, 0));
     }
 
     void FixedUpdate()
@@ -270,7 +270,8 @@ public class Prisoner : MonoBehaviour
     }
 
     public bool IsFacingRight() {
-        return _rigidBody.velocity.x < 0;
+        return transform.eulerAngles.y > 179.5f && transform.eulerAngles.y < 180.5f;
+        //return _rigidBody.velocity.x < 0;
     }
 
     private bool _killed = false;
