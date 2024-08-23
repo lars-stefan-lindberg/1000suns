@@ -57,6 +57,7 @@ public class BabyPrisoner : MonoBehaviour
             new Vector3(groundLineCastPosition.x, groundLineCastPosition.y - isGroundedCheckOffset, groundLineCastPosition.z),
             groundLayer);
 
+        //Save until potentially making a smart baby prisoner
         // if (isGrounded && !isTurning)
         // {
         //     //Check ahead if no ground ahead
@@ -76,13 +77,12 @@ public class BabyPrisoner : MonoBehaviour
 
         if(!isTurning && !isAlerted) {
             float currentHorizontalPos = transform.position.x;
-            if(((currentHorizontalPos >= (originHorizontalPos + maxTravellingDistance)) && !IsFacingLeft()) || 
-                ((currentHorizontalPos <= (originHorizontalPos - maxTravellingDistance)) && IsFacingLeft())) 
+            if(((currentHorizontalPos >= (originHorizontalPos + maxTravellingDistance)) && !IsMovingLeft()) || 
+                ((currentHorizontalPos <= (originHorizontalPos - maxTravellingDistance)) && IsMovingLeft())) 
             {
                 isTurning = true;
                 turnAroundTimer = 0;
             }
-
         }
 
         if (isGrounded && !isAlerted)
@@ -136,22 +136,29 @@ public class BabyPrisoner : MonoBehaviour
         }
     }
 
-    private bool IsFacingLeft() {
+    private bool IsMovingLeft() {
         return _rigidBody.velocity.x < 0;
+    }
+
+    private bool IsFacingLeft() {
+        return transform.eulerAngles.y > -0.5 && transform.eulerAngles.y < 0.5;
     }
 
     public float alertRunDuration = 1.5f;
     public void Alert() {
         speed = 0;
         isAlerted = true;
-        if(IsFacingLeft()) 
-            FlipHorizontal();
+        isTurning = false;
         StartCoroutine(AlertRunDelay(alertRunDuration));
     }
 
     private IEnumerator AlertRunDelay(float alertRunDelay) {
         yield return new WaitForSeconds(alertRunDelay);
         _animator.SetBool("isAlerted", isAlerted);
+        Debug.Log(transform.eulerAngles.y);
+        Debug.Log(IsFacingLeft());
+        if(IsFacingLeft()) 
+            FlipHorizontal();
         speed = alertSpeed;
     }
 
