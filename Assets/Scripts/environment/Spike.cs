@@ -22,6 +22,7 @@ public class Spike : MonoBehaviour
     private void Awake() {
         _rigidBody = GetComponent<Rigidbody2D>();
         _collider = GetComponent<BoxCollider2D>();
+        _collider.enabled = false;
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _animator = GetComponent<Animator>();
         _animator.enabled = false;
@@ -36,6 +37,7 @@ public class Spike : MonoBehaviour
 
             if(hit.transform != null) {
                 if(hit.transform.CompareTag("Player")) {
+                    _collider.enabled = true;
                     _isFalling = true;
                     _rigidBody.gravityScale = gravity;
                 }
@@ -50,6 +52,8 @@ public class Spike : MonoBehaviour
     }
 
     private void OnCollisionEnter2D(Collision2D collision) {
+        if(!_isFalling)
+            return;
         _hit = true;
         _isFalling = false;
         _rigidBody.velocity = Vector3.zero;

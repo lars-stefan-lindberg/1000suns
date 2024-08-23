@@ -5,8 +5,7 @@ using UnityEngine;
 
 public class Collectible : MonoBehaviour
 {
-    void OnCollisionEnter2D(Collision2D other) {
-        Debug.Log("Collision");
+    void OnTriggerEnter2D(Collider2D other) {
         if(other.gameObject.CompareTag("Player")) {
             Destroy(gameObject);
         }
