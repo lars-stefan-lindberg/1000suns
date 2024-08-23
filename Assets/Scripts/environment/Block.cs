@@ -18,8 +18,9 @@ public class Block : MonoBehaviour
         }
         else if (collision.transform.CompareTag("Projectile"))
         {
+            _rigidBody.bodyType = RigidbodyType2D.Dynamic;
             Projectile projectile = collision.gameObject.GetComponent<Projectile>();
-            bool hitFromTheLeft = collision.transform.position.x < _rigidBody.position.x;
+            bool hitFromTheLeft = Player.obj.transform.position.x < _rigidBody.position.x;
             float power = basePushPower * projectile.power;
             _rigidBody.velocity = new Vector2(hitFromTheLeft ? power : -power, 0);
         }
