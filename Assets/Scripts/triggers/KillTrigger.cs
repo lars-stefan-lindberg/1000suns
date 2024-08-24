@@ -9,5 +9,8 @@ public class KillTrigger : MonoBehaviour
         if(other.gameObject.CompareTag("Player")) {
             Reaper.obj.KillPlayerGeneric();
         }
+        if(other.gameObject.CompareTag("Enemy")) {
+            Reaper.obj.KillPrisoner(other.gameObject.GetComponent<Prisoner>());
+        }
     }
 }
