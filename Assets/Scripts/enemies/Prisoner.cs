@@ -15,6 +15,7 @@ public class Prisoner : MonoBehaviour
     private static float _defaultGravity = 1;
 
     //General properties
+    public int movementDirection = 0; //-1->left, 1->right
     public float gravityAcceleration = 0.5f;
     public float speedAcceleration = 1f;
     private float enemyWidth;
@@ -57,7 +58,12 @@ public class Prisoner : MonoBehaviour
         _rigidBody = GetComponent<Rigidbody2D>();
         _animator = GetComponentInChildren<Animator>();
         _collider = GetComponent<BoxCollider2D>();
-        //if (getRandomMovement() == 1) FlipHorizontal();
+        if(movementDirection == 0) {
+            if (getRandomMovement() == 1) 
+                FlipHorizontal();
+        }
+        if(movementDirection == 1)
+            FlipHorizontal();
         enemyWidth = _collider.bounds.extents.x;
     }
 
