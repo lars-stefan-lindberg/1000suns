@@ -11,7 +11,7 @@ public class Prisoner : MonoBehaviour
     private Animator _animator;
     public LayerMask groundLayer;
 
-    private static float _defaultSpeed = 3;
+    public float defaultSpeed = 3;
     private static float _defaultGravity = 1;
 
     //General properties
@@ -259,7 +259,7 @@ public class Prisoner : MonoBehaviour
     }
     private void GracefulSpeedChange()
     {        
-        speed = Mathf.MoveTowards(speed, _defaultSpeed, speedAcceleration * Time.fixedDeltaTime);
+        speed = Mathf.MoveTowards(speed, defaultSpeed, speedAcceleration * Time.fixedDeltaTime);
     }
 
     private void FlipHorizontal()

@@ -30079,6 +30079,87 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4266296263437843612, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
   m_PrefabInstance: {fileID: 349702273}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &943619980
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 11189882589870275, guid: 212d53e652c3f4601b3cfe5a5b380f74, type: 3}
+      propertyPath: prisonersToSpawn.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11189882589870275, guid: 212d53e652c3f4601b3cfe5a5b380f74, type: 3}
+      propertyPath: prisonersToSpawn.Array.data[0]
+      value: 
+      objectReference: {fileID: 1734935032}
+    - target: {fileID: 4720458059243767474, guid: 212d53e652c3f4601b3cfe5a5b380f74, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 618
+      objectReference: {fileID: 0}
+    - target: {fileID: 4720458059243767474, guid: 212d53e652c3f4601b3cfe5a5b380f74, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 31.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4720458059243767474, guid: 212d53e652c3f4601b3cfe5a5b380f74, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4720458059243767474, guid: 212d53e652c3f4601b3cfe5a5b380f74, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4720458059243767474, guid: 212d53e652c3f4601b3cfe5a5b380f74, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4720458059243767474, guid: 212d53e652c3f4601b3cfe5a5b380f74, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4720458059243767474, guid: 212d53e652c3f4601b3cfe5a5b380f74, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4720458059243767474, guid: 212d53e652c3f4601b3cfe5a5b380f74, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4720458059243767474, guid: 212d53e652c3f4601b3cfe5a5b380f74, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4720458059243767474, guid: 212d53e652c3f4601b3cfe5a5b380f74, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5345624932733389397, guid: 212d53e652c3f4601b3cfe5a5b380f74, type: 3}
+      propertyPath: m_Size.x
+      value: 2.312317
+      objectReference: {fileID: 0}
+    - target: {fileID: 5345624932733389397, guid: 212d53e652c3f4601b3cfe5a5b380f74, type: 3}
+      propertyPath: m_Size.y
+      value: 3.9499855
+      objectReference: {fileID: 0}
+    - target: {fileID: 5345624932733389397, guid: 212d53e652c3f4601b3cfe5a5b380f74, type: 3}
+      propertyPath: m_Offset.x
+      value: 0.000030517578
+      objectReference: {fileID: 0}
+    - target: {fileID: 5345624932733389397, guid: 212d53e652c3f4601b3cfe5a5b380f74, type: 3}
+      propertyPath: m_Offset.y
+      value: 5.4501057
+      objectReference: {fileID: 0}
+    - target: {fileID: 7497542003183226443, guid: 212d53e652c3f4601b3cfe5a5b380f74, type: 3}
+      propertyPath: m_Name
+      value: PrisonerSpawnTrigger (3)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 212d53e652c3f4601b3cfe5a5b380f74, type: 3}
 --- !u!1001 &985135038
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -30355,6 +30436,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5ccb8f1e22b614b349b2d6a31833ca67, type: 3}
+--- !u!1 &1734935032 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5873467829969753878, guid: 97caebb36b7df4895a595d2740614fcf, type: 3}
+  m_PrefabInstance: {fileID: 1932718144}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1774455849
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -30521,6 +30607,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Prisoner (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 5873467829969753878, guid: 97caebb36b7df4895a595d2740614fcf, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -30602,3 +30692,4 @@ SceneRoots:
   - {fileID: 1932718144}
   - {fileID: 985135038}
   - {fileID: 8955126859680698788}
+  - {fileID: 943619980}
