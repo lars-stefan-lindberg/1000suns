@@ -49,6 +49,8 @@ public class Prisoner : MonoBehaviour
     public bool isStatic = false;
     public bool isSpawningSoul = false;
     public bool isImmuneToForcePush = false;
+    public bool isSpawningFast = false;
+    public float spawnAnimationSpeed = 3;
 
     public float playerCastDistance = 0;
     public float attackSpeed = 40f;
@@ -57,6 +59,8 @@ public class Prisoner : MonoBehaviour
     {
         _rigidBody = GetComponent<Rigidbody2D>();
         _animator = GetComponentInChildren<Animator>();
+        if(isSpawningFast)
+            _animator.speed = spawnAnimationSpeed;
         _collider = GetComponent<BoxCollider2D>();
         if(movementDirection == 0) {
             if (getRandomMovement() == 1) 
@@ -131,6 +135,8 @@ public class Prisoner : MonoBehaviour
             return;
         if (_animator.GetCurrentAnimatorStateInfo(0).IsName("prisoner_spawn"))
             return;
+        else
+            _animator.speed = 1;
 
         //Check if grounded
         Vector3 groundLineCastPosition = _collider.transform.position;
@@ -233,6 +239,8 @@ public class Prisoner : MonoBehaviour
             return;
         if (_animator.GetCurrentAnimatorStateInfo(0).IsName("prisoner_spawn"))
             return;
+        else
+            _animator.speed = 1;
 
         if (turnAroundTimer <= timeToTurnAround && isTurning)
         {
