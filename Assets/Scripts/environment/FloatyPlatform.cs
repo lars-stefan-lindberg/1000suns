@@ -6,7 +6,7 @@ using UnityEngine;
 public class FloatyPlatform : MonoBehaviour
 {
     public BoxCollider2D _collider;
-    private Rigidbody2D _rigidBody;
+    public Rigidbody2D _rigidBody;
 
     public float idleMoveSpeed;
     private float _idleVerticalTargetPosition;
@@ -39,16 +39,34 @@ public class FloatyPlatform : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        if(collision.transform.CompareTag("FloatingPlatform"))
+        {
+            FloatyPlatform floatyPlatform = collision.gameObject.GetComponent<FloatyPlatform>();
+            if(floatyPlatform.isPlayerOnPlatform && floatyPlatform.IsFalling()) {
+                floatyPlatform._collider.enabled = false;
+                RegisterPlayerOnPlatform();
+            }
+        }
         if(collision.transform.CompareTag("Player"))
         {
-            isPlayerOnPlatform = true;
-            PlayerMovement.obj.platformRigidBody = _rigidBody;
-            PlayerPush.obj.platform = this;
+            RegisterPlayerOnPlatform();
         }
         if(collision.transform.CompareTag("Enemy")) {
             Prisoner prisoner = collision.gameObject.GetComponent<Prisoner>();
             MovePlatform(!prisoner.IsFacingRight(), _prisonerPushPower);
         }
+    }
+
+    public bool IsFalling() {
+        return fallTimer >= timeBeforeFall;
+    }
+
+    private void RegisterPlayerOnPlatform() {
+        isPlayerOnPlatform = true;
+        PlayerMovement.obj.platformRigidBody = _rigidBody;
+        PlayerPush.obj.platform = this;
+        if(isFallingPlatform)
+            _startFallCountDown = true;
     }
 
     private void OnCollisionExit2D(Collision2D collision)
@@ -84,8 +102,6 @@ public class FloatyPlatform : MonoBehaviour
 
         if (movePlatform)
         {
-            if(isFallingPlatform)
-                _startFallCountDown = true;
             _rigidBody.velocity = new Vector2(Mathf.MoveTowards(_rigidBody.velocity.x, 0, deceleration * Time.deltaTime), _rigidBody.velocity.y);
         } else
         {
