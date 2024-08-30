@@ -111,6 +111,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _frameVelocity.x = isFacingLeft() ? -initialForcePushJumpSpeed : initialForcePushJumpSpeed;
         PlayerPush.obj.ResetBuiltUpPower();
         Player.obj.hasPowerUp = false;
+        Debug.Log("setting force push jump trigger");
         _animator.SetTrigger("forcePushJump");
     }
 
@@ -126,7 +127,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     {
         _animator.SetBool("isGrounded", isGrounded);
         isMoving = _movementInput.x != 0;
-        _animator.SetBool("isMoving", _movementInput.x != 0);
+        _animator.SetBool("isMoving", isMoving);
         isFalling = _frameVelocity.y < -_stats.MinimumFallAnimationSpeed;
         _animator.SetBool("isFalling", isFalling);
         if (_landed)
