@@ -43,6 +43,9 @@ public class LevelManager : MonoBehaviour
             Player.obj.PlaySpawn();
             PlayerMovement.obj.SetStartingOnGround();
             PlayerMovement.obj.isGrounded = true;
+            PlayerMovement.obj.isForcePushJumping = false;
+            PlayerMovement.obj.jumpedWhileForcePushJumping = false;
+
 
             sceneLoadTrigger.LoadScenes();
         }

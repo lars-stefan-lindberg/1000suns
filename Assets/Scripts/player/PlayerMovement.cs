@@ -106,17 +106,16 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     }
 
     public void ExecuteForcePushJump() {
-        _isForcePushJumping = true;
+        isForcePushJumping = true;
         forcePushJumpOnGroundTimer = 0;
         _frameVelocity.x = isFacingLeft() ? -initialForcePushJumpSpeed : initialForcePushJumpSpeed;
         PlayerPush.obj.ResetBuiltUpPower();
         Player.obj.hasPowerUp = false;
-        Debug.Log("setting force push jump trigger");
         _animator.SetTrigger("forcePushJump");
     }
 
     public void ExecuteForcePushJumpWithProjectile() {
-        _isForcePushJumping = true;
+        isForcePushJumping = true;
         forcePushJumpOnGroundTimer = 0;
         _frameVelocity.x = isFacingLeft() ? initialForcePushJumpSpeed : -initialForcePushJumpSpeed;
     }
@@ -326,7 +325,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     #endregion
 
     #region Jumping
-    public bool _isForcePushJumping = false;
+    public bool isForcePushJumping = false;
     public bool jumpedWhileForcePushJumping = false;
     public float jumpedWhileForcePushJumpingModifier = 0.6f;
     public float initialForcePushJumpSpeed = 30f;
@@ -387,7 +386,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         AudioManager.obj.PlayJump(gameObject.transform);
         StartCoroutine(JumpSqueeze(_jumpSqueezeX, _jumpSqueezeY, _jumpSqueezeTime));
         _jumpToConsume = false;
-        if(_isForcePushJumping) {
+        if(isForcePushJumping) {
             jumpedWhileForcePushJumping = true;
         }
     }
@@ -425,10 +424,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private void HandleDirection()
     {
-        if (_isForcePushJumping) {
+        if (isForcePushJumping) {
             forcePushJumpOnGroundTimer += Time.fixedDeltaTime;
             if(forcePushJumpOnGroundTimer > forcePushJumpOnGroundDuration) 
-                _isForcePushJumping = false;
+                isForcePushJumping = false;
         }
         
         if (_isFallDashing)
