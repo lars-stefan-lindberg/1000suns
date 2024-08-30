@@ -302,7 +302,11 @@ public class Prisoner : MonoBehaviour
         _animator.SetTrigger("death");
     }
 
+    public bool isSpawningPrisoners = false;
+    public GameObject[] prisonersToSpawn;
     public void Kill() {
+        if(isSpawningPrisoners)
+            SpawnPrisoners();
         if(isSpawningSoul) {
             GameObject prisonerSoul = Instantiate(this.prisonerSoul, transform.position, transform.rotation);
             prisonerSoul.GetComponent<PrisonerSoul>().Target = prisonerSoulTarget;
@@ -312,6 +316,11 @@ public class Prisoner : MonoBehaviour
         }
     }
 
+    private void SpawnPrisoners() {
+        foreach(GameObject prisoner in prisonersToSpawn) {
+            prisoner.SetActive(true);
+        }
+    }
     //private void OnDrawGizmos()
     //{
     //    Gizmos.color = Color.cyan;
