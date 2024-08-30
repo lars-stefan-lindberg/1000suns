@@ -198,6 +198,8 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
+  defaultSpeed: 3
+  movementDirection: -1
   gravityAcceleration: 0.5
   speedAcceleration: 0.5
   speed: 3
@@ -222,5 +224,8 @@ MonoBehaviour:
   isStatic: 0
   isSpawningSoul: 0
   isImmuneToForcePush: 0
+  isSpawningFast: 0
+  spawnAnimationSpeed: 3
   playerCastDistance: 7
-  attackSpeed: 40
+  isAttacking: 0
+  attackSpeedMultiplier: 2

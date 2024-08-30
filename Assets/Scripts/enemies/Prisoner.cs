@@ -53,7 +53,8 @@ public class Prisoner : MonoBehaviour
     public float spawnAnimationSpeed = 3;
 
     public float playerCastDistance = 0;
-    public float attackSpeed = 40f;
+    public bool isAttacking = false;
+    public float attackSpeedMultiplier = 1.5f;
 
     private void Start()
     {
@@ -215,8 +216,11 @@ public class Prisoner : MonoBehaviour
 
             if(hit.transform != null) {
                 if(hit.transform.CompareTag("Player")) {
-                    Attack();
+                    //Attack();
+                    isAttacking = true;
                 }
+                else
+                    isAttacking = false;
             }
         }
 
@@ -228,10 +232,10 @@ public class Prisoner : MonoBehaviour
         //_animator.SetBool("isMoving", isMoving);
     }
 
-    private void Attack()
-    {
-        _rigidBody.AddForce(new Vector2(IsFacingRight() ? attackSpeed : -attackSpeed, 0));
-    }
+    // private void Attack()
+    // {
+    //     _rigidBody.AddForce(new Vector2(IsFacingRight() ? attackSpeed : -attackSpeed, 0));
+    // }
 
     void FixedUpdate()
     {
@@ -257,7 +261,7 @@ public class Prisoner : MonoBehaviour
             if (!isTurning && !isStatic)
             {
                 Vector2 currentVelocity = _rigidBody.velocity;
-                currentVelocity.x = -_collider.transform.right.x * speed;
+                currentVelocity.x = -_collider.transform.right.x * speed * (isAttacking ? attackSpeedMultiplier : 1);
                 _rigidBody.velocity = currentVelocity;
             }
         }
