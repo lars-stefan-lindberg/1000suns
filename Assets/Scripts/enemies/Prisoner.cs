@@ -56,7 +56,7 @@ public class Prisoner : MonoBehaviour
     public bool isAttacking = false;
     public float attackSpeedMultiplier = 1.5f;
 
-    private void Start()
+    private void Awake()
     {
         _rigidBody = GetComponent<Rigidbody2D>();
         _animator = GetComponentInChildren<Animator>();
