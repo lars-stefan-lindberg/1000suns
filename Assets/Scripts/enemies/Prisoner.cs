@@ -9,6 +9,7 @@ public class Prisoner : MonoBehaviour
     private Rigidbody2D _rigidBody;
     private BoxCollider2D _collider;
     private Animator _animator;
+    private SpriteRenderer _spriteRenderer;
     public LayerMask groundLayer;
 
     public float defaultSpeed = 3;
@@ -60,6 +61,9 @@ public class Prisoner : MonoBehaviour
     {
         _rigidBody = GetComponent<Rigidbody2D>();
         _animator = GetComponentInChildren<Animator>();
+        _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        if(isImmuneToForcePush)
+            _spriteRenderer.color = new Color(0.6f, 0, 0, 1);
         if(isSpawningFast)
             _animator.speed = spawnAnimationSpeed;
         _collider = GetComponent<BoxCollider2D>();
@@ -117,15 +121,13 @@ public class Prisoner : MonoBehaviour
             _animator.SetTrigger("hit");
             damagePower = hitPower;
             hasBeenHit = true;
-            hasBeenHitTimeCount = hasBeenHitDuration;
+            hasBeenHitTimeCount = hasBeenHitDuration;   
             _rigidBody.gravityScale = 0;
             _rigidBody.velocity = new Vector2(0, 0);
-
             if (hitFromTheLeft)
                 _rigidBody.AddForce(new Vector2(damagePower * forceMultiplier, 0));
             else
                 _rigidBody.AddForce(new Vector2(damagePower * -forceMultiplier, 0));
-
             horizontalMoveSpeedDuringHit = _rigidBody.velocity;
         }
     }
