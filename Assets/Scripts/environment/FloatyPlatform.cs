@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class FloatyPlatform : MonoBehaviour
 {
-    public BoxCollider2D _collider;
-    public Rigidbody2D _rigidBody;
+    private BoxCollider2D _collider;
+    private Rigidbody2D _rigidBody;
 
     public float idleMoveSpeed;
     private float _idleVerticalTargetPosition;
@@ -49,7 +49,13 @@ public class FloatyPlatform : MonoBehaviour
         }
         if(collision.transform.CompareTag("Player"))
         {
-            RegisterPlayerOnPlatform();
+            //Check if player is landing on top of platform
+            Bounds playerBounds = collision.collider.bounds;
+            Vector2 playerBottom = new(playerBounds.center.x, playerBounds.center.y - playerBounds.extents.y);
+            Bounds platformBounds = _collider.bounds;
+            Vector2 platformTop = new(platformBounds.center.x, platformBounds.center.y + platformBounds.extents.y);
+            if(platformTop.y < playerBottom.y)
+                RegisterPlayerOnPlatform();
         }
         if(collision.transform.CompareTag("Enemy")) {
             Prisoner prisoner = collision.gameObject.GetComponent<Prisoner>();
