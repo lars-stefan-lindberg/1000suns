@@ -5,8 +5,19 @@ using UnityEngine;
 
 public class Collectible : MonoBehaviour
 {
+    private SpriteRenderer _spriteRenderer;
+    [SerializeField] private string id;
     void OnTriggerEnter2D(Collider2D other) {
         if(other.gameObject.CompareTag("Player")) {
+            PowerUpManager.obj.PowerUpPicked(id);
+            Destroy(gameObject);
+        }
+    }
+
+    void Awake() {
+        _spriteRenderer = GetComponent<SpriteRenderer>();
+        if(PowerUpManager.obj.IsPowerUpPicked(id)) {
+            _spriteRenderer.enabled = false;
             Destroy(gameObject);
         }
     }

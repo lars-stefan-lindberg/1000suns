@@ -482,6 +482,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5370714439325005350, guid: efa475b809def4593b8aa9fc393bfc3c, type: 3}
+      propertyPath: id
+      value: C11
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -501,7 +505,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2966756286449915058, guid: ccf8a71e85567403ea77036fe1d60886, type: 3}
       propertyPath: _scenesToLoad.Array.size
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 2966756286449915058, guid: ccf8a71e85567403ea77036fe1d60886, type: 3}
       propertyPath: _scenesToUnload.Array.size
@@ -524,6 +528,10 @@ PrefabInstance:
       value: C13
       objectReference: {fileID: 0}
     - target: {fileID: 2966756286449915058, guid: ccf8a71e85567403ea77036fe1d60886, type: 3}
+      propertyPath: _scenesToLoad.Array.data[4]._sceneName
+      value: C8
+      objectReference: {fileID: 0}
+    - target: {fileID: 2966756286449915058, guid: ccf8a71e85567403ea77036fe1d60886, type: 3}
       propertyPath: _scenesToLoad.Array.data[0]._sceneAsset
       value: 
       objectReference: {fileID: 102900000, guid: 3f78d3a538546444aa17d6c6207dbbbc, type: 3}
@@ -539,6 +547,10 @@ PrefabInstance:
       propertyPath: _scenesToLoad.Array.data[3]._sceneAsset
       value: 
       objectReference: {fileID: 102900000, guid: c324d61d312764e26af320fbf2c18d7f, type: 3}
+    - target: {fileID: 2966756286449915058, guid: ccf8a71e85567403ea77036fe1d60886, type: 3}
+      propertyPath: _scenesToLoad.Array.data[4]._sceneAsset
+      value: 
+      objectReference: {fileID: 102900000, guid: 8feb3ad35aaaa4fd1a504ab603d595ac, type: 3}
     - target: {fileID: 2966756286449915058, guid: ccf8a71e85567403ea77036fe1d60886, type: 3}
       propertyPath: _scenesToUnload.Array.data[0]._sceneName
       value: C8
