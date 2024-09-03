@@ -9,14 +9,14 @@ public class Collectible : MonoBehaviour
     [SerializeField] private string id;
     void OnTriggerEnter2D(Collider2D other) {
         if(other.gameObject.CompareTag("Player")) {
-            PowerUpManager.obj.PowerUpPicked(id);
+            CollectibleManager.obj.CollectiblePickedTemporary(id);
             Destroy(gameObject);
         }
     }
 
     void Awake() {
         _spriteRenderer = GetComponent<SpriteRenderer>();
-        if(PowerUpManager.obj.IsPowerUpPicked(id)) {
+        if(CollectibleManager.obj.IsCollectiblePicked(id)) {
             _spriteRenderer.enabled = false;
             Destroy(gameObject);
         }

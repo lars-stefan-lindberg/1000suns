@@ -155,8 +155,6 @@ public class BabyPrisoner : MonoBehaviour
     private IEnumerator AlertRunDelay(float alertRunDelay) {
         yield return new WaitForSeconds(alertRunDelay);
         _animator.SetBool("isAlerted", isAlerted);
-        Debug.Log(transform.eulerAngles.y);
-        Debug.Log(IsFacingLeft());
         if(IsFacingLeft()) 
             FlipHorizontal();
         speed = alertSpeed;
