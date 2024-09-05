@@ -1,17 +1,15 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PrisonerAlertCutSceneTrigger : MonoBehaviour
 {
     public BabyPrisoner babyPrisoner;
     public Prisoner prisoner;
-    public float cutSceneDuration = 5f;
+    public float cutSceneDuration = 4.5f;
     void OnTriggerEnter2D(Collider2D other) {
         if(other.gameObject.CompareTag("BabyPrisoner")) {
             other.gameObject.SetActive(false);
+            CutsceneManager.obj.babyPrisonerAlerted = true;
         }
         if(other.gameObject.CompareTag("Player")) {
             PlayerMovement.obj.Freeze(cutSceneDuration);
