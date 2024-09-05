@@ -28,6 +28,8 @@ public class FloatyPlatform : MonoBehaviour
     private float _idleTargetVerticalPosition = 0;
     private float _prisonerPushPower = 2f;
 
+    private FallingPlatformFlash _fallingPlatformFlash;
+
     private void Awake()
     {
         _collider = GetComponent<BoxCollider2D>();
@@ -35,6 +37,7 @@ public class FloatyPlatform : MonoBehaviour
         _blockingCastLayerMask = LayerMask.GetMask(new[] { "Ground", "Default", "JumpThroughs" });
         startingVerticalPosition = transform.position.y;
         _idleVerticalTargetPosition = startingVerticalPosition - idleVerticalDistance;
+        _fallingPlatformFlash = GetComponent<FallingPlatformFlash>();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -89,11 +92,14 @@ public class FloatyPlatform : MonoBehaviour
     public bool somethingToTheLeft = false;
     private void Update()
     {
-        if(_startFallCountDown)
+        if(_startFallCountDown) {
             fallTimer += Time.deltaTime;
+            _fallingPlatformFlash.StartFlashing(timeBeforeFall);
+        }
         if(fallTimer >= timeFallingBeforeDestroy)
             this.gameObject.SetActive(false);
         if(isFallingPlatform && fallTimer >= timeBeforeFall) {
+            _fallingPlatformFlash.StopFlashing();
             _rigidBody.bodyType = RigidbodyType2D.Dynamic;
             _rigidBody.gravityScale = 1;
             return;
