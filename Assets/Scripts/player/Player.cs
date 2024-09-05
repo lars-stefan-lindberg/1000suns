@@ -47,6 +47,10 @@ public class Player : MonoBehaviour
         _animator.SetTrigger("spawn");
     }
 
+    public void SetHasCape() {
+        _animator.SetLayerWeight(1, 1);
+    }
+
     void OnDestroy()
     {
         obj = null; 

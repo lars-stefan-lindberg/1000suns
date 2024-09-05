@@ -8,6 +8,7 @@ public class CapePickupTrigger : MonoBehaviour
         if (other.gameObject.CompareTag("Player")) {
             BackgroundBlobManager.obj.StartCutscene();
             CutsceneManager.obj.capePicked = true;
+            Player.obj.SetHasCape();
             gameObject.SetActive(false);
         }
     }
