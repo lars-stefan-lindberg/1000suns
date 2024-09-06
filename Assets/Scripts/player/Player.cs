@@ -13,6 +13,7 @@ public class Player : MonoBehaviour
     public bool hasPowerUp = false;
     public float spawnFreezeDuration = 1.4f;
     public Surface surface = Surface.Rock;
+    public bool hasCape = false;
 
     private Animator _animator;
     private LayerMask _groundLayerMasks;
@@ -48,6 +49,7 @@ public class Player : MonoBehaviour
     }
 
     public void SetHasCape() {
+        hasCape = true;
         _animator.SetLayerWeight(1, 1);
     }
 
