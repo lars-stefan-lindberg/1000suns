@@ -9,7 +9,7 @@ public class Player : MonoBehaviour
 
     [Header("Dependencies")]
     public Rigidbody2D rigidBody;
-    public Collider2D playerCollider;
+    private BoxCollider2D _collider;
     public bool hasPowerUp = false;
     public float spawnFreezeDuration = 1.4f;
     public Surface surface = Surface.Rock;
@@ -22,6 +22,7 @@ public class Player : MonoBehaviour
     {
         obj = this;
         _animator = GetComponentInChildren<Animator>();
+        _collider = GetComponentInChildren<BoxCollider2D>();
         _groundLayerMasks = LayerMask.GetMask("Ground");
     }
 
@@ -36,14 +37,17 @@ public class Player : MonoBehaviour
     }
 
     public void PlayGenericDeathAnimation() {
+        _collider.enabled = false;
         _animator.SetTrigger("genericDeath");
     }
 
     public void PlayShadowDeathAnimation() {
+        _collider.enabled = false;
         _animator.SetTrigger("shadowDeath");
     }
 
     public void PlaySpawn() {
+        _collider.enabled = true;
         PlayerMovement.obj.Freeze(spawnFreezeDuration);
         _animator.SetTrigger("spawn");
     }

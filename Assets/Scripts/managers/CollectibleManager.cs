@@ -1,17 +1,24 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class CollectibleManager : MonoBehaviour
 {
-    public static CollectibleManager obj;
+    private static readonly Lazy<CollectibleManager> lazyInstance =
+        new Lazy<CollectibleManager>(() => new CollectibleManager());
 
-    private HashSet<string> pickedColllectibles;
-    private string temporaryPickedUpCollectibleId;
+    private CollectibleManager() {}
 
-    void Awake() {
-        obj = this;
-        pickedColllectibles = new HashSet<string>();
+    public static CollectibleManager Instance
+    {
+        get
+        {
+            return lazyInstance.Value;
+        }
     }
+
+    private HashSet<string> pickedColllectibles = new();
+    private string temporaryPickedUpCollectibleId;
 
     public void CollectiblePickedTemporary(string id) {
         temporaryPickedUpCollectibleId = id;
@@ -26,9 +33,5 @@ public class CollectibleManager : MonoBehaviour
 
     public bool IsCollectiblePicked(string id) {
         return pickedColllectibles.Contains(id);
-    }
-
-    void OnDestroy() {
-        obj = null;
     }
 }

@@ -4,11 +4,19 @@ public class Block : MonoBehaviour
 {
     private Rigidbody2D _rigidBody;
     private BoxCollider2D _collider;
+    private BoxCollider2D _childCollider;
+
+    public LayerMask groundLayer;
+    private bool _isGrounded = true;
+    private float _isGroundedCheckOffset;
 
     private void Awake()
     {
         _rigidBody = GetComponent<Rigidbody2D>();
         _collider = GetComponent<BoxCollider2D>();
+        _childCollider = GetComponentInChildren<BoxCollider2D>();
+        Bounds blockBounds = _childCollider.bounds;
+        _isGroundedCheckOffset = blockBounds.extents.y + 0.01f;
     }
 
     public float basePushPower = 7f;
@@ -17,8 +25,11 @@ public class Block : MonoBehaviour
     {
         if (collision.transform.CompareTag("Player"))
         {
-            _rigidBody.bodyType = RigidbodyType2D.Static;
+            if(_isGrounded)
+                _rigidBody.bodyType = RigidbodyType2D.Static;
+
             if(HitUnderneath(collision)) {
+                _rigidBody.bodyType = RigidbodyType2D.Static;
                 if(PlayerMovement.obj.isGrounded)
                     Reaper.obj.KillPlayerGeneric();
                 else
@@ -59,6 +70,16 @@ public class Block : MonoBehaviour
         {
             _rigidBody.velocity = new Vector2(Mathf.MoveTowards(_rigidBody.velocity.x, 0, deceleration * Time.deltaTime), _rigidBody.velocity.y);
         }
+
+        Vector3 groundLineCastPosition = _collider.transform.position;
+        // Debug.DrawLine(
+        //    groundLineCastPosition,
+        //    new Vector3(groundLineCastPosition.x, groundLineCastPosition.y - _isGroundedCheckOffset, groundLineCastPosition.z),
+        //    Color.red);
+        _isGrounded = Physics2D.Linecast(
+            groundLineCastPosition,
+            new Vector3(groundLineCastPosition.x, groundLineCastPosition.y - _isGroundedCheckOffset, groundLineCastPosition.z),
+            groundLayer);
     }
 
     private void FixedUpdate() {
@@ -74,8 +95,9 @@ public class Block : MonoBehaviour
         Bounds collisionBounds = collider.bounds;
         Vector2 top = new(collisionBounds.center.x, collisionBounds.center.y + collisionBounds.extents.y);
 
-        Bounds blockBounds = _collider.bounds;
+        Bounds blockBounds = _childCollider.bounds;
         Vector2 bottom = new(blockBounds.center.x, blockBounds.center.y - blockBounds.extents.y);
-        return bottom.y > top.y;
+        float margin = 0.3f;
+        return bottom.y > top.y - margin;
     }
 }

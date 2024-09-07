@@ -14936,13 +14936,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 439911554970688327, guid: 5ccb8f1e22b614b349b2d6a31833ca67, type: 3}
+      propertyPath: isGrounded
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 439911554970688327, guid: 5ccb8f1e22b614b349b2d6a31833ca67, type: 3}
+      propertyPath: groundLayer.m_Bits
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 622106780198347613, guid: 5ccb8f1e22b614b349b2d6a31833ca67, type: 3}
       propertyPath: m_Name
       value: Block (2)
       objectReference: {fileID: 0}
     - target: {fileID: 8306541276769626935, guid: 5ccb8f1e22b614b349b2d6a31833ca67, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 459.88812
+      value: 460
       objectReference: {fileID: 0}
     - target: {fileID: 8306541276769626935, guid: 5ccb8f1e22b614b349b2d6a31833ca67, type: 3}
       propertyPath: m_LocalPosition.y
@@ -14978,6 +14986,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8306541276769626935, guid: 5ccb8f1e22b614b349b2d6a31833ca67, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9124832465662887608, guid: 5ccb8f1e22b614b349b2d6a31833ca67, type: 3}
+      propertyPath: m_Interpolate
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
