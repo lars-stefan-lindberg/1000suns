@@ -9,7 +9,7 @@ public class Collectible : MonoBehaviour
     [SerializeField] private string id;
     void OnTriggerEnter2D(Collider2D other) {
         if(other.gameObject.CompareTag("Player")) {
-            CollectibleManager.Instance.CollectiblePickedTemporary(id);
+            CollectibleManager.Instance.CollectiblePickedTemporarily(id);
             Destroy(gameObject);
         }
     }

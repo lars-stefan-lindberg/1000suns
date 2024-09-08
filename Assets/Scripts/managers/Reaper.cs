@@ -15,12 +15,14 @@ public class Reaper : MonoBehaviour
     public float shadowDeathAnimationTime = 0.8f;
     public void KillPlayerGeneric() {
         PlayerMovement.obj.Freeze(genericDeathAnimationTime);
+        CollectibleManager.Instance.ResetTemporaryPickedCollectible();
         Player.obj.PlayGenericDeathAnimation();
         StartCoroutine(afterDeathAnimation(genericDeathAnimationTime));
     }
 
     public void KillPlayerShadow() {
         PlayerMovement.obj.Freeze(shadowDeathAnimationTime);
+        CollectibleManager.Instance.ResetTemporaryPickedCollectible();
         Player.obj.PlayShadowDeathAnimation();
         StartCoroutine(afterDeathAnimation(shadowDeathAnimationTime));
     }

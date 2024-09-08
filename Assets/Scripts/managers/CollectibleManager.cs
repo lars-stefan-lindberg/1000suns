@@ -18,16 +18,20 @@ public class CollectibleManager : MonoBehaviour
     }
 
     private HashSet<string> pickedColllectibles = new();
-    private string temporaryPickedUpCollectibleId;
+    private string _temporaryPickedUpCollectibleId;
 
-    public void CollectiblePickedTemporary(string id) {
-        temporaryPickedUpCollectibleId = id;
+    public void ResetTemporaryPickedCollectible() {
+        _temporaryPickedUpCollectibleId = null;
     }
-    
+
+    public void CollectiblePickedTemporarily(String id) {
+        _temporaryPickedUpCollectibleId = id;
+    }
+
     public void CollectiblePickedPermanent() {
-        if(temporaryPickedUpCollectibleId != null) {
-            pickedColllectibles.Add(temporaryPickedUpCollectibleId);
-            temporaryPickedUpCollectibleId = null;
+        if(_temporaryPickedUpCollectibleId != null) {
+            pickedColllectibles.Add(_temporaryPickedUpCollectibleId);
+            _temporaryPickedUpCollectibleId = null;
         }
     }
 
