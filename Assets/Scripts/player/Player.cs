@@ -37,16 +37,19 @@ public class Player : MonoBehaviour
     }
 
     public void PlayGenericDeathAnimation() {
+        rigidBody.bodyType = RigidbodyType2D.Static;
         _collider.enabled = false;
         _animator.SetTrigger("genericDeath");
     }
 
     public void PlayShadowDeathAnimation() {
+        rigidBody.bodyType = RigidbodyType2D.Static;
         _collider.enabled = false;
         _animator.SetTrigger("shadowDeath");
     }
 
     public void PlaySpawn() {
+        rigidBody.bodyType = RigidbodyType2D.Dynamic;
         _collider.enabled = true;
         PlayerMovement.obj.Freeze(spawnFreezeDuration);
         _animator.SetTrigger("spawn");
