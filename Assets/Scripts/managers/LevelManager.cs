@@ -47,6 +47,7 @@ public class LevelManager : MonoBehaviour
             PlayerMovement.obj.isGrounded = true;
             PlayerMovement.obj.isForcePushJumping = false;
             PlayerMovement.obj.jumpedWhileForcePushJumping = false;
+            Reaper.obj.playerKilled = false;
 
 
             sceneLoadTrigger.LoadScenes();

@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class Reaper : MonoBehaviour
 {
     public static Reaper obj;
+    public bool playerKilled = false;
 
     void Awake() {
         obj = this;
@@ -14,17 +15,23 @@ public class Reaper : MonoBehaviour
     public float genericDeathAnimationTime = 0.8f;
     public float shadowDeathAnimationTime = 0.8f;
     public void KillPlayerGeneric() {
-        PlayerMovement.obj.Freeze(genericDeathAnimationTime);
-        CollectibleManager.obj.ResetTemporaryPickedCollectible();
-        Player.obj.PlayGenericDeathAnimation();
-        StartCoroutine(afterDeathAnimation(genericDeathAnimationTime));
+        if(!playerKilled){
+            playerKilled = true;
+            PlayerMovement.obj.Freeze(genericDeathAnimationTime);
+            CollectibleManager.obj.ResetTemporaryPickedCollectible();
+            Player.obj.PlayGenericDeathAnimation();
+            StartCoroutine(afterDeathAnimation(genericDeathAnimationTime));
+        }
     }
 
     public void KillPlayerShadow() {
-        PlayerMovement.obj.Freeze(shadowDeathAnimationTime);
-        CollectibleManager.obj.ResetTemporaryPickedCollectible();
-        Player.obj.PlayShadowDeathAnimation();
-        StartCoroutine(afterDeathAnimation(shadowDeathAnimationTime));
+        if(!playerKilled){
+            playerKilled = true;
+            PlayerMovement.obj.Freeze(shadowDeathAnimationTime);
+            CollectibleManager.obj.ResetTemporaryPickedCollectible();
+            Player.obj.PlayShadowDeathAnimation();
+            StartCoroutine(afterDeathAnimation(shadowDeathAnimationTime));
+        }
     }
 
     public void KillPrisoner(Prisoner prisoner) {
