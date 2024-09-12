@@ -199,15 +199,17 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   defaultSpeed: 3
-  movementDirection: -1
+  movementDirection: 0
   gravityAcceleration: 0.5
   speedAcceleration: 0.5
   speed: 3
   isGrounded: 1
   isGroundFloorAhead: 0
   groundAheadCheck: 1.35
+  groundBehindCheck: 1.96
   isGroundedCheckOffset: 0.9
-  frontCheck: 0.7
+  frontCheck: 0.85
+  behindCheck: 1.4
   hasBeenHit: 0
   hasBeenHitDuration: 0.5
   hasBeenHitTimeCount: 0
@@ -229,3 +231,6 @@ MonoBehaviour:
   playerCastDistance: 7
   isAttacking: 0
   attackSpeedMultiplier: 2
+  isStuck: 0
+  isSpawningPrisoners: 0
+  prisonersToSpawn: []

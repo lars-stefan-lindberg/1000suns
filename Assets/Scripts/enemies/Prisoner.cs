@@ -25,9 +25,11 @@ public class Prisoner : MonoBehaviour
     //Collision detection
     public bool isGrounded = true;
     public bool isGroundFloorAhead = true;
-    public float groundAheadCheck = 0.51f;
+    public float groundAheadCheck = 1.35f;
+    public float groundBehindCheck = 1.96f;
     public float isGroundedCheckOffset = 0.55f; //TODO: Get dynamic value based on enemy height
     public float frontCheck = 0.51f;
+    public float behindCheck = 1.4f;
     private RaycastHit2D _otherHit; //Enemy or boulder
 
     //When hit or recovering from hit
@@ -58,6 +60,7 @@ public class Prisoner : MonoBehaviour
     public float playerCastDistance = 0;
     public bool isAttacking = false;
     public float attackSpeedMultiplier = 1.5f;
+    public bool isStuck = false;
 
     private void Awake()
     {
@@ -156,11 +159,6 @@ public class Prisoner : MonoBehaviour
             new Vector3(groundLineCastPosition.x, groundLineCastPosition.y - isGroundedCheckOffset, groundLineCastPosition.z),
             groundLayer);
 
-        // if(groundHit && !isGrounded) {
-        //     Debug.Log("landed");
-        //     isRecovering = true;
-        //     recoveryTimeCount = recoveryDuration;
-        // }
         if(!isGrounded && groundHit) {
             _isFalling = false;
         } else if(isGrounded && !groundHit && !hasBeenHit && !isRecovering && !_isSpawning) {
@@ -170,7 +168,23 @@ public class Prisoner : MonoBehaviour
 
         isGrounded = groundHit;
 
-        if (isGrounded && !isTurning && !hasBeenHit)
+        //Check if space to move is too small. If so go into idle state
+        if(isGrounded) {
+            bool isWallAhead = Physics2D.Raycast(_collider.transform.position, new Vector3(-_collider.transform.right.x, 0, 0), frontCheck, groundLayer);
+            bool isWallBehind = Physics2D.Raycast(_collider.transform.position, new Vector3(_collider.transform.right.x, 0, 0), behindCheck, groundLayer);
+            
+            Vector2 groundLineAheadCastPosition = _collider.transform.position - _collider.transform.right * enemyWidth * groundAheadCheck;
+            isGroundFloorAhead = Physics2D.Linecast(groundLineAheadCastPosition, groundLineAheadCastPosition + Vector2.down, groundLayer);
+            
+            Vector2 groundLineBehindCastPosition = _collider.transform.position + _collider.transform.right * enemyWidth * groundBehindCheck;
+            bool isGroundFloorBehind = Physics2D.Linecast(groundLineBehindCastPosition, groundLineBehindCastPosition + Vector2.down, groundLayer);
+            
+            if((isWallAhead && isWallBehind) || (!isGroundFloorAhead && !isGroundFloorBehind)) {
+                isStuck = true;
+            }
+        }
+
+        if (isGrounded && !isTurning && !hasBeenHit && !isStuck)
         {
             //Check ahead if no ground ahead
             Vector2 groundLineAheadCastPosition = _collider.transform.position - _collider.transform.right * enemyWidth * groundAheadCheck;
@@ -225,12 +239,12 @@ public class Prisoner : MonoBehaviour
             }
         }
 
-        if (!hasBeenHit && !isRecovering && isGrounded && !isStatic && !isTurning)
+        if (!hasBeenHit && !isRecovering && isGrounded && !isStatic && !isTurning && !isStuck)
         {
             GracefulSpeedChange();
         }
 
-        if(!isStatic && !hasBeenHit && !isRecovering && isGrounded) {
+        if(!isStatic && !hasBeenHit && !isRecovering && isGrounded && !isStuck) {
             Debug.DrawRay(transform.position, (IsFacingRight() ? Vector3.right : Vector3.left) * playerCastDistance, Color.red);
             RaycastHit2D hit = Physics2D.Raycast(transform.position, IsFacingRight() ? Vector3.right : Vector3.left, playerCastDistance);
 
@@ -246,9 +260,11 @@ public class Prisoner : MonoBehaviour
 
         //Check if landed on edge. Try to recover by moving to one side -> either fall, or reach stable ground
         if(!isGrounded && _rigidBody.velocity == Vector2.zero) {
-            Debug.Log("nudging");
             _rigidBody.velocity = new Vector2(7, 0);
         }
+
+        if(isStuck)
+            _rigidBody.velocity = Vector2.zero;
 
         //Update animator
         _animator.SetBool("isGrounded", isGrounded);
@@ -257,6 +273,7 @@ public class Prisoner : MonoBehaviour
         _animator.SetBool("isMoving", Mathf.Abs(_rigidBody.velocity.x) > 0.01);
         _animator.SetBool("isSpawning", _isSpawning);
         _animator.SetBool("isFalling", _isFalling);
+        _animator.SetBool("isStuck", isStuck);
         //_animator.SetBool("isMoving", isMoving);
     }
 
@@ -286,7 +303,7 @@ public class Prisoner : MonoBehaviour
             FlipHorizontal();
         }
         
-        if (!hasBeenHit && !isRecovering && isGrounded)
+        if (!hasBeenHit && !isRecovering && isGrounded && !isStuck)
         {
             if (!isTurning && !isStatic)
             {
