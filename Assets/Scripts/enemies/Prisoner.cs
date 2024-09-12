@@ -244,6 +244,12 @@ public class Prisoner : MonoBehaviour
             }
         }
 
+        //Check if landed on edge. Try to recover by moving to one side -> either fall, or reach stable ground
+        if(!isGrounded && _rigidBody.velocity == Vector2.zero) {
+            Debug.Log("nudging");
+            _rigidBody.velocity = new Vector2(7, 0);
+        }
+
         //Update animator
         _animator.SetBool("isGrounded", isGrounded);
         _animator.SetBool("isHit", hasBeenHit);
