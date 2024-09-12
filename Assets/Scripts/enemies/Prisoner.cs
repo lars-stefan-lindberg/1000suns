@@ -23,7 +23,7 @@ public class Prisoner : MonoBehaviour
     public float speed = 0f;
 
     //Collision detection
-    public bool isGrounded = false;
+    public bool isGrounded = true;
     public bool isGroundFloorAhead = true;
     public float groundAheadCheck = 0.51f;
     public float isGroundedCheckOffset = 0.55f; //TODO: Get dynamic value based on enemy height
@@ -52,6 +52,8 @@ public class Prisoner : MonoBehaviour
     public bool isImmuneToForcePush = false;
     public bool isSpawningFast = false;
     public float spawnAnimationSpeed = 3;
+    private bool _isSpawning = true;
+    private bool _isFalling = false;
 
     public float playerCastDistance = 0;
     public bool isAttacking = false;
@@ -134,8 +136,10 @@ public class Prisoner : MonoBehaviour
 
     void Update()
     {
-        if(_killed) 
+        if(_killed) {
+            _animator.SetBool("isKilled", _killed);
             return;
+        }
         if (_animator.GetCurrentAnimatorStateInfo(0).IsName("prisoner_spawn"))
             return;
         else
@@ -147,10 +151,24 @@ public class Prisoner : MonoBehaviour
         //    groundLineCastPosition,
         //    new Vector3(groundLineCastPosition.x, groundLineCastPosition.y - isGroundedCheckOffset, groundLineCastPosition.z),
         //    Color.red);
-        isGrounded = Physics2D.Linecast(
+        bool groundHit = Physics2D.Linecast(
             groundLineCastPosition,
             new Vector3(groundLineCastPosition.x, groundLineCastPosition.y - isGroundedCheckOffset, groundLineCastPosition.z),
             groundLayer);
+
+        // if(groundHit && !isGrounded) {
+        //     Debug.Log("landed");
+        //     isRecovering = true;
+        //     recoveryTimeCount = recoveryDuration;
+        // }
+        if(!isGrounded && groundHit) {
+            _isFalling = false;
+        } else if(isGrounded && !groundHit && !hasBeenHit && !isRecovering && !_isSpawning) {
+            _isFalling = true;
+            _animator.SetTrigger("fall");
+        }
+
+        isGrounded = groundHit;
 
         if (isGrounded && !isTurning && !hasBeenHit)
         {
@@ -231,6 +249,8 @@ public class Prisoner : MonoBehaviour
         _animator.SetBool("isHit", hasBeenHit);
         _animator.SetBool("isRecovering", isRecovering);
         _animator.SetBool("isMoving", Mathf.Abs(_rigidBody.velocity.x) > 0.01);
+        _animator.SetBool("isSpawning", _isSpawning);
+        _animator.SetBool("isFalling", _isFalling);
         //_animator.SetBool("isMoving", isMoving);
     }
 
@@ -241,8 +261,10 @@ public class Prisoner : MonoBehaviour
 
     void FixedUpdate()
     {
-        if(_killed)
+        if(_killed) {
+            _animator.SetBool("isKilled", _killed);
             return;
+        }
         if (_animator.GetCurrentAnimatorStateInfo(0).IsName("prisoner_spawn"))
             return;
         else
@@ -322,6 +344,10 @@ public class Prisoner : MonoBehaviour
         foreach(GameObject prisoner in prisonersToSpawn) {
             prisoner.SetActive(true);
         }
+    }
+
+    public void SpawningComplete() {
+        _isSpawning = false;
     }
     //private void OnDrawGizmos()
     //{
