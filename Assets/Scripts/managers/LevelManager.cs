@@ -26,7 +26,7 @@ public class LevelManager : MonoBehaviour
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
-        if(mode == LoadSceneMode.Single) {
+        if(mode == LoadSceneMode.Single && scene == SceneManager.GetActiveScene()) {
             SceneFadeManager.obj.StartFadeIn();
 
             GameObject[] sceneGameObjects = scene.GetRootGameObjects();
