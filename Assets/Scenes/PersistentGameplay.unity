@@ -473,9 +473,9 @@ GameObject:
   - component: {fileID: 519420032}
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
-  - component: {fileID: 519420033}
   - component: {fileID: 519420035}
   - component: {fileID: 519420036}
+  - component: {fileID: 519420037}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -557,26 +557,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1285203678}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &519420033
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 519420028}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a160d838ff8b4b4693ac20007e008c7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_AssetsPPU: 8
-  m_RefResolutionX: 320
-  m_RefResolutionY: 180
-  m_UpscaleRT: 0
-  m_PixelSnapping: 0
-  m_CropFrameX: 0
-  m_CropFrameY: 0
-  m_StretchFill: 0
 --- !u!114 &519420035
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -655,6 +635,30 @@ MonoBehaviour:
     mipBias: 0
     varianceClampScale: 0.9
     contrastAdaptiveSharpening: 0
+--- !u!114 &519420037
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c88f5cead0c0b2a4eb05b5900433f8d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ComponentVersion: 1
+  m_AssetsPPU: 8
+  m_RefResolutionX: 320
+  m_RefResolutionY: 180
+  m_CropFrame: 0
+  m_GridSnapping: 1
+  m_FilterMode: 0
+  m_UpscaleRT: 0
+  m_PixelSnapping: 0
+  m_CropFrameX: 0
+  m_CropFrameY: 0
+  m_StretchFill: 0
 --- !u!1 &650861853 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5764671153394771574, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
@@ -1066,11 +1070,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1657636802850301417, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 233.5
+      value: 944.625
       objectReference: {fileID: 0}
     - target: {fileID: 1657636802850301417, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 38.25
+      value: -42.125
       objectReference: {fileID: 0}
     - target: {fileID: 1657636802850301417, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
       propertyPath: m_LocalPosition.z
@@ -6667,6 +6671,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdfd22d622a9f43b1bc6e4eaa0228832, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerKilled: 0
   genericDeathAnimationTime: 0.8
   shadowDeathAnimationTime: 0.8
 --- !u!1 &2101111513

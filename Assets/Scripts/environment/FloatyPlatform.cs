@@ -121,18 +121,18 @@ public class FloatyPlatform : MonoBehaviour
             movePlatform = false;
         }
 
-        if (!isPlayerOnPlatform && _rigidBody.velocity.x == 0)
-            MoveIdlePlatform();
+        // if (!isPlayerOnPlatform && _rigidBody.velocity.x == 0)
+        //     MoveIdlePlatform();
     }
 
-    private void MoveIdlePlatform()
-    {
-        if (transform.position.y >= startingVerticalPosition)
-            _idleTargetVerticalPosition = _idleVerticalTargetPosition;
-        if (transform.position.y <= _idleVerticalTargetPosition)
-            _idleTargetVerticalPosition = startingVerticalPosition;
-        transform.position = new Vector2(transform.position.x, Mathf.MoveTowards(transform.position.y, _idleTargetVerticalPosition, idleMoveSpeed * Time.deltaTime));
-    }
+    // private void MoveIdlePlatform()
+    // {
+    //     if (transform.position.y >= startingVerticalPosition)
+    //         _idleTargetVerticalPosition = _idleVerticalTargetPosition;
+    //     if (transform.position.y <= _idleVerticalTargetPosition)
+    //         _idleTargetVerticalPosition = startingVerticalPosition;
+    //     transform.position = new Vector2(transform.position.x, Mathf.MoveTowards(transform.position.y, _idleTargetVerticalPosition, idleMoveSpeed * Time.deltaTime));
+    // }
 
     public void MovePlatform(bool isFacingLeft, float force)
     {
@@ -152,9 +152,9 @@ public class FloatyPlatform : MonoBehaviour
         _rigidBody.velocity = new Vector2(isFacingLeft ? power : -power, 0);
     }
 
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireCube(_collider.bounds.center, new Vector2(_collider.size.x * (1 + blockingCastDistance), _collider.size.y));
-    }
+    // private void OnDrawGizmosSelected()
+    // {
+    //     Gizmos.color = Color.yellow;
+    //     Gizmos.DrawWireCube(_collider.bounds.center, new Vector2(_collider.size.x * (1 + blockingCastDistance), _collider.size.y));
+    // }
 }
