@@ -498,10 +498,12 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     #endregion
 
     private void ApplyMovement() {
-        if (_freezePlayer)
-            Player.obj.rigidBody.velocity = new Vector2(0,0);
-        else 
-            Player.obj.rigidBody.velocity = _frameVelocity;
+        if(Player.obj.rigidBody.bodyType != RigidbodyType2D.Static) {
+            if (_freezePlayer)
+                Player.obj.rigidBody.velocity = new Vector2(0,0);
+            else 
+                Player.obj.rigidBody.velocity = _frameVelocity;
+        }
     } 
 
     private void OnDrawGizmos()

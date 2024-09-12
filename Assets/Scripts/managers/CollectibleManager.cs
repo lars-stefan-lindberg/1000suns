@@ -4,17 +4,10 @@ using UnityEngine;
 
 public class CollectibleManager : MonoBehaviour
 {
-    private static readonly Lazy<CollectibleManager> lazyInstance =
-        new Lazy<CollectibleManager>(() => new CollectibleManager());
+    public static CollectibleManager obj;
 
-    private CollectibleManager() {}
-
-    public static CollectibleManager Instance
-    {
-        get
-        {
-            return lazyInstance.Value;
-        }
+    void Awake() {
+        obj = this;
     }
 
     private HashSet<string> pickedColllectibles = new();
@@ -37,5 +30,9 @@ public class CollectibleManager : MonoBehaviour
 
     public bool IsCollectiblePicked(string id) {
         return pickedColllectibles.Contains(id);
+    }
+
+    void OnDestroy() {
+        obj = this;
     }
 }
