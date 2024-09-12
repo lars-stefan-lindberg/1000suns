@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class FloatyPlatform : MonoBehaviour
@@ -97,7 +94,7 @@ public class FloatyPlatform : MonoBehaviour
             _fallingPlatformFlash.StartFlashing(timeBeforeFall);
         }
         if(fallTimer >= timeFallingBeforeDestroy)
-            this.gameObject.SetActive(false);
+            gameObject.SetActive(false);
         if(isFallingPlatform && fallTimer >= timeBeforeFall) {
             _fallingPlatformFlash.StopFlashing();
             _rigidBody.bodyType = RigidbodyType2D.Dynamic;
@@ -139,6 +136,17 @@ public class FloatyPlatform : MonoBehaviour
 
     public void MovePlatform(bool isFacingLeft, float force)
     {
+        if(isFacingLeft) {
+            somethingToTheRight = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.right, blockingCastDistance, _blockingCastLayerMask);
+            if(somethingToTheRight)
+                return;
+        }
+        if(!isFacingLeft) {
+            somethingToTheLeft = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.left, blockingCastDistance, _blockingCastLayerMask);
+            if(somethingToTheLeft)
+                return;
+        }
+
         movePlatform = true;
         float power = force * basePushPower;
         _rigidBody.velocity = new Vector2(isFacingLeft ? power : -power, 0);
