@@ -6,7 +6,6 @@ public class PlayerPush : MonoBehaviour
 {
     public static PlayerPush obj;
 
-    private Animator _animator;
     private SpriteRenderer _playerSpriteRenderer;
 
     public float minBuildUpPowerTime = 0.5f;
@@ -29,13 +28,12 @@ public class PlayerPush : MonoBehaviour
     
     public FloatyPlatform platform;
 
-    bool CanUseForcePushJump => PlayerMovement.obj.isGrounded && Player.obj.hasPowerUp && _buildUpPower >= maxForce && platform == null;
+    bool CanUseForcePushJump => PlayerMovement.obj.isGrounded && Player.obj.hasPowerUp && _buildUpPower >= maxForce;
 
     private void Awake()
     {
         obj = this;
         _playerSpriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        _animator = GetComponentInChildren<Animator>();
     }
 
     public void OnShoot(InputAction.CallbackContext context)
@@ -62,8 +60,8 @@ public class PlayerPush : MonoBehaviour
                     PlayerMovement.obj.ExecuteFallDash();
 
                 if(platform != null) {
-                    //float power = Player.obj.hasPowerUp ? powerUpMaxForce : _buildUpPower;
-                    StartCoroutine(DelayedMovePlatform(projectileDelay, _buildUpPower));
+                    float power = Player.obj.hasPowerUp ? powerUpMaxForce : _buildUpPower;
+                    StartCoroutine(DelayedMovePlatform(projectileDelay, power));
                 }
 
                 if(CanUseForcePushJump) 
