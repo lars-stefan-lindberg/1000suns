@@ -71,8 +71,8 @@ public class FloatyPlatform : MonoBehaviour
                 RegisterPlayerOnPlatform();
         }
         if(collision.transform.CompareTag("Enemy")) {
-            Prisoner prisoner = collision.gameObject.GetComponent<Prisoner>();
-            MovePlatform(!prisoner.IsFacingRight(), _prisonerPushPower);
+            bool hitFromRight = collision.transform.position.x > transform.position.x;
+            MovePlatform(!hitFromRight, _prisonerPushPower);
         }
     }
 
