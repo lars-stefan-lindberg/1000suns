@@ -32,6 +32,8 @@ public class FallingPlatformFlash : MonoBehaviour
         _startFlashing = true;
         _mediumFlashTime = timeBeforeFall / 2f;
         _fastFlashTime = timeBeforeFall * (2f / 3f);
+        _elapsedTime = 0f;
+        _totalElapsedTime = 0f;
     }
 
     public void StopFlashing() {

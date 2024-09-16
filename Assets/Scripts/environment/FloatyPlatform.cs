@@ -1,9 +1,11 @@
+using System.Collections;
 using UnityEngine;
 
 public class FloatyPlatform : MonoBehaviour
 {
     private BoxCollider2D _collider;
     private Rigidbody2D _rigidBody;
+    private SpriteRenderer _spriteRenderer;
 
     public float idleMoveSpeed;
     private float _idleVerticalTargetPosition;
@@ -27,14 +29,25 @@ public class FloatyPlatform : MonoBehaviour
 
     private FallingPlatformFlash _fallingPlatformFlash;
 
+    private bool _respawning = false;
+    public float spawnTime = 1f;
+    public float spawnTimer = 0f;
+    private Vector2 _startingPosition;
+
+    private Color _fadeStartColor;
+    [Range(0.1f, 10f), SerializeField] private float _fadeSpeed = 5f;
+
     private void Awake()
     {
         _collider = GetComponent<BoxCollider2D>();
         _rigidBody = GetComponent<Rigidbody2D>();
+        _spriteRenderer = GetComponent<SpriteRenderer>();
         _blockingCastLayerMask = LayerMask.GetMask(new[] { "Ground", "Default", "JumpThroughs" });
         startingVerticalPosition = transform.position.y;
         _idleVerticalTargetPosition = startingVerticalPosition - idleVerticalDistance;
         _fallingPlatformFlash = GetComponent<FallingPlatformFlash>();
+        _startingPosition = transform.position;
+        _fadeStartColor = new Color(_spriteRenderer.color.r, _spriteRenderer.color.g, _spriteRenderer.color.b, 0);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -87,14 +100,19 @@ public class FloatyPlatform : MonoBehaviour
 
     public bool somethingToTheRight = false;
     public bool somethingToTheLeft = false;
+    private bool _startFlashing = true;
     private void Update()
     {
         if(_startFallCountDown) {
             fallTimer += Time.deltaTime;
-            _fallingPlatformFlash.StartFlashing(timeBeforeFall);
+            if(_startFlashing) {
+                _startFlashing = false;
+                _fallingPlatformFlash.StartFlashing(timeBeforeFall);
+            }
         }
-        if(fallTimer >= timeFallingBeforeDestroy)
-            gameObject.SetActive(false);
+        if(fallTimer >= timeFallingBeforeDestroy) {
+            StartRespawning();
+        }
         if(isFallingPlatform && fallTimer >= timeBeforeFall) {
             _fallingPlatformFlash.StopFlashing();
             _rigidBody.bodyType = RigidbodyType2D.Dynamic;
@@ -121,6 +139,14 @@ public class FloatyPlatform : MonoBehaviour
             movePlatform = false;
         }
 
+        if(_respawning) {
+            spawnTimer += Time.deltaTime;
+            if(spawnTimer >= spawnTime) {
+                _respawning = false;
+                transform.position = _startingPosition;
+                StartCoroutine(FadeInSprite());
+            }
+        }
         // if (!isPlayerOnPlatform && _rigidBody.velocity.x == 0)
         //     MoveIdlePlatform();
     }
@@ -150,6 +176,29 @@ public class FloatyPlatform : MonoBehaviour
         movePlatform = true;
         float power = force * basePushPower;
         _rigidBody.velocity = new Vector2(isFacingLeft ? power : -power, 0);
+    }
+
+    private void StartRespawning() {
+        _respawning = true;
+        fallTimer = 0f;
+        _startFallCountDown = false;
+        spawnTimer = 0f;
+        _rigidBody.velocity = new Vector3(0,0,0);
+        _rigidBody.gravityScale = 0;
+        _rigidBody.bodyType = RigidbodyType2D.Kinematic;
+        _fadeStartColor.a = 0;
+        _spriteRenderer.color = _fadeStartColor;
+        isPlayerOnPlatform = false;
+        _fallingPlatformFlash.StopFlashing();
+        _startFlashing = true;
+    }
+
+    private IEnumerator FadeInSprite() {
+        while(_spriteRenderer.color.a < 1f) {
+            _fadeStartColor.a += Time.deltaTime * _fadeSpeed;
+            _spriteRenderer.color = _fadeStartColor;
+            yield return null;
+        }
     }
 
     // private void OnDrawGizmosSelected()
