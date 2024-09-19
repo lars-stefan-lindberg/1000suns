@@ -2,9 +2,9 @@ using System.Collections;
 using System.Linq;
 using UnityEngine;
 
-public class BackgroundBlobManager : MonoBehaviour
+public class CapeRoomBackgroundBlobManager : MonoBehaviour
 {
-    public static BackgroundBlobManager obj;
+    public static CapeRoomBackgroundBlobManager obj;
     private bool _startCutscene = false;
 
     [ContextMenu("StartCutscene")]
@@ -35,8 +35,6 @@ public class BackgroundBlobManager : MonoBehaviour
             
             //Fade out blobs
             StartCoroutine(FadeOutBlobSprites());
-
-            //Create temporary cape trigger that will start the cutscene
 
             //Play big blob sound
         }

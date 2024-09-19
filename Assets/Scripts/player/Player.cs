@@ -17,6 +17,7 @@ public class Player : MonoBehaviour
 
     private Animator _animator;
     private LayerMask _groundLayerMasks;
+    private SpriteRenderer _spriteRenderer;
 
     void Awake()
     {
@@ -24,6 +25,7 @@ public class Player : MonoBehaviour
         _animator = GetComponentInChildren<Animator>();
         _collider = GetComponentInChildren<BoxCollider2D>();
         _groundLayerMasks = LayerMask.GetMask("Ground");
+        _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
     }
 
     void OnCollisionEnter2D(Collision2D other) {
