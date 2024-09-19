@@ -34383,8 +34383,16 @@ PrefabInstance:
       value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 7191767626496316833, guid: a0e73d062e410485895676a224d0eb99, type: 3}
+      propertyPath: timeBeforeFall
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 7191767626496316833, guid: a0e73d062e410485895676a224d0eb99, type: 3}
       propertyPath: isFallingPlatform
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7191767626496316833, guid: a0e73d062e410485895676a224d0eb99, type: 3}
+      propertyPath: timeFallingBeforeDestroy
+      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
