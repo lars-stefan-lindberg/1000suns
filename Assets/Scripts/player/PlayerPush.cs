@@ -60,7 +60,7 @@ public class PlayerPush : MonoBehaviour
                     PlayerMovement.obj.ExecuteFallDash();
 
                 if(platform != null) {
-                    float power = Player.obj.hasPowerUp ? powerUpMaxForce : _buildUpPower;
+                    float power = Player.obj.hasPowerUp && IsFullyCharged() ? powerUpMaxForce : _buildUpPower;
                     StartCoroutine(DelayedMovePlatform(projectileDelay, power));
                 }
 
