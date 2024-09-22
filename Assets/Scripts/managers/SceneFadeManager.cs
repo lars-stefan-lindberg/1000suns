@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
 
@@ -50,5 +48,12 @@ public class SceneFadeManager : MonoBehaviour
             _fadeOutImage.color = _fadeOutStartColor;
             IsFadingIn = true;
         }
+    }
+    public void SetFadedOutState() {
+        _fadeOutStartColor.a = 1;
+        _fadeOutImage.color = _fadeOutStartColor;
+    }
+    public void SetFadeInSpeed(float speed) {
+        _fadeInSpeed = speed;
     }
 }

@@ -26,7 +26,7 @@ public class LevelManager : MonoBehaviour
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
-        if(mode == LoadSceneMode.Single && scene == SceneManager.GetActiveScene()) {
+        if(mode == LoadSceneMode.Single) {
             SceneFadeManager.obj.StartFadeIn();
 
             GameObject[] sceneGameObjects = scene.GetRootGameObjects();
@@ -48,7 +48,6 @@ public class LevelManager : MonoBehaviour
             PlayerMovement.obj.isForcePushJumping = false;
             PlayerMovement.obj.jumpedWhileForcePushJumping = false;
             Reaper.obj.playerKilled = false;
-
 
             sceneLoadTrigger.LoadScenes();
         }

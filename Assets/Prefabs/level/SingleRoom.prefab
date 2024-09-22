@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2256484198556276230}
   m_Layer: 2
   m_Name: SingleRoom
-  m_TagString: Untagged
+  m_TagString: Room
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -96,6 +96,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   virtualCamera: {fileID: 1807143514575258344}
+  followCamera: {fileID: 0}
+  alternativeCamera: {fileID: 0}
   currentScene:
     _sceneAsset: {fileID: 0}
     _sceneName: 
@@ -112,7 +114,7 @@ GameObject:
   - component: {fileID: 5452273966837431561}
   m_Layer: 0
   m_Name: CM vcam
-  m_TagString: Untagged
+  m_TagString: VirtualCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

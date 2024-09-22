@@ -25,9 +25,7 @@ public class RoomMgr : MonoBehaviour
                 CinemachineVirtualCamera cinemachineVirtualCamera = alternativeCamera.GetComponent<CinemachineVirtualCamera>();
                 cinemachineVirtualCamera.enabled = true;
             } else {
-                virtualCamera.SetActive(true);
-                CinemachineVirtualCamera cinemachineVirtualCamera = virtualCamera.GetComponent<CinemachineVirtualCamera>();
-                cinemachineVirtualCamera.enabled = true;
+                ActivateVirtualCamera();
             }
             SceneManager.SetActiveScene(SceneManager.GetSceneByName(currentScene));
         }
@@ -48,5 +46,11 @@ public class RoomMgr : MonoBehaviour
                 followCamera.GetComponent<CinemachineVirtualCamera>().enabled = false;
             }
         }
+    }
+
+    public void ActivateVirtualCamera() {
+        virtualCamera.SetActive(true);
+        CinemachineVirtualCamera cinemachineVirtualCamera = virtualCamera.GetComponent<CinemachineVirtualCamera>();
+        cinemachineVirtualCamera.enabled = true;
     }
 }
