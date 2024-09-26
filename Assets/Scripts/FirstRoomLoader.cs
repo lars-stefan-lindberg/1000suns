@@ -7,7 +7,7 @@ public class FirstRoomLoader : MonoBehaviour
     void Start()
     {
         SceneFadeManager.obj.SetFadedOutState();
-        SceneFadeManager.obj.SetFadeInSpeed(2f);
+        SceneFadeManager.obj.SetFadeInSpeed(1f);
         SceneFadeManager.obj.StartFadeIn();
     }
 
