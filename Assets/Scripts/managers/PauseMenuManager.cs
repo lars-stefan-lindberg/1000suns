@@ -80,6 +80,14 @@ public class PauseMenuManager : MonoBehaviour
         Destroy(_persistentGameplay);
     }
 
+    public void ChangeMusicVolume(float volume) {
+        SoundMixerManager.obj.SetMusicVolume(volume);
+    }
+
+    public void ChangeSoundFxVolume(float volume) {
+        SoundMixerManager.obj.SetSoundFXVolume(volume);
+    }
+
     void OnDestroy() {
         obj = null;
     }
