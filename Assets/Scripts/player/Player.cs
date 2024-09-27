@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
+
+/*
+Cave start coordinates (first screen):
+X: 233.875
+Y: 78.375
+*/
 public class Player : MonoBehaviour
 {
     public static Player obj;

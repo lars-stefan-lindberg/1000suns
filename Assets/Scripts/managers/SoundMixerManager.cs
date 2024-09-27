@@ -5,6 +5,8 @@ using UnityEngine.Audio;
 
 public class SoundMixerManager : MonoBehaviour
 {
+    public static SoundMixerManager obj;
+
     [SerializeField] AudioMixer audioMixer;
 
     //Level between 0.0001 and 1
@@ -51,5 +53,13 @@ public class SoundMixerManager : MonoBehaviour
             yield return null;
         }
         yield break;
+    }
+
+    void Awake() {
+        obj = this;
+    }
+
+    void OnDestroy() {
+        obj = null;
     }
 }

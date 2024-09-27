@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 using System.Linq;
 using System.Collections;
 using TMPro;
@@ -18,27 +19,23 @@ public class MainMenuManager : MonoBehaviour
 
     public bool IsFadingOut { get; private set; }
 
-    [SerializeField] private Button _playButton;
+    [SerializeField] private GameObject _playButton;
     [SerializeField] private Button _optionsButton;
     private Color _optionsButtonColor;
     [SerializeField] private Button _backButton;
     private Color _backButtonColor;
-    [SerializeField] private Slider _musicSlider;
+    [SerializeField] private GameObject _musicSlider;
 
     [SerializeField] private GameObject _optionsMenu;
     [SerializeField] private GameObject _titleMenu;
-
-    [SerializeField] private GameObject _soundMixerManagerObj;
-    private SoundMixerManager _soundMixerManager;
 
     [SerializeField] private GameObject _musicManagerObj;
     private AudioSource _musicAudioSource;
 
     void Awake() {
-        _playButton.Select();
+        EventSystem.current.SetSelectedGameObject(_playButton);
         _optionsButtonColor = _optionsButton.GetComponentInChildren<TextMeshProUGUI>().color;
         _backButtonColor = _backButton.GetComponentInChildren<TextMeshProUGUI>().color;
-        _soundMixerManager = _soundMixerManagerObj.GetComponentInChildren<SoundMixerManager>();
         _musicAudioSource = _musicManagerObj.GetComponent<AudioSource>();
     }
 
@@ -58,11 +55,13 @@ public class MainMenuManager : MonoBehaviour
     }
 
     private IEnumerator StartGameCoroutine() {
-        Coroutine masterFadeCoroutine = StartCoroutine(_soundMixerManager.StartMasterFade(3f, 0f));
+        float masterVolume = SoundMixerManager.obj.GetMasterVolume();
+
+        StartCoroutine(SoundMixerManager.obj.StartMasterFade(3f, 0f));
         StartFadeOut();
         while(IsFadingOut)
             yield return null;
-        while(_soundMixerManager.GetMasterVolume() > 0.001f) {
+        while(SoundMixerManager.obj.GetMasterVolume() > 0.001f) {
             yield return null;
         }
         _musicAudioSource.Stop();
@@ -72,7 +71,7 @@ public class MainMenuManager : MonoBehaviour
         while(!persistentGameplay.isLoaded) {
             yield return null;
         }
-        _soundMixerManager.SetMasterVolume(1);
+        SoundMixerManager.obj.SetMasterVolume(masterVolume);
         SceneManager.LoadSceneAsync(_caveRoom1, LoadSceneMode.Additive);
         Scene caveRoom1 = SceneManager.GetSceneByName(_caveRoom1.SceneName);
         while(!caveRoom1.isLoaded) {
@@ -95,7 +94,7 @@ public class MainMenuManager : MonoBehaviour
     public void ShowOptionsMenu() {
         _titleMenu.SetActive(false);
         _optionsMenu.SetActive(true);
-        _musicSlider.Select();
+        EventSystem.current.SetSelectedGameObject(_musicSlider);
 
         //Reset color of options button from animation
         TextMeshProUGUI textMeshPro = _optionsButton.GetComponentInChildren<TextMeshProUGUI>();
@@ -105,10 +104,18 @@ public class MainMenuManager : MonoBehaviour
     public void ShowTitleMenu() {
         _optionsMenu.SetActive(false);
         _titleMenu.SetActive(true);
-        _playButton.Select();
+        EventSystem.current.SetSelectedGameObject(_playButton);
 
         //Reset color of back button from animation
         TextMeshProUGUI textMeshPro = _backButton.GetComponentInChildren<TextMeshProUGUI>();
         textMeshPro.color = _backButtonColor;
+    }
+
+    public void ChangeMusicVolume(float volume) {
+        SoundMixerManager.obj.SetMusicVolume(volume);
+    }
+
+    public void ChangeSoundFxVolume(float volume) {
+        SoundMixerManager.obj.SetSoundFXVolume(volume);
     }
 }

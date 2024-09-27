@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using UnityEditor.VisionOS;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -140,16 +141,28 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private bool _freezePlayer = false;
     public void Freeze(float freezeDuration) {
-        _playerInput.currentActionMap.Disable();
+        DisablePlayerMovement();
         _freezePlayer = true;
         _movementInput = new Vector2(0,0);
         StartCoroutine(FreezeDuration(freezeDuration));
     }
 
+    public void DisablePlayerMovement() {
+        _playerInput.currentActionMap.FindAction("Movement").Disable();
+        _playerInput.currentActionMap.FindAction("Jump").Disable();
+        _playerInput.currentActionMap.FindAction("Shoot").Disable();
+    }
+
+    public void EnablePlayerMovement() {
+        _playerInput.currentActionMap.FindAction("Movement").Enable();
+        _playerInput.currentActionMap.FindAction("Jump").Enable();
+        _playerInput.currentActionMap.FindAction("Shoot").Enable();
+    }
+
     private IEnumerator FreezeDuration(float freezeDuration) {
         yield return new WaitForSeconds(freezeDuration);
         _freezePlayer = false;
-        _playerInput.currentActionMap.Enable();
+        EnablePlayerMovement();
     }
 
     public void OnMovement(InputAction.CallbackContext value)
