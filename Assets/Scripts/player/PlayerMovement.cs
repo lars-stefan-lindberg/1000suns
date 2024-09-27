@@ -147,6 +147,17 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         StartCoroutine(FreezeDuration(freezeDuration));
     }
 
+    public void Freeze() {
+        DisablePlayerMovement();
+        _freezePlayer = true;
+        _movementInput = new Vector2(0,0);
+    }
+
+    public void UnFreeze() {
+        _freezePlayer = false;
+        EnablePlayerMovement();
+    }
+
     public void DisablePlayerMovement() {
         _playerInput.currentActionMap.FindAction("Movement").Disable();
         _playerInput.currentActionMap.FindAction("Jump").Disable();
