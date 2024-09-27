@@ -20,6 +20,8 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
         if(_startCutscene) {
             _startCutscene = false;
 
+            PlayerMovement.obj.Freeze();
+
             //Loop through all children, get animators, and increase speed of animation
             Animator[] animators = GetComponentsInChildren<Animator>();
             foreach(Animator animator in animators) {
@@ -46,7 +48,7 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
     }
 
     private IEnumerator FadeOutBlobSprites() {
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(7);
         SpriteRenderer[] blobSprites = GetComponentsInChildren<SpriteRenderer>();
         while(blobSprites.First().color.a > 0) {
             foreach(SpriteRenderer blobSprite in blobSprites) {
@@ -54,6 +56,7 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
             }
             yield return null;
         }
+        PlayerMovement.obj.UnFreeze();
     }
 
     void OnDestroy() {

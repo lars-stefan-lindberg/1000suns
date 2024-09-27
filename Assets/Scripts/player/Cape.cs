@@ -15,12 +15,19 @@ public class Cape : MonoBehaviour
         if (other.gameObject.CompareTag("Player")) {
             CapeRoomBackgroundBlobManager.obj.StartCutscene();
             CutsceneManager.obj.capePicked = true;
-            Player.obj.SetHasCape();
-            gameObject.SetActive(false);
+            
+            StartCoroutine(DelayCapePickupSetInactive());
         }
     }
 
     public void StartAnimation() {
         _animator.enabled = true;
+    }
+
+    //Since we are waiting for the light to fill the screen before removing cape and updating player sprite
+    private IEnumerator DelayCapePickupSetInactive() {
+        yield return new WaitForSeconds(2);
+        Player.obj.SetHasCape();
+        gameObject.SetActive(false);
     }
 }
