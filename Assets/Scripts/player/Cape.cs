@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Cape : MonoBehaviour
 {
+    [SerializeField] private GameObject _container;
     private Animator _animator;
 
     void Awake() {
@@ -20,6 +22,10 @@ public class Cape : MonoBehaviour
         }
     }
 
+    public void StopHover() {
+        StartCoroutine(StopHoverCoroutine());
+    }
+
     public void StartAnimation() {
         _animator.enabled = true;
     }
@@ -29,5 +35,11 @@ public class Cape : MonoBehaviour
         yield return new WaitForSeconds(2);
         Player.obj.SetHasCape();
         gameObject.SetActive(false);
+    }
+
+    private IEnumerator StopHoverCoroutine() {
+        _container.GetComponent<Animator>().SetTrigger("returnToStart");
+        yield return new WaitForSeconds(2);
+        _container.GetComponent<Animator>().enabled = false;
     }
 }

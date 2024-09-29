@@ -27,24 +27,24 @@ public class EnterCapeRoomTrigger : MonoBehaviour
     private IEnumerator EnterCapeRoomSequence() {
         //Zoom in on cape
 
+        _cape.GetComponent<Cape>().StopHover();
+
         //Fade in beam of light
         while(_beamOfLightRenderer.color.a < 0.65f) {
             _fadeStartColor.a += Time.deltaTime * _fadeSpeed;
             _beamOfLightRenderer.color = _fadeStartColor;
             yield return null;
         }
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(1f);
+        _cape.GetComponent<Cape>().StartAnimation();
+        yield return new WaitForSeconds(2f);
 
         //Lower cape
         while(_cape.transform.position != _capeMoveTarget.position) {
             _cape.transform.position = Vector2.MoveTowards(_cape.transform.position, _capeMoveTarget.position, 1.1f * Time.deltaTime);
             yield return null;
         }
-
-        yield return new WaitForSeconds(1f);
-
-        _cape.GetComponent<Cape>().StartAnimation();
-
+        
         yield return new WaitForSeconds(3);
 
         //Fade out beam
