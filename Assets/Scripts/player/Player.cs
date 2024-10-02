@@ -1,14 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
-
-/*
-Cave start coordinates (first screen):
-X: 233.875
-Y: 78.375
-*/
 public class Player : MonoBehaviour
 {
     public static Player obj;
@@ -66,6 +57,10 @@ public class Player : MonoBehaviour
     public void SetHasCape() {
         hasCape = true;
         _animator.SetLayerWeight(1, 1);
+    }
+
+    public void SetCaveStartingCoordinates() {
+        transform.position = new Vector2(233.875f, 78.375f);
     }
 
     void OnDestroy()
