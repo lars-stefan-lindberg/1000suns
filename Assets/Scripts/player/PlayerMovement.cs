@@ -44,7 +44,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _animator = GetComponentInChildren<Animator>();
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         _powerJumpForce = _stats.JumpPower * 2f;
-        _groundLayerMasks = LayerMask.GetMask("Ground");
         _platformLayerMasks = LayerMask.GetMask("JumpThroughs");
         _ceilingLayerMasks = LayerMask.GetMask("Ground");
         _playerInput = GetComponentInChildren<PlayerInput>();
@@ -133,7 +132,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         if (_landed)
         {
             DustParticleMgr.obj.CreateDust();
-            AudioManager.obj.PlayLand(Player.obj.surface, gameObject.transform);
+            SoundFXManager.obj.PlayLand(Player.obj.surface, gameObject.transform);
             StartCoroutine(JumpSqueeze(_landedSqueezeX, _landedSqueezeY, _landedSqueezeTime));
             _landed = false;
         }
@@ -275,7 +274,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     private float _landedSqueezeY = 0.65f;
     private float _landedSqueezeTime = 0.08f;
     private bool _landed = false;
-    private LayerMask _groundLayerMasks;
+    [SerializeField] private LayerMask _groundLayerMasks;
     private LayerMask _platformLayerMasks;
     private LayerMask _ceilingLayerMasks;
 
@@ -407,7 +406,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     {
         ExecuteJump(_stats.JumpPower);
         DustParticleMgr.obj.CreateDust();
-        AudioManager.obj.PlayJump(gameObject.transform);
+        SoundFXManager.obj.PlayJump(gameObject.transform);
         StartCoroutine(JumpSqueeze(_jumpSqueezeX, _jumpSqueezeY, _jumpSqueezeTime));
         _jumpToConsume = false;
         if(isForcePushJumping) {

@@ -172,6 +172,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d27911ef18e8b41cebdc5a850922ebb0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 264
+  _wallCheckCastDistance: 1.05
   basePushPower: 7
   deceleration: 20
 --- !u!1 &1974178393461014631
@@ -184,7 +188,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6394235449312190256}
   - component: {fileID: 6963575288791899999}
-  m_Layer: 3
+  m_Layer: 7
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}

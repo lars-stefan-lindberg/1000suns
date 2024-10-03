@@ -1,8 +1,9 @@
+using System.Collections;
 using UnityEngine;
 
-public class AudioManager : MonoBehaviour
+public class SoundFXManager : MonoBehaviour
 {
-    public static AudioManager obj;
+    public static SoundFXManager obj;
 
     [SerializeField] private AudioSource soundFXObject;
 
@@ -11,6 +12,8 @@ public class AudioManager : MonoBehaviour
     public AudioClip[] stepOnRoots;
     public AudioClip[] landOnRock;
     public AudioClip[] stepOnRock;
+    public AudioClip[] blockSliding;
+    private AudioSource _blockSlidingSource;
 
     void Start() {
         obj = this;
@@ -34,19 +37,26 @@ public class AudioManager : MonoBehaviour
             PlayRandomSound(stepOnRock, spawnTransform, 1f);
     }
 
+    public AudioSource PlayBlockSliding(Transform spawnTransform, float soundDurationPercentage) {
+        return PlaySound(blockSliding[0], spawnTransform, 1f, soundDurationPercentage);
+    }
+
     public void PlaySound(AudioClip clip, Transform spawnTransform, float volume)
     {
         AudioSource audioSource = Instantiate(soundFXObject, spawnTransform.position, Quaternion.identity);
-
         audioSource.clip = clip;
-
         audioSource.volume = volume;
+        PlaySound(audioSource, audioSource.clip.length);
+    }
 
-        audioSource.Play();
-
-        float clipLength = audioSource.clip.length;
-
-        Destroy(audioSource.gameObject, clipLength);
+    public AudioSource PlaySound(AudioClip clip, Transform spawnTransform, float volume, float clipLengthPercentage)
+    {
+        AudioSource audioSource = Instantiate(soundFXObject, spawnTransform.position, Quaternion.identity);
+        audioSource.clip = clip;
+        audioSource.volume = volume;
+        float clipLength = audioSource.clip.length * clipLengthPercentage;
+        PlaySound(audioSource, clipLength);
+        return audioSource;
     }
 
     public void PlayRandomSound(AudioClip[] clip, Transform spawnTransform, float volume)
@@ -54,14 +64,13 @@ public class AudioManager : MonoBehaviour
         int random = Random.Range(0, clip.Length);
 
         AudioSource audioSource = Instantiate(soundFXObject, spawnTransform.position, Quaternion.identity);
-
         audioSource.clip = clip[random];
-
         audioSource.volume = volume;
+        PlaySound(audioSource, audioSource.clip.length);
+    }
 
+    public void PlaySound(AudioSource audioSource, float clipLength) {
         audioSource.Play();
-
-        float clipLength = audioSource.clip.length;
 
         Destroy(audioSource.gameObject, clipLength);
     }
