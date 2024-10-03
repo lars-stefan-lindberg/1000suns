@@ -38,39 +38,41 @@ public class PlayerPush : MonoBehaviour
 
     public void OnShoot(InputAction.CallbackContext context)
     {
-        if (context.performed)
-        {
-            if (defaultPower < StaminaMgr.obj.GetCurrentStamina()) {
-                _buildUpPower = defaultPower;
-                _buildingUpPower = true;
-                _buildUpPowerTime = 0;
-            }
-        }
-        if(context.canceled) {
-            //Need to check that we are building power before we can push. If not the push will be executed on button release.
-            if(_buildingUpPower && _buildUpPowerTime >= minBuildUpPowerTime)
+        if(Player.obj.hasCape) {
+            if (context.performed)
             {
-                //Should tilt the player slightly backwards in air
-                if(!PlayerMovement.obj.isGrounded && !PlayerMovement.obj.isFalling)
-                {
-                    //Tilt player slightly when in air
-                    float power = PlayerMovement.obj.isFacingLeft() ? pushTiltPower : -pushTiltPower;
-                    Player.obj.rigidBody.AddForce(new Vector2(power, 0));
-                } else if(PlayerMovement.obj.isFalling)
-                    PlayerMovement.obj.ExecuteFallDash();
-
-                if(platform != null) {
-                    float power = Player.obj.hasPowerUp && IsFullyCharged() ? powerUpMaxForce : _buildUpPower;
-                    StartCoroutine(DelayedMovePlatform(projectileDelay, power));
+                if (defaultPower < StaminaMgr.obj.GetCurrentStamina()) {
+                    _buildUpPower = defaultPower;
+                    _buildingUpPower = true;
+                    _buildUpPowerTime = 0;
                 }
-
-                if(CanUseForcePushJump) 
-                    ForcePushJump(powerUpMaxForce);
-                else
-                    ForcePush(_buildUpPower);
             }
-            
-            ResetBuiltUpPower();
+            if(context.canceled) {
+                //Need to check that we are building power before we can push. If not the push will be executed on button release.
+                if(_buildingUpPower && _buildUpPowerTime >= minBuildUpPowerTime)
+                {
+                    //Should tilt the player slightly backwards in air
+                    if(!PlayerMovement.obj.isGrounded && !PlayerMovement.obj.isFalling)
+                    {
+                        //Tilt player slightly when in air
+                        float power = PlayerMovement.obj.isFacingLeft() ? pushTiltPower : -pushTiltPower;
+                        Player.obj.rigidBody.AddForce(new Vector2(power, 0));
+                    } else if(PlayerMovement.obj.isFalling)
+                        PlayerMovement.obj.ExecuteFallDash();
+
+                    if(platform != null) {
+                        float power = Player.obj.hasPowerUp && IsFullyCharged() ? powerUpMaxForce : _buildUpPower;
+                        StartCoroutine(DelayedMovePlatform(projectileDelay, power));
+                    }
+
+                    if(CanUseForcePushJump) 
+                        ForcePushJump(powerUpMaxForce);
+                    else
+                        ForcePush(_buildUpPower);
+                }
+                
+                ResetBuiltUpPower();
+            }
         }
     }
 
