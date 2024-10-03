@@ -23,6 +23,8 @@ public class Player : MonoBehaviour
         _collider = GetComponentInChildren<BoxCollider2D>();
         _groundLayerMasks = LayerMask.GetMask("Ground");
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+
+        SetHasCape(true);
     }
 
     void OnCollisionEnter2D(Collision2D other) {
@@ -54,9 +56,12 @@ public class Player : MonoBehaviour
         _animator.SetTrigger("spawn");
     }
 
-    public void SetHasCape() {
-        hasCape = true;
-        _animator.SetLayerWeight(1, 1);
+    public void SetHasCape(bool _hasCape) {
+        if(_hasCape)
+            _animator.SetLayerWeight(1, 1);
+        else
+            _animator.SetLayerWeight(1, 0);
+        hasCape = _hasCape;
     }
 
     public void SetHasPowerUp(bool _hasPowerUp) {

@@ -45,7 +45,7 @@ public class LevelManager : MonoBehaviour
                 Player.obj.gameObject.SetActive(true);
                 Player.obj.PlaySpawn();
                 if(Player.obj.hasCape)
-                    Player.obj.SetHasCape();
+                    Player.obj.SetHasCape(true);
                 PlayerMovement.obj.SetStartingOnGround();
                 PlayerMovement.obj.isGrounded = true;
                 PlayerMovement.obj.isForcePushJumping = false;

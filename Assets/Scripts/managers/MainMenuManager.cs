@@ -71,6 +71,8 @@ public class MainMenuManager : MonoBehaviour
         while(!persistentGameplay.isLoaded) {
             yield return null;
         }
+        Player.obj.SetHasCape(false);
+
         SoundMixerManager.obj.SetMasterVolume(masterVolume);
         SceneManager.LoadSceneAsync(_caveRoom1, LoadSceneMode.Additive);
         Scene caveRoom1 = SceneManager.GetSceneByName(_caveRoom1.SceneName);

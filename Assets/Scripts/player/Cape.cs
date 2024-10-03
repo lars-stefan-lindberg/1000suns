@@ -33,7 +33,7 @@ public class Cape : MonoBehaviour
     //Since we are waiting for the light to fill the screen before removing cape and updating player sprite
     private IEnumerator DelayCapePickupSetInactive() {
         yield return new WaitForSeconds(2);
-        Player.obj.SetHasCape();
+        Player.obj.SetHasCape(true);
         gameObject.SetActive(false);
     }
 
