@@ -14,7 +14,7 @@ public class Player : MonoBehaviour
 
     private Animator _animator;
     private LayerMask _groundLayerMasks;
-    private SpriteRenderer _spriteRenderer;
+    private PlayerFlash _playerFlash;
 
     void Awake()
     {
@@ -22,7 +22,7 @@ public class Player : MonoBehaviour
         _animator = GetComponentInChildren<Animator>();
         _collider = GetComponentInChildren<BoxCollider2D>();
         _groundLayerMasks = LayerMask.GetMask("Ground");
-        _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        _playerFlash = GetComponentInChildren<PlayerFlash>();
 
         SetHasCape(true);
     }
@@ -68,6 +68,8 @@ public class Player : MonoBehaviour
         if(_hasPowerUp) {
             _animator.SetLayerWeight(1, 0);
             _animator.SetLayerWeight(2, 1);
+            //Flash animation
+            _playerFlash.StartFlashing();
         } else {
             _animator.SetLayerWeight(1, 1);
             _animator.SetLayerWeight(2, 0);
