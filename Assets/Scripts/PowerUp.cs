@@ -31,7 +31,7 @@ public class PowerUp : MonoBehaviour
 
     void FixedUpdate() {
         if(_playerEntered && !_isPicked && !Player.obj.hasPowerUp) {
-            Player.obj.hasPowerUp = true;
+            Player.obj.SetHasPowerUp(true);
             _animator.SetBool("isPicked", true);
             _isPicked = true;
         }

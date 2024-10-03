@@ -111,7 +111,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         forcePushJumpOnGroundTimer = 0;
         _frameVelocity.x = isFacingLeft() ? -initialForcePushJumpSpeed : initialForcePushJumpSpeed;
         PlayerPush.obj.ResetBuiltUpPower();
-        Player.obj.hasPowerUp = false;
+        Player.obj.SetHasPowerUp(false);
         _animator.SetTrigger("forcePushJump");
     }
 

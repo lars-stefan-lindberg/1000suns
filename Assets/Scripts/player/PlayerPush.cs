@@ -136,7 +136,7 @@ public class PlayerPush : MonoBehaviour
             Player.obj.hasPowerUp);
         if(forcePushJump) {
            PlayerMovement.obj.ExecuteForcePushJumpWithProjectile();
-           Player.obj.hasPowerUp = false;
+           Player.obj.SetHasPowerUp(false);
         }
     }
 

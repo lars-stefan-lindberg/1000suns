@@ -59,6 +59,17 @@ public class Player : MonoBehaviour
         _animator.SetLayerWeight(1, 1);
     }
 
+    public void SetHasPowerUp(bool _hasPowerUp) {
+        if(_hasPowerUp) {
+            _animator.SetLayerWeight(1, 0);
+            _animator.SetLayerWeight(2, 1);
+        } else {
+            _animator.SetLayerWeight(1, 1);
+            _animator.SetLayerWeight(2, 0);
+        }
+        hasPowerUp = _hasPowerUp;
+    }
+
     public void SetCaveStartingCoordinates() {
         transform.position = new Vector2(233.875f, 78.375f);
     }
