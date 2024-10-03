@@ -8,6 +8,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 {
     public static PlayerMovement obj;
 
+    [SerializeField] private bool isDevMode = true;
     [SerializeField] private ScriptableStats _stats;
     private SpriteRenderer _spriteRenderer;
     public GameObject anchor;
@@ -178,18 +179,19 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public void OnMovement(InputAction.CallbackContext value)
     {
         _movementInput = value.ReadValue<Vector2>();
-
-        if (_movementInput.y < 0 && isGrounded && !_buildingUpPowerJump) //Pressing down
-        {
-            if(StaminaMgr.obj.HasEnoughStamina(new StaminaMgr.PowerJump()))
+        if(isDevMode) {
+            if (_movementInput.y < 0 && isGrounded && !_buildingUpPowerJump) //Pressing down
             {
-                _buildingUpPowerJump = true;
-                _buildUpPowerJumpTime = 0;
-                buildPowerJumpAnimation.GetComponent<BuildPowerJumpAnimationMgr>().Play();
+                if(StaminaMgr.obj.HasEnoughStamina(new StaminaMgr.PowerJump()))
+                {
+                    _buildingUpPowerJump = true;
+                    _buildUpPowerJumpTime = 0;
+                    buildPowerJumpAnimation.GetComponent<BuildPowerJumpAnimationMgr>().Play();
+                }
             }
+            else if(_movementInput.y >= 0)
+                CancelPowerJumpCharge();
         }
-        else if(_movementInput.y >= 0)
-            CancelPowerJumpCharge();
     }
 
     public void OnJump(InputAction.CallbackContext context)
@@ -239,9 +241,11 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private void BuildUpPowerJump()
     {
-        if (_buildingUpPowerJump && _buildUpPowerJumpTime < POWER_JUMP_MAX_CHARGED_TIME)
-        {
-            _buildUpPowerJumpTime += Time.deltaTime;
+        if(isDevMode) {
+            if (_buildingUpPowerJump && _buildUpPowerJumpTime < POWER_JUMP_MAX_CHARGED_TIME)
+            {
+                _buildUpPowerJumpTime += Time.deltaTime;
+            }
         }
     }
 
@@ -374,6 +378,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     private bool HasBufferedJump => _bufferedJumpUsable && _time < _timeJumpWasPressed + _stats.JumpBuffer;
     private bool CanUseCoyote => _coyoteUsable && !isGrounded && _time < _frameLeftGrounded + _stats.CoyoteTime;
     private bool CanUseAirJump =>
+        isDevMode &&
         !isGrounded &&
         _time > _frameLeftGrounded + _stats.CoyoteTime &&
         _numberOfAirJumps < MAX_NUMBER_OF_AIR_JUMPS &&
