@@ -112,7 +112,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _frameVelocity.x = isFacingLeft() ? -initialForcePushJumpSpeed : initialForcePushJumpSpeed;
         PlayerPush.obj.ResetBuiltUpPower();
         Player.obj.SetHasPowerUp(false);
-        _animator.SetTrigger("forcePushJump");
     }
 
     public void ExecuteForcePushJumpWithProjectile() {
@@ -137,6 +136,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             StartCoroutine(JumpSqueeze(_landedSqueezeX, _landedSqueezeY, _landedSqueezeTime));
             _landed = false;
         }
+        _animator.SetBool("isForcePushJumping", isForcePushJumping);
     }
 
     private bool _freezePlayer = false;
