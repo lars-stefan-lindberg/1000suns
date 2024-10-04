@@ -5,6 +5,7 @@ using UnityEngine;
 public class CollectibleManager : MonoBehaviour
 {
     public static CollectibleManager obj;
+    public static int NUMBER_OF_COLLECTIBLES = 7;
 
     void Awake() {
         obj = this;
@@ -30,6 +31,10 @@ public class CollectibleManager : MonoBehaviour
 
     public bool IsCollectiblePicked(string id) {
         return pickedColllectibles.Contains(id);
+    }
+
+    public int GetNumberOfCollectiblesPicked() {
+        return pickedColllectibles.Count;
     }
 
     void OnDestroy() {

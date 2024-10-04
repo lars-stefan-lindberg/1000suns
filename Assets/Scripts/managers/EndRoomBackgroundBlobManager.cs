@@ -6,6 +6,7 @@ public class EndRoomBackgroundBlobManager : MonoBehaviour
 {
     public static EndRoomBackgroundBlobManager obj;
     [SerializeField] private GameObject tempPlayerObj;
+    [SerializeField] private GameObject creditsUI;
     [SerializeField] private Transform playerMoveTarget;
     private bool _startCutscene = false;
 
@@ -41,20 +42,13 @@ public class EndRoomBackgroundBlobManager : MonoBehaviour
             //Player cutscene
             StartCoroutine(PlayerFadeAway());
             
-            //Fade out blobs
-            StartCoroutine(FadeOutBlobSprites());
-
-            //Show end screen
+            //Fade out blobs and show credits
+            StartCoroutine(FadeOutBlobSpritesAndShowCredits());
         }
     }
 
     public void FadeInBlobs() {
         StartCoroutine(FadeInBlobSprites());
-    }
-
-    private IEnumerator FadeOutDelay() {
-        yield return new WaitForSeconds(4);
-        CapeRoomFadeManager.obj.StartFadeIn();
     }
 
     private IEnumerator FadeInBlobSprites() {
@@ -67,8 +61,8 @@ public class EndRoomBackgroundBlobManager : MonoBehaviour
         }
     }
 
-    private IEnumerator FadeOutBlobSprites() {
-        yield return new WaitForSeconds(10);
+    private IEnumerator FadeOutBlobSpritesAndShowCredits() {
+        yield return new WaitForSeconds(11);
         SpriteRenderer[] blobSprites = GetComponentsInChildren<SpriteRenderer>();
         while(blobSprites.First().color.a > 0) {
             foreach(SpriteRenderer blobSprite in blobSprites) {
@@ -76,6 +70,13 @@ public class EndRoomBackgroundBlobManager : MonoBehaviour
             }
             yield return null;
         }
+        yield return new WaitForSeconds(3f);
+        //Fade out screen
+        SceneFadeManager.obj.StartFadeOut(0.8f);
+        yield return new WaitForSeconds(3f);
+        //Show credits
+        creditsUI.SetActive(true);
+        SceneFadeManager.obj.StartFadeIn();
     }
 
     private IEnumerator PlayerFadeAway() {
