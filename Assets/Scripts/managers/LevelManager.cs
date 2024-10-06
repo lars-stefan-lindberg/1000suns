@@ -30,7 +30,6 @@ public class LevelManager : MonoBehaviour
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
         isRunningAfterSceneLoaded = true;
         if(mode == LoadSceneMode.Single) {
-            SceneFadeManager.obj.StartFadeIn();
             if(scene.name != _titleScreen.SceneName) {
                 GameObject[] sceneGameObjects = scene.GetRootGameObjects();
                 GameObject playerSpawnPoint = sceneGameObjects.First(gameObject => gameObject.CompareTag("PlayerSpawnPoint"));
@@ -54,6 +53,7 @@ public class LevelManager : MonoBehaviour
 
                 sceneLoadTrigger.LoadScenes();
             }
+            SceneFadeManager.obj.StartFadeIn();
         }
         isRunningAfterSceneLoaded = false;
     }
