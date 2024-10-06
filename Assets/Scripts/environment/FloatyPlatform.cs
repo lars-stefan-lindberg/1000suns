@@ -148,6 +148,7 @@ public class FloatyPlatform : MonoBehaviour
                 _respawning = false;
                 transform.position = _startingPosition;
                 StartCoroutine(FadeInSprite());
+                _collider.enabled = true; //If it was set to false from another platform
             }
         }
         // if (!isPlayerOnPlatform && _rigidBody.velocity.x == 0)
