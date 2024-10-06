@@ -20,7 +20,7 @@ public class Reaper : MonoBehaviour
             PlayerMovement.obj.Freeze(genericDeathAnimationTime);
             CollectibleManager.obj.ResetTemporaryPickedCollectible();
             Player.obj.PlayGenericDeathAnimation();
-            StartCoroutine(afterDeathAnimation(genericDeathAnimationTime));
+            StartCoroutine(AfterDeathAnimation(genericDeathAnimationTime));
         }
     }
 
@@ -30,7 +30,7 @@ public class Reaper : MonoBehaviour
             PlayerMovement.obj.Freeze(shadowDeathAnimationTime);
             CollectibleManager.obj.ResetTemporaryPickedCollectible();
             Player.obj.PlayShadowDeathAnimation();
-            StartCoroutine(afterDeathAnimation(shadowDeathAnimationTime));
+            StartCoroutine(AfterDeathAnimation(shadowDeathAnimationTime));
         }
     }
 
@@ -38,7 +38,7 @@ public class Reaper : MonoBehaviour
         prisoner.InitiateKill();
     }
 
-    private IEnumerator afterDeathAnimation(float waitingTime) {
+    private IEnumerator AfterDeathAnimation(float waitingTime) {
         yield return new WaitForSeconds(waitingTime);
         Player.obj.gameObject.SetActive(false);
         SceneFadeManager.obj.StartFadeOut();

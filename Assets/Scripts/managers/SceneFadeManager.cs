@@ -27,7 +27,8 @@ public class SceneFadeManager : MonoBehaviour
                 _fadeOutStartColor.a += Time.deltaTime * _fadeOutSpeed;
                 _fadeOutImage.color = _fadeOutStartColor;
             } else {
-                _fadeOutSpeed = _tempFadeOutSpeed;
+                if(_tempFadeOutSpeed != 0)
+                    _fadeOutSpeed = _tempFadeOutSpeed;
                 _tempFadeOutSpeed = 0;
                 IsFadingOut = false;
             }
