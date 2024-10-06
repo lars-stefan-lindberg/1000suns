@@ -179,7 +179,7 @@ public class Prisoner : MonoBehaviour
             Vector2 groundLineBehindCastPosition = _collider.transform.position + _collider.transform.right * enemyWidth * groundBehindCheck;
             bool isGroundFloorBehind = Physics2D.Linecast(groundLineBehindCastPosition, groundLineBehindCastPosition + Vector2.down, groundLayer);
             
-            if((isWallAhead && isWallBehind) || (!isGroundFloorAhead && !isGroundFloorBehind)) {
+            if((isWallAhead && isWallBehind) || (!isGroundFloorAhead && !isGroundFloorBehind) && !hasBeenHit) {
                 isStuck = true;
             }
         }
@@ -213,6 +213,7 @@ public class Prisoner : MonoBehaviour
         if (hasBeenHit)
         {
             isTurning = false;
+            isStuck = false;
             turnAroundTimer = timeToTurnAround;
             hasBeenHitTimeCount -= Time.deltaTime;
             GracefulGravityChange();
