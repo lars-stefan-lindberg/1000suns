@@ -143,7 +143,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public void Freeze(float freezeDuration) {
         DisablePlayerMovement();
         _freezePlayer = true;
-        _movementInput = new Vector2(0,0);
+        //_movementInput = new Vector2(0,0);
         StartCoroutine(FreezeDuration(freezeDuration));
     }
 
@@ -452,6 +452,11 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private void HandleDirection()
     {
+        if(_freezePlayer) {
+            _frameVelocity.x = 0;
+            return;
+        }
+        
         if (isForcePushJumping) {
             forcePushJumpOnGroundTimer += Time.fixedDeltaTime;
             if(forcePushJumpOnGroundTimer > forcePushJumpOnGroundDuration) 
@@ -527,10 +532,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private void ApplyMovement() {
         if(Player.obj.rigidBody.bodyType != RigidbodyType2D.Static) {
-            if (_freezePlayer)
-                Player.obj.rigidBody.velocity = new Vector2(0,0);
-            else 
-                Player.obj.rigidBody.velocity = _frameVelocity;
+            Player.obj.rigidBody.velocity = _frameVelocity;
         }
     } 
 
