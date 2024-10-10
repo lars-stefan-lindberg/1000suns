@@ -30,6 +30,10 @@ public class PlayerPush : MonoBehaviour
 
     bool CanUseForcePushJump => PlayerMovement.obj.isGrounded && Player.obj.hasPowerUp && _buildUpPower >= maxForce;
 
+    private float _recoveryTime = 0.2f; //Time in between charges
+    private float _recoveryTimeTimer = 1f;
+    private bool _isRecovering = false;
+
     private void Awake()
     {
         obj = this;
@@ -39,7 +43,7 @@ public class PlayerPush : MonoBehaviour
     public void OnShoot(InputAction.CallbackContext context)
     {
         if(Player.obj.hasCape) {
-            if (context.performed)
+            if (context.performed && !_isRecovering)
             {
                 if (defaultPower < StaminaMgr.obj.GetCurrentStamina()) {
                     _buildUpPower = defaultPower;
@@ -69,6 +73,9 @@ public class PlayerPush : MonoBehaviour
                         ForcePushJump(powerUpMaxForce);
                     else
                         ForcePush(_buildUpPower);
+
+                    _recoveryTimeTimer = 0;
+                    _isRecovering = true;
                 }
                 
                 ResetBuiltUpPower();
@@ -104,6 +111,12 @@ public class PlayerPush : MonoBehaviour
             if(_buildUpPower < maxForce && _buildUpPowerTime > minBuildUpPowerTime) {
                 _buildUpPower *= powerBuildUpPerFixedUpdate;
             }
+        }
+
+        if(_isRecovering) {
+            _recoveryTimeTimer += Time.deltaTime;
+            if(_recoveryTimeTimer > _recoveryTime)
+                _isRecovering = false;
         }
     }
 
