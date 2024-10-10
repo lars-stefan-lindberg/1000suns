@@ -297,7 +297,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     {
         Physics2D.queriesStartInColliders = false;
 
-        // Ground and Ceiling
         bool groundHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, _groundLayerMasks);
         
         //Corner case when spawning
@@ -335,6 +334,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             _powerJumpExecuted = false;
             _landed = true;
             jumpedWhileForcePushJumping = false;
+            _frameVelocity.y = 0; //To avoid "double grounded". Sometimes when player barely reaches up on edge it gets grounded, but still has upwards velocity, and lands again.
             GroundedChanged?.Invoke(true, Mathf.Abs(_frameVelocity.y));            
         }
         // Left the Ground
