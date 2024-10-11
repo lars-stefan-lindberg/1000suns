@@ -30,11 +30,11 @@ public class SoundFXManager : MonoBehaviour
             PlayRandomSound(landOnRock, spawnTransform, 1f);
     }
 
-    public void PlayStep(Surface surface, Transform spawnTransform) {
+    public void PlayStep(Surface surface, Transform spawnTransform, float volume) {
         if(surface == Surface.Roots)
-            PlayRandomSound(stepOnRoots, spawnTransform, 1f);
+            PlayRandomSound(stepOnRoots, spawnTransform, volume);
         else if(surface == Surface.Rock)
-            PlayRandomSound(stepOnRock, spawnTransform, 1f);
+            PlayRandomSound(stepOnRock, spawnTransform, volume);
     }
 
     public AudioSource PlayBlockSliding(Transform spawnTransform, float soundDurationPercentage) {

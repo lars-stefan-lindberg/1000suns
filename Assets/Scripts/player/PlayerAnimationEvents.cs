@@ -4,7 +4,11 @@ using UnityEngine;
 
 public class PlayerAnimationEvents : MonoBehaviour
 {
-    public void PlayRunStep() {
-        SoundFXManager.obj.PlayStep(Player.obj.surface, gameObject.transform);
+    public void PlayDefaultRunStep() {
+        SoundFXManager.obj.PlayStep(Player.obj.surface, gameObject.transform, 1f);
+    }
+
+    public void PlaySubtleRunStep() {
+        SoundFXManager.obj.PlayStep(Player.obj.surface, gameObject.transform, 0.8f);
     }
 }
