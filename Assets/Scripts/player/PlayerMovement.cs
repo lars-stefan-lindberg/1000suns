@@ -205,11 +205,11 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             }
             if (!PowerJumpMaxCharged)
             {
-                if(_movementInput.x != 0 && PlayerPush.obj.IsFullyCharged() && Player.obj.hasPowerUp) {
+                if(_movementInput.x != 0 && PlayerPush.obj.IsFullyCharged() && Player.obj.hasPowerUp && (isGrounded || CanUseCoyote)) {
                     _jumpToConsume = true;
                     ExecuteForcePushJump();
                 }
-                if (isGrounded)
+                if (isGrounded || CanUseCoyote)
                     _jumpToConsume = true;
                 else
                 {
