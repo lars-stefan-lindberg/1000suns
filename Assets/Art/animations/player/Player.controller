@@ -48,11 +48,11 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.25
+  m_TransitionDuration: 0
   m_TransitionOffset: 0
-  m_ExitTime: 0.75961536
-  m_HasExitTime: 0
-  m_HasFixedDuration: 1
+  m_ExitTime: 1
+  m_HasExitTime: 1
+  m_HasFixedDuration: 0
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
@@ -233,7 +233,7 @@ AnimatorStateMachine:
     m_Position: {x: 30, y: 190, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -1196902900693284131}
-    m_Position: {x: -170, y: 440, z: 0}
+    m_Position: {x: -250, y: 440, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 5511996873522917319}
     m_Position: {x: 270, y: 330, z: 0}
@@ -272,7 +272,7 @@ AnimatorStateMachine:
     m_Position: {x: -430, y: 250, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 825844513741796853}
-    m_Position: {x: -330, y: 90, z: 0}
+    m_Position: {x: -310, y: 90, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -5174090837931181296}
     m_Position: {x: -420, y: 160, z: 0}
@@ -313,7 +313,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 0}
+  m_Motion: {fileID: 7400000, guid: 1cada3260eae8458eaec3034b4e328b8, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -854,55 +854,55 @@ AnimatorController:
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: isGrounded
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: isFalling
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: forcePush
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: shadowDeath
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: genericDeath
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: spawn
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: forcePushWhileRunning
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: isForcePushJumping
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   m_AnimatorLayers:
   - serializedVersion: 5
     m_Name: Base Layer
@@ -954,6 +954,21 @@ AnimatorController:
     - serializedVersion: 2
       m_State: {fileID: -5174090837931181296}
       m_Motion: {fileID: 7400000, guid: 1cada3260eae8458eaec3034b4e328b8, type: 2}
+    - serializedVersion: 2
+      m_State: {fileID: 950076708769278489}
+      m_Motion: {fileID: 7400000, guid: 21fc8e6c963f64be59328def58ae6682, type: 2}
+    - serializedVersion: 2
+      m_State: {fileID: 1598945714097750441}
+      m_Motion: {fileID: 7400000, guid: 023df7845ac7f464e89e5bcedf424e29, type: 2}
+    - serializedVersion: 2
+      m_State: {fileID: -1764518212342403451}
+      m_Motion: {fileID: 7400000, guid: 6a1f17492da834c00866f2c3f8d094ba, type: 2}
+    - serializedVersion: 2
+      m_State: {fileID: 2126277458097393680}
+      m_Motion: {fileID: 7400000, guid: 5d6727e5c633b4ca3a334391f1c90333, type: 2}
+    - serializedVersion: 2
+      m_State: {fileID: 825844513741796853}
+      m_Motion: {fileID: 7400000, guid: 28bbfb33db50c47c8a37f16dc80b7c91, type: 2}
     m_Behaviours: []
     m_BlendingMode: 0
     m_SyncedLayerIndex: 0
@@ -1174,9 +1189,9 @@ AnimatorStateTransition:
   serializedVersion: 3
   m_TransitionDuration: 0
   m_TransitionOffset: 0
-  m_ExitTime: 0.5
+  m_ExitTime: 1
   m_HasExitTime: 1
-  m_HasFixedDuration: 1
+  m_HasFixedDuration: 0
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
