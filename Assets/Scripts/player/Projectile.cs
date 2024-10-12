@@ -35,8 +35,14 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.transform.CompareTag("Enemy") || collision.transform.CompareTag("Block") || collision.transform.CompareTag("Ground")
-            || collision.transform.CompareTag("Orb") || collision.transform.CompareTag("FloatingPlatform") || collision.transform.CompareTag("FallingPlatform"))
+        if(collision.transform.CompareTag("Enemy") || 
+            collision.transform.CompareTag("Block") || 
+            collision.transform.CompareTag("Ground") || 
+            collision.transform.CompareTag("Orb") || 
+            collision.transform.CompareTag("FloatingPlatform") || 
+            collision.transform.CompareTag("Rock") || 
+            collision.transform.CompareTag("Roots") || 
+            collision.transform.CompareTag("FallingPlatform"))
             Destroy(gameObject);
     }
 }
