@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -37,6 +38,12 @@ public class LevelManager : MonoBehaviour
                 
                 GameObject sceneLoadTriggerGameObject = sceneGameObjects.First(gameObject => gameObject.CompareTag("SceneLoadTrigger"));
                 SceneLoadTrigger sceneLoadTrigger = sceneLoadTriggerGameObject.GetComponent<SceneLoadTrigger>();
+
+                //If we have multiple cameras in room, activate the first/default one when loading the room. This will also
+                //do an early enough reset of any parallax backgrounds.
+                GameObject room = sceneGameObjects.First(gameObject => gameObject.CompareTag("Room"));
+                RoomMgr roomMgr = room.GetComponent<RoomMgr>();
+                roomMgr.ActivateVirtualCamera();
 
                 Player.obj.transform.position = _playerSpawningCollider.transform.position;
                 AdjustSpawnFaceDirection(sceneLoadTrigger.transform.position.x, playerSpawnPoint.transform.position.x);

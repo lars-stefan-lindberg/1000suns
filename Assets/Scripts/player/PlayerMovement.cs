@@ -347,7 +347,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         }
 
         //Check if landed on edge but still falling. Try to recover by moving to one side -> either fall, or reach stable ground
-        if(!isGrounded && Player.obj.rigidBody.velocity == Vector2.zero) {
+        if(!isGrounded && Player.obj.rigidBody.velocity == Vector2.zero && Player.obj.rigidBody.bodyType != RigidbodyType2D.Static) {
             Player.obj.rigidBody.velocity = new Vector2(5, 0);
         }
 
