@@ -29,14 +29,11 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject _optionsMenu;
     [SerializeField] private GameObject _titleMenu;
 
-    [SerializeField] private GameObject _musicManagerObj;
-    private AudioSource _musicAudioSource;
-
     void Awake() {
         EventSystem.current.SetSelectedGameObject(_playButton);
         _optionsButtonColor = _optionsButton.GetComponentInChildren<TextMeshProUGUI>().color;
         _backButtonColor = _backButton.GetComponentInChildren<TextMeshProUGUI>().color;
-        _musicAudioSource = _musicManagerObj.GetComponent<AudioSource>();
+        MusicManager.obj.PlayTitleSong();
     }
 
     void Update() {
@@ -64,7 +61,7 @@ public class MainMenuManager : MonoBehaviour
         while(SoundMixerManager.obj.GetMasterVolume() > 0.001f) {
             yield return null;
         }
-        _musicAudioSource.Stop();
+        MusicManager.obj.StopPlaying();
 
         SceneManager.LoadSceneAsync(_persistentGameplay, LoadSceneMode.Additive);
         Scene persistentGameplay = SceneManager.GetSceneByName(_persistentGameplay.SceneName);
