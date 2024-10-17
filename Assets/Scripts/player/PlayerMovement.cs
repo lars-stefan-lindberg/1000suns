@@ -323,7 +323,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         }
 
         // Landed on the Ground
-        if (!isGrounded && groundHit)
+        if (!isGrounded && groundHit && Player.obj.rigidBody.velocity.y <= 0.05f)
         {
             isGrounded = true;
             _coyoteUsable = true;
@@ -334,7 +334,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             _powerJumpExecuted = false;
             _landed = true;
             jumpedWhileForcePushJumping = false;
-            _frameVelocity.y = 0; //To avoid "double grounded". Sometimes when player barely reaches up on edge it gets grounded, but still has upwards velocity, and lands again.
+
+            //To avoid "double grounded". Sometimes when player barely reaches up on edge it gets grounded, but still has upwards velocity, and lands again.
+            _frameVelocity.y = 0; 
+
             GroundedChanged?.Invoke(true, Mathf.Abs(_frameVelocity.y));            
         }
         // Left the Ground
@@ -344,11 +347,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             isOnPlatform = false;
             _frameLeftGrounded = _time;
             GroundedChanged?.Invoke(false, 0);
-        }
-
-        //Check if landed on edge but still falling. Try to recover by moving to one side -> either fall, or reach stable ground
-        if(!isGrounded && Player.obj.rigidBody.velocity == Vector2.zero && Player.obj.rigidBody.bodyType != RigidbodyType2D.Static) {
-            Player.obj.rigidBody.velocity = new Vector2(5, 0);
         }
 
         Physics2D.queriesStartInColliders = _cachedQueryStartInColliders;
