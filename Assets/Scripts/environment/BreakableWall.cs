@@ -45,11 +45,13 @@ public class BreakableWall : MonoBehaviour
     void FixedUpdate()
     {
         if(shakeWall) {
+            SoundFXManager.obj.PlayBreakableWallCrackling(transform);
             shakeAnimation.Emit(10);
             shakeWall = false;
             StartCoroutine(ShakeWall());
         }
         if(breakWall) {
+            SoundFXManager.obj.PlayBreakableWallBreak(transform);
             _visibleLayerAnimator.SetTrigger("reveal");
             _collider.enabled = false;
             _fadeSprite = true;
