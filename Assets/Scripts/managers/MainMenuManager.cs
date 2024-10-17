@@ -68,7 +68,12 @@ public class MainMenuManager : MonoBehaviour
         while(!persistentGameplay.isLoaded) {
             yield return null;
         }
+
+        //Reset player properties
         Player.obj.SetHasCape(false);
+        Player.obj.CanFallDash = false;
+        CollectibleManager.obj.ResetCollectibles();
+        //TODO reset number of lives died
 
         SoundMixerManager.obj.SetMasterVolume(masterVolume);
         SceneManager.LoadSceneAsync(_caveRoom1, LoadSceneMode.Additive);

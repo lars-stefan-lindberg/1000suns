@@ -11,7 +11,7 @@ public class CollectibleManager : MonoBehaviour
         obj = this;
     }
 
-    private HashSet<string> pickedColllectibles = new();
+    private HashSet<string> pickedCollectibles = new();
     private string _temporaryPickedUpCollectibleId;
 
     public void ResetTemporaryPickedCollectible() {
@@ -24,17 +24,22 @@ public class CollectibleManager : MonoBehaviour
 
     public void CollectiblePickedPermanent() {
         if(_temporaryPickedUpCollectibleId != null) {
-            pickedColllectibles.Add(_temporaryPickedUpCollectibleId);
+            pickedCollectibles.Add(_temporaryPickedUpCollectibleId);
             _temporaryPickedUpCollectibleId = null;
         }
     }
 
     public bool IsCollectiblePicked(string id) {
-        return pickedColllectibles.Contains(id);
+        return pickedCollectibles.Contains(id);
     }
 
     public int GetNumberOfCollectiblesPicked() {
-        return pickedColllectibles.Count;
+        return pickedCollectibles.Count;
+    }
+
+    public void ResetCollectibles() {
+        ResetTemporaryPickedCollectible();
+        pickedCollectibles = new();
     }
 
     void OnDestroy() {

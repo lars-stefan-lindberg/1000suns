@@ -61,7 +61,7 @@ public class PlayerPush : MonoBehaviour
                         //Tilt player slightly when in air
                         float power = PlayerMovement.obj.isFacingLeft() ? pushTiltPower : -pushTiltPower;
                         Player.obj.rigidBody.AddForce(new Vector2(power, 0));
-                    } else if(PlayerMovement.obj.isFalling)
+                    } else if(PlayerMovement.obj.isFalling && Player.obj.CanFallDash)
                         PlayerMovement.obj.ExecuteFallDash();
 
                     if(platform != null) {
