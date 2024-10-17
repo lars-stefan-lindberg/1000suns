@@ -56,10 +56,12 @@ public class MusicManager : MonoBehaviour
         PlayIntroAndLoop(_titleSongIntro, _titleSongLoop);
     }
 
+    [ContextMenu("Play cave song")]
     public void PlayCaveSong() {
         PlayIntroAndLoop(_caveSongIntro, _caveSongLoop);
     }
 
+    [ContextMenu("Play end song")]
     public void PlayEndSong() {
         PlayOneTime(_endSong);
     }

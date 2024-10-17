@@ -13,7 +13,6 @@ public class FirstRoomLoader : MonoBehaviour
 
     void Update() {
         if(!SceneFadeManager.obj.IsFadingIn) {
-            MusicManager.obj.PlayCaveSong();
             SceneFadeManager.obj.SetFadeInSpeed(5f);
             Destroy(this);
         }

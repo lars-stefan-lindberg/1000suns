@@ -54,7 +54,7 @@ public class MainMenuManager : MonoBehaviour
     private IEnumerator StartGameCoroutine() {
         float masterVolume = SoundMixerManager.obj.GetMasterVolume();
 
-        StartCoroutine(SoundMixerManager.obj.StartMasterFade(3f, 0f));
+        StartCoroutine(SoundMixerManager.obj.StartMasterFade(3f, 0.001f));
         StartFadeOut();
         while(IsFadingOut)
             yield return null;

@@ -36,7 +36,7 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
             StartCoroutine(FadeOutDelay());
             
             //Fade out blobs
-            StartCoroutine(FadeOutBlobSprites());
+            StartCoroutine(FadeOutBlobSpritesAndPlayMusic());
 
             //Play big blob sound
         }
@@ -47,7 +47,7 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
         CapeRoomFadeManager.obj.StartFadeIn();
     }
 
-    private IEnumerator FadeOutBlobSprites() {
+    private IEnumerator FadeOutBlobSpritesAndPlayMusic() {
         yield return new WaitForSeconds(7);
         SpriteRenderer[] blobSprites = GetComponentsInChildren<SpriteRenderer>();
         while(blobSprites.First().color.a > 0) {
@@ -57,6 +57,7 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
             yield return null;
         }
         PlayerMovement.obj.UnFreeze();
+        MusicManager.obj.PlayCaveSong();
     }
 
     void OnDestroy() {

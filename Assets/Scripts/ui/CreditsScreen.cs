@@ -17,7 +17,8 @@ public class CreditsScreen : MonoBehaviour
     }
 
     private IEnumerator QuitToTitleScreenDelayed() {
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(13f);
+        MusicManager.obj.StopPlaying();
                 
         PauseMenuManager.obj.Quit();
     }
