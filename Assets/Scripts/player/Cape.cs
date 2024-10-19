@@ -16,7 +16,7 @@ public class Cape : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other) {
         if (other.gameObject.CompareTag("Player")) {
             CapeRoomBackgroundBlobManager.obj.StartCutscene();
-            CutsceneManager.obj.capePicked = true;
+            GameEventManager.obj.CapePicked = true;
             
             StartCoroutine(DelayCapePickupSetInactive());
         }

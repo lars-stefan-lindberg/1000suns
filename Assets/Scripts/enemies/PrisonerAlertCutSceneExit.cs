@@ -5,7 +5,7 @@ public class PrisonerAlertCutSceneExit : MonoBehaviour
 {
     void OnTriggerEnter2D(Collider2D other) {
         if(other.gameObject.CompareTag("Player")) {
-            CutsceneManager.obj.firstPrisonerSpawned = true;
+            GameEventManager.obj.PrisonerIntroSeen = true;
         }
     }
 }

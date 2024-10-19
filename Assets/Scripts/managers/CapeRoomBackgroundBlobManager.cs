@@ -5,6 +5,7 @@ using UnityEngine;
 public class CapeRoomBackgroundBlobManager : MonoBehaviour
 {
     public static CapeRoomBackgroundBlobManager obj;
+    [SerializeField] private GameObject _tutorialCanvas;
     private bool _startCutscene = false;
 
     [ContextMenu("StartCutscene")]
@@ -35,8 +36,8 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
             CapeRoomFadeManager.obj.StartFadeOut();
             StartCoroutine(FadeOutDelay());
             
-            //Fade out blobs
-            StartCoroutine(FadeOutBlobSpritesAndPlayMusic());
+            //Fade out blobs, show tutorial, and then play music
+            StartCoroutine(FadeOutBlobSpritesAndTutorialAndPlayMusic());
 
             //Play big blob sound
         }
@@ -47,7 +48,7 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
         CapeRoomFadeManager.obj.StartFadeIn();
     }
 
-    private IEnumerator FadeOutBlobSpritesAndPlayMusic() {
+    private IEnumerator FadeOutBlobSpritesAndTutorialAndPlayMusic() {
         yield return new WaitForSeconds(7);
         SpriteRenderer[] blobSprites = GetComponentsInChildren<SpriteRenderer>();
         while(blobSprites.First().color.a > 0) {
@@ -56,6 +57,16 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
             }
             yield return null;
         }
+
+        Time.timeScale = 0;
+        _tutorialCanvas.SetActive(true);
+        TutorialManager.obj.StartFadeIn();
+        while(!TutorialManager.obj.tutorialCompleted) {
+            yield return null;
+        }
+        _tutorialCanvas.SetActive(false);
+        Time.timeScale = 1;
+
         PlayerMovement.obj.UnFreeze();
         MusicManager.obj.PlayCaveSong();
     }

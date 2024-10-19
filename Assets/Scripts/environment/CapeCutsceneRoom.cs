@@ -8,7 +8,7 @@ public class CapeCutsceneRoom : MonoBehaviour
     public GameObject backgroundBlobs;
     void OnTriggerEnter2D(Collider2D other) {
         if (other.gameObject.CompareTag("Player")) {
-            if(CutsceneManager.obj.capePicked) {
+            if(GameEventManager.obj.CapePicked) {
                 cape.SetActive(false);
                 backgroundBlobs.SetActive(false);
             }

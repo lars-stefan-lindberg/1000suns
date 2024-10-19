@@ -9,7 +9,7 @@ public class BabyPrisonerCutsceneRoom : MonoBehaviour
     {
         if(other.CompareTag("Player"))
         {
-            if(CutsceneManager.obj.babyPrisonerAlerted) {
+            if(GameEventManager.obj.BabyPrisonerAlerted) {
                 babyPrisoner.SetActive(false);
                 cutsceneTrigger.SetActive(false);
             }

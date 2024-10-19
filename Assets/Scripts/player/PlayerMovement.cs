@@ -47,7 +47,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _powerJumpForce = _stats.JumpPower * 2f;
         _platformLayerMasks = LayerMask.GetMask("JumpThroughs");
         _ceilingLayerMasks = LayerMask.GetMask("Ground");
-        _playerInput = GetComponentInChildren<PlayerInput>();
+        _playerInput = GetComponent<PlayerInput>();
     }
 
     private void OnDestroy()

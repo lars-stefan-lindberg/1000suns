@@ -9,7 +9,7 @@ public class PrisonerAlertCutSceneTrigger : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other) {
         if(other.gameObject.CompareTag("BabyPrisoner")) {
             other.gameObject.SetActive(false);
-            CutsceneManager.obj.babyPrisonerAlerted = true;
+            GameEventManager.obj.BabyPrisonerAlerted = true;
         }
         if(other.gameObject.CompareTag("Player")) {
             PlayerMovement.obj.Freeze(cutSceneDuration);
