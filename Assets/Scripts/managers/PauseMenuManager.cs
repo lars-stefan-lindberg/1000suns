@@ -68,6 +68,7 @@ public class PauseMenuManager : MonoBehaviour
         while(SoundMixerManager.obj.GetMasterVolume() > 0.001f) {
             yield return null;
         }
+        MusicManager.obj.StopPlaying();
         SceneManager.LoadScene(_titleScreen.SceneName);
         Scene titleScreen = SceneManager.GetSceneByName(_titleScreen.SceneName);
         while(!titleScreen.isLoaded) {
