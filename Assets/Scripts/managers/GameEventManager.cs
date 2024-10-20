@@ -14,7 +14,6 @@ public class GameEventManager : MonoBehaviour
     //Tutorials seen
     public bool HasSeenForcePushDashTutorial { get; set; }
     public bool HasSeenForcePushJumpTutorial { get; set; }
-    public bool HasSeenPoweredForcePushTutorial { get; set; }
 
     void Awake() {
         obj = this;

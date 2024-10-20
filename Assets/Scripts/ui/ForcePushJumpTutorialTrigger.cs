@@ -16,8 +16,8 @@ public class ForcePushJumpTutorialTrigger : MonoBehaviour
             PlayerMovement.obj.Freeze();
             Time.timeScale = 0;
             _tutorialCanvas.SetActive(true);
-            TutorialManager.obj.StartFadeIn();
-            while(!TutorialManager.obj.tutorialCompleted) {
+            TutorialDialogManager.obj.StartFadeIn();
+            while(!TutorialDialogManager.obj.tutorialCompleted) {
                 yield return null;
             }
             _tutorialCanvas.SetActive(false);

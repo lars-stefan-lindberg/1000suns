@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SetCanFallDashTrigger : MonoBehaviour
@@ -9,24 +8,16 @@ public class SetCanFallDashTrigger : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other) {
         if(other.CompareTag("Player")) {
             Player.obj.CanFallDash = true;
-            StartCoroutine(ShowTutorial());
+            StartCoroutine(MaybeTutorial());
+            GetComponent<BoxCollider2D>().enabled = false;
         }
     }
 
-    private IEnumerator ShowTutorial() {
+    private IEnumerator MaybeTutorial() {
         if(!GameEventManager.obj.HasSeenForcePushDashTutorial) {
-            PlayerMovement.obj.Freeze();
-            Time.timeScale = 0;
-            _tutorialCanvas.SetActive(true);
-            TutorialManager.obj.StartFadeIn();
-            while(!TutorialManager.obj.tutorialCompleted) {
-                yield return null;
-            }
-            _tutorialCanvas.SetActive(false);
-            Time.timeScale = 1;
-            PlayerMovement.obj.UnFreeze();
+            TutorialFooterManager.obj.StartFadeIn();
             GameEventManager.obj.HasSeenForcePushDashTutorial = true;
-            GetComponent<BoxCollider2D>().enabled = false;
         }
+        yield return null;
     }
 }
