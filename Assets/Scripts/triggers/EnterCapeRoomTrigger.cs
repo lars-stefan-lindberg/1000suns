@@ -1,8 +1,11 @@
 using System.Collections;
+using Cinemachine;
 using UnityEngine;
 
 public class EnterCapeRoomTrigger : MonoBehaviour
 {
+    [SerializeField] private CinemachineVirtualCamera _defaultCamera;
+    [SerializeField] private GameObject _zoomedCamera;
     [SerializeField] private GameObject _beamOfLight;
     [SerializeField] private GameObject _cape;
     [SerializeField] private Transform _capeMoveTarget;
@@ -26,8 +29,14 @@ public class EnterCapeRoomTrigger : MonoBehaviour
 
     private IEnumerator EnterCapeRoomSequence() {
         //Zoom in on cape
+        _zoomedCamera.SetActive(true);
+        CinemachineVirtualCamera zoomedCameraVcam = _zoomedCamera.GetComponent<CinemachineVirtualCamera>();
+        zoomedCameraVcam.enabled = true;
+        _defaultCamera.enabled = false;
 
         _cape.GetComponent<Cape>().StopHover();
+
+        yield return new WaitForSeconds(1f);
 
         //Fade in beam of light
         while(_beamOfLightRenderer.color.a < 0.65f) {
@@ -53,6 +62,10 @@ public class EnterCapeRoomTrigger : MonoBehaviour
             _beamOfLightRenderer.color = _fadeStartColor;
             yield return null;
         }
+
+        //Zoom out
+        _defaultCamera.enabled = true;
+        zoomedCameraVcam.enabled = false;
 
         yield return new WaitForSeconds(1);
 
