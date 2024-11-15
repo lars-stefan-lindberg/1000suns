@@ -17,8 +17,26 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip[] breakableWallCrackling;
     public AudioClip breakableWallBreak;
 
+    public AudioClip uiBrowse;
+    public AudioClip uiBack;
+    public AudioClip uiConfirm;
+    public AudioClip uiPlay;
+
     void Start() {
         obj = this;
+    }
+
+    public void PlayUIBrowse() {
+        PlaySound(uiBrowse, Camera.main.transform, 1f);
+    }
+    public void PlayUIBack() {
+        PlaySound(uiBack, Camera.main.transform, 1f);
+    }
+    public void PlayUIConfirm() {
+        PlaySound(uiConfirm, Camera.main.transform, 1f);
+    }
+    public void PlayUIPlay() {
+        PlaySound(uiPlay, Camera.main.transform, 1f);
     }
 
     public void PlayJump(Transform spawnTransform) {

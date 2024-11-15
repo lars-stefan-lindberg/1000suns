@@ -52,6 +52,8 @@ public class MainMenuManager : MonoBehaviour
     }
 
     private IEnumerator StartGameCoroutine() {
+        SoundFXManager.obj.PlayUIPlay();
+
         float masterVolume = SoundMixerManager.obj.GetMasterVolume();
 
         StartCoroutine(SoundMixerManager.obj.StartMasterFade(3f, 0.001f));
@@ -97,6 +99,8 @@ public class MainMenuManager : MonoBehaviour
     }
 
     public void ShowOptionsMenu() {
+        SoundFXManager.obj.PlayUIConfirm();
+
         _titleMenu.SetActive(false);
         _optionsMenu.SetActive(true);
         EventSystem.current.SetSelectedGameObject(_musicSlider);
@@ -107,6 +111,8 @@ public class MainMenuManager : MonoBehaviour
     }
 
     public void ShowTitleMenu() {
+        SoundFXManager.obj.PlayUIBack();
+
         _optionsMenu.SetActive(false);
         _titleMenu.SetActive(true);
         EventSystem.current.SetSelectedGameObject(_playButton);
@@ -122,5 +128,10 @@ public class MainMenuManager : MonoBehaviour
 
     public void ChangeSoundFxVolume(float volume) {
         SoundMixerManager.obj.SetSoundFXVolume(volume);
+    }
+
+    public void PlayBrowseSound() {
+        Debug.Log("Playing sound");
+        SoundFXManager.obj.PlayUIBrowse();
     }
 }
