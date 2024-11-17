@@ -42,6 +42,8 @@ public class PauseMenuManager : MonoBehaviour
     }
 
     public void ResumeGame() {
+        SoundFXManager.obj.PlayUIConfirm();
+
         EventSystem.current.SetSelectedGameObject(null);
         _pauseMenu.SetActive(false);
         PlayerMovement.obj.EnablePlayerMovement();
@@ -58,6 +60,8 @@ public class PauseMenuManager : MonoBehaviour
     }
 
     private IEnumerator QuitCoroutine() {
+        SoundFXManager.obj.PlayUIBack();
+
         float masterVolume = SoundMixerManager.obj.GetMasterVolume();
 
         SceneFadeManager.obj.StartFadeOut();

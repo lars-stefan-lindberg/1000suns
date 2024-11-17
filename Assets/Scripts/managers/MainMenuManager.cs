@@ -129,9 +129,4 @@ public class MainMenuManager : MonoBehaviour
     public void ChangeSoundFxVolume(float volume) {
         SoundMixerManager.obj.SetSoundFXVolume(volume);
     }
-
-    public void PlayBrowseSound() {
-        Debug.Log("Playing sound");
-        SoundFXManager.obj.PlayUIBrowse();
-    }
 }
