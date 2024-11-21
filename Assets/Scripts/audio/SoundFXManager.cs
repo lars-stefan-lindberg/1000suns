@@ -7,20 +7,33 @@ public class SoundFXManager : MonoBehaviour
 
     [SerializeField] private AudioSource soundFXObject;
 
+    #region Player
     public AudioClip[] jump;
     public AudioClip[] landOnRoots;
     public AudioClip[] stepOnRoots;
     public AudioClip[] landOnRock;
     public AudioClip[] stepOnRock;
+    #endregion
+
     public AudioClip[] blockSliding;
 
     public AudioClip[] breakableWallCrackling;
     public AudioClip breakableWallBreak;
 
+    #region UI
     public AudioClip uiBrowse;
     public AudioClip uiBack;
     public AudioClip uiConfirm;
     public AudioClip uiPlay;
+    #endregion
+
+    #region BabyPrisoner
+    public AudioClip[] babyPrisonerCrawl;
+    public AudioClip babyPrisonerAlert;
+    public AudioClip babyPrisonerDespawn;
+    public AudioClip babyPrisonerEscape;
+    public AudioClip babyPrisonerScared;
+    #endregion
 
     void Start() {
         obj = this;
@@ -69,12 +82,63 @@ public class SoundFXManager : MonoBehaviour
         PlaySound(breakableWallBreak, spawnTransform, 1f);
     }
 
+    public void PlayBabyPrisonerCrawl(Transform spawnTransform) {
+        PlayRandomSound(babyPrisonerCrawl, spawnTransform, 1f);
+    }
+    public void PlayBabyPrisonerAlert(Transform spawnTransform) {
+        PlaySound(babyPrisonerAlert, spawnTransform, 1f);
+    }
+    public void PlayBabyPrisonerDespawn(Transform spawnTransform) {
+        PlaySound(babyPrisonerDespawn, spawnTransform, 1f);
+    }
+    public void PlayBabyPrisonerScared(Transform spawnTransform) {
+        PlaySound(babyPrisonerScared, spawnTransform, 1f);
+    }
+    public AudioSource PlayBabyPrisonerEscape(Transform spawnTransform) {
+        return PlayLoopedSound(babyPrisonerEscape, spawnTransform, 1f);
+    }
+
     public void PlaySound(AudioClip clip, Transform spawnTransform, float volume)
     {
         AudioSource audioSource = Instantiate(soundFXObject, spawnTransform.position, Quaternion.identity);
         audioSource.clip = clip;
         audioSource.volume = volume;
         PlaySound(audioSource, audioSource.clip.length);
+    }
+
+    public AudioSource PlayLoopedSound(AudioClip clip, Transform spawnTransform, float volume)
+    {
+        AudioSource audioSource = Instantiate(soundFXObject, spawnTransform.position, Quaternion.identity);
+        audioSource.transform.parent = spawnTransform;
+        audioSource.clip = clip;
+        audioSource.volume = volume;
+        audioSource.loop = true;
+        audioSource.Play();
+
+        return audioSource;
+    }
+
+    public void FadeOutAndStopLoopedSound(AudioSource audioSource) {
+        StartCoroutine(FadeOutAndStopLoopedSoundCoroutine(audioSource));
+    }
+
+    private IEnumerator FadeOutAndStopLoopedSoundCoroutine(AudioSource audioSource) {
+        float duration = 2f;
+        float currentTime = 0;
+        float currentVol = audioSource.volume;
+        float targetValue = 0.0001f;
+        while (currentTime < duration)
+        {
+            currentTime += Time.deltaTime;
+            float newVol = Mathf.Lerp(currentVol, targetValue, currentTime / duration);
+            audioSource.volume = newVol;
+            yield return null;
+        }
+
+        audioSource.Stop();
+        Destroy(audioSource.gameObject);
+
+        yield break;
     }
 
     public AudioSource PlaySound(AudioClip clip, Transform spawnTransform, float volume, float clipLengthPercentage)

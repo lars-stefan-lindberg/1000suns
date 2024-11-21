@@ -26,6 +26,8 @@ public class BabyPrisoner : MonoBehaviour
 
     public bool isAlerted = false;
 
+    bool IsMoving => Mathf.Abs(_rigidBody.velocity.x) > 0.01;
+
     public float playerCastDistance = 0;
 
     public float originHorizontalPos;
@@ -35,6 +37,10 @@ public class BabyPrisoner : MonoBehaviour
     public LayerMask groundLayer;
 
     private float _enemyWidth;
+
+    private readonly float playScaredSoundEffectInterval = 1f;
+    private float playScaredSoundEffectTimer = 0f;
+    private AudioSource _escapeAudioSource;
 
     void Start() {
         _collider = GetComponent<BoxCollider2D>();
@@ -100,12 +106,19 @@ public class BabyPrisoner : MonoBehaviour
         //     }
         // }
 
+        if(isAlerted && IsMoving) {
+            if(playScaredSoundEffectTimer >= playScaredSoundEffectInterval) {
+                SoundFXManager.obj.PlayBabyPrisonerScared(transform);
+                playScaredSoundEffectTimer = 0;
+            }
+            playScaredSoundEffectTimer += Time.deltaTime;
+        }
+
         //Update animator
         _animator.SetBool("isGrounded", isGrounded);
-        _animator.SetBool("isMoving", Mathf.Abs(_rigidBody.velocity.x) > 0.01);
+        _animator.SetBool("isMoving", IsMoving);
         _animator.SetBool("isAlerted", isAlerted);
     }
-
 
     void FixedUpdate()
     {
@@ -149,6 +162,7 @@ public class BabyPrisoner : MonoBehaviour
         speed = 0;
         isAlerted = true;
         isTurning = false;
+        SoundFXManager.obj.PlayBabyPrisonerAlert(transform);
         StartCoroutine(AlertRunDelay(alertRunDuration));
     }
 
@@ -158,10 +172,12 @@ public class BabyPrisoner : MonoBehaviour
         if(IsFacingLeft()) 
             FlipHorizontal();
         speed = alertSpeed;
+        _escapeAudioSource = SoundFXManager.obj.PlayBabyPrisonerEscape(transform);
     }
 
     public void Despawn() {
         _animator.SetTrigger("despawn");
+        SoundFXManager.obj.PlayBabyPrisonerDespawn(transform);
         StartCoroutine(DelayedSetInactive(1f));
     }
 
@@ -180,5 +196,16 @@ public class BabyPrisoner : MonoBehaviour
     private void GracefulSpeedChange()
     {        
         speed = Mathf.MoveTowards(speed, maxSpeed, speedAcceleration * Time.fixedDeltaTime);
+    }
+
+    public void Disable() {
+        speed = 0;
+        SoundFXManager.obj.FadeOutAndStopLoopedSound(_escapeAudioSource);
+        StartCoroutine(DelayedSetGameObjectInactive());
+    }
+
+    private IEnumerator DelayedSetGameObjectInactive() {
+        yield return new WaitForSeconds(2.1f);
+        gameObject.SetActive(false);
     }
 }

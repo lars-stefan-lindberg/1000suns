@@ -8,12 +8,14 @@ public class PrisonerAlertCutSceneTrigger : MonoBehaviour
     public float cutSceneDuration = 4.5f;
     void OnTriggerEnter2D(Collider2D other) {
         if(other.gameObject.CompareTag("BabyPrisoner")) {
-            other.gameObject.SetActive(false);
+            BabyPrisoner babyPrisoner = other.gameObject.GetComponent<BabyPrisoner>();
+            babyPrisoner.Disable();
             GameEventManager.obj.BabyPrisonerAlerted = true;
         }
         if(other.gameObject.CompareTag("Player")) {
             PlayerMovement.obj.Freeze(cutSceneDuration);
             //Zoom in on prisoner
+            SoundFXManager.obj.PlayBabyPrisonerScared(babyPrisoner.transform);
             prisoner.isStatic = true;
             prisoner.gameObject.SetActive(true);
             StartCoroutine(PrisonerSpawn());
