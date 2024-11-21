@@ -10,6 +10,7 @@ public class SoundMixerManager : MonoBehaviour
     private const string MASTER_VOLUME_PARAM = "masterVolume";
     private const string MUSIC_VOLUME_PARAM = "musicVolume";
     private const string SOUNDFX_VOLUME_PARAM = "soundFXVolume";
+    private const string AMBIENCE_VOLUME_PARAM = "ambienceVolume";
 
     private float _musicVolumeBeforeFade = 0;
 
@@ -37,6 +38,13 @@ public class SoundMixerManager : MonoBehaviour
         return GetVolume(MUSIC_VOLUME_PARAM);
     }
 
+    public void SetAmbienceVolume(float level) {
+        audioMixer.SetFloat(AMBIENCE_VOLUME_PARAM, Mathf.Log10(level) * 20f);
+    }
+    public float GetAmbienceVolume() {
+        return GetVolume(AMBIENCE_VOLUME_PARAM);
+    }
+
     private float GetVolume(string param) {
         float currentVolume;
         audioMixer.GetFloat(param, out currentVolume);
@@ -53,6 +61,11 @@ public class SoundMixerManager : MonoBehaviour
     public IEnumerator StartMusicFade(float duration, float targetVolume) {
         _musicVolumeBeforeFade = GetMusicVolume();
         StartCoroutine(StartVolumeFade(MUSIC_VOLUME_PARAM, duration, targetVolume));
+        yield return null;
+    }
+
+    public IEnumerator StartAmbienceFade(float duration, float targetVolume) {
+        StartCoroutine(StartVolumeFade(AMBIENCE_VOLUME_PARAM, duration, targetVolume));
         yield return null;
     }
 

@@ -128,5 +128,9 @@ public class MainMenuManager : MonoBehaviour
 
     public void ChangeSoundFxVolume(float volume) {
         SoundMixerManager.obj.SetSoundFXVolume(volume);
+    }    
+    
+    public void ChangeAmbienceVolume(float volume) {
+        SoundMixerManager.obj.SetAmbienceVolume(volume);
     }
 }

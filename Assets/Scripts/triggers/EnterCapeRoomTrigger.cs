@@ -22,9 +22,20 @@ public class EnterCapeRoomTrigger : MonoBehaviour
     private void OnTriggerExit2D(Collider2D collider) {
         if(collider.transform.CompareTag("Player") && !_isTriggered) {
             PlayerMovement.obj.Freeze();
+            StartCoroutine(FadeOutAndStopAmbience());
             StartCoroutine(EnterCapeRoomSequence());
             _isTriggered = true;
         }
+    }
+
+    private IEnumerator FadeOutAndStopAmbience() {
+        float ambienceVolume = SoundMixerManager.obj.GetAmbienceVolume();
+        StartCoroutine(SoundMixerManager.obj.StartAmbienceFade(1f, 0.001f));
+        while(SoundMixerManager.obj.GetAmbienceVolume() > 0.001f) {
+            yield return null;
+        }
+        AmbienceManager.obj.StopAmbience();
+        SoundMixerManager.obj.SetAmbienceVolume(ambienceVolume);
     }
 
     private IEnumerator EnterCapeRoomSequence() {

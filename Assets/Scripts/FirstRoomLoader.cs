@@ -9,6 +9,8 @@ public class FirstRoomLoader : MonoBehaviour
         SceneFadeManager.obj.SetFadedOutState();
         SceneFadeManager.obj.SetFadeInSpeed(1f);
         SceneFadeManager.obj.StartFadeIn();
+
+        StartCoroutine(AmbienceFadeIn());
     }
 
     void Update() {
@@ -16,5 +18,14 @@ public class FirstRoomLoader : MonoBehaviour
             SceneFadeManager.obj.SetFadeInSpeed(5f);
             Destroy(this);
         }
+    }
+
+    private IEnumerator AmbienceFadeIn() {
+        float v = SoundMixerManager.obj.GetAmbienceVolume();
+        SoundMixerManager.obj.SetAmbienceVolume(0.001f);
+        AmbienceManager.obj.PlayAmbience();
+        StartCoroutine(SoundMixerManager.obj.StartAmbienceFade(3f, v));
+
+        yield return null;
     }
 }
