@@ -50,6 +50,7 @@ public class EnterCapeRoomTrigger : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         //Fade in beam of light
+        SoundFXManager.obj.PlayCapeIntroduction(_cape.transform);
         while(_beamOfLightRenderer.color.a < 0.65f) {
             _fadeStartColor.a += Time.deltaTime * _fadeSpeed;
             _beamOfLightRenderer.color = _fadeStartColor;

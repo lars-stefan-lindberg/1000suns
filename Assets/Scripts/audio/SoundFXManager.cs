@@ -42,6 +42,11 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip prisonerSlide;
     #endregion
 
+    #region CapeRoom
+    public AudioClip capeIntroduction;
+    public AudioClip capePickUp;
+    #endregion
+
     void Start() {
         obj = this;
     }
@@ -116,6 +121,13 @@ public class SoundFXManager : MonoBehaviour
     }
     public void PlayPrisonerSlide(Transform spawnTransform) {
         PlaySound(prisonerSlide, spawnTransform, 1f);
+    }
+
+    public void PlayCapeIntroduction(Transform spawnTransform) {
+        PlaySound(capeIntroduction, spawnTransform, 1f);
+    }
+    public void PlayCapePickUp(Transform spawnTransform) {
+        PlaySound(capePickUp, spawnTransform, 1f);
     }
 
     public void PlaySound(AudioClip clip, Transform spawnTransform, float volume)

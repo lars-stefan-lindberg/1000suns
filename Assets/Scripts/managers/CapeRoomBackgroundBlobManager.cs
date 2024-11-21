@@ -38,8 +38,6 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
             
             //Fade out blobs, show tutorial, and then play music
             StartCoroutine(FadeOutBlobSpritesAndTutorialAndPlayMusic());
-
-            //Play big blob sound
         }
     }
 
