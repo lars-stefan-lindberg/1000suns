@@ -39305,9 +39305,17 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2256484198556276230, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
+      propertyPath: prisoners.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2256484198556276230, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
       propertyPath: currentScene._sceneName
       value: C10
       objectReference: {fileID: 0}
+    - target: {fileID: 2256484198556276230, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
+      propertyPath: prisoners.Array.data[0]
+      value: 
+      objectReference: {fileID: 1734935034}
     - target: {fileID: 2256484198556276230, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
       propertyPath: currentScene._sceneAsset
       value: 
@@ -39898,6 +39906,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 5873467829969753878, guid: 97caebb36b7df4895a595d2740614fcf, type: 3}
   m_PrefabInstance: {fileID: 1932718144}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1734935034 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5213114004992624181, guid: 97caebb36b7df4895a595d2740614fcf, type: 3}
+  m_PrefabInstance: {fileID: 1932718144}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1734935032}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 699a0f74e0d3246e59b50e639039cec5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1774455849
 PrefabInstance:
   m_ObjectHideFlags: 0

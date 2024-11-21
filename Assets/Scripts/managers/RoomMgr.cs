@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Cinemachine;
 using Unity.VisualScripting;
+using System.Linq;
 
 //Room size: X: 40, Y: 22.5
 public class RoomMgr : MonoBehaviour
@@ -13,20 +14,26 @@ public class RoomMgr : MonoBehaviour
     public GameObject alternativeCamera;
     public SceneField currentScene;
 
-
     private void OnTriggerEnter2D(Collider2D other)
     {
         if(other.CompareTag("Player"))
         {
             bool enterFromRight = transform.position.x < other.gameObject.transform.position.x;
             if(alternativeCamera != null && enterFromRight) {
-                
                 alternativeCamera.SetActive(true);
                 CinemachineVirtualCamera cinemachineVirtualCamera = alternativeCamera.GetComponent<CinemachineVirtualCamera>();
                 cinemachineVirtualCamera.enabled = true;
             } else {
                 ActivateVirtualCamera();
             }
+
+            GameObject[] sceneGameObjects = SceneManager.GetSceneByName(currentScene).GetRootGameObjects();
+            IEnumerable<GameObject> prisonerGameObjects = sceneGameObjects.Where(gameObject => gameObject.CompareTag("Enemy"));
+            foreach(GameObject gameObject in prisonerGameObjects) {
+                Prisoner prisoner = gameObject.GetComponent<Prisoner>();
+                prisoner.offScreen = false;
+            }
+
             SceneManager.SetActiveScene(SceneManager.GetSceneByName(currentScene));
         }
     }
@@ -44,6 +51,13 @@ public class RoomMgr : MonoBehaviour
             if(followCamera != null) {
                 followCamera.SetActive(false);
                 followCamera.GetComponent<CinemachineVirtualCamera>().enabled = false;
+            }
+
+            GameObject[] sceneGameObjects = SceneManager.GetSceneByName(currentScene).GetRootGameObjects();
+            IEnumerable<GameObject> prisonerGameObjects = sceneGameObjects.Where(gameObject => gameObject.CompareTag("Enemy"));
+            foreach(GameObject gameObject in prisonerGameObjects) {
+                Prisoner prisoner = gameObject.GetComponent<Prisoner>();
+                prisoner.offScreen = true;
             }
         }
     }

@@ -1,7 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class BabyPrisoner : MonoBehaviour
@@ -200,7 +197,7 @@ public class BabyPrisoner : MonoBehaviour
 
     public void Disable() {
         speed = 0;
-        SoundFXManager.obj.FadeOutAndStopLoopedSound(_escapeAudioSource);
+        SoundFXManager.obj.FadeOutAndStopLoopedSound(_escapeAudioSource, 2f);
         StartCoroutine(DelayedSetGameObjectInactive());
     }
 

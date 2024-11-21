@@ -35,6 +35,13 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip babyPrisonerScared;
     #endregion
 
+    #region Prisoner
+    public AudioClip[] prisonerCrawl;
+    public AudioClip prisonerSpawn;
+    public AudioClip prisonerHit;
+    public AudioClip prisonerSlide;
+    #endregion
+
     void Start() {
         obj = this;
     }
@@ -98,6 +105,19 @@ public class SoundFXManager : MonoBehaviour
         return PlayLoopedSound(babyPrisonerEscape, spawnTransform, 1f);
     }
 
+    public void PlayPrisonerCrawl(Transform spawnTransform) {
+        PlayRandomSound(prisonerCrawl, spawnTransform, 1f);
+    }
+    public void PlayPrisonerSpawn(Transform spawnTransform) {
+        PlaySound(prisonerSpawn, spawnTransform, 1f);
+    }
+    public AudioSource PlayPrisonerHit(Transform spawnTransform) {
+        return PlayLoopedSound(prisonerHit, spawnTransform, 1f);
+    }
+    public void PlayPrisonerSlide(Transform spawnTransform) {
+        PlaySound(prisonerSlide, spawnTransform, 1f);
+    }
+
     public void PlaySound(AudioClip clip, Transform spawnTransform, float volume)
     {
         AudioSource audioSource = Instantiate(soundFXObject, spawnTransform.position, Quaternion.identity);
@@ -118,12 +138,11 @@ public class SoundFXManager : MonoBehaviour
         return audioSource;
     }
 
-    public void FadeOutAndStopLoopedSound(AudioSource audioSource) {
-        StartCoroutine(FadeOutAndStopLoopedSoundCoroutine(audioSource));
+    public void FadeOutAndStopLoopedSound(AudioSource audioSource, float duration) {
+        StartCoroutine(FadeOutAndStopLoopedSoundCoroutine(audioSource, duration));
     }
 
-    private IEnumerator FadeOutAndStopLoopedSoundCoroutine(AudioSource audioSource) {
-        float duration = 2f;
+    private IEnumerator FadeOutAndStopLoopedSoundCoroutine(AudioSource audioSource, float duration) {
         float currentTime = 0;
         float currentVol = audioSource.volume;
         float targetValue = 0.0001f;

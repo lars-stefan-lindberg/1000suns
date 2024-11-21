@@ -62,6 +62,10 @@ public class Prisoner : MonoBehaviour
     public float attackSpeedMultiplier = 1.5f;
     public bool isStuck = false;
 
+    private AudioSource _gotHitAudioSource;
+    private bool _isFadingOutHitSound = false;
+    public bool offScreen = false;
+
     private void Awake()
     {
         _rigidBody = GetComponent<Rigidbody2D>();
@@ -123,6 +127,9 @@ public class Prisoner : MonoBehaviour
     private void applyGotHitState(float hitPower, bool hitFromTheLeft)
     {
         if(!isImmuneToForcePush) {
+            _gotHitAudioSource = SoundFXManager.obj.PlayPrisonerHit(transform);
+            _isFadingOutHitSound = false;
+            
             _animator.SetTrigger("hit");
             damagePower = hitPower;
             hasBeenHit = true;
@@ -267,6 +274,11 @@ public class Prisoner : MonoBehaviour
         if(isStuck)
             _rigidBody.velocity = Vector2.zero;
 
+        if(!_isFadingOutHitSound && _gotHitAudioSource != null && !hasBeenHit && isGrounded) {
+            _isFadingOutHitSound = true;
+            SoundFXManager.obj.FadeOutAndStopLoopedSound(_gotHitAudioSource, 0.2f);
+        }
+
         //Update animator
         _animator.SetBool("isGrounded", isGrounded);
         _animator.SetBool("isHit", hasBeenHit);
@@ -344,6 +356,8 @@ public class Prisoner : MonoBehaviour
 
     [ContextMenu("InitiateKill")]
     public void InitiateKill() {
+        if(_gotHitAudioSource != null)
+            SoundFXManager.obj.FadeOutAndStopLoopedSound(_gotHitAudioSource, 0.2f);
         _killed = true;
         _rigidBody.bodyType = RigidbodyType2D.Static;
         _collider.enabled = false;
