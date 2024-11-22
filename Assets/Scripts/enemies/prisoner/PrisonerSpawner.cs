@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PrisonerSpawner : MonoBehaviour
 {
@@ -29,7 +30,9 @@ public class PrisonerSpawner : MonoBehaviour
     [ContextMenu("SpawnPrisoner")]
     public void SpawnPrisoner() {
         float randomHorizontalPosition = GetRandomHorizontalPosition();
-        Instantiate(prisoner, new Vector2(randomHorizontalPosition, _leftPoint.transform.position.y), transform.rotation);
+        GameObject newPrisoner = Instantiate(prisoner, new Vector2(randomHorizontalPosition, _leftPoint.transform.position.y), transform.rotation);
+        newPrisoner.transform.parent = transform;
+        newPrisoner.transform.SetParent(null);
     }
 
     private float GetRandomHorizontalPosition()

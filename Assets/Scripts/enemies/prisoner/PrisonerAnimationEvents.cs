@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PrisonerAnimationEvents : MonoBehaviour
 {
@@ -15,7 +17,8 @@ public class PrisonerAnimationEvents : MonoBehaviour
             SoundFXManager.obj.PlayPrisonerCrawl(gameObject.transform);
     }
     public void PlaySpawn() {
-        SoundFXManager.obj.PlayPrisonerSpawn(gameObject.transform);
+        if(SceneManager.GetActiveScene().GetRootGameObjects().Contains(gameObject))
+            SoundFXManager.obj.PlayPrisonerSpawn(gameObject.transform);
     }
     public void PlaySlide() {
         SoundFXManager.obj.PlayPrisonerSlide(gameObject.transform);
