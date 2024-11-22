@@ -33,6 +33,7 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip babyPrisonerDespawn;
     public AudioClip babyPrisonerEscape;
     public AudioClip babyPrisonerScared;
+    public AudioClip[] babyPrisonerIdle;
     #endregion
 
     #region Prisoner
@@ -96,6 +97,9 @@ public class SoundFXManager : MonoBehaviour
 
     public void PlayBabyPrisonerCrawl(Transform spawnTransform) {
         PlayRandomSound(babyPrisonerCrawl, spawnTransform, 1f);
+    }
+    public void PlayBabyPrisonerIdle(Transform spawnTransform) {
+        PlayRandomSound(babyPrisonerIdle, spawnTransform, 1f);
     }
     public void PlayBabyPrisonerAlert(Transform spawnTransform) {
         PlaySound(babyPrisonerAlert, spawnTransform, 1f);
