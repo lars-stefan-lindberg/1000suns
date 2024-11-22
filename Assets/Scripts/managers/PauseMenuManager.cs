@@ -54,14 +54,17 @@ public class PauseMenuManager : MonoBehaviour
         _isPaused = false;
     }
 
+    public void QuitButtonHandler() {
+        SoundFXManager.obj.PlayUIBack();
+        Quit();
+    }
+
     public void Quit() {
         Time.timeScale = 1f;
         StartCoroutine(QuitCoroutine());
     }
 
     private IEnumerator QuitCoroutine() {
-        SoundFXManager.obj.PlayUIBack();
-
         float masterVolume = SoundMixerManager.obj.GetMasterVolume();
 
         SceneFadeManager.obj.StartFadeOut();
@@ -73,6 +76,7 @@ public class PauseMenuManager : MonoBehaviour
             yield return null;
         }
         MusicManager.obj.StopPlaying();
+        AmbienceManager.obj.StopAmbience();
         SceneManager.LoadScene(_titleScreen.SceneName);
         Scene titleScreen = SceneManager.GetSceneByName(_titleScreen.SceneName);
         while(!titleScreen.isLoaded) {

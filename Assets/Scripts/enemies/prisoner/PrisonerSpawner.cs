@@ -21,7 +21,8 @@ public class PrisonerSpawner : MonoBehaviour
         else {
             SpawnPrisoner();
             _spawnTimer = 0f;
-            _spawnTime = Random.Range(_startingSpawnTime - 0.2f, _startingSpawnTime + 0.2f);
+            //_spawnTime = Random.Range(_startingSpawnTime - 0.2f, _startingSpawnTime + 0.2f);
+            _spawnTime = _startingSpawnTime;
         }
     }
 
