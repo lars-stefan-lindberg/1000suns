@@ -24,7 +24,10 @@ public class MainMenuManager : MonoBehaviour
     private Color _optionsButtonColor;
     [SerializeField] private Button _backButton;
     private Color _backButtonColor;
-    [SerializeField] private GameObject _musicSlider;
+    [SerializeField] private GameObject _musicSliderGameObject;
+    [SerializeField] private Slider _musicSlider;
+    [SerializeField] private Slider _soundFXSlider;
+    [SerializeField] private Slider _ambienceSlider;
 
     [SerializeField] private GameObject _optionsMenu;
     [SerializeField] private GameObject _titleMenu;
@@ -101,9 +104,13 @@ public class MainMenuManager : MonoBehaviour
     public void ShowOptionsMenu() {
         SoundFXManager.obj.PlayUIConfirm();
 
+        _musicSlider.value = SoundMixerManager.obj.GetMusicVolume();
+        _soundFXSlider.value = SoundMixerManager.obj.GetSoundFXVolume();
+        _ambienceSlider.value = SoundMixerManager.obj.GetAmbienceVolume();
+
         _titleMenu.SetActive(false);
         _optionsMenu.SetActive(true);
-        EventSystem.current.SetSelectedGameObject(_musicSlider);
+        EventSystem.current.SetSelectedGameObject(_musicSliderGameObject);
 
         //Reset color of options button from animation
         TextMeshProUGUI textMeshPro = _optionsButton.GetComponentInChildren<TextMeshProUGUI>();

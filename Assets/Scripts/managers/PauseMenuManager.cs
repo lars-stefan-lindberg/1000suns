@@ -15,6 +15,9 @@ public class PauseMenuManager : MonoBehaviour
     [SerializeField] private GameObject[] _menuObjects;
     [SerializeField] private SceneField _titleScreen;
     [SerializeField] private GameObject _persistentGameplay;
+    [SerializeField] private Slider _musicSlider;
+    [SerializeField] private Slider _soundFXSlider;
+    [SerializeField] private Slider _ambienceSlider;
     
     private Color _buttonColor;
 
@@ -33,6 +36,11 @@ public class PauseMenuManager : MonoBehaviour
                 ResumeGame();
             } else {
                 PlayerMovement.obj.DisablePlayerMovement();
+
+                _musicSlider.value = SoundMixerManager.obj.GetMusicVolume();
+                _soundFXSlider.value = SoundMixerManager.obj.GetSoundFXVolume();
+                _ambienceSlider.value = SoundMixerManager.obj.GetAmbienceVolume();
+
                 _isPaused = true;
                 _pauseMenu.SetActive(true);
                 EventSystem.current.SetSelectedGameObject(_firstSelectedPauseMenuItem);
