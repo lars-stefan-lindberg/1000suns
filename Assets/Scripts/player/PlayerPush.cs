@@ -8,12 +8,12 @@ public class PlayerPush : MonoBehaviour
 
     private SpriteRenderer _playerSpriteRenderer;
 
-    public float minBuildUpPowerTime = 0.5f;
+    public float minBuildUpPowerTime = 0.3f;
 
     public int playerOffset = 1;
     public float maxForce = 3;
     public float powerUpMaxForce = 4;
-    public float powerBuildUpPerFixedUpdate = 1.1f;
+    public float powerBuildUpPerFixedUpdate = 1.2f;
 
     public float defaultPower = 1;
     public float pushTiltPower = 2000;
@@ -30,10 +30,6 @@ public class PlayerPush : MonoBehaviour
 
     bool CanUseForcePushJump => PlayerMovement.obj.isGrounded && Player.obj.hasPowerUp && _buildUpPower >= maxForce;
 
-    private float _recoveryTime = 0.2f; //Time in between charges
-    private float _recoveryTimeTimer = 1f;
-    private bool _isRecovering = false;
-
     private void Awake()
     {
         obj = this;
@@ -43,9 +39,10 @@ public class PlayerPush : MonoBehaviour
     public void OnShoot(InputAction.CallbackContext context)
     {
         if(Player.obj.hasCape) {
-            if (context.performed && !_isRecovering)
+            if (context.performed)
             {
                 if (defaultPower < StaminaMgr.obj.GetCurrentStamina()) {
+                    pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().HardCancel();
                     _buildUpPower = defaultPower;
                     _buildingUpPower = true;
                     _buildUpPowerTime = 0;
@@ -73,9 +70,6 @@ public class PlayerPush : MonoBehaviour
                         ForcePushJump(powerUpMaxForce);
                     else
                         ForcePush(_buildUpPower);
-
-                    _recoveryTimeTimer = 0;
-                    _isRecovering = true;
                 }
                 
                 ResetBuiltUpPower();
@@ -111,12 +105,6 @@ public class PlayerPush : MonoBehaviour
             if(_buildUpPower < maxForce && _buildUpPowerTime > minBuildUpPowerTime) {
                 _buildUpPower *= powerBuildUpPerFixedUpdate;
             }
-        }
-
-        if(_isRecovering) {
-            _recoveryTimeTimer += Time.deltaTime;
-            if(_recoveryTimeTimer > _recoveryTime)
-                _isRecovering = false;
         }
     }
 

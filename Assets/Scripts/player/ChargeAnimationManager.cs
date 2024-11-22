@@ -46,6 +46,15 @@ public class ChargeAnimationMgr : MonoBehaviour
         StartCoroutine(SpriteFadeOutAndCancel(_animationFadeMultiplier));
     }
 
+    public void HardCancel() {
+        _animator.SetBool("fullyCharged", false);
+        _animator.SetBool("poweredUp", false);
+        _animator.enabled = false;
+        _fadeStartColor.a = 0;
+        _spriteRenderer.color = _fadeStartColor;
+        _spriteRenderer.enabled = false;
+    }
+
     private IEnumerator SpriteFadeOutAndCancel(float fadeMultiplier) {
         while(_spriteRenderer.color.a > 0) {
             _fadeStartColor.a -= Time.deltaTime * fadeMultiplier;
