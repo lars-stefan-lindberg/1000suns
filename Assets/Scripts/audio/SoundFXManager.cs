@@ -15,7 +15,12 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip[] stepOnRock;
     #endregion
 
-    public AudioClip[] blockSliding;
+    #region Block
+    public AudioClip blockSliding;
+    public AudioClip blockLand;
+    public AudioClip[] blockSlideOffEdge;
+    public AudioClip[] blockWallImpact;
+    #endregion
 
     public AudioClip[] breakableWallCrackling;
     public AudioClip breakableWallBreak;
@@ -84,7 +89,16 @@ public class SoundFXManager : MonoBehaviour
     }
 
     public AudioSource PlayBlockSliding(Transform spawnTransform, float soundDurationPercentage) {
-        return PlaySound(blockSliding[0], spawnTransform, 1f, soundDurationPercentage);
+        return PlaySound(blockSliding, spawnTransform, 1f, soundDurationPercentage);
+    }
+    public void PlayBlockLand(Transform spawnTransform) {
+        PlaySound(blockLand, spawnTransform, 1f);
+    }
+    public void PlayBlockSlideOffEdge(Transform spawnTransform) {
+        PlayRandomSound(blockSlideOffEdge, spawnTransform, 1f);
+    }
+    public void PlayBlockWallImpact(Transform spawnTransform) {
+        PlayRandomSound(blockWallImpact, spawnTransform, 1f);
     }
 
     public void PlayBreakableWallCrackling(Transform spawnTransform) {

@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Block : MonoBehaviour
@@ -9,17 +10,19 @@ public class Block : MonoBehaviour
     public LayerMask groundLayer;
     [SerializeField] private float _wallCheckCastDistance = 1.05f;
     private bool _isGrounded = true;
-    private float _isGroundedCheckOffset;
     private AudioSource _slideSoundAudioSource;
     private bool _isMovingHorizontally = false;
+    private float _frontCheck = 1.23f;
+    private float _wallImpactCoolDownTime = 0.5f;
+    private float _wallImpactCoolDownTimer = 1f;
+
+    public float _grounderDistance = 0.89f;
 
     private void Awake()
     {
         _rigidBody = GetComponent<Rigidbody2D>();
         _collider = GetComponent<BoxCollider2D>();
         _childCollider = GetComponentInChildren<BoxCollider2D>();
-        Bounds blockBounds = _childCollider.bounds;
-        _isGroundedCheckOffset = blockBounds.extents.y + 0.01f;
     }
 
     public float basePushPower = 7f;
@@ -84,16 +87,20 @@ public class Block : MonoBehaviour
             _rigidBody.velocity = new Vector2(Mathf.MoveTowards(_rigidBody.velocity.x, 0, deceleration * Time.deltaTime), _rigidBody.velocity.y);
         } 
 
-        Vector3 groundLineCastPosition = _collider.transform.position;
         // Debug.DrawLine(
-        //    groundLineCastPosition,
-        //    new Vector3(groundLineCastPosition.x, groundLineCastPosition.y - _isGroundedCheckOffset, groundLineCastPosition.z),
+        //    _collider.transform.position,
+        //    new Vector3(_collider.transform.position.x, _collider.transform.position.y - _isGroundedCheckOffset, _collider.transform.position.z),
         //    Color.red);
-        _isGrounded = Physics2D.Linecast(
-            groundLineCastPosition,
-            new Vector3(groundLineCastPosition.x, groundLineCastPosition.y - _isGroundedCheckOffset, groundLineCastPosition.z),
-            groundLayer);
+
+        bool groundHit = Physics2D.BoxCast(_childCollider.bounds.center, _childCollider.size - new Vector2(1f, 0), 0, Vector2.down, _grounderDistance, groundLayer);
+
+        if(!_isGrounded && groundHit)
+            SoundFXManager.obj.PlayBlockLand(transform);
+        if(_isGrounded && !groundHit)
+            SoundFXManager.obj.PlayBlockSlideOffEdge(transform);
         
+        _isGrounded = groundHit;
+
         if(!_isGrounded) {
             if(_slideSoundAudioSource != null && _slideSoundAudioSource.isPlaying) {
                 _slideSoundAudioSource.mute = true;
@@ -105,6 +112,22 @@ public class Block : MonoBehaviour
         }
 
         _isMovingHorizontally = Mathf.Abs(_rigidBody.velocity.x) > 0.01f;
+
+        if(_isMovingHorizontally) {
+            bool isMovingRight = _rigidBody.velocity.x > 0;
+            bool isWallAhead = Physics2D.Raycast(new Vector3(_collider.transform.position.x, _collider.transform.position.y - 0.2f, _collider.transform.position.z), 
+                isMovingRight ? Vector2.right : Vector2.left, _frontCheck, groundLayer);
+            if(isWallAhead) {
+                if(_wallImpactCoolDownTimer >= _wallImpactCoolDownTime) {
+                    SoundFXManager.obj.PlayBlockWallImpact(transform);
+                    _wallImpactCoolDownTimer = 0;
+                } else {
+                    _wallImpactCoolDownTimer += Time.deltaTime;
+                }
+            }
+        } else {
+            _wallImpactCoolDownTimer = 1f;
+        }
 
         if(!_isMovingHorizontally && _slideSoundAudioSource != null && _slideSoundAudioSource.isPlaying)
             _slideSoundAudioSource.mute = true;
