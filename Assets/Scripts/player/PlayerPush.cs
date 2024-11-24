@@ -53,7 +53,7 @@ public class PlayerPush : MonoBehaviour
                 if(_buildingUpPower && _buildUpPowerTime >= minBuildUpPowerTime)
                 {
                     //Should tilt the player slightly backwards in air
-                    if(!PlayerMovement.obj.isGrounded && !PlayerMovement.obj.isFalling)
+                    if(!PlayerMovement.obj.isGrounded && !PlayerMovement.obj.isFalling && IsFullyCharged())
                     {
                         //Tilt player slightly when in air
                         float power = PlayerMovement.obj.isFacingLeft() ? pushTiltPower : -pushTiltPower;
