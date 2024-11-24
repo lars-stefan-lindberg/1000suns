@@ -13,6 +13,11 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip[] stepOnRoots;
     public AudioClip[] landOnRock;
     public AudioClip[] stepOnRock;
+    public AudioClip[] forcePushJump;
+    public AudioClip[] forcePushLand;
+    public AudioClip forcePushStartCharging;
+    public AudioClip forcePushChargeLoop;
+    public AudioClip forcePushExecute;
     #endregion
 
     #region Block
@@ -88,6 +93,22 @@ public class SoundFXManager : MonoBehaviour
             PlayRandomSound(stepOnRock, spawnTransform, volume);
     }
 
+    public void PlayForcePushJump(Transform spawnTransform) {
+        PlayRandomSound(forcePushJump, spawnTransform, 1f);
+    }
+    public void PlayForcePushLand(Transform spawnTransform) {
+        PlayRandomSound(forcePushLand, spawnTransform, 1f);
+    }
+    public void PlayForcePushExecute(Transform spawnTransform) {
+        PlaySound(forcePushExecute, spawnTransform, 1f);
+    }
+    public AudioSource PlayForcePushStartCharging(Transform spawnTransform) {
+        return PlaySound(forcePushStartCharging, spawnTransform, 1f);
+    }
+    public AudioSource PlayForcePushChargeLoop(Transform spawnTransform) {
+        return PlayLoopedSound(forcePushChargeLoop, spawnTransform, 1f);
+    }
+
     public AudioSource PlayBlockSliding(Transform spawnTransform, float soundDurationPercentage) {
         return PlaySound(blockSliding, spawnTransform, 1f, soundDurationPercentage);
     }
@@ -148,12 +169,14 @@ public class SoundFXManager : MonoBehaviour
         PlaySound(capePickUp, spawnTransform, 1f);
     }
 
-    public void PlaySound(AudioClip clip, Transform spawnTransform, float volume)
+    public AudioSource PlaySound(AudioClip clip, Transform spawnTransform, float volume)
     {
         AudioSource audioSource = Instantiate(soundFXObject, spawnTransform.position, Quaternion.identity);
+        audioSource.transform.parent = spawnTransform;
         audioSource.clip = clip;
         audioSource.volume = volume;
         PlaySound(audioSource, audioSource.clip.length);
+        return audioSource;
     }
 
     public AudioSource PlayLoopedSound(AudioClip clip, Transform spawnTransform, float volume)
@@ -168,11 +191,11 @@ public class SoundFXManager : MonoBehaviour
         return audioSource;
     }
 
-    public void FadeOutAndStopLoopedSound(AudioSource audioSource, float duration) {
-        StartCoroutine(FadeOutAndStopLoopedSoundCoroutine(audioSource, duration));
+    public void FadeOutAndStopSound(AudioSource audioSource, float duration) {
+        StartCoroutine(FadeOutAndStopSoundCoroutine(audioSource, duration));
     }
 
-    private IEnumerator FadeOutAndStopLoopedSoundCoroutine(AudioSource audioSource, float duration) {
+    private IEnumerator FadeOutAndStopSoundCoroutine(AudioSource audioSource, float duration) {
         float currentTime = 0;
         float currentVol = audioSource.volume;
         float targetValue = 0.0001f;
@@ -180,6 +203,8 @@ public class SoundFXManager : MonoBehaviour
         {
             currentTime += Time.deltaTime;
             float newVol = Mathf.Lerp(currentVol, targetValue, currentTime / duration);
+            if(audioSource == null)
+                yield break;
             audioSource.volume = newVol;
             yield return null;
         }

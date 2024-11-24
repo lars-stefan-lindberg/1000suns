@@ -114,6 +114,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public void ExecuteForcePushJump() {
         isForcePushJumping = true;
         forcePushJumpOnGroundTimer = 0;
+        _cameFromForcePushJump = true;
         _frameVelocity.x = isFacingLeft() ? -initialForcePushJumpSpeed : initialForcePushJumpSpeed;
         PlayerPush.obj.ResetBuiltUpPower();
         Player.obj.SetHasPowerUp(false);
@@ -127,6 +128,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     public bool isFalling = false;
     public bool isMoving = false;
+    private bool _cameFromForcePushJump = false;
     private void UpdateAnimator()
     {
         _animator.SetBool("isGrounded", isGrounded);
@@ -138,6 +140,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         {
             DustParticleMgr.obj.CreateDust();
             SoundFXManager.obj.PlayLand(Player.obj.surface, gameObject.transform);
+            if(_cameFromForcePushJump) {
+                SoundFXManager.obj.PlayForcePushLand(gameObject.transform);
+                _cameFromForcePushJump = false;
+            }
             StartCoroutine(JumpSqueeze(_landedSqueezeX, _landedSqueezeY, _landedSqueezeTime));
             _landed = false;
         }
@@ -419,12 +425,15 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     {
         ExecuteJump(_stats.JumpPower);
         DustParticleMgr.obj.CreateDust();
-        SoundFXManager.obj.PlayJump(gameObject.transform);
-        StartCoroutine(JumpSqueeze(_jumpSqueezeX, _jumpSqueezeY, _jumpSqueezeTime));
-        _jumpToConsume = false;
+
         if(isForcePushJumping) {
             jumpedWhileForcePushJumping = true;
-        }
+            SoundFXManager.obj.PlayForcePushJump(gameObject.transform);
+        } else
+            SoundFXManager.obj.PlayJump(gameObject.transform);
+
+        StartCoroutine(JumpSqueeze(_jumpSqueezeX, _jumpSqueezeY, _jumpSqueezeTime));
+        _jumpToConsume = false;
     }
 
     private void ExecuteAirJump()

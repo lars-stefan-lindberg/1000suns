@@ -276,7 +276,7 @@ public class Prisoner : MonoBehaviour
 
         if(!_isFadingOutHitSound && _gotHitAudioSource != null && !hasBeenHit && isGrounded) {
             _isFadingOutHitSound = true;
-            SoundFXManager.obj.FadeOutAndStopLoopedSound(_gotHitAudioSource, 0.2f);
+            SoundFXManager.obj.FadeOutAndStopSound(_gotHitAudioSource, 0.2f);
         }
 
         //Update animator
@@ -357,7 +357,7 @@ public class Prisoner : MonoBehaviour
     [ContextMenu("InitiateKill")]
     public void InitiateKill() {
         if(_gotHitAudioSource != null)
-            SoundFXManager.obj.FadeOutAndStopLoopedSound(_gotHitAudioSource, 0.2f);
+            SoundFXManager.obj.FadeOutAndStopSound(_gotHitAudioSource, 0.2f);
         _killed = true;
         _rigidBody.bodyType = RigidbodyType2D.Static;
         _collider.enabled = false;

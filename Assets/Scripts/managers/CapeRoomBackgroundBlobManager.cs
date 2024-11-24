@@ -23,6 +23,7 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
 
             PlayerMovement.obj.Freeze();
 
+            SoundFXManager.obj.PlayCapePickUp(Camera.main.transform);
             //Loop through all children, get animators, and increase speed of animation
             Animator[] animators = GetComponentsInChildren<Animator>();
             foreach(Animator animator in animators) {

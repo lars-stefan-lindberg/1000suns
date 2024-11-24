@@ -30,6 +30,10 @@ public class PlayerPush : MonoBehaviour
 
     bool CanUseForcePushJump => PlayerMovement.obj.isGrounded && Player.obj.hasPowerUp && _buildUpPower >= maxForce;
 
+    private AudioSource _forcePushStartChargingAudioSource;
+    private AudioSource _forcePushChargeLoopAudioSource;
+    private bool _startedForcePushChargeLoop = false;
+
     private void Awake()
     {
         obj = this;
@@ -43,6 +47,7 @@ public class PlayerPush : MonoBehaviour
             {
                 if (defaultPower < StaminaMgr.obj.GetCurrentStamina()) {
                     pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().HardCancel();
+                    _forcePushStartChargingAudioSource = SoundFXManager.obj.PlayForcePushStartCharging(transform);
                     _buildUpPower = defaultPower;
                     _buildingUpPower = true;
                     _buildUpPowerTime = 0;
@@ -86,6 +91,16 @@ public class PlayerPush : MonoBehaviour
     }
 
     public void ResetBuiltUpPower() {
+        if(_forcePushStartChargingAudioSource != null && _forcePushStartChargingAudioSource.isPlaying) {
+            SoundFXManager.obj.FadeOutAndStopSound(_forcePushStartChargingAudioSource, 0.05f);
+            _forcePushStartChargingAudioSource = null;
+        }
+        if(_forcePushChargeLoopAudioSource != null && _forcePushChargeLoopAudioSource.isPlaying) {
+            SoundFXManager.obj.FadeOutAndStopSound(_forcePushChargeLoopAudioSource, 0.05f);
+            _startedForcePushChargeLoop = false;
+            _forcePushChargeLoopAudioSource = null;
+        }
+
         _buildingUpPower = false;
         _buildUpPower = defaultPower;
         _buildUpPowerTime = 0;
@@ -109,6 +124,11 @@ public class PlayerPush : MonoBehaviour
             if(_buildUpPower < maxForce && _buildUpPowerTime > minBuildUpPowerTime) {
                 _buildUpPower *= powerBuildUpPerFixedUpdate;
             }
+        }
+
+        if(IsFullyCharged() && !_startedForcePushChargeLoop) {
+            _startedForcePushChargeLoop = true;
+            _forcePushChargeLoopAudioSource = SoundFXManager.obj.PlayForcePushChargeLoop(transform);
         }
     }
 
@@ -135,6 +155,7 @@ public class PlayerPush : MonoBehaviour
 
     private IEnumerator DelayedProjectile(float delay, float power, bool forcePushJump) {
         yield return new WaitForSeconds(delay);
+        SoundFXManager.obj.PlayForcePushExecute(transform);
         int playerFacingDirection = _playerSpriteRenderer.flipX ? -1 : 1;
         ProjectileManager.obj.shootProjectile(
             new Vector3(gameObject.transform.position.x + (playerOffset * playerFacingDirection) , gameObject.transform.position.y, gameObject.transform.position.z),

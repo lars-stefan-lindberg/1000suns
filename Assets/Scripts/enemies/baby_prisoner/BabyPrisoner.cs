@@ -197,7 +197,7 @@ public class BabyPrisoner : MonoBehaviour
 
     public void Disable() {
         speed = 0;
-        SoundFXManager.obj.FadeOutAndStopLoopedSound(_escapeAudioSource, 2f);
+        SoundFXManager.obj.FadeOutAndStopSound(_escapeAudioSource, 2f);
         StartCoroutine(DelayedSetGameObjectInactive());
     }
 
