@@ -80,6 +80,8 @@ public class Block : MonoBehaviour
     }
 
     public float deceleration = 1f;
+    private float _blockSizeOffSet = 1.002f; //To dial in the landing sound
+
     private void Update()
     {
         if (_rigidBody.velocity.x != 0)
@@ -92,7 +94,8 @@ public class Block : MonoBehaviour
         //    new Vector3(_collider.transform.position.x, _collider.transform.position.y - _isGroundedCheckOffset, _collider.transform.position.z),
         //    Color.red);
 
-        bool groundHit = Physics2D.BoxCast(_childCollider.bounds.center, _childCollider.size - new Vector2(1f, 0), 0, Vector2.down, _grounderDistance, groundLayer);
+        bool groundHit = Physics2D.BoxCast(_childCollider.bounds.center, _childCollider.size - new Vector2(_blockSizeOffSet, 0), 0, 
+            Vector2.down, _grounderDistance, groundLayer);
 
         if(!_isGrounded && groundHit)
             SoundFXManager.obj.PlayBlockLand(transform);
