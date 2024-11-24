@@ -92,10 +92,16 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         return _spriteRenderer.flipX;
     }
 
-    public void ExecuteFallDash()
+    private float _fallDashMultiplier = 1.35f;
+    public void ExecuteFallDash(bool isPoweredUp)
     {
         _isFallDashing = true;
-        _frameVelocity.x = isFacingLeft() ? initialDashSpeed : -initialDashSpeed;
+        float speed = initialDashSpeed;
+        if(isPoweredUp) {
+            speed *= _fallDashMultiplier;
+            Player.obj.SetHasPowerUp(false);
+        }
+        _frameVelocity.x = isFacingLeft() ? speed : -speed;
     }
 
     public void TriggerForcePushAnimation() {
