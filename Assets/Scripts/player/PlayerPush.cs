@@ -55,9 +55,13 @@ public class PlayerPush : MonoBehaviour
                     //Should tilt the player slightly backwards in air
                     if(!PlayerMovement.obj.isGrounded && !PlayerMovement.obj.isFalling && IsFullyCharged())
                     {
-                        //Tilt player slightly when in air
-                        float power = PlayerMovement.obj.isFacingLeft() ? pushTiltPower : -pushTiltPower;
-                        Player.obj.rigidBody.AddForce(new Vector2(power, 0));
+                        if(Player.obj.hasPowerUp) {
+                            PlayerMovement.obj.ExecuteFallDash();
+                            Player.obj.SetHasPowerUp(false);
+                        } else {
+                            float power = PlayerMovement.obj.isFacingLeft() ? pushTiltPower : -pushTiltPower;
+                            Player.obj.rigidBody.AddForce(new Vector2(power, 0));
+                        }
                     } else if(PlayerMovement.obj.isFalling && Player.obj.CanFallDash)
                         PlayerMovement.obj.ExecuteFallDash();
 
