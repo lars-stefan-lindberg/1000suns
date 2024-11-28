@@ -96,7 +96,7 @@ public class TutorialDialogManager : MonoBehaviour
         _confirmButton.enabled = false;
     }
 
-    void Destroy() {
+    void OnDestroy() {
         obj = null;
     }
 }

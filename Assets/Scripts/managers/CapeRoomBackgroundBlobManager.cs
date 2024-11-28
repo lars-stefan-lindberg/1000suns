@@ -57,10 +57,17 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
             yield return null;
         }
 
+        PlayerMovement.obj.Freeze();
+        Time.timeScale = 0;
         _tutorialCanvas.SetActive(true);
-        TutorialFooterManager.obj.StartFadeIn();
-
+        TutorialDialogManager.obj.StartFadeIn();
+        while(!TutorialDialogManager.obj.tutorialCompleted) {
+            yield return null;
+        }
+        _tutorialCanvas.SetActive(false);
+        Time.timeScale = 1;
         PlayerMovement.obj.UnFreeze();
+
         MusicManager.obj.PlayCaveSong();
     }
 
