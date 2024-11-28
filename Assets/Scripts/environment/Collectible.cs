@@ -9,8 +9,10 @@ public class Collectible : MonoBehaviour
     [SerializeField] private string id;
     void OnTriggerEnter2D(Collider2D other) {
         if(other.gameObject.CompareTag("Player")) {
+            SoundFXManager.obj.PlayCollectiblePickup(transform);
             CollectibleManager.obj.CollectiblePickedTemporarily(id);
-            Destroy(gameObject);
+            _spriteRenderer.enabled = false;
+            Destroy(gameObject, 2);
         }
     }
 

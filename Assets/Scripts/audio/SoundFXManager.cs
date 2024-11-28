@@ -64,8 +64,14 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip capePickUp;
     #endregion
 
+    public AudioClip collectiblePickup;
+
     void Start() {
         obj = this;
+    }
+
+    public void PlayCollectiblePickup(Transform spawnTransform) {
+        PlaySound(collectiblePickup, spawnTransform, 1f);
     }
 
     public void PlayUIBrowse() {
