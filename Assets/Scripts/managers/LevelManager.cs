@@ -49,15 +49,18 @@ public class LevelManager : MonoBehaviour
                 AdjustSpawnFaceDirection(sceneLoadTrigger.transform.position.x, playerSpawnPoint.transform.position.x);
                 Player.obj.SetHasPowerUp(false);
                 Player.obj.gameObject.SetActive(true);
-                Player.obj.PlaySpawn();
-                if(Player.obj.hasCape)
-                    Player.obj.SetHasCape(true);
+                
                 PlayerMovement.obj.SetStartingOnGround();
                 PlayerMovement.obj.isGrounded = true;
                 PlayerMovement.obj.isForcePushJumping = false;
                 PlayerMovement.obj.jumpedWhileForcePushJumping = false;
-                Reaper.obj.playerKilled = false;
+                PlayerMovement.obj.CancelJumping();
 
+                Reaper.obj.playerKilled = false;
+                if(Player.obj.hasCape)
+                    Player.obj.SetHasCape(true);
+                Player.obj.PlaySpawn();
+                
                 sceneLoadTrigger.LoadScenes();
             }
             SceneFadeManager.obj.StartFadeIn();

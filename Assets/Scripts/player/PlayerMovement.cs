@@ -250,6 +250,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         }
     }
 
+    public void CancelJumping() {
+        _jumpToConsume = false;
+    }
+
     private void BuildUpPowerJump()
     {
         if(isDevMode) {
