@@ -19,6 +19,13 @@ public class Spike : MonoBehaviour
     private float spawnTime = 3f;
     private Color _fadeStartColor;
     [Range(0.1f, 10f), SerializeField] private float _fadeSpeed = 5f;
+    [SerializeField] private GameObject _dustParticles;
+
+    private float _originXPosition;
+    private readonly float _shakeDistance = 0.1f;
+    private readonly float _shakeTime = 0.12f;
+    private readonly float _shakeFrameWait = 0.08f;
+    private readonly float _shakeTimeTotal = 0.4f;
 
     private void Awake() {
         _rigidBody = GetComponent<Rigidbody2D>();
@@ -29,19 +36,26 @@ public class Spike : MonoBehaviour
         _animator.enabled = false;
         _startingPosition = transform.position;
         _fadeStartColor = new Color(_spriteRenderer.color.r, _spriteRenderer.color.g, _spriteRenderer.color.b, 0);
+        _originXPosition = _spriteRenderer.transform.position.x;
     }
 
-    private void Update() {
-        Debug.DrawRay(transform.position, Vector3.down * castDistance, Color.red);
-        if (!_isFalling && !_hasDetectedPlayer) {
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector3.down, castDistance);
+    private float _raycastOffset = 2;
 
-            if(hit.transform != null) {
-                if(hit.transform.CompareTag("Player")) {
+    private void Update() {
+        Debug.DrawRay(new Vector2(transform.position.x - _raycastOffset, transform.position.y), Vector3.down * castDistance, Color.red);
+        Debug.DrawRay(new Vector2(transform.position.x + _raycastOffset, transform.position.y), Vector3.down * castDistance, Color.red);
+        if (!_isFalling && !_hasDetectedPlayer) {
+            RaycastHit2D hitLeft = Physics2D.Raycast(new Vector2(transform.position.x - _raycastOffset, transform.position.y), Vector3.down, castDistance);
+            RaycastHit2D hitRight = Physics2D.Raycast(new Vector2(transform.position.x + _raycastOffset, transform.position.y), Vector3.down, castDistance);
+
+            if(hitLeft.transform != null || hitRight.transform != null) {
+                if(hitLeft.transform.CompareTag("Player") || hitRight.transform.CompareTag("Player")) {
+                    GameObject dustParticles = Instantiate(_dustParticles, transform);
+                    dustParticles.transform.parent = null;
+                    dustParticles.GetComponent<ParticleSystem>().Play();
                     _startFalling = true;
-                    _collider.enabled = true;
                     _isFalling = true;
-                    _rigidBody.gravityScale = gravity;
+                    StartCoroutine(ShakeBeforeFall(dustParticles));
                 }
             }
         }
@@ -57,9 +71,32 @@ public class Spike : MonoBehaviour
         }
     }
 
+    private IEnumerator ShakeBeforeFall(GameObject dustParticles) {
+        //Shake spike
+        float leftX = _originXPosition - _shakeDistance;
+        float rightX = _originXPosition + _shakeDistance;
+        float[] positions = new float[2] {leftX, rightX};
+        float time = 0f;
+        int index = 1;
+        while(time <= _shakeTimeTotal) {
+            time += (Time.deltaTime / _shakeTime) + _shakeFrameWait;
+            index += 1;
+            _spriteRenderer.transform.position = new Vector2(positions[index % 2], _spriteRenderer.transform.position.y);
+            yield return new WaitForSeconds(_shakeFrameWait);
+        }
+        _spriteRenderer.transform.position = new Vector2(_originXPosition, _spriteRenderer.transform.position.y);
+
+        Destroy(dustParticles, 1);
+        _collider.enabled = true;
+        _rigidBody.gravityScale = gravity;
+        SoundFXManager.obj.PlayFallingSpikeFall(transform);
+        yield return null;
+    }
+
     private void OnCollisionEnter2D(Collision2D collision) {
         if(!_isFalling)
             return;
+        SoundFXManager.obj.PlayFallingSpikeHit(transform);
         _hasDetectedPlayer = true;
         _isFalling = false;
         _rigidBody.velocity = Vector3.zero;

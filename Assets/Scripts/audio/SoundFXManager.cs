@@ -29,6 +29,7 @@ public class SoundFXManager : MonoBehaviour
 
     #region FallingSpike
     public AudioClip[] fallingSpikeCrackling;
+    public AudioClip[] fallingSpikeFall;
     public AudioClip[] fallingSpikeHit;
     #endregion
 
@@ -137,6 +138,9 @@ public class SoundFXManager : MonoBehaviour
 
     public void PlayFallingSpikeCrackling(Transform spawnTransform) {
         PlayRandomSound(fallingSpikeCrackling, spawnTransform, 1f);
+    }
+    public void PlayFallingSpikeFall(Transform spawnTransform) {
+        PlayRandomSound(fallingSpikeFall, spawnTransform, 1f);
     }
     public void PlayFallingSpikeHit(Transform spawnTransform) {
         PlayRandomSound(fallingSpikeHit, spawnTransform, 1f);
