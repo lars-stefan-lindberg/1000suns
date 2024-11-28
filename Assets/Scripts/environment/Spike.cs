@@ -10,7 +10,8 @@ public class Spike : MonoBehaviour
     public bool isRespawnable = false;
     private bool _isRespawning = false;
     private bool _isFalling = false;
-    private bool _hit = false;
+    private bool _startFalling = false;
+    private bool _hasDetectedPlayer = false;
     public float castDistance = 0;
     public float gravity = 0;
     private Vector2 _startingPosition;
@@ -32,16 +33,21 @@ public class Spike : MonoBehaviour
 
     private void Update() {
         Debug.DrawRay(transform.position, Vector3.down * castDistance, Color.red);
-        if (!_isFalling && !_hit) {
+        if (!_isFalling && !_hasDetectedPlayer) {
             RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector3.down, castDistance);
 
             if(hit.transform != null) {
                 if(hit.transform.CompareTag("Player")) {
+                    _startFalling = true;
                     _collider.enabled = true;
                     _isFalling = true;
                     _rigidBody.gravityScale = gravity;
                 }
             }
+        }
+        if(_startFalling) {
+            _startFalling = false;
+            SoundFXManager.obj.PlayFallingSpikeCrackling(transform);
         }
         if(_isRespawning) {
             _respawnTimer += Time.deltaTime;
@@ -54,7 +60,7 @@ public class Spike : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision) {
         if(!_isFalling)
             return;
-        _hit = true;
+        _hasDetectedPlayer = true;
         _isFalling = false;
         _rigidBody.velocity = Vector3.zero;
         _rigidBody.gravityScale = 0;
@@ -93,6 +99,6 @@ public class Spike : MonoBehaviour
         }
         _isRespawning = false;
         _collider.enabled = true;
-        _hit = false;
+        _hasDetectedPlayer = false;
     }
 }

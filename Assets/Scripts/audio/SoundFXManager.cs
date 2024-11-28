@@ -27,6 +27,11 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip[] blockWallImpact;
     #endregion
 
+    #region FallingSpike
+    public AudioClip[] fallingSpikeCrackling;
+    public AudioClip[] fallingSpikeHit;
+    #endregion
+
     public AudioClip[] breakableWallCrackling;
     public AudioClip breakableWallBreak;
 
@@ -128,6 +133,13 @@ public class SoundFXManager : MonoBehaviour
 
     public void PlayBreakableWallBreak(Transform spawnTransform) {
         PlaySound(breakableWallBreak, spawnTransform, 1f);
+    }
+
+    public void PlayFallingSpikeCrackling(Transform spawnTransform) {
+        PlayRandomSound(fallingSpikeCrackling, spawnTransform, 1f);
+    }
+    public void PlayFallingSpikeHit(Transform spawnTransform) {
+        PlayRandomSound(fallingSpikeHit, spawnTransform, 1f);
     }
 
     public void PlayBabyPrisonerCrawl(Transform spawnTransform) {
