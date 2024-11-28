@@ -87,6 +87,7 @@ public class MainMenuManager : MonoBehaviour
             yield return null;
         }
         Player.obj.SetCaveStartingCoordinates();
+        PlayerMovement.obj.DisablePlayerMovement();
         
         GameObject[] sceneGameObjects = caveRoom1.GetRootGameObjects();
         GameObject room = sceneGameObjects.First(gameObject => gameObject.CompareTag("Room"));

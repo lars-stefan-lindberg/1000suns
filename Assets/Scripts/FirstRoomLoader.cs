@@ -11,12 +11,13 @@ public class FirstRoomLoader : MonoBehaviour
         SceneFadeManager.obj.StartFadeIn();
 
         StartCoroutine(AmbienceFadeIn());
+        StartCoroutine(DelayedEnablePlayerMovement());
     }
 
     void Update() {
         if(!SceneFadeManager.obj.IsFadingIn) {
             SceneFadeManager.obj.SetFadeInSpeed(5f);
-            Destroy(this);
+            Destroy(this, 5);
         }
     }
 
@@ -27,5 +28,10 @@ public class FirstRoomLoader : MonoBehaviour
         StartCoroutine(SoundMixerManager.obj.StartAmbienceFade(3f, v));
 
         yield return null;
+    }
+
+    private IEnumerator DelayedEnablePlayerMovement() {
+        yield return new WaitForSeconds(3);
+        PlayerMovement.obj.EnablePlayerMovement();
     }
 }
