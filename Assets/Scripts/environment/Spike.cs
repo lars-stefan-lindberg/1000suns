@@ -39,24 +39,34 @@ public class Spike : MonoBehaviour
         _originXPosition = _spriteRenderer.transform.position.x;
     }
 
-    private float _raycastOffset = 2;
+    private readonly float _raycastOffsetX = 2;
+    [SerializeField] private float _raycastOffsetY = 0;
 
     private void Update() {
-        Debug.DrawRay(new Vector2(transform.position.x - _raycastOffset, transform.position.y), Vector3.down * castDistance, Color.red);
-        Debug.DrawRay(new Vector2(transform.position.x + _raycastOffset, transform.position.y), Vector3.down * castDistance, Color.red);
+        Debug.DrawRay(new Vector2(transform.position.x - _raycastOffsetX, transform.position.y + _raycastOffsetY), Vector3.down * (castDistance + _raycastOffsetY), Color.red);
+        Debug.DrawRay(new Vector2(transform.position.x + _raycastOffsetX, transform.position.y + _raycastOffsetY), Vector3.down * (castDistance + _raycastOffsetY), Color.red);
         if (!_isFalling && !_hasDetectedPlayer) {
-            RaycastHit2D hitLeft = Physics2D.Raycast(new Vector2(transform.position.x - _raycastOffset, transform.position.y), Vector3.down, castDistance);
-            RaycastHit2D hitRight = Physics2D.Raycast(new Vector2(transform.position.x + _raycastOffset, transform.position.y), Vector3.down, castDistance);
-
-            if(hitLeft.transform != null || hitRight.transform != null) {
-                if(hitLeft.transform.CompareTag("Player") || hitRight.transform.CompareTag("Player")) {
-                    GameObject dustParticles = Instantiate(_dustParticles, transform);
-                    dustParticles.transform.parent = null;
-                    dustParticles.GetComponent<ParticleSystem>().Play();
-                    _startFalling = true;
-                    _isFalling = true;
-                    StartCoroutine(ShakeBeforeFall(dustParticles));
+            RaycastHit2D hitLeft = Physics2D.Raycast(new Vector2(transform.position.x - _raycastOffsetX, transform.position.y + _raycastOffsetY), Vector3.down, castDistance + _raycastOffsetY);
+            RaycastHit2D hitRight = Physics2D.Raycast(new Vector2(transform.position.x + _raycastOffsetX, transform.position.y + _raycastOffsetY), Vector3.down, castDistance + _raycastOffsetY);
+            bool hit = false;
+            if(hitLeft.transform != null) {
+                if(hitLeft.transform.CompareTag("Player")) {
+                    hit = true;
                 }
+            }
+            if(hitRight.transform != null) {
+                if(hitRight.transform.CompareTag("Player")) {
+                    hit = true;
+                }
+            }
+
+            if(hit) {
+                GameObject dustParticles = Instantiate(_dustParticles, transform);
+                dustParticles.transform.parent = null;
+                dustParticles.GetComponent<ParticleSystem>().Play();
+                _startFalling = true;
+                _isFalling = true;
+                StartCoroutine(ShakeBeforeFall(dustParticles));
             }
         }
         if(_startFalling) {
