@@ -12,6 +12,7 @@ public class Player : MonoBehaviour
     public Surface surface = Surface.Rock;
     public bool hasCape = false;
     public bool CanFallDash {get; set;}
+    public bool CanForcePushJump {get; set;}
 
     private Animator _animator;
     private LayerMask _groundLayerMasks;
@@ -27,6 +28,7 @@ public class Player : MonoBehaviour
 
         SetHasCape(true);
         CanFallDash = true;
+        CanForcePushJump = true;
     }
 
     void OnCollisionEnter2D(Collision2D other) {

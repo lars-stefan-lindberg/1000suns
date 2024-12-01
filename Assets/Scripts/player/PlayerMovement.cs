@@ -92,13 +92,17 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         return _spriteRenderer.flipX;
     }
 
-    private float _fallDashMultiplier = 1.35f;
-    public void ExecuteFallDash(bool isPoweredUp)
+    private float _poweredFallDashMultiplierFalling = 1.35f;
+    private float _poweredFallDashMultiplierNotFalling = 1.2f;
+    public void ExecuteFallDash(bool isPoweredUp, bool isFalling)
     {
         _isFallDashing = true;
         float speed = initialDashSpeed;
         if(isPoweredUp) {
-            speed *= _fallDashMultiplier;
+            if(isFalling)
+                speed *= _poweredFallDashMultiplierFalling;
+            else
+                speed *= _poweredFallDashMultiplierNotFalling;
             Player.obj.SetHasPowerUp(false);
         }
         _frameVelocity.x = isFacingLeft() ? speed : -speed;
@@ -216,7 +220,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             }
             if (!PowerJumpMaxCharged)
             {
-                if(_movementInput.x != 0 && PlayerPush.obj.IsFullyCharged() && Player.obj.hasPowerUp && (isGrounded || CanUseCoyote)) {
+                if(Player.obj.CanForcePushJump && _movementInput.x != 0 && PlayerPush.obj.IsFullyCharged() && Player.obj.hasPowerUp && (isGrounded || CanUseCoyote)) {
                     _jumpToConsume = true;
                     ExecuteForcePushJump();
                 }

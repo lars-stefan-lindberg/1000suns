@@ -5,7 +5,7 @@ using UnityEngine;
 public class CollectibleManager : MonoBehaviour
 {
     public static CollectibleManager obj;
-    public static int NUMBER_OF_COLLECTIBLES = 7;
+    public static int NUMBER_OF_COLLECTIBLES = 8;
 
     void Awake() {
         obj = this;

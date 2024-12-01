@@ -77,6 +77,7 @@ public class MainMenuManager : MonoBehaviour
         //Reset player properties
         Player.obj.SetHasCape(false);
         Player.obj.CanFallDash = false;
+        Player.obj.CanForcePushJump = false;
         CollectibleManager.obj.ResetCollectibles();
         //TODO reset number of lives died
 

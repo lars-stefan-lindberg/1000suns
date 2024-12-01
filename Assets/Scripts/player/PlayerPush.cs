@@ -28,7 +28,7 @@ public class PlayerPush : MonoBehaviour
     
     public FloatyPlatform platform;
 
-    bool CanUseForcePushJump => PlayerMovement.obj.isGrounded && Player.obj.hasPowerUp && _buildUpPower >= maxForce;
+    bool CanUseForcePushJump => PlayerMovement.obj.isGrounded && Player.obj.hasPowerUp && _buildUpPower >= maxForce && Player.obj.CanForcePushJump;
 
     private AudioSource _forcePushStartChargingAudioSource;
     private AudioSource _forcePushChargeLoopAudioSource;
@@ -61,14 +61,14 @@ public class PlayerPush : MonoBehaviour
                     if(!PlayerMovement.obj.isGrounded && !PlayerMovement.obj.isFalling && IsFullyCharged())
                     {
                         if(Player.obj.hasPowerUp) {
-                            PlayerMovement.obj.ExecuteFallDash(false);
-                            Player.obj.SetHasPowerUp(false);
+                            PlayerMovement.obj.ExecuteFallDash(true, false);
                         } else {
                             float power = PlayerMovement.obj.isFacingLeft() ? pushTiltPower : -pushTiltPower;
                             Player.obj.rigidBody.AddForce(new Vector2(power, 0));
                         }
-                    } else if(PlayerMovement.obj.isFalling && Player.obj.CanFallDash)
-                        PlayerMovement.obj.ExecuteFallDash(Player.obj.hasPowerUp);
+                    } else if(PlayerMovement.obj.isFalling && Player.obj.CanFallDash) {
+                        PlayerMovement.obj.ExecuteFallDash(Player.obj.hasPowerUp && IsFullyCharged(), true);
+                    }
 
                     if(platform != null) {
                         float power = Player.obj.hasPowerUp && IsFullyCharged() ? powerUpMaxForce : _buildUpPower;
