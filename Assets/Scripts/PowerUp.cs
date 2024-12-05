@@ -12,6 +12,7 @@ public class PowerUp : MonoBehaviour
 
     private bool _isPicked = false;
     private bool _playerEntered = false;
+    private bool _isSpawned = false;
 
     void Awake() {
         _animator = GetComponent<Animator>();
@@ -30,7 +31,7 @@ public class PowerUp : MonoBehaviour
     }
 
     void FixedUpdate() {
-        if(_playerEntered && !_isPicked && !Player.obj.hasPowerUp) {
+        if(_isSpawned && _playerEntered && !_isPicked && !Player.obj.hasPowerUp) {
             Player.obj.SetHasPowerUp(true);
             _animator.SetBool("isPicked", true);
             _isPicked = true;
@@ -45,6 +46,7 @@ public class PowerUp : MonoBehaviour
 
     public void SetRecovered() {
         _isPicked = false;
+        _isSpawned = true;
         _recoveryTimer = 0;
     }
 }
