@@ -34,16 +34,6 @@ public class PowerUpRoomCutScene : MonoBehaviour
     }
 
     private IEnumerator StartCutscene() {
-        // float ambienceVolume = SoundMixerManager.obj.GetAmbienceVolume();
-        // StartCoroutine(SoundMixerManager.obj.StartAmbienceFade(3f, 0.001f));
-        // while(SoundMixerManager.obj.GetAmbienceVolume() > 0.001f) {
-        //     yield return null;
-        // }
-        // AmbienceManager.obj.StopAmbience();
-        // SoundMixerManager.obj.SetAmbienceVolume(ambienceVolume);
-
-        // MusicManager.obj.PlayCaveSong();
-
         _cutsceneFinished = true;
         GameEventManager.obj.FirstPowerUpPicked = true;
 

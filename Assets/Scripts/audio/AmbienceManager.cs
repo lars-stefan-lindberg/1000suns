@@ -14,6 +14,7 @@ public class AmbienceManager : MonoBehaviour
         obj = this;
     }
 
+    [ContextMenu("Play ambience")]
     public void PlayAmbience() {
         _ambienceSource = Instantiate(ambienceObject, Camera.main.transform.position, Quaternion.identity);
         _ambienceSource.transform.parent = transform;
