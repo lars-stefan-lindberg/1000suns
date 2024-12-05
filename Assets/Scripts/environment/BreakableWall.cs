@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class BreakableWall : MonoBehaviour
 {
+    public bool isBig = false;
     public GameObject visibleLayer;
     private Animator _visibleLayerAnimator;
     private SpriteRenderer _spriteRenderer;
@@ -17,6 +18,7 @@ public class BreakableWall : MonoBehaviour
     public bool breakWall = false;
     public bool shakeWall = false;
     public float fadeMultiplier = 0.1f;
+    public int numberOfShakeParticles = 10;
     private bool _fadeSprite = false;
     public float shakeDistance = 0.1f;
     public float shakeTime = 0.12f;
@@ -33,9 +35,11 @@ public class BreakableWall : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collider) {
         if(collider.transform.CompareTag("Projectile")){
             var projectile = collider.gameObject.GetComponent<Projectile>();
-            if(projectile.power >= PlayerPush.obj.maxForce && !unbreakable) {
+            if(!isBig && projectile.power >= PlayerPush.obj.maxForce && !unbreakable) {
                 if(otherBreakableWall != null)
                     otherBreakableWall.SetActive(false);
+                breakWall = true;
+            } else if(isBig && projectile.isPoweredUp && projectile.power >= PlayerPush.obj.maxForce && !unbreakable) {
                 breakWall = true;
             }
             else
@@ -46,7 +50,7 @@ public class BreakableWall : MonoBehaviour
     {
         if(shakeWall) {
             SoundFXManager.obj.PlayBreakableWallCrackling(transform);
-            shakeAnimation.Emit(10);
+            shakeAnimation.Emit(numberOfShakeParticles);
             shakeWall = false;
             StartCoroutine(ShakeWall());
         }
