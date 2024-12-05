@@ -1,0 +1,72 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class PowerUpRoomCutScene : MonoBehaviour
+{
+    private Animator _animator;
+
+    [SerializeField] private float _recoveryTime = 10;
+    private float _recoveryTimer = 0;
+
+    private bool _isPicked = false;
+    private bool _playerEntered = false;
+    private bool _isSpawned = false;
+    private bool _cutsceneFinished = false;
+
+    void Awake() {
+        _animator = GetComponent<Animator>();
+    }
+    
+    void OnTriggerEnter2D(Collider2D other) {
+        if(other.CompareTag("Player")) {
+            if(!_cutsceneFinished)
+                StartCoroutine(StartCutscene());
+            else
+                _playerEntered = true;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other) {
+        if(other.gameObject.CompareTag("Player")) {
+            _playerEntered = false;
+        }
+    }
+
+    private IEnumerator StartCutscene() {
+        // float ambienceVolume = SoundMixerManager.obj.GetAmbienceVolume();
+        // StartCoroutine(SoundMixerManager.obj.StartAmbienceFade(3f, 0.001f));
+        // while(SoundMixerManager.obj.GetAmbienceVolume() > 0.001f) {
+        //     yield return null;
+        // }
+        // AmbienceManager.obj.StopAmbience();
+        // SoundMixerManager.obj.SetAmbienceVolume(ambienceVolume);
+
+        // MusicManager.obj.PlayCaveSong();
+
+        _cutsceneFinished = true;
+        GameEventManager.obj.FirstPowerUpPicked = true;
+
+        yield return null;
+    }
+
+    void FixedUpdate() {
+        if(_isSpawned && _playerEntered && !_isPicked && !Player.obj.hasPowerUp) {
+            Player.obj.SetHasPowerUp(true);
+            _animator.SetBool("isPicked", true);
+            _isPicked = true;
+        }
+        if(_isPicked) {
+            _recoveryTimer += Time.deltaTime;
+            if(_recoveryTimer >= _recoveryTime) {
+                _animator.SetBool("isPicked", false);
+            }
+        }
+    }
+
+    public void SetRecovered() {
+        _isPicked = false;
+        _isSpawned = true;
+        _recoveryTimer = 0;
+    }
+}

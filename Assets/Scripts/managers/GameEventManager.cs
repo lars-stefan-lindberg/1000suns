@@ -10,6 +10,7 @@ public class GameEventManager : MonoBehaviour
     public bool PrisonerIntroSeen { get; set; }
     public bool BabyPrisonerAlerted { get; set; }
     public bool CapePicked { get; set; }
+    public bool FirstPowerUpPicked { get; set; }
 
     //Tutorials seen
     public bool HasSeenForcePushDashTutorial { get; set; }
