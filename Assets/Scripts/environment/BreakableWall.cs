@@ -7,6 +7,7 @@ public class BreakableWall : MonoBehaviour
 {
     public bool isBig = false;
     public GameObject visibleLayer;
+    public GameObject background;
     private Animator _visibleLayerAnimator;
     private SpriteRenderer _spriteRenderer;
     private BoxCollider2D _collider;
@@ -55,6 +56,8 @@ public class BreakableWall : MonoBehaviour
             StartCoroutine(ShakeWall());
         }
         if(breakWall) {
+            if(background != null)
+                background.SetActive(false);
             SoundFXManager.obj.PlayBreakableWallBreak(transform);
             _visibleLayerAnimator.SetTrigger("reveal");
             _collider.enabled = false;
