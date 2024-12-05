@@ -1,10 +1,13 @@
 using System.Collections;
-using System.Collections.Generic;
+using Cinemachine;
 using UnityEngine;
 
 public class PowerUpRoomCutScene : MonoBehaviour
 {
     private Animator _animator;
+
+    [SerializeField] private CinemachineVirtualCamera _defaultCamera;
+    [SerializeField] private GameObject _zoomedCamera;
 
     [SerializeField] private float _recoveryTime = 10;
     private float _recoveryTimer = 0;
@@ -34,6 +37,18 @@ public class PowerUpRoomCutScene : MonoBehaviour
     }
 
     private IEnumerator StartCutscene() {
+        //Zoom in on power up
+        _zoomedCamera.SetActive(true);
+        CinemachineVirtualCamera zoomedCameraVcam = _zoomedCamera.GetComponent<CinemachineVirtualCamera>();
+        zoomedCameraVcam.enabled = true;
+        _defaultCamera.enabled = false;
+
+        yield return new WaitForSeconds(3);
+
+        //Zoom out
+        _defaultCamera.enabled = true;
+        zoomedCameraVcam.enabled = false;
+
         _cutsceneFinished = true;
         GameEventManager.obj.FirstPowerUpPicked = true;
 
