@@ -13,10 +13,6 @@ public class GameEventManager : MonoBehaviour
     public bool FirstPowerUpPicked { get; set; }
     public bool PowerUpRoomsFloorBroken { get; set; }
 
-    //Tutorials seen
-    public bool HasSeenForcePushDashTutorial { get; set; }
-    public bool HasSeenForcePushJumpTutorial { get; set; }
-
     void Awake() {
         obj = this;
     }
