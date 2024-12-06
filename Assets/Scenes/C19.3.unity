@@ -53780,7 +53780,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 86563751249474569, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 930284411824747446, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
       propertyPath: m_Name
@@ -53788,7 +53788,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1807143514575258344, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2256484198556276230, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
       propertyPath: currentScene._sceneName
@@ -53841,9 +53841,6 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 4266296263437843612, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1687898262}
     - targetCorrespondingSourceObject: {fileID: 4266296263437843612, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1323075734}
@@ -54118,68 +54115,6 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
---- !u!1001 &1687898261
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1470251162}
-    m_Modifications:
-    - target: {fileID: 673676492584824553, guid: 85681cff689914034886db86c695de5b, type: 3}
-      propertyPath: m_Name
-      value: SingleRoomBackground
-      objectReference: {fileID: 0}
-    - target: {fileID: 1811493771940002750, guid: 85681cff689914034886db86c695de5b, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1811493771940002750, guid: 85681cff689914034886db86c695de5b, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1811493771940002750, guid: 85681cff689914034886db86c695de5b, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1811493771940002750, guid: 85681cff689914034886db86c695de5b, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1811493771940002750, guid: 85681cff689914034886db86c695de5b, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1811493771940002750, guid: 85681cff689914034886db86c695de5b, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1811493771940002750, guid: 85681cff689914034886db86c695de5b, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1811493771940002750, guid: 85681cff689914034886db86c695de5b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1811493771940002750, guid: 85681cff689914034886db86c695de5b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1811493771940002750, guid: 85681cff689914034886db86c695de5b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 85681cff689914034886db86c695de5b, type: 3}
---- !u!4 &1687898262 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1811493771940002750, guid: 85681cff689914034886db86c695de5b, type: 3}
-  m_PrefabInstance: {fileID: 1687898261}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1749018943
 GameObject:
   m_ObjectHideFlags: 0
@@ -64005,7 +63940,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 1470251161}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 45e653bab7fb20e499bda25e1b646fea, type: 3}
   m_Name: 
