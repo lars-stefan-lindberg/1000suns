@@ -79,6 +79,16 @@ public class FloatyPlatform : MonoBehaviour
         }
     }
 
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.transform.CompareTag("Player"))
+        {
+            isPlayerOnPlatform = false;
+            PlayerMovement.obj.platformRigidBody = null;
+            PlayerPush.obj.platform = null;
+        }
+    }
+
     public bool IsFalling() {
         return fallTimer >= timeBeforeFall;
     }
@@ -89,16 +99,6 @@ public class FloatyPlatform : MonoBehaviour
         PlayerPush.obj.platform = this;
         if(isFallingPlatform)
             _startFallCountDown = true;
-    }
-
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        if (collision.transform.CompareTag("Player"))
-        {
-            isPlayerOnPlatform = false;
-            PlayerMovement.obj.platformRigidBody = null;
-            PlayerPush.obj.platform = null;
-        }
     }
 
     public bool somethingToTheRight = false;
