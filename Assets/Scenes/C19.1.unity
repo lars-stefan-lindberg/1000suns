@@ -285,11 +285,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5349280976128504704, guid: 0e8f500ea200d484bb8ebc74cf7ce55f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1030.6875
+      value: 1035.8125
       objectReference: {fileID: 0}
     - target: {fileID: 5349280976128504704, guid: 0e8f500ea200d484bb8ebc74cf7ce55f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -43.999996
+      value: -42.999996
       objectReference: {fileID: 0}
     - target: {fileID: 5349280976128504704, guid: 0e8f500ea200d484bb8ebc74cf7ce55f, type: 3}
       propertyPath: m_LocalPosition.z
@@ -359,11 +359,11 @@ PrefabInstance:
       objectReference: {fileID: 397801725}
     - target: {fileID: 4720458059243767474, guid: 191f0e8fc9e744462ad7b7a2e69e3ee7, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1029.9839
+      value: 1033.2339
       objectReference: {fileID: 0}
     - target: {fileID: 4720458059243767474, guid: 191f0e8fc9e744462ad7b7a2e69e3ee7, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -43.84859
+      value: -42.894657
       objectReference: {fileID: 0}
     - target: {fileID: 4720458059243767474, guid: 191f0e8fc9e744462ad7b7a2e69e3ee7, type: 3}
       propertyPath: m_LocalPosition.z
@@ -732,7 +732,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _floor: {fileID: 1244482335}
-  _fadeMultiplier: 3.5
+  _fadeMultiplier: 1.5
 --- !u!61 &741046428
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -787,7 +787,7 @@ Transform:
   m_GameObject: {fileID: 741046426}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1025.625, y: -45.5, z: 0}
+  m_LocalPosition: {x: 1027.375, y: -45.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -911,7 +911,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.009918213, y: 0}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -922,7 +922,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 6.02594, y: 1}
+  m_Size: {x: 6, y: 1}
   m_EdgeRadius: 0
 --- !u!50 &820873305
 Rigidbody2D:
@@ -44158,7 +44158,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _floor: {fileID: 1244482335}
-  _fadeMultiplier: 3.5
+  _fadeMultiplier: 1.5
 --- !u!61 &1112324516
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -44213,7 +44213,7 @@ Transform:
   m_GameObject: {fileID: 1112324514}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1018.375, y: -45.5, z: 0}
+  m_LocalPosition: {x: 1016.625, y: -45.57606, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -44235,7 +44235,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1119847175
 Transform:
   m_ObjectHideFlags: 0
