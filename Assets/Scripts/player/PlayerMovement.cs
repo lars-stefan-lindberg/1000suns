@@ -499,8 +499,9 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         } else
         {
             if(jumpedWhileForcePushJumping) {
-                //Time to defy physics and keep horizontal velocity
-                
+                //Time to defy physics and keep horizontal velocity, except if you hit a wall
+                if(Player.obj.rigidBody.velocity.x < 0.01 && Player.obj.rigidBody.velocity.x > -0.01)
+                    jumpedWhileForcePushJumping = false;
             } else {
                 if (_movementInput.x == 0)
                 {
