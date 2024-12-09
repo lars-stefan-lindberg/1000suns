@@ -168,6 +168,8 @@ public class Prisoner : MonoBehaviour
 
         if(!isGrounded && groundHit) {
             _isFalling = false;
+            isRecovering = true;
+            recoveryTimeCount = recoveryDuration;
         } else if(isGrounded && !groundHit && !hasBeenHit && !isRecovering && !_isSpawning) {
             _isFalling = true;
             _animator.SetTrigger("fall");
@@ -189,7 +191,8 @@ public class Prisoner : MonoBehaviour
             if((isWallAhead && isWallBehind) || (!isGroundFloorAhead && !isGroundFloorBehind) && !hasBeenHit) {
                 isStuck = true;
             }
-        }
+        } else
+            isStuck = false;
 
         if (isGrounded && !isTurning && !hasBeenHit && !isStuck)
         {
@@ -263,7 +266,8 @@ public class Prisoner : MonoBehaviour
                 }
                 else
                     isAttacking = false;
-            }
+            } else
+                isAttacking = false;
         }
 
         //Check if landed on edge. Try to recover by moving to one side -> either fall, or reach stable ground
