@@ -48,7 +48,12 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
     }
 
     private IEnumerator FadeOutBlobSpritesAndTutorialAndPlayMusic() {
-        yield return new WaitForSeconds(7);
+        yield return new WaitForSeconds(2);
+        Player.obj.transform.position = new Vector2(372.35f, Player.obj.transform.position.y);
+        PlayerMovement.obj.SetNewPower();
+
+        yield return new WaitForSeconds(5);
+        
         SpriteRenderer[] blobSprites = GetComponentsInChildren<SpriteRenderer>();
         while(blobSprites.First().color.a > 0) {
             foreach(SpriteRenderer blobSprite in blobSprites) {
@@ -66,6 +71,9 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
         }
         _tutorialCanvas.SetActive(false);
         Time.timeScale = 1;
+
+        PlayerMovement.obj.SetNewPowerRecevied();
+        yield return new WaitForSeconds(2);
         PlayerMovement.obj.UnFreeze();
 
         MusicManager.obj.PlayCaveSong();
