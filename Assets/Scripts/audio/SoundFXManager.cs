@@ -5,7 +5,8 @@ public class SoundFXManager : MonoBehaviour
 {
     public static SoundFXManager obj;
 
-    [SerializeField] private AudioSource soundFXObject;
+    [SerializeField] private AudioSource spatiallyAwareSoundFXObject;
+    [SerializeField] private AudioSource nonSpatiallyAwareSoundFXObject;
 
     #region Player
     public AudioClip[] jump;
@@ -185,15 +186,25 @@ public class SoundFXManager : MonoBehaviour
     }
 
     public void PlayCapeIntroduction(Transform spawnTransform) {
-        PlaySound(capeIntroduction, spawnTransform, 1f);
+        PlayNonSpatiallyAwareSound(capeIntroduction, spawnTransform, 1f);
     }
     public void PlayCapePickUp(Transform spawnTransform) {
-        PlaySound(capePickUp, spawnTransform, 1f);
+        PlayNonSpatiallyAwareSound(capePickUp, spawnTransform, 1f);
     }
 
     public AudioSource PlaySound(AudioClip clip, Transform spawnTransform, float volume)
     {
-        AudioSource audioSource = Instantiate(soundFXObject, spawnTransform.position, Quaternion.identity);
+        AudioSource audioSource = Instantiate(spatiallyAwareSoundFXObject, spawnTransform.position, Quaternion.identity);
+        audioSource.transform.parent = spawnTransform;
+        audioSource.clip = clip;
+        audioSource.volume = volume;
+        PlaySound(audioSource, audioSource.clip.length);
+        return audioSource;
+    }
+
+    public AudioSource PlayNonSpatiallyAwareSound(AudioClip clip, Transform spawnTransform, float volume)
+    {
+        AudioSource audioSource = Instantiate(nonSpatiallyAwareSoundFXObject, spawnTransform.position, Quaternion.identity);
         audioSource.transform.parent = spawnTransform;
         audioSource.clip = clip;
         audioSource.volume = volume;
@@ -203,7 +214,7 @@ public class SoundFXManager : MonoBehaviour
 
     public AudioSource PlayLoopedSound(AudioClip clip, Transform spawnTransform, float volume)
     {
-        AudioSource audioSource = Instantiate(soundFXObject, spawnTransform.position, Quaternion.identity);
+        AudioSource audioSource = Instantiate(spatiallyAwareSoundFXObject, spawnTransform.position, Quaternion.identity);
         audioSource.transform.parent = spawnTransform;
         audioSource.clip = clip;
         audioSource.volume = volume;
@@ -239,7 +250,7 @@ public class SoundFXManager : MonoBehaviour
 
     public AudioSource PlaySound(AudioClip clip, Transform spawnTransform, float volume, float clipLengthPercentage)
     {
-        AudioSource audioSource = Instantiate(soundFXObject, spawnTransform.position, Quaternion.identity);
+        AudioSource audioSource = Instantiate(spatiallyAwareSoundFXObject, spawnTransform.position, Quaternion.identity);
         audioSource.clip = clip;
         audioSource.volume = volume;
         float clipLength = audioSource.clip.length * clipLengthPercentage;
@@ -251,7 +262,7 @@ public class SoundFXManager : MonoBehaviour
     {
         int random = Random.Range(0, clip.Length);
 
-        AudioSource audioSource = Instantiate(soundFXObject, spawnTransform.position, Quaternion.identity);
+        AudioSource audioSource = Instantiate(spatiallyAwareSoundFXObject, spawnTransform.position, Quaternion.identity);
         audioSource.clip = clip[random];
         audioSource.volume = volume;
         PlaySound(audioSource, audioSource.clip.length);
