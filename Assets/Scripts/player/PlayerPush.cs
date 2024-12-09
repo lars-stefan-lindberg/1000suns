@@ -28,7 +28,7 @@ public class PlayerPush : MonoBehaviour
     
     public FloatyPlatform platform;
 
-    bool CanUseForcePushJump => PlayerMovement.obj.isGrounded && Player.obj.hasPowerUp && _buildUpPower >= maxForce && Player.obj.CanForcePushJump;
+    bool CanUsePoweredForcePush => PlayerMovement.obj.isGrounded && Player.obj.hasPowerUp && _buildUpPower >= maxForce;
 
     private AudioSource _forcePushStartChargingAudioSource;
     private AudioSource _forcePushChargeLoopAudioSource;
@@ -75,8 +75,8 @@ public class PlayerPush : MonoBehaviour
                         StartCoroutine(DelayedMovePlatform(projectileDelay, power));
                     }
 
-                    if(CanUseForcePushJump) 
-                        ForcePushJump(powerUpMaxForce);
+                    if(CanUsePoweredForcePush) 
+                        PoweredForcePush(powerUpMaxForce);
                     else
                         ForcePush(_buildUpPower);
                 }
@@ -134,7 +134,7 @@ public class PlayerPush : MonoBehaviour
 
     public float projectileDelay = 0.1f;
 
-    void ForcePushJump(float power) {
+    void PoweredForcePush(float power) {
         Push(power, true);
     }
 
@@ -163,7 +163,7 @@ public class PlayerPush : MonoBehaviour
             power,
             Player.obj.hasPowerUp);
         if(forcePushJump) {
-           PlayerMovement.obj.ExecuteForcePushJumpWithProjectile();
+           PlayerMovement.obj.ExecutePoweredForcePushWithProjectile();
            Player.obj.SetHasPowerUp(false);
         }
     }
