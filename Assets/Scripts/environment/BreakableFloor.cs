@@ -5,6 +5,7 @@ public class BreakableFloor : MonoBehaviour
 {
     private SpriteRenderer _spriteRenderer;
     private BoxCollider2D _collider;
+    private PolygonCollider2D _playerOnTopDetectionCollider;
     public ParticleSystem shakeAnimation;
 
     public bool unbreakable = false;
@@ -24,6 +25,7 @@ public class BreakableFloor : MonoBehaviour
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         _originYPosition = _spriteRenderer.transform.position.y;
         _collider = GetComponent<BoxCollider2D>();
+        _playerOnTopDetectionCollider = GetComponent<PolygonCollider2D>();
     }
 
     void OnTriggerEnter2D(Collider2D other) {
@@ -49,6 +51,7 @@ public class BreakableFloor : MonoBehaviour
             SoundFXManager.obj.PlayBreakableWallBreak(transform);
             shakeAnimation.Emit(numberOfShakeParticles);
             _collider.enabled = false;
+            _playerOnTopDetectionCollider.enabled = false;
             _fadeSprite = true;
             _breakFloor = false;
             GameEventManager.obj.PowerUpRoomsFloorBroken = true;
