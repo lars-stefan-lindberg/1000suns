@@ -7,73 +7,81 @@ public class PlayerFlash : MonoBehaviour
     [ColorUsage(true, true)]
     [SerializeField] private Color _flashColor = Color.white;
     [SerializeField] private float _flashIntensity = 0.5f;
-    [SerializeField] private float _defaultFlashSpeed = 0.25f;
+    [SerializeField] private float _defaultFlashSpeed = 0.27f;
+    private float _flashSpeed;
 
     private SpriteRenderer _spriteRenderer;
     private Material _material;
 
     private bool _startFlashing = false;
-    private bool _stopFlashing = false;
+    private bool _increaseFlash = false;
+    private bool _decreaseFlash = false;
     private float _elapsedTime = 0f; //Elapsed time between a blend and non-blend
-    private float _currentFlashAmount = 0f;
+    private float _totalElapsedTime = 0f;
+    private float _flashDuration = 0f;
+    private float _currentFlashIntensity = 0f;
+    private bool _isFlashing = false;
 
     private void Awake() {
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _material = _spriteRenderer.material;
+        _flashSpeed = _defaultFlashSpeed;
     }
 
-    public void StartFlashing() {
+    public void FlashOnce() {
         _startFlashing = true;
-        _elapsedTime = 0f;
+        _flashDuration = 0.1f;
+        _flashSpeed = _defaultFlashSpeed;
+    }
+
+    public void FlashFor(float duration, float flashSpeed) {
+        _startFlashing = true;
+        _flashDuration = duration;
+        _flashSpeed = flashSpeed;
     }
 
     void Update() {
-        // if (_startFlashing) {
-        //     StartCoroutine(SingleFlash());
-        //     _startFlashing = false;
-        // }
-        if (_startFlashing) {
-            if(_currentFlashAmount == 0f) {
-                _elapsedTime = 0f;
-            }
-            
-            _elapsedTime += Time.deltaTime;
+        if(_startFlashing) {
+            _totalElapsedTime = 0;
+            _startFlashing = false;
+            _increaseFlash = true;
+        }
 
-            float flashTime = _defaultFlashSpeed;
-            _currentFlashAmount = Mathf.Lerp(0f, _flashIntensity, _elapsedTime / flashTime);
+        if(!_isFlashing && _totalElapsedTime < _flashDuration)
+            _isFlashing = true;
 
-            _material.SetFloat("_FlashAmount", _currentFlashAmount);
+        if(_totalElapsedTime <= _flashDuration)
+            _totalElapsedTime += Time.deltaTime;
 
-            if(_currentFlashAmount == _flashIntensity) {
-                _startFlashing = false;
-                _stopFlashing = true;
-                _elapsedTime = 0;
-            }
-        } 
-        else if(_stopFlashing) {
-            if(_currentFlashAmount > 0f) {
+        if(_isFlashing) {
+            if (_increaseFlash) {
+                if(_currentFlashIntensity == 0f) {
+                    _elapsedTime = 0f;
+                }
+                
                 _elapsedTime += Time.deltaTime;
-                _currentFlashAmount = Mathf.Lerp(_flashIntensity, 0f, (_elapsedTime / _defaultFlashSpeed));
-                _material.SetFloat("_FlashAmount", _currentFlashAmount);
-            } else 
-                _stopFlashing = false;
-        }
-    }
 
-    private IEnumerator SingleFlash() {
-        _elapsedTime = 0f;
-        while(_currentFlashAmount != _flashIntensity) {
-            _elapsedTime += Time.deltaTime;
-            _currentFlashAmount = Mathf.Lerp(0f, _flashIntensity, _elapsedTime / _defaultFlashSpeed);
-            _material.SetFloat("_FlashAmount", _currentFlashAmount);
-        }
+                _currentFlashIntensity = Mathf.Lerp(0f, _flashIntensity, _elapsedTime / _flashSpeed);
 
-        _elapsedTime = 0f;
-        while(_currentFlashAmount != 0f) {
-            _elapsedTime += Time.deltaTime;
-            _currentFlashAmount = Mathf.Lerp(_flashIntensity, 0f, _elapsedTime / _defaultFlashSpeed);
-            _material.SetFloat("_FlashAmount", _currentFlashAmount);
+                _material.SetFloat("_FlashAmount", _currentFlashIntensity);
+
+                if(_currentFlashIntensity == _flashIntensity) {
+                    _increaseFlash = false;
+                    _decreaseFlash = true;
+                    _elapsedTime = 0;
+                }
+            } 
+            else if(_decreaseFlash) {
+                if(_currentFlashIntensity > 0f) {
+                    _elapsedTime += Time.deltaTime;
+                    _currentFlashIntensity = Mathf.Lerp(_flashIntensity, 0f, _elapsedTime / _flashSpeed);
+                    _material.SetFloat("_FlashAmount", _currentFlashIntensity);
+                } else {
+                    _decreaseFlash = false;
+                    _increaseFlash = true;
+                    _isFlashing = false;
+                }
+            }
         }
-        yield return null;
     }
 }

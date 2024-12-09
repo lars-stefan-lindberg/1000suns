@@ -173,6 +173,17 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         EnablePlayerMovement();
     }
 
+    [ContextMenu("Get new power")]
+    public void SetNewPower() {
+        _animator.SetTrigger("isNewPower");
+        Freeze();
+    }
+
+    [ContextMenu("New power received")]
+    public void SetNewPowerRecevied() {
+        _animator.SetTrigger("newPowerReceived");
+    }
+
     public void DisablePlayerMovement() {
         _playerInput.currentActionMap.FindAction("Movement").Disable();
         _playerInput.currentActionMap.FindAction("Jump").Disable();

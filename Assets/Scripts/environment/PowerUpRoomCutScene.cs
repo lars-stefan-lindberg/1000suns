@@ -16,6 +16,7 @@ public class PowerUpRoomCutScene : MonoBehaviour
     private bool _playerEntered = false;
     private bool _isSpawned = false;
     private bool _cutsceneFinished = false;
+    private bool _isFirstPick = true;
 
     void Awake() {
         _animator = GetComponent<Animator>();
@@ -37,17 +38,42 @@ public class PowerUpRoomCutScene : MonoBehaviour
     }
 
     private IEnumerator StartCutscene() {
+        PlayerMovement.obj.Freeze();
+
+        yield return new WaitForSeconds(1);
         //Zoom in on power up
         _zoomedCamera.SetActive(true);
         CinemachineVirtualCamera zoomedCameraVcam = _zoomedCamera.GetComponent<CinemachineVirtualCamera>();
         zoomedCameraVcam.enabled = true;
         _defaultCamera.enabled = false;
 
-        yield return new WaitForSeconds(3);
+        Player.obj.transform.position = new Vector2(1058.875f, Player.obj.transform.position.y);
+        PlayerMovement.obj.SetNewPower();
+        yield return new WaitForSeconds(1f);
+        _animator.SetTrigger("enableFast");
+        Player.obj.FlashFor(4.5f);
+
+        CameraShakeManager.obj.ShakeCamera(1f, 4.9f);
+
+        yield return new WaitForSeconds(2.5f);
+        Player.obj.SetBlackCape();
+        yield return new WaitForSeconds(2.5f);
+
+        _animator.SetTrigger("disableFast");
+        SetIsPicked();
+
+        yield return new WaitForSeconds(1);
 
         //Zoom out
         _defaultCamera.enabled = true;
         zoomedCameraVcam.enabled = false;
+        
+        yield return new WaitForSeconds(2f);
+
+        PlayerMovement.obj.SetNewPowerRecevied();
+
+        yield return new WaitForSeconds(2f);
+        PlayerMovement.obj.UnFreeze();
 
         _cutsceneFinished = true;
         GameEventManager.obj.FirstPowerUpPicked = true;
@@ -57,9 +83,7 @@ public class PowerUpRoomCutScene : MonoBehaviour
 
     void FixedUpdate() {
         if(_isSpawned && _playerEntered && !_isPicked && !Player.obj.hasPowerUp) {
-            Player.obj.SetHasPowerUp(true);
-            _animator.SetBool("isPicked", true);
-            _isPicked = true;
+            SetIsPicked();
         }
         if(_isPicked) {
             _recoveryTimer += Time.deltaTime;
@@ -67,6 +91,19 @@ public class PowerUpRoomCutScene : MonoBehaviour
                 _animator.SetBool("isPicked", false);
             }
         }
+    }
+
+    private void SetIsPicked() {
+        Player.obj.SetHasPowerUp(true);
+        _animator.SetBool("isPicked", true);
+        if(!_isFirstPick)
+            _isPicked = true;
+        else
+            _isFirstPick = false;
+    }
+
+    public void SetFirstPowerUpRecovered() {
+        _isPicked = true;
     }
 
     public void SetRecovered() {

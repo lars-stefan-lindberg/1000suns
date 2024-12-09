@@ -68,17 +68,37 @@ public class Player : MonoBehaviour
         hasCape = _hasCape;
     }
 
+
+    public void SetBlackCape() {
+        _animator.SetLayerWeight(1, 0);
+        _animator.SetLayerWeight(2, 1);
+    }
+
     public void SetHasPowerUp(bool _hasPowerUp) {
         if(_hasPowerUp) {
             _animator.SetLayerWeight(1, 0);
             _animator.SetLayerWeight(2, 1);
             //Flash animation
-            _playerFlash.StartFlashing();
+            _playerFlash.FlashOnce();
         } else {
             _animator.SetLayerWeight(1, 1);
             _animator.SetLayerWeight(2, 0);
         }
         hasPowerUp = _hasPowerUp;
+    }
+
+    [ContextMenu("Flash once")]
+    public void FlashOnce() {
+        _playerFlash.FlashOnce();
+    }
+
+    [ContextMenu("Flash")]
+    public void FlashFor() {
+        FlashFor(5);
+        //_playerFlash.StartFlashing();
+    }
+    public void FlashFor(float duration) {
+        _playerFlash.FlashFor(duration, 0.05f);
     }
 
     public void SetCaveStartingCoordinates() {
