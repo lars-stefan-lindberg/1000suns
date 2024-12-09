@@ -16,7 +16,7 @@ public class PowerUpRoomCutScene : MonoBehaviour
     private bool _playerEntered = false;
     private bool _isSpawned = false;
     private bool _cutsceneFinished = false;
-    private bool _isFirstPick = true;
+    private bool _recoveryTriggered = false;
 
     void Awake() {
         _animator = GetComponent<Animator>();
@@ -86,9 +86,11 @@ public class PowerUpRoomCutScene : MonoBehaviour
             SetIsPicked();
         }
         if(_isPicked) {
-            _recoveryTimer += Time.deltaTime;
-            if(_recoveryTimer >= _recoveryTime) {
-                _animator.SetBool("isPicked", false);
+            if(_recoveryTriggered) {
+                _recoveryTimer += Time.deltaTime;
+                if(_recoveryTimer >= _recoveryTime) {
+                    _animator.SetBool("isPicked", false);
+                }
             }
         }
     }
@@ -96,14 +98,11 @@ public class PowerUpRoomCutScene : MonoBehaviour
     private void SetIsPicked() {
         Player.obj.SetHasPowerUp(true);
         _animator.SetBool("isPicked", true);
-        if(!_isFirstPick)
-            _isPicked = true;
-        else
-            _isFirstPick = false;
+        _isPicked = true;
     }
 
     public void SetFirstPowerUpRecovered() {
-        _isPicked = true;
+        _recoveryTriggered = true;
     }
 
     public void SetRecovered() {
