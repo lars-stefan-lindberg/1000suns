@@ -11,6 +11,8 @@ public class SwitchToMusicOnlyTrigger : MonoBehaviour
     }
 
     private IEnumerator FadeOutAmbienceAndStartMusic() {
+        MusicManager.obj.PlayCaveSong();
+
         float ambienceVolume = SoundMixerManager.obj.GetAmbienceVolume();
         StartCoroutine(SoundMixerManager.obj.StartAmbienceFade(3f, 0.001f));
         while(SoundMixerManager.obj.GetAmbienceVolume() > 0.001f) {
@@ -18,6 +20,5 @@ public class SwitchToMusicOnlyTrigger : MonoBehaviour
         }
         AmbienceManager.obj.StopAmbience();
         SoundMixerManager.obj.SetAmbienceVolume(ambienceVolume);
-        MusicManager.obj.PlayCaveSong();
     }
 }

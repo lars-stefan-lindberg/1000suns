@@ -60,6 +60,10 @@ public class MusicManager : MonoBehaviour
     public void PlayCaveSong() {
         PlayIntroAndLoop(_caveSongIntro, _caveSongLoop);
     }
+    [ContextMenu("Play cave loop")]
+    public void PlayCaveLoop() {
+        PlayLoop(_caveSongLoop);
+    }
 
     [ContextMenu("Play end song")]
     public void PlayEndSong() {
@@ -93,6 +97,17 @@ public class MusicManager : MonoBehaviour
 
         double startTime = AudioSettings.dspTime + 1;
         _oneTimeSource.PlayScheduled(startTime);
+    }
+
+    private void PlayLoop(AudioClip clip) {
+        _loopSource = Instantiate(musicObject, Camera.main.transform.position, Quaternion.identity);
+        _loopSource.transform.parent = transform;
+        _loopSource.clip = clip;
+        _loopSource.playOnAwake = false;
+        _loopSource.loop = true;
+
+        double startTime = AudioSettings.dspTime + 1;
+        _loopSource.PlayScheduled(startTime);
     }
 
     public void StopPlaying() {
