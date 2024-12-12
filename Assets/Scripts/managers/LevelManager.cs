@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -36,20 +37,16 @@ public class LevelManager : MonoBehaviour
                 GameObject playerSpawnPoint = sceneGameObjects.First(gameObject => gameObject.CompareTag("PlayerSpawnPoint"));
                 _playerSpawningCollider = playerSpawnPoint.GetComponent<Collider2D>();
                 
-                GameObject sceneLoadTriggerGameObject = sceneGameObjects.First(gameObject => gameObject.CompareTag("SceneLoadTrigger"));
-                SceneLoadTrigger sceneLoadTrigger = sceneLoadTriggerGameObject.GetComponent<SceneLoadTrigger>();
-
                 //If we have multiple cameras in room, activate the first/default one when loading the room. This will also
                 //do an early enough reset of any parallax backgrounds.
-                GameObject room = sceneGameObjects.First(gameObject => gameObject.CompareTag("Room"));
-                RoomMgr roomMgr = room.GetComponent<RoomMgr>();
-                roomMgr.ActivateVirtualCamera();
+                GameObject cameras = sceneGameObjects.First(gameObject => gameObject.CompareTag("Cameras"));
+                CameraManager cameraManager = cameras.GetComponent<CameraManager>();
+                cameraManager.ActivateMainCamera();
 
                 Player.obj.transform.position = _playerSpawningCollider.transform.position;
-                AdjustSpawnFaceDirection(sceneLoadTrigger.transform.position.x, playerSpawnPoint.transform.position.x);
+                AdjustSpawnFaceDirection(Camera.main.transform.position.x, playerSpawnPoint.transform.position.x);
                 Player.obj.SetHasPowerUp(false);
                 Player.obj.gameObject.SetActive(true);
-                
                 PlayerMovement.obj.SetStartingOnGround();
                 PlayerMovement.obj.isGrounded = true;
                 PlayerMovement.obj.isForcePushJumping = false;
@@ -61,7 +58,11 @@ public class LevelManager : MonoBehaviour
                     Player.obj.SetHasCape(true);
                 Player.obj.PlaySpawn();
                 
-                sceneLoadTrigger.LoadScenes();
+                IEnumerable<GameObject> levelSwitchers = sceneGameObjects.Where(gameObject => gameObject.CompareTag("LevelSwitcher"));
+                foreach(GameObject levelSwitcherGameObject in levelSwitchers) {
+                    LevelSwitcher levelSwitcher = levelSwitcherGameObject.GetComponent<LevelSwitcher>();
+                    levelSwitcher.LoadNextRoom();
+                }
             }
             SceneFadeManager.obj.StartFadeIn();
         }

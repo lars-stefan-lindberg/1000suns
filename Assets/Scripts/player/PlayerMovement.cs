@@ -56,12 +56,17 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private void FixedUpdate()
     {
-        CheckCollisions();
+        if(!_stopCollisions)
+            CheckCollisions();
 
         BuildUpPowerJump();
         HandleJump();
         HandleDirection();
         HandleGravity();
+
+        if(_stopMovement) {
+            _frameVelocity = new Vector2(0,0);
+        }
 
         ApplyMovement();
     }
@@ -155,6 +160,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     }
 
     private bool _freezePlayer = false;
+    private bool _stopMovement = false;
+    private bool _stopCollisions = false;
     public void Freeze(float freezeDuration) {
         DisablePlayerMovement();
         _freezePlayer = true;
@@ -171,6 +178,61 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public void UnFreeze() {
         _freezePlayer = false;
         EnablePlayerMovement();
+    }
+
+    public void StopInTime() {
+        Freeze();
+        _stopMovement = true;
+        _stopCollisions = true;
+        Player.obj.rigidBody.gravityScale = 0;
+        _animator.speed = 0;
+    }
+
+    public void StartInTime() {
+        UnFreeze();
+        Player.obj.rigidBody.gravityScale = 1;
+        _animator.speed = 1;
+        _stopMovement = false;
+        _stopCollisions = false;
+    }
+
+    public enum PlayerDirection {
+        RIGHT,
+        LEFT,
+        UP,
+        DOWN
+    }
+    public void TransitionToNextRoom(PlayerDirection direction) {
+        StartCoroutine(TransitionToNextRoomCoroutine(direction));
+    }
+
+    private float _transitionDistanceX = 1;
+    private float _transitionDistanceY = 1.5f;
+    private IEnumerator TransitionToNextRoomCoroutine(PlayerDirection direction) {
+        float target = 0;
+        if(direction == PlayerDirection.LEFT || direction == PlayerDirection.RIGHT) {
+            if(direction == PlayerDirection.RIGHT)
+                target = transform.position.x + _transitionDistanceX;
+            if(direction == PlayerDirection.LEFT)
+                target = transform.position.x - _transitionDistanceX;
+            while(transform.position.x != target) {
+                transform.position = new Vector2(Mathf.MoveTowards(transform.position.x, target, Time.deltaTime * 5f), transform.position.y);
+                yield return null;
+            }
+        } else if(direction == PlayerDirection.UP || direction == PlayerDirection.DOWN) {
+            if(direction == PlayerDirection.UP)
+                target = transform.position.y + _transitionDistanceY;
+            if(direction == PlayerDirection.DOWN)
+                target = transform.position.y - _transitionDistanceY;
+            while(transform.position.y != target) {
+                transform.position = new Vector2(transform.position.x, Mathf.MoveTowards(transform.position.y, target, Time.deltaTime * 5f));
+                yield return null;
+            }
+        }
+
+        yield return new WaitForSeconds(0.5f);
+        StartInTime();
+        yield return null;
     }
 
     [ContextMenu("Get new power")]
