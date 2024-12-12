@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 using System.Linq;
 using System.Collections;
 using TMPro;
+using System.Collections.Generic;
 
 public class MainMenuManager : MonoBehaviour
 {
@@ -87,13 +88,19 @@ public class MainMenuManager : MonoBehaviour
         while(!caveRoom1.isLoaded) {
             yield return null;
         }
+        SceneManager.SetActiveScene(caveRoom1);
+        
         Player.obj.SetCaveStartingCoordinates();
         PlayerMovement.obj.DisablePlayerMovement();
         
         GameObject[] sceneGameObjects = caveRoom1.GetRootGameObjects();
-        GameObject room = sceneGameObjects.First(gameObject => gameObject.CompareTag("Room"));
-        RoomMgr roomMgr = room.GetComponentInChildren<RoomMgr>();
-        roomMgr.ActivateVirtualCamera();
+        GameObject cameras = sceneGameObjects.First(gameObject => gameObject.CompareTag("Cameras"));
+        CameraManager cameraManager = cameras.GetComponent<CameraManager>();
+        cameraManager.ActivateMainCamera();
+
+        GameObject levelSwitcherGameObject = sceneGameObjects.First(gameObject => gameObject.CompareTag("LevelSwitcher"));
+        LevelSwitcher levelSwitcher = levelSwitcherGameObject.GetComponent<LevelSwitcher>();
+        levelSwitcher.LoadNextRoom();
 
         SceneManager.UnloadSceneAsync(_titleScreen.SceneName);
     }
