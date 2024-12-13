@@ -96,7 +96,7 @@ public class MainMenuManager : MonoBehaviour
         GameObject[] sceneGameObjects = caveRoom1.GetRootGameObjects();
         GameObject cameras = sceneGameObjects.First(gameObject => gameObject.CompareTag("Cameras"));
         CameraManager cameraManager = cameras.GetComponent<CameraManager>();
-        cameraManager.ActivateMainCamera();
+        cameraManager.ActivateMainCamera(PlayerMovement.PlayerDirection.NO_DIRECTION);
 
         GameObject levelSwitcherGameObject = sceneGameObjects.First(gameObject => gameObject.CompareTag("LevelSwitcher"));
         LevelSwitcher levelSwitcher = levelSwitcherGameObject.GetComponent<LevelSwitcher>();

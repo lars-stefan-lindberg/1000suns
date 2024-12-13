@@ -41,7 +41,7 @@ public class LevelManager : MonoBehaviour
                 //do an early enough reset of any parallax backgrounds.
                 GameObject cameras = sceneGameObjects.First(gameObject => gameObject.CompareTag("Cameras"));
                 CameraManager cameraManager = cameras.GetComponent<CameraManager>();
-                cameraManager.ActivateMainCamera();
+                cameraManager.ActivateMainCamera(PlayerMovement.PlayerDirection.NO_DIRECTION);
 
                 Player.obj.transform.position = _playerSpawningCollider.transform.position;
                 AdjustSpawnFaceDirection(Camera.main.transform.position.x, playerSpawnPoint.transform.position.x);

@@ -6,12 +6,16 @@ public class FirstRoomLoader : MonoBehaviour
 {
     void Start()
     {
-        SceneFadeManager.obj.SetFadedOutState();
-        SceneFadeManager.obj.SetFadeInSpeed(1f);
-        SceneFadeManager.obj.StartFadeIn();
+        if(!GameEventManager.obj.CaveLevelStarted) {
+            SceneFadeManager.obj.SetFadedOutState();
+            SceneFadeManager.obj.SetFadeInSpeed(1f);
+            SceneFadeManager.obj.StartFadeIn();
 
-        StartCoroutine(AmbienceFadeIn());
-        StartCoroutine(DelayedEnablePlayerMovement());
+            StartCoroutine(AmbienceFadeIn());
+            StartCoroutine(DelayedEnablePlayerMovement());
+
+            GameEventManager.obj.CaveLevelStarted = true;
+        }
     }
 
     void Update() {

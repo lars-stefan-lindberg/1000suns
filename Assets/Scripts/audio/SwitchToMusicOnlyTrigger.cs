@@ -3,6 +3,12 @@ using UnityEngine;
 
 public class SwitchToMusicOnlyTrigger : MonoBehaviour
 {
+    void Awake() {
+        if(GameEventManager.obj.AfterPowerUpRoomsCompletedWallBreak) {
+            gameObject.SetActive(false);
+            Destroy(gameObject, 3);
+        }
+    }
     void OnTriggerEnter2D(Collider2D other) {
         if(other.CompareTag("Player")) {
             StartCoroutine(FadeOutAmbienceAndStartMusic());

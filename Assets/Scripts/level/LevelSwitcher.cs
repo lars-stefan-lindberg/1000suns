@@ -12,6 +12,7 @@ public class LevelSwitcher : MonoBehaviour
     [SerializeField] private GameObject _currentRoomCamera;
     [SerializeField] private SceneField[] _scenesToLoad;
     [SerializeField] private SceneField[] _scenesToUnload;
+    [SerializeField] private bool _enablePlayerTransition = true;
     private BoxCollider2D _collider;
 
     void Awake() {
@@ -22,7 +23,8 @@ public class LevelSwitcher : MonoBehaviour
         if(SceneManager.GetActiveScene().name != _currentScene.SceneName)
             return;
         if(other.CompareTag("Player")) {
-            PlayerMovement.obj.StopInTime();
+            if(_enablePlayerTransition)
+                PlayerMovement.obj.StopInTime();
 
             StartCoroutine(LoadScenesCoroutine());
             StartCoroutine(UnloadScenes());
@@ -37,7 +39,7 @@ public class LevelSwitcher : MonoBehaviour
         }
     }
 
-    private float _collisionMargin = 0.3f;
+    private float _collisionMargin = 0.5f;
     private PlayerMovement.PlayerDirection getPlayerDirection(Collider2D playerCollider) {
         Bounds playerCollisionBounds = playerCollider.bounds;
         Bounds levelSwitcherBounds = _collider.bounds;
@@ -63,21 +65,23 @@ public class LevelSwitcher : MonoBehaviour
     }
 
     public IEnumerator ActivateNextRoomCameraAndTransitionPlayer(PlayerMovement.PlayerDirection direction) {
-        if(_scenesToLoad.Length > 0) {
-            bool scenesLoaded = false;
-            while(!scenesLoaded) {
-                for(int i = 0; i < _scenesToLoad.Length; i++) {
-                    Scene scene = SceneManager.GetSceneByName(_scenesToLoad[i].SceneName);
-                    if(!scene.isLoaded) {
-                        scenesLoaded = false;
-                    } else if(i == _scenesToLoad.Length - 1 && scene.isLoaded)
-                        scenesLoaded = true;
+        if(_enablePlayerTransition) {
+            if(_scenesToLoad.Length > 0) {
+                bool scenesLoaded = false;
+                while(!scenesLoaded) {
+                    for(int i = 0; i < _scenesToLoad.Length; i++) {
+                        Scene scene = SceneManager.GetSceneByName(_scenesToLoad[i].SceneName);
+                        if(!scene.isLoaded) {
+                            scenesLoaded = false;
+                        } else if(i == _scenesToLoad.Length - 1 && scene.isLoaded)
+                            scenesLoaded = true;
+                    }
+                    yield return null;
                 }
-                yield return null;
             }
-        }
 
-        PlayerMovement.obj.TransitionToNextRoom(direction);
+            PlayerMovement.obj.TransitionToNextRoom(direction);
+        }
 
         _currentRoomCamera.SetActive(false);
         _currentRoomCamera.GetComponent<CinemachineVirtualCamera>().enabled = false;
@@ -85,7 +89,7 @@ public class LevelSwitcher : MonoBehaviour
         GameObject[] sceneGameObjects = SceneManager.GetSceneByName(_nextScene).GetRootGameObjects();
         GameObject cameras = sceneGameObjects.First(gameObject => gameObject.CompareTag("Cameras"));
         CameraManager cameraManager = cameras.GetComponent<CameraManager>();
-        cameraManager.ActivateMainCamera();
+        cameraManager.ActivateMainCamera(direction);
 
         yield return null;
     }

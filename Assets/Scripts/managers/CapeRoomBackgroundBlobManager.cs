@@ -15,6 +15,10 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
 
     void Awake() {
         obj = this;
+        if(GameEventManager.obj.CapePicked) {
+            gameObject.SetActive(false);
+            Destroy(gameObject, 3);
+        }
     }
     void Update()
     {

@@ -20,6 +20,9 @@ public class PowerUpRoomCutScene : MonoBehaviour
 
     void Awake() {
         _animator = GetComponent<Animator>();
+        if(GameEventManager.obj.FirstPowerUpPicked) {
+            _cutsceneFinished = true;
+        }
     }
     
     void OnTriggerEnter2D(Collider2D other) {

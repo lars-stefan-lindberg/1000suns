@@ -15,6 +15,10 @@ public class EnterCapeRoomTrigger : MonoBehaviour
     private bool _isTriggered = false;
 
     void Awake() {
+        if(GameEventManager.obj.CapePicked) {
+            _isTriggered = true;
+            Destroy(gameObject, 3);
+        }
         _beamOfLightRenderer = _beamOfLight.GetComponent<SpriteRenderer>();
         _fadeStartColor = new Color(_beamOfLightRenderer.color.r, _beamOfLightRenderer.color.g, _beamOfLightRenderer.color.b, 0);
     }

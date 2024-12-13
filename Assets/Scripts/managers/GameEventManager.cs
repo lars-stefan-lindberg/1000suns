@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameEventManager : MonoBehaviour
@@ -12,9 +10,22 @@ public class GameEventManager : MonoBehaviour
     public bool CapePicked { get; set; }
     public bool FirstPowerUpPicked { get; set; }
     public bool PowerUpRoomsFloorBroken { get; set; }
+    public bool CaveLevelStarted { get; set; }
+    public bool AfterPowerUpRoomsCompletedWallBreak { get; set; }
 
     void Awake() {
         obj = this;
+        ResetGameEvents();
+    }
+
+    public void ResetGameEvents() {
+        PrisonerIntroSeen = false;
+        BabyPrisonerAlerted = false;
+        CapePicked = false;
+        FirstPowerUpPicked = false;
+        PowerUpRoomsFloorBroken = false;
+        CaveLevelStarted = false;
+        AfterPowerUpRoomsCompletedWallBreak = false;
     }
 
     void Destroy() {

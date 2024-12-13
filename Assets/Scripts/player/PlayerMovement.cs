@@ -165,7 +165,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public void Freeze(float freezeDuration) {
         DisablePlayerMovement();
         _freezePlayer = true;
-        //_movementInput = new Vector2(0,0);
+        _movementInput = new Vector2(0,0);
         StartCoroutine(FreezeDuration(freezeDuration));
     }
 
@@ -200,14 +200,15 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         RIGHT,
         LEFT,
         UP,
-        DOWN
+        DOWN,
+        NO_DIRECTION
     }
     public void TransitionToNextRoom(PlayerDirection direction) {
         StartCoroutine(TransitionToNextRoomCoroutine(direction));
     }
 
     private float _transitionDistanceX = 1;
-    private float _transitionDistanceY = 1.5f;
+    private float _transitionDistanceY = 2f;
     private IEnumerator TransitionToNextRoomCoroutine(PlayerDirection direction) {
         float target = 0;
         if(direction == PlayerDirection.LEFT || direction == PlayerDirection.RIGHT) {
