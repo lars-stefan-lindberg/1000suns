@@ -91,6 +91,7 @@ public class MainMenuManager : MonoBehaviour
         SceneManager.SetActiveScene(caveRoom1);
         
         Player.obj.SetCaveStartingCoordinates();
+        CaveAvatar.obj.SetCaveStartingCoordinates();
         PlayerMovement.obj.DisablePlayerMovement();
         
         GameObject[] sceneGameObjects = caveRoom1.GetRootGameObjects();

@@ -125,7 +125,7 @@ public class MusicManager : MonoBehaviour
         }
     }
 
-    void Destroy() {
+    void OnDestroy() {
         obj = null;
     }
 }
