@@ -28,7 +28,7 @@ public class GameEventManager : MonoBehaviour
         AfterPowerUpRoomsCompletedWallBreak = false;
     }
 
-    void Destroy() {
+    void OnDestroy() {
         obj = null;
     }
 }

@@ -95,7 +95,7 @@ public class TutorialFooterManager : MonoBehaviour
         _panelMaxAlpha = 246f/255f;
     }
 
-    void Destroy() {
+    void OnDestroy() {
         obj = null;
     }
 }

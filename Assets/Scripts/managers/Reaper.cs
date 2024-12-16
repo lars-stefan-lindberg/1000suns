@@ -48,7 +48,7 @@ public class Reaper : MonoBehaviour
         LevelManager.obj.ReloadCurrentScene();
     }
 
-    void Destroy() {
+    void OnDestroy() {
         obj = null;
     }
 }
