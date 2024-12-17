@@ -5,28 +5,18 @@ using UnityEngine;
 public class CollectibleManager : MonoBehaviour
 {
     public static CollectibleManager obj;
-    public static int NUMBER_OF_COLLECTIBLES = 8;
+    public static int NUMBER_OF_PRISONER_COLLECTIBLES = 8;
 
     void Awake() {
         obj = this;
     }
 
     private HashSet<string> pickedCollectibles = new();
-    private string _temporaryPickedUpCollectibleId;
 
-    public void ResetTemporaryPickedCollectible() {
-        _temporaryPickedUpCollectibleId = null;
-    }
 
-    public void CollectiblePickedTemporarily(String id) {
-        _temporaryPickedUpCollectibleId = id;
-    }
-
-    public void CollectiblePickedPermanent() {
-        if(_temporaryPickedUpCollectibleId != null) {
-            pickedCollectibles.Add(_temporaryPickedUpCollectibleId);
-            _temporaryPickedUpCollectibleId = null;
-        }
+    public void CollectiblePickedPermanently(String id) {
+        if(!IsCollectiblePicked(id))
+            pickedCollectibles.Add(id);
     }
 
     public bool IsCollectiblePicked(string id) {
@@ -38,7 +28,6 @@ public class CollectibleManager : MonoBehaviour
     }
 
     public void ResetCollectibles() {
-        ResetTemporaryPickedCollectible();
         pickedCollectibles = new();
     }
 

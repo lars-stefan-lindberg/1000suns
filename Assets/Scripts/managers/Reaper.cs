@@ -18,7 +18,6 @@ public class Reaper : MonoBehaviour
         if(!playerKilled){
             playerKilled = true;
             PlayerMovement.obj.Freeze(genericDeathAnimationTime);
-            CollectibleManager.obj.ResetTemporaryPickedCollectible();
             Player.obj.PlayGenericDeathAnimation();
             StartCoroutine(AfterDeathAnimation(genericDeathAnimationTime));
         }
@@ -28,7 +27,6 @@ public class Reaper : MonoBehaviour
         if(!playerKilled){
             playerKilled = true;
             PlayerMovement.obj.Freeze(shadowDeathAnimationTime);
-            CollectibleManager.obj.ResetTemporaryPickedCollectible();
             Player.obj.PlayShadowDeathAnimation();
             StartCoroutine(AfterDeathAnimation(shadowDeathAnimationTime));
         }

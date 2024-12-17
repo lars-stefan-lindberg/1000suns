@@ -9,7 +9,7 @@ public class CreditsScreen : MonoBehaviour
 
     void Awake() {
         TextMeshProUGUI collectiblesText = _collectibleCountLabel.GetComponent<TextMeshProUGUI>();
-        collectiblesText.text = CollectibleManager.obj.GetNumberOfCollectiblesPicked() + " out of " + CollectibleManager.NUMBER_OF_COLLECTIBLES;
+        collectiblesText.text = CollectibleManager.obj.GetNumberOfCollectiblesPicked() + " out of " + CollectibleManager.NUMBER_OF_PRISONER_COLLECTIBLES;
     }
 
     public void QuitToTitleScreen() {
