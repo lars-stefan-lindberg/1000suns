@@ -18,6 +18,7 @@ public class PauseMenuManager : MonoBehaviour
     [SerializeField] private Slider _musicSlider;
     [SerializeField] private Slider _soundFXSlider;
     [SerializeField] private Slider _ambienceSlider;
+    [SerializeField] private TextMeshProUGUI _collectibleCountText;
     
     private Color _buttonColor;
 
@@ -40,6 +41,8 @@ public class PauseMenuManager : MonoBehaviour
                 _musicSlider.value = SoundMixerManager.obj.GetMusicVolume();
                 _soundFXSlider.value = SoundMixerManager.obj.GetSoundFXVolume();
                 _ambienceSlider.value = SoundMixerManager.obj.GetAmbienceVolume();
+
+                _collectibleCountText.text = CollectibleManager.obj.GetNumberOfCollectiblesPicked().ToString();
 
                 _isPaused = true;
                 _pauseMenu.SetActive(true);
