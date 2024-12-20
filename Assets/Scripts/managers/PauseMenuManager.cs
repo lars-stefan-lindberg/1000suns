@@ -36,6 +36,7 @@ public class PauseMenuManager : MonoBehaviour
             if(_isPaused) {
                 ResumeGame();
             } else {
+                SoundFXManager.obj.PlayUIBack();
                 PlayerMovement.obj.DisablePlayerMovement();
 
                 _musicSlider.value = SoundMixerManager.obj.GetMusicVolume();
