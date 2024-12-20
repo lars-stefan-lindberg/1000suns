@@ -4,8 +4,8 @@ using UnityEngine;
 public class BreakableFloor : MonoBehaviour
 {
     private SpriteRenderer _spriteRenderer;
-    private BoxCollider2D _collider;
-    private PolygonCollider2D _playerOnTopDetectionCollider;
+    [SerializeField] private BoxCollider2D _floorCollider;
+    private BoxCollider2D _playerOnTopDetectionCollider;
     public ParticleSystem shakeAnimation;
 
     public bool unbreakable = false;
@@ -24,17 +24,25 @@ public class BreakableFloor : MonoBehaviour
     private void Awake() {
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         _originYPosition = _spriteRenderer.transform.position.y;
-        _collider = GetComponent<BoxCollider2D>();
-        _playerOnTopDetectionCollider = GetComponent<PolygonCollider2D>();
+        _playerOnTopDetectionCollider = GetComponent<BoxCollider2D>();
     }
 
+    private readonly float _collisionMargin = 0.3f;
     void OnTriggerEnter2D(Collider2D other) {
         if(other.gameObject.CompareTag("Player")) {
-            _collisionCount += 1;
-            if(_collisionCount == collisionsBeforeBreak) {
-                _breakFloor = true;
-            } else {
-                _shakeFloor = true;
+            //Check if player is landing on top
+            Bounds playerCollisionBounds = other.bounds;
+            Bounds floorBounds = _playerOnTopDetectionCollider.bounds;
+            Vector2 playerBottom = new(playerCollisionBounds.center.x, playerCollisionBounds.center.y - playerCollisionBounds.extents.y);
+            Vector2 floorTop = new(floorBounds.center.x, floorBounds.center.y + floorBounds.extents.y); 
+
+            if(playerBottom.y + _collisionMargin > floorTop.y) {
+                _collisionCount += 1;
+                if(_collisionCount == collisionsBeforeBreak) {
+                    _breakFloor = true;
+                } else {
+                    _shakeFloor = true;
+                }
             }
         }
     }
@@ -42,18 +50,16 @@ public class BreakableFloor : MonoBehaviour
     void FixedUpdate()
     {
         if(_shakeFloor) {
-            SoundFXManager.obj.PlayBreakableWallCrackling(transform);
-            shakeAnimation.Emit(numberOfShakeParticles);
             _shakeFloor = false;
             StartCoroutine(ShakeWall());
         }
         if(_breakFloor) {
+            _breakFloor = false;
             SoundFXManager.obj.PlayBreakableWallBreak(transform);
             shakeAnimation.Emit(numberOfShakeParticles);
-            _collider.enabled = false;
+            _floorCollider.enabled = false;
             _playerOnTopDetectionCollider.enabled = false;
             _fadeSprite = true;
-            _breakFloor = false;
             GameEventManager.obj.PowerUpRoomsFloorBroken = true;
             Destroy(gameObject, 5);
         }
@@ -63,6 +69,9 @@ public class BreakableFloor : MonoBehaviour
     }
 
     private IEnumerator ShakeWall() {
+        yield return new WaitForSeconds(0.05f);
+        SoundFXManager.obj.PlayBreakableWallCrackling(transform);
+        shakeAnimation.Emit(numberOfShakeParticles);
         float downY = _originYPosition - shakeDistance;
         float upY = _originYPosition + shakeDistance;
         float[] positions = new float[2] {downY, upY};
