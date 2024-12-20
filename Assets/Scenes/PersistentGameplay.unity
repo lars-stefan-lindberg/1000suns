@@ -2045,6 +2045,37 @@ Canvas:
   m_SortingLayerID: 1282702309
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!1 &1048942170
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1048942171}
+  m_Layer: 0
+  m_Name: AvatarTargetRight
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1048942171
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1048942170}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.475, y: 1.475, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 650861884}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1058668642
 GameObject:
   m_ObjectHideFlags: 0
@@ -2430,11 +2461,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1657636802850301417, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 235.34999
+      value: 233.84999
       objectReference: {fileID: 0}
     - target: {fileID: 1657636802850301417, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 21.89848
+      value: 21.898481
       objectReference: {fileID: 0}
     - target: {fileID: 1657636802850301417, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2642,6 +2673,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1657636802850301417, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1058668643}
+    - targetCorrespondingSourceObject: {fileID: 1657636802850301417, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1505653760}
+    - targetCorrespondingSourceObject: {fileID: 1657636802850301417, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1048942171}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 5764671153394771574, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
       insertIndex: -1
@@ -8040,6 +8077,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1449212419}
   m_CullTransparentMesh: 1
+--- !u!1 &1505653759
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1505653760}
+  m_Layer: 0
+  m_Name: AvatarTargetLeft
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1505653760
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1505653759}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.475, y: 1.475, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 650861884}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1555766167
 GameObject:
   m_ObjectHideFlags: 0
@@ -8722,11 +8790,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 874638831613449156, guid: 20021d2876d624dceb3922337f7c4e85, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 233.87502
+      value: 232.37502
       objectReference: {fileID: 0}
     - target: {fileID: 874638831613449156, guid: 20021d2876d624dceb3922337f7c4e85, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 23.382824
+      value: 23.382826
       objectReference: {fileID: 0}
     - target: {fileID: 874638831613449156, guid: 20021d2876d624dceb3922337f7c4e85, type: 3}
       propertyPath: m_LocalPosition.z
@@ -8763,6 +8831,30 @@ PrefabInstance:
     - target: {fileID: 3183850526039139232, guid: 20021d2876d624dceb3922337f7c4e85, type: 3}
       propertyPath: m_Name
       value: CaveAvatarContainer
+      objectReference: {fileID: 0}
+    - target: {fileID: 8580895499237262943, guid: 20021d2876d624dceb3922337f7c4e85, type: 3}
+      propertyPath: _target
+      value: 
+      objectReference: {fileID: 1505653759}
+    - target: {fileID: 8580895499237262943, guid: 20021d2876d624dceb3922337f7c4e85, type: 3}
+      propertyPath: _followPlayer
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8580895499237262943, guid: 20021d2876d624dceb3922337f7c4e85, type: 3}
+      propertyPath: _playerTargetLeft
+      value: 
+      objectReference: {fileID: 1505653760}
+    - target: {fileID: 8580895499237262943, guid: 20021d2876d624dceb3922337f7c4e85, type: 3}
+      propertyPath: _playerTargetRight
+      value: 
+      objectReference: {fileID: 1048942171}
+    - target: {fileID: 8580895499237262943, guid: 20021d2876d624dceb3922337f7c4e85, type: 3}
+      propertyPath: _approachTargetDuration
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8580895499237262943, guid: 20021d2876d624dceb3922337f7c4e85, type: 3}
+      propertyPath: _approachTargetLerpSpeed
+      value: 0.02
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

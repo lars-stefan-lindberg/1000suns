@@ -45,6 +45,7 @@ public class LevelManager : MonoBehaviour
 
                 Player.obj.transform.position = _playerSpawningCollider.transform.position;
                 AdjustSpawnFaceDirection(Camera.main.transform.position.x, playerSpawnPoint.transform.position.x);
+                CaveAvatar.obj.SetStartingPosition();
                 Player.obj.SetHasPowerUp(false);
                 Player.obj.gameObject.SetActive(true);
                 PlayerMovement.obj.SetStartingOnGround();

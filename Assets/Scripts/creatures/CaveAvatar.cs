@@ -1,75 +1,47 @@
 using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 public class CaveAvatar : MonoBehaviour
 {
     public static CaveAvatar obj;
 
-    [SerializeField] private bool _isCollectible = false;
-    public bool IsCollected {get; set;}
-    public bool IsPermantentlyCollected {get; set;}
-    [SerializeField] private float _collectibleDistanceFromPlayerMultiplier = 2.5f;
-
-    [SerializeField] private float _lerpSpeed = 2;
+    [SerializeField] private float _followPlayerLerpSpeed = 0.05f;
+    [SerializeField] private float _approachTargetLerpSpeed = 0.03f;
     [SerializeField] private float _tailPartLerpSpeed = 0.04f;
     [SerializeField] private GameObject _head;
     [SerializeField] private SpriteRenderer _headSpriteRenderer;
     [SerializeField] private GameObject[] _tailParts;
-    [SerializeField] private GameObject _blackHole;
+    [SerializeField] private Transform _playerTargetLeft;
+    [SerializeField] private Transform _playerTargetRight;
+    private Transform _target;
+    public bool IsFollowingPlayer {get; set;}
 
-    private readonly float _distanceFromPlayerX = 1.475f;
-    private readonly float _distanceFromPlayerY = 1.475f;
     [SerializeField] private float _floatDistance = 0.25f;
 
     private float _floatDirectionTimer = 0;
     [SerializeField] private float _floatDirectionChangeTime = 1f;
     private bool _floatUp = true;
 
-    private bool IsIdle => !_preparingTakeOff && (Player.obj.rigidBody.velocity.x == 0 || (_isCollectible && !IsCollected && !IsPermantentlyCollected));
-
-    private bool _startedTakeOff = false;
-    private bool _preparingTakeOff = false;
-    private float _squeezeX = 1.25f;
-    private float _squeezeY = 0.65f;
-    private float _squeezeTime = 0.08f;
-    private int _numberOfSqueezes = 4;
-
     void Awake() {
         obj = this;
-        IsCollected = false;
-        IsPermantentlyCollected = false;
+        IsFollowingPlayer = true;
     }
 
     void FixedUpdate()
     {
-        if(IsPermantentlyCollected) {
-            if(!_startedTakeOff) {
-                _startedTakeOff = true;
-                _preparingTakeOff = true;
-                SoundFXManager.obj.PlayCollectiblePickup(transform);
-                StartCoroutine(PrepareTakeOff(_squeezeX, _squeezeY, _squeezeTime));
-            }
-        }
-
         Vector2 headTargetPosition;
-        if(_isCollectible && !IsCollected) { //Don't follow
-            float headTargetX = _head.transform.position.x;
-            headTargetPosition = new(headTargetX, _head.transform.position.y);
-        } else if(_preparingTakeOff) {
-            headTargetPosition = _head.transform.position;
-        }
-        else { //Follow
+
+        if(IsFollowingPlayer) {
             bool isPlayerFacingLeft = PlayerMovement.obj.isFacingLeft();
-            _headSpriteRenderer.flipX = isPlayerFacingLeft;    
-            float distanceFromPlayerX = _isCollectible ? _distanceFromPlayerX * _collectibleDistanceFromPlayerMultiplier : _distanceFromPlayerX;
-            float headTargetX = isPlayerFacingLeft ? Player.obj.transform.position.x + distanceFromPlayerX : Player.obj.transform.position.x - distanceFromPlayerX;
-            headTargetPosition = new (headTargetX, Player.obj.transform.position.y + _distanceFromPlayerY);
+            _headSpriteRenderer.flipX = isPlayerFacingLeft;   
+            headTargetPosition = isPlayerFacingLeft ? _playerTargetRight.position : _playerTargetLeft.position;
+        } else {
+            headTargetPosition = _target.transform.position;
+            _headSpriteRenderer.flipX = _head.transform.position.x > _target.transform.position.x;
         }
 
-        //If player is standing still, or is uncollected collectible, go into idle/floating state
-        if(IsIdle) {
+        //If player is standing still, go into idle/floating state
+        if(IsTargetReached(_head.transform.position, headTargetPosition)) {
             _floatDirectionTimer += Time.deltaTime;
             if(_floatDirectionTimer > _floatDirectionChangeTime) {
                 _floatUp = !_floatUp;
@@ -80,7 +52,11 @@ public class CaveAvatar : MonoBehaviour
             _floatDirectionTimer = 0;
         }
 
-        _head.transform.position = Vector2.Lerp(_head.transform.position, headTargetPosition, _lerpSpeed);
+        if(IsFollowingPlayer)
+            _head.transform.position = Vector2.Lerp(_head.transform.position, headTargetPosition, _followPlayerLerpSpeed);
+        else {
+            _head.transform.position = Vector2.Lerp(_head.transform.position, headTargetPosition, _approachTargetLerpSpeed);
+        }
 
         _tailParts[0].transform.position = Vector2.Lerp(_tailParts[0].transform.position, _head.transform.position, _tailPartLerpSpeed);
         _tailParts[1].transform.position = Vector2.Lerp(_tailParts[1].transform.position, _tailParts[0].transform.position, _tailPartLerpSpeed);
@@ -89,44 +65,54 @@ public class CaveAvatar : MonoBehaviour
         _tailParts[4].transform.position = Vector2.Lerp(_tailParts[4].transform.position, _tailParts[3].transform.position, _tailPartLerpSpeed);
     }
 
-    public void SetCaveStartingCoordinates() {
-        transform.position = new Vector2(233.875f, 78.375f);
+    public float _targetReachedMargin = 0.5f;
+    private bool IsTargetReached(Vector2 position, Vector2 target) {
+        if(
+            IsWithinInterval(position.x, target.x - _targetReachedMargin, target.x + _targetReachedMargin)
+            && IsWithinInterval(position.y, target.y - _targetReachedMargin, target.y + _targetReachedMargin)
+        ) {
+            return true;
+        }
+        return false;
     }
 
-    private IEnumerator PrepareTakeOff(float xSqueeze, float ySqueeze, float seconds)
+    private bool IsWithinInterval(float value, float lowerBound, float upperBound)
     {
-        yield return new WaitForSeconds(0.1f);
+        return value >= lowerBound && value <= upperBound;
+    }
+
+    public void SetCaveStartingCoordinates() {
+        SetPosition(new Vector2(233.875f, 78.375f));
+    }
+
+    public void SetStartingPosition() {
+        Vector2 headTargetPosition = PlayerMovement.obj.isFacingLeft() ? _playerTargetRight.position : _playerTargetLeft.position;
+        SetPosition(headTargetPosition);
+    }
+
+    public void SetPosition(Vector2 target) {
+        bool isPlayerFacingLeft = PlayerMovement.obj.isFacingLeft();
+        _headSpriteRenderer.flipX = isPlayerFacingLeft;   
+
+        transform.position = target;
+        _head.transform.position = target;
         foreach(GameObject tail in _tailParts) {
-            tail.SetActive(false);
+            tail.transform.position = target;
         }
-        Vector3 originalSize = Vector3.one;
-        Vector3 newSize = new Vector3(xSqueeze, ySqueeze, originalSize.z);
-        int squeezeCounter = 0;
-        while(squeezeCounter < _numberOfSqueezes) {
-            float time = 0f;
-            while (time <= 1.0)
-            {
-                time += Time.deltaTime / seconds;
-                _headSpriteRenderer.transform.localScale = Vector3.Lerp(originalSize, newSize, time);
-                yield return null;
-            }
-            time = 0f;
-            while(time <= 1.0)
-            {
-                time += Time.deltaTime / seconds;
-                _headSpriteRenderer.transform.localScale = Vector3.Lerp(newSize, originalSize, time);
-                yield return null;
-            }
-            squeezeCounter += 1;
-        }
+    }
 
-        _blackHole.SetActive(true);
-        yield return new WaitForSeconds(1f);
-        
-        _headSpriteRenderer.enabled = false;
-        _blackHole.GetComponent<BlackHole>().Despawn();
+    public void SetTarget(Transform target) {
+        IsFollowingPlayer = false;
+        _target = target;
+    }
 
-        Destroy(gameObject, 5);
+    public bool IsFacingLeft()
+    {
+        return _headSpriteRenderer.flipX;
+    }
+
+    public Transform GetHead() {
+        return _head.transform;
     }
 
     void OnDestroy() {

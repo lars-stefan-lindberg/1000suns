@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class LevelExitTrigger : MonoBehaviour
 {
-    [SerializeField] private CaveAvatar _collectible;
+    [SerializeField] private CaveCollectibleCreature _collectible;
     [SerializeField] private string _id;
 
     private void OnTriggerEnter2D(Collider2D other)
