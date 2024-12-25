@@ -37,11 +37,11 @@ public class TutorialDialogManager : MonoBehaviour
         if (IsFadingIn) {
             if(_fadeAlpha.a < 1f) {
                 _fadeAlpha.a += Time.unscaledDeltaTime * _fadeInSpeed;
-                foreach(Image image in _images) {
-                    image.color = new Color(image.color.r, image.color.g, image.color.b, _fadeAlpha.a);
+                for (int i = 0; i < _images.Count; i++) {
+                    _images[i].color = new Color(_images[i].color.r, _images[i].color.g, _images[i].color.b, _fadeAlpha.a);
                 }
-                foreach(TextMeshProUGUI text in _texts) {
-                    text.color = new Color(text.color.r, text.color.g, text.color.b, _fadeAlpha.a);
+                for (int i = 0; i < _texts.Count; i++) {
+                    _texts[i].color = new Color(_texts[i].color.r, _texts[i].color.g, _texts[i].color.b, _fadeAlpha.a);
                 }
             } else {
                 IsFadingIn = false;
@@ -51,11 +51,11 @@ public class TutorialDialogManager : MonoBehaviour
         if(IsFadingOut) {
             if(_fadeAlpha.a > 0f) {
                 _fadeAlpha.a -= Time.unscaledDeltaTime * _fadeOutSpeed;
-                foreach(Image image in _images) {
-                    image.color = new Color(image.color.r, image.color.g, image.color.b, _fadeAlpha.a);
+                for (int i = 0; i < _images.Count; i++) {
+                    _images[i].color = new Color(_images[i].color.r, _images[i].color.g, _images[i].color.b, _fadeAlpha.a);
                 }
-                foreach(TextMeshProUGUI text in _texts) {
-                    text.color = new Color(text.color.r, text.color.g, text.color.b, _fadeAlpha.a);
+                for (int i = 0; i < _texts.Count; i++) {
+                    _texts[i].color = new Color(_texts[i].color.r, _texts[i].color.g, _texts[i].color.b, _fadeAlpha.a);
                 }
             } else {
                 IsFadingOut = false;

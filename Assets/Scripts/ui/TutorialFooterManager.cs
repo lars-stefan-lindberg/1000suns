@@ -36,11 +36,11 @@ public class TutorialFooterManager : MonoBehaviour
         if (IsFadingIn) {
             if(_fadeAlpha.a < 1f) {
                 _fadeAlpha.a += Time.deltaTime * _fadeInSpeed;
-                foreach(Image image in _images) {
-                    image.color = new Color(image.color.r, image.color.g, image.color.b, _fadeAlpha.a);
+                for (int i = 0; i < _images.Count; i++) {
+                    _images[i].color = new Color(_images[i].color.r, _images[i].color.g, _images[i].color.b, _fadeAlpha.a);
                 }
-                foreach(TextMeshProUGUI text in _texts) {
-                    text.color = new Color(text.color.r, text.color.g, text.color.b, _fadeAlpha.a);
+                for (int i = 0; i < _texts.Count; i++) {
+                    _texts[i].color = new Color(_texts[i].color.r, _texts[i].color.g, _texts[i].color.b, _fadeAlpha.a);
                 }
                 if(_fadeAlpha.a <= _panelMaxAlpha)
                     _panel.color =  new Color(_panel.color.r, _panel.color.g, _panel.color.b, _fadeAlpha.a);
@@ -52,11 +52,11 @@ public class TutorialFooterManager : MonoBehaviour
         if(IsFadingOut) {
             if(_fadeAlpha.a > 0f) {
                 _fadeAlpha.a -= Time.deltaTime * _fadeOutSpeed;
-                foreach(Image image in _images) {
-                    image.color = new Color(image.color.r, image.color.g, image.color.b, _fadeAlpha.a);
+                for (int i = 0; i < _images.Count; i++) {
+                    _images[i].color = new Color(_images[i].color.r, _images[i].color.g, _images[i].color.b, _fadeAlpha.a);
                 }
-                foreach(TextMeshProUGUI text in _texts) {
-                    text.color = new Color(text.color.r, text.color.g, text.color.b, _fadeAlpha.a);
+                for (int i = 0; i < _texts.Count; i++) {
+                    _texts[i].color = new Color(_texts[i].color.r, _texts[i].color.g, _texts[i].color.b, _fadeAlpha.a);
                 }
                 if(_fadeAlpha.a <= _panelMaxAlpha)
                     _panel.color = new Color(_panel.color.r, _panel.color.g, _panel.color.b, _fadeAlpha.a);

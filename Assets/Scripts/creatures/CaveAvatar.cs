@@ -96,8 +96,8 @@ public class CaveAvatar : MonoBehaviour
 
         transform.position = target;
         _head.transform.position = target;
-        foreach(GameObject tail in _tailParts) {
-            tail.transform.position = target;
+        for (int i = 0; i < _tailParts.Length; i++) {
+            _tailParts[i].transform.position = target;
         }
     }
 

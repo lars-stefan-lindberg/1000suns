@@ -60,7 +60,9 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
         
         SpriteRenderer[] blobSprites = GetComponentsInChildren<SpriteRenderer>();
         while(blobSprites.First().color.a > 0) {
-            foreach(SpriteRenderer blobSprite in blobSprites) {
+            for (int i = 0; i < blobSprites.Length; i++)
+            {
+                var blobSprite = blobSprites[i];
                 blobSprite.color = new Color(blobSprite.color.r, blobSprite.color.b, blobSprite.color.g, Mathf.MoveTowards(blobSprite.color.a, 0, 3.5f * Time.deltaTime));
             }
             yield return null;

@@ -14,9 +14,9 @@ public class ActivatePowerUpTrigger : MonoBehaviour
         }
         if (collision.gameObject.CompareTag("Player"))
         { 
-            foreach (GameObject gameObject in gameObjectsToActivate)
+            for (int i = 0; i < gameObjectsToActivate.Count; i++)
             {
-                gameObject.SetActive(true);
+                gameObjectsToActivate[i].SetActive(true);
             }
             _hasBeenActivated = true;
         }

@@ -57,7 +57,9 @@ public class EndRoomBackgroundBlobManager : MonoBehaviour
     private IEnumerator FadeInBlobSprites() {
         SpriteRenderer[] blobSprites = GetComponentsInChildren<SpriteRenderer>();
         while(blobSprites.First().color.a < 1) {
-            foreach(SpriteRenderer blobSprite in blobSprites) {
+            for (int i = 0; i < blobSprites.Length; i++)
+            {
+                var blobSprite = blobSprites[i];
                 blobSprite.color = new Color(blobSprite.color.r, blobSprite.color.b, blobSprite.color.g, Mathf.MoveTowards(blobSprite.color.a, 1, 0.5f * Time.deltaTime));
             }
             yield return null;
@@ -68,7 +70,9 @@ public class EndRoomBackgroundBlobManager : MonoBehaviour
         yield return new WaitForSeconds(14);
         SpriteRenderer[] blobSprites = GetComponentsInChildren<SpriteRenderer>();
         while(blobSprites.First().color.a > 0) {
-            foreach(SpriteRenderer blobSprite in blobSprites) {
+            for (int i = 0; i < blobSprites.Length; i++)
+            {
+                var blobSprite = blobSprites[i];
                 blobSprite.color = new Color(blobSprite.color.r, blobSprite.color.b, blobSprite.color.g, Mathf.MoveTowards(blobSprite.color.a, 0, 2.5f * Time.deltaTime));
             }
             yield return null;

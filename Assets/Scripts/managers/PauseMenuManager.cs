@@ -59,8 +59,9 @@ public class PauseMenuManager : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(null);
         _pauseMenu.SetActive(false);
         PlayerMovement.obj.EnablePlayerMovement();
-        foreach(GameObject gameObject in _menuObjects) {
-            gameObject.GetComponentInChildren<TextMeshProUGUI>().color = _buttonColor;
+        for (int i = 0; i < _menuObjects.Length; i++)
+        {
+            _menuObjects[i].GetComponentInChildren<TextMeshProUGUI>().color = _buttonColor;
         }
         Time.timeScale = 1f;
         _isPaused = false;
