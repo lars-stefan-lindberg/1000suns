@@ -15,15 +15,13 @@ public class BootGame : MonoBehaviour
     }
 
     private IEnumerator Boot() {
-        SceneManager.LoadSceneAsync(_commonObjects, LoadSceneMode.Additive);
-        Scene commonObjects = SceneManager.GetSceneByName(_commonObjects.SceneName);
-        while(!commonObjects.isLoaded) {
+        AsyncOperation loadCommonOperation = SceneManager.LoadSceneAsync(_commonObjects, LoadSceneMode.Additive);
+        while(!loadCommonOperation.isDone) {
             yield return null;
         }
 
-        SceneManager.LoadSceneAsync(_titleScreen, LoadSceneMode.Additive);
-        Scene titleScreen = SceneManager.GetSceneByName(_titleScreen.SceneName);
-        while(!titleScreen.isLoaded) {
+        AsyncOperation loadTitleScreenOperation = SceneManager.LoadSceneAsync(_titleScreen, LoadSceneMode.Additive);
+        while(!loadTitleScreenOperation.isDone) {
             yield return null;
         }
 

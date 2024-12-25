@@ -69,9 +69,8 @@ public class MainMenuManager : MonoBehaviour
         }
         MusicManager.obj.StopPlaying();
 
-        SceneManager.LoadSceneAsync(_persistentGameplay, LoadSceneMode.Additive);
-        Scene persistentGameplay = SceneManager.GetSceneByName(_persistentGameplay.SceneName);
-        while(!persistentGameplay.isLoaded) {
+        AsyncOperation loadPersistentGameplayOperation = SceneManager.LoadSceneAsync(_persistentGameplay, LoadSceneMode.Additive);
+        while(!loadPersistentGameplayOperation.isDone) {
             yield return null;
         }
 
@@ -83,11 +82,11 @@ public class MainMenuManager : MonoBehaviour
         //TODO reset number of lives died
 
         SoundMixerManager.obj.SetMasterVolume(masterVolume);
-        SceneManager.LoadSceneAsync(_caveRoom1, LoadSceneMode.Additive);
-        Scene caveRoom1 = SceneManager.GetSceneByName(_caveRoom1.SceneName);
-        while(!caveRoom1.isLoaded) {
+        AsyncOperation loadCaveOperation = SceneManager.LoadSceneAsync(_caveRoom1, LoadSceneMode.Additive);
+        while(!loadCaveOperation.isDone) {
             yield return null;
         }
+        Scene caveRoom1 = SceneManager.GetSceneByName(_caveRoom1.SceneName);
         SceneManager.SetActiveScene(caveRoom1);
         
         Player.obj.SetCaveStartingCoordinates();
