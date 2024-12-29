@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5309891371398229118}
   - component: {fileID: 5769145254539207023}
   m_Layer: 0
-  m_Name: PrisonerCollectibleContainer
+  m_Name: CaveCollectibleCreatureContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -91,7 +91,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93303eafe6a974dc8bdeb04ff62f3ef2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _caveAvatar: {fileID: 3194047749858963257}
+  _collectible: {fileID: 0}
   id: C7
 --- !u!1 &505652035926701708
 GameObject:
@@ -370,19 +370,11 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8483464536911661338, guid: 20021d2876d624dceb3922337f7c4e85, type: 3}
       insertIndex: -1
       addedObject: {fileID: 9124095461427890873}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2362102421452583756, guid: 20021d2876d624dceb3922337f7c4e85, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 567237430981104428}
   m_SourcePrefab: {fileID: 100100000, guid: 20021d2876d624dceb3922337f7c4e85, type: 3}
---- !u!114 &3194047749858963257 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8580895499237262943, guid: 20021d2876d624dceb3922337f7c4e85, type: 3}
-  m_PrefabInstance: {fileID: 6577225227874576742}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 624e896dc1eaf4800b40d7664185220f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &3386053207641677948 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8483464536911661338, guid: 20021d2876d624dceb3922337f7c4e85, type: 3}
@@ -393,3 +385,46 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 874638831613449156, guid: 20021d2876d624dceb3922337f7c4e85, type: 3}
   m_PrefabInstance: {fileID: 6577225227874576742}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &8899430469720267306 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2362102421452583756, guid: 20021d2876d624dceb3922337f7c4e85, type: 3}
+  m_PrefabInstance: {fileID: 6577225227874576742}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &567237430981104428
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8899430469720267306}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d62ac029b1017974ead8b6ad01623c82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lightLayer: 0
+  type: 0
+  spriteMode: 0
+  sprite: {fileID: 21300000, guid: 6592d6be03fd808449716a11558d506f, type: 3}
+  color: {r: 0.6132076, g: 0.6132076, b: 0.6132076, a: 1}
+  flipX: 0
+  flipY: 0
+  lightSpriteTransform:
+    applyRotation: 1
+    scale: {x: 1.5, y: 1.5}
+    rotation: 0
+    position: {x: 0, y: 0}
+  lightSpriteShape:
+    update: 0
+  meshMode:
+    enable: 0
+    alpha: 0.5
+    shader: 0
+    materials:
+    - {fileID: 0}
+    sortingLayer:
+      name: Default
+      Order: 0
+  glowMode:
+    enable: 0
+    glowRadius: 1
