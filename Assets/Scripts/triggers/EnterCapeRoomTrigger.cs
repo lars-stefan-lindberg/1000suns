@@ -1,15 +1,16 @@
 using System.Collections;
 using Cinemachine;
+using FunkyCode;
 using UnityEngine;
 
 public class EnterCapeRoomTrigger : MonoBehaviour
 {
     [SerializeField] private CinemachineVirtualCamera _defaultCamera;
     [SerializeField] private GameObject _zoomedCamera;
-    [SerializeField] private GameObject _beamOfLight;
+    [SerializeField] private LightSprite2D _beamOfLightLight;
     [SerializeField] private GameObject _cape;
     [SerializeField] private Transform _capeMoveTarget;
-    private SpriteRenderer _beamOfLightRenderer;
+    [SerializeField] private SpriteRenderer _beamOfLightRenderer;
     [Range(0.1f, 10f), SerializeField] private float _fadeSpeed = 5f;
     private Color _fadeStartColor;
     private bool _isTriggered = false;
@@ -19,7 +20,6 @@ public class EnterCapeRoomTrigger : MonoBehaviour
             _isTriggered = true;
             Destroy(gameObject, 3);
         }
-        _beamOfLightRenderer = _beamOfLight.GetComponent<SpriteRenderer>();
         _fadeStartColor = new Color(_beamOfLightRenderer.color.r, _beamOfLightRenderer.color.g, _beamOfLightRenderer.color.b, 0);
     }
 
@@ -58,6 +58,7 @@ public class EnterCapeRoomTrigger : MonoBehaviour
         while(_beamOfLightRenderer.color.a < 0.65f) {
             _fadeStartColor.a += Time.deltaTime * _fadeSpeed;
             _beamOfLightRenderer.color = _fadeStartColor;
+            _beamOfLightLight.color.a = _fadeStartColor.a;
             yield return null;
         }
         yield return new WaitForSeconds(1f);
@@ -76,6 +77,7 @@ public class EnterCapeRoomTrigger : MonoBehaviour
         while(_beamOfLightRenderer.color.a > 0f) {
             _fadeStartColor.a -= Time.deltaTime * _fadeSpeed;
             _beamOfLightRenderer.color = _fadeStartColor;
+            _beamOfLightLight.color.a = _fadeStartColor.a;
             yield return null;
         }
 
