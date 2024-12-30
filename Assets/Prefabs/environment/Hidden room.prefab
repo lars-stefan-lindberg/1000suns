@@ -4795,8 +4795,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -122905283
+  m_SortingLayer: 1
   m_SortingOrder: 4
   m_RenderMode: 0
   m_MeshDistribution: 0
@@ -9687,9 +9687,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 3
+  m_SortingLayerID: -122905283
+  m_SortingLayer: 1
+  m_SortingOrder: 4
   m_RenderMode: 0
   m_MeshDistribution: 0
   m_SortMode: 0
@@ -9736,7 +9736,7 @@ GameObject:
   - component: {fileID: 7915206346027773574}
   m_Layer: 3
   m_Name: Breakable wall left
-  m_TagString: Untagged
+  m_TagString: BreakableWall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -9796,8 +9796,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -122905283
+  m_SortingLayer: 1
   m_SortingOrder: 3
   m_Sprite: {fileID: 21300000, guid: 6fb50707578464b53b819fc1657d57ff, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -9867,7 +9867,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1227e4f1af7b4817b96621dcb236beb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isBig: 0
   visibleLayer: {fileID: 4784712282965838549}
+  background: {fileID: 0}
   breakAnimation: {fileID: 903147335871033044}
   shakeAnimation: {fileID: 6676282155021130023}
   unbreakable: 1
@@ -9875,6 +9877,7 @@ MonoBehaviour:
   breakWall: 0
   shakeWall: 0
   fadeMultiplier: 3.5
+  numberOfShakeParticles: 10
   shakeDistance: 0.1
   shakeTime: 0.12
   shakeFrameWait: 0.08
@@ -10502,8 +10505,8 @@ TilemapRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -122905283
+  m_SortingLayer: 1
   m_SortingOrder: 2
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
@@ -10548,7 +10551,7 @@ GameObject:
   - component: {fileID: 8108716272873098147}
   m_Layer: 3
   m_Name: Breakable wall right
-  m_TagString: Untagged
+  m_TagString: BreakableWall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -10608,8 +10611,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -122905283
+  m_SortingLayer: 1
   m_SortingOrder: 3
   m_Sprite: {fileID: 21300000, guid: 6fb50707578464b53b819fc1657d57ff, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -10679,7 +10682,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1227e4f1af7b4817b96621dcb236beb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isBig: 0
   visibleLayer: {fileID: 4784712282965838549}
+  background: {fileID: 0}
   breakAnimation: {fileID: 788812395528218009}
   shakeAnimation: {fileID: 7643387119225362485}
   unbreakable: 0
@@ -10687,6 +10692,7 @@ MonoBehaviour:
   breakWall: 0
   shakeWall: 0
   fadeMultiplier: 3.5
+  numberOfShakeParticles: 10
   shakeDistance: 0.1
   shakeTime: 0.12
   shakeFrameWait: 0.08
@@ -15485,8 +15491,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -122905283
+  m_SortingLayer: 1
   m_SortingOrder: 4
   m_RenderMode: 0
   m_MeshDistribution: 0
@@ -20315,9 +20321,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 3
+  m_SortingLayerID: -122905283
+  m_SortingLayer: 1
+  m_SortingOrder: 4
   m_RenderMode: 0
   m_MeshDistribution: 0
   m_SortMode: 0

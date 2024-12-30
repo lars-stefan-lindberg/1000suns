@@ -42,7 +42,8 @@ public class Projectile : MonoBehaviour
             collision.transform.CompareTag("FloatingPlatform") || 
             collision.transform.CompareTag("Rock") || 
             collision.transform.CompareTag("Roots") || 
-            collision.transform.CompareTag("FallingPlatform"))
+            collision.transform.CompareTag("FallingPlatform") ||
+            collision.transform.CompareTag("BreakableWall"))
             Destroy(gameObject);
     }
 }
