@@ -57462,10 +57462,7 @@ PrefabInstance:
     - {fileID: 8492598831167192472, guid: f271c8cc09b534eec82268d24cd420b2, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 7156174909810798453, guid: f271c8cc09b534eec82268d24cd420b2, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1441538284}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f271c8cc09b534eec82268d24cd420b2, type: 3}
 --- !u!4 &715643028 stripped
 Transform:
@@ -57765,57 +57762,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 725605797152465177, guid: f271c8cc09b534eec82268d24cd420b2, type: 3}
   m_PrefabInstance: {fileID: 606819736}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1441538284
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1441538277}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 143f829798ec14143ac2b96528ed9425, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mapType: 0
-  shadowLayer: 0
-  maskLayer: 0
-  shadowTranslucency: 0
-  shadowTileType: 0
-  bumpMapMode:
-    type: 0
-    textureType: 0
-    texture: {fileID: 0}
-    sprite: {fileID: 0}
-    invertX: 0
-    invertY: 0
-    depth: 1
-    spriteRenderer: {fileID: 0}
-  rectangle:
-    shadowType: 3
-    maskType: 0
-    gameObject: {fileID: 1441538277}
-    transform: {fileID: 1441538278}
-    shadowOptimization: 1
-  isometric:
-    shadowType: 1
-    maskType: 2
-    gameObject: {fileID: 1441538277}
-    transform: {fileID: 1441538278}
-    ZasY: 0
-  hexagon:
-    shadowType: 1
-    maskType: 2
-    gameObject: {fileID: 1441538277}
-    transform: {fileID: 1441538278}
-  superTilemapEditor:
-    shadowType: 1
-    maskType: 2
-    gameObject: {fileID: 1441538277}
-    transform: {fileID: 1441538278}
-    shadowTypeSTE: 1
-    maskTypeSTE: 2
-    eventsInit: 0
 --- !u!4 &1450160570 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2966402462076824777, guid: 2870c8436a26c48bab71efa3f8eaa5e0, type: 3}
@@ -58646,11 +58592,11 @@ PrefabInstance:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 2053600500}
   - {fileID: 606819736}
   - {fileID: 1226449850}
   - {fileID: 1470009813}
   - {fileID: 7195136754257509741}
-  - {fileID: 2053600500}
   - {fileID: 2842472975711373077}
   - {fileID: 2810114474061919769}
   - {fileID: 224839118}

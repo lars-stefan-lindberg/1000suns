@@ -29453,11 +29453,73 @@ PrefabInstance:
       propertyPath: m_Name
       value: Environment
       objectReference: {fileID: 0}
+    - target: {fileID: 8492598831167192472, guid: f271c8cc09b534eec82268d24cd420b2, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8492598831167192472, guid: f271c8cc09b534eec82268d24cd420b2, type: 3}
+      propertyPath: hexagon.transform
+      value: 
+      objectReference: {fileID: 327368345}
+    - target: {fileID: 8492598831167192472, guid: f271c8cc09b534eec82268d24cd420b2, type: 3}
+      propertyPath: hexagon.gameObject
+      value: 
+      objectReference: {fileID: 327368346}
+    - target: {fileID: 8492598831167192472, guid: f271c8cc09b534eec82268d24cd420b2, type: 3}
+      propertyPath: rectangle.maskType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8492598831167192472, guid: f271c8cc09b534eec82268d24cd420b2, type: 3}
+      propertyPath: shadowTranslucency
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8492598831167192472, guid: f271c8cc09b534eec82268d24cd420b2, type: 3}
+      propertyPath: isometric.transform
+      value: 
+      objectReference: {fileID: 327368345}
+    - target: {fileID: 8492598831167192472, guid: f271c8cc09b534eec82268d24cd420b2, type: 3}
+      propertyPath: rectangle.transform
+      value: 
+      objectReference: {fileID: 327368345}
+    - target: {fileID: 8492598831167192472, guid: f271c8cc09b534eec82268d24cd420b2, type: 3}
+      propertyPath: isometric.gameObject
+      value: 
+      objectReference: {fileID: 327368346}
+    - target: {fileID: 8492598831167192472, guid: f271c8cc09b534eec82268d24cd420b2, type: 3}
+      propertyPath: rectangle.gameObject
+      value: 
+      objectReference: {fileID: 327368346}
+    - target: {fileID: 8492598831167192472, guid: f271c8cc09b534eec82268d24cd420b2, type: 3}
+      propertyPath: rectangle.shadowType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8492598831167192472, guid: f271c8cc09b534eec82268d24cd420b2, type: 3}
+      propertyPath: rectangle.shadowOptimization
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8492598831167192472, guid: f271c8cc09b534eec82268d24cd420b2, type: 3}
+      propertyPath: superTilemapEditor.transform
+      value: 
+      objectReference: {fileID: 327368345}
+    - target: {fileID: 8492598831167192472, guid: f271c8cc09b534eec82268d24cd420b2, type: 3}
+      propertyPath: superTilemapEditor.gameObject
+      value: 
+      objectReference: {fileID: 327368346}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f271c8cc09b534eec82268d24cd420b2, type: 3}
+--- !u!4 &327368345 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 725605797152465177, guid: f271c8cc09b534eec82268d24cd420b2, type: 3}
+  m_PrefabInstance: {fileID: 327368344}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &327368346 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7156174909810798453, guid: f271c8cc09b534eec82268d24cd420b2, type: 3}
+  m_PrefabInstance: {fileID: 327368344}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &491664133
 PrefabInstance:
   m_ObjectHideFlags: 0

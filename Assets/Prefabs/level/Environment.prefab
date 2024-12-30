@@ -201,7 +201,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -122905283
   m_SortingLayer: 1
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
   m_MaxChunkCount: 16
@@ -224,7 +224,6 @@ GameObject:
   - component: {fileID: 6925274799063752953}
   - component: {fileID: 3853478914615609402}
   - component: {fileID: 4872135042702721699}
-  - component: {fileID: 4631290816666566293}
   m_Layer: 3
   m_Name: Tilemap
   m_TagString: Roots
@@ -433,8 +432,8 @@ TilemapRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -122905283
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
@@ -552,57 +551,6 @@ CompositeCollider2D:
   m_OffsetDistance: 0.00005
   m_UseDelaunayMesh: 0
   m_CompositeGameObject: {fileID: 5934104016242381738}
---- !u!114 &4631290816666566293
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5934104016242381738}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 143f829798ec14143ac2b96528ed9425, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mapType: 0
-  shadowLayer: 0
-  maskLayer: 0
-  shadowTranslucency: 0
-  shadowTileType: 0
-  bumpMapMode:
-    type: 0
-    textureType: 0
-    texture: {fileID: 0}
-    sprite: {fileID: 0}
-    invertX: 0
-    invertY: 0
-    depth: 1
-    spriteRenderer: {fileID: 0}
-  rectangle:
-    shadowType: 3
-    maskType: 0
-    gameObject: {fileID: 0}
-    transform: {fileID: 0}
-    shadowOptimization: 0
-  isometric:
-    shadowType: 1
-    maskType: 2
-    gameObject: {fileID: 0}
-    transform: {fileID: 0}
-    ZasY: 0
-  hexagon:
-    shadowType: 1
-    maskType: 2
-    gameObject: {fileID: 0}
-    transform: {fileID: 0}
-  superTilemapEditor:
-    shadowType: 1
-    maskType: 2
-    gameObject: {fileID: 0}
-    transform: {fileID: 0}
-    shadowTypeSTE: 1
-    maskTypeSTE: 2
-    eventsInit: 0
 --- !u!1 &6016041714041218055
 GameObject:
   m_ObjectHideFlags: 0
@@ -895,7 +843,6 @@ GameObject:
   - component: {fileID: 7171302106241115628}
   - component: {fileID: 7391192369701538338}
   - component: {fileID: 127157483109955743}
-  - component: {fileID: 8492598831167192472}
   m_Layer: 3
   m_Name: Tilemap
   m_TagString: Rock
@@ -1124,8 +1071,8 @@ TilemapRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -122905283
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
@@ -1243,57 +1190,6 @@ CompositeCollider2D:
   m_OffsetDistance: 0.00005
   m_UseDelaunayMesh: 0
   m_CompositeGameObject: {fileID: 7156174909810798453}
---- !u!114 &8492598831167192472
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7156174909810798453}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 143f829798ec14143ac2b96528ed9425, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mapType: 0
-  shadowLayer: 0
-  maskLayer: 0
-  shadowTranslucency: 0
-  shadowTileType: 0
-  bumpMapMode:
-    type: 0
-    textureType: 0
-    texture: {fileID: 0}
-    sprite: {fileID: 0}
-    invertX: 0
-    invertY: 0
-    depth: 1
-    spriteRenderer: {fileID: 0}
-  rectangle:
-    shadowType: 3
-    maskType: 0
-    gameObject: {fileID: 0}
-    transform: {fileID: 0}
-    shadowOptimization: 0
-  isometric:
-    shadowType: 1
-    maskType: 2
-    gameObject: {fileID: 0}
-    transform: {fileID: 0}
-    ZasY: 0
-  hexagon:
-    shadowType: 1
-    maskType: 2
-    gameObject: {fileID: 0}
-    transform: {fileID: 0}
-  superTilemapEditor:
-    shadowType: 1
-    maskType: 2
-    gameObject: {fileID: 0}
-    transform: {fileID: 0}
-    shadowTypeSTE: 1
-    maskTypeSTE: 2
-    eventsInit: 0
 --- !u!1 &8112054033563554956
 GameObject:
   m_ObjectHideFlags: 0
@@ -1473,7 +1369,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -122905283
   m_SortingLayer: 1
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
   m_MaxChunkCount: 16
