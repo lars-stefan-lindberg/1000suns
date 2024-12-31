@@ -10,6 +10,7 @@ public class Prisoner : MonoBehaviour
     private BoxCollider2D _collider;
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
+    private LightSprite2DFadeManager _lightSprite2DFadeManager;
     public LayerMask groundLayer;
 
     public float defaultSpeed = 3;
@@ -71,6 +72,7 @@ public class Prisoner : MonoBehaviour
         _rigidBody = GetComponent<Rigidbody2D>();
         _animator = GetComponentInChildren<Animator>();
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        _lightSprite2DFadeManager = GetComponentInChildren<LightSprite2DFadeManager>();
         if(isImmuneToForcePush)
             _spriteRenderer.color = new Color(0.6f, 0, 0, 1);
         if(isSpawningFast)
@@ -366,10 +368,12 @@ public class Prisoner : MonoBehaviour
         _rigidBody.bodyType = RigidbodyType2D.Static;
         _collider.enabled = false;
         _animator.SetTrigger("death");
+        _lightSprite2DFadeManager.StartFadeIn();
     }
 
     public bool isSpawningPrisoners = false;
     public GameObject[] prisonersToSpawn;
+    //Kill is run by the end of the death animation via event trigger
     public void Kill() {
         if(isSpawningPrisoners)
             SpawnPrisoners();
@@ -388,6 +392,9 @@ public class Prisoner : MonoBehaviour
         }
     }
 
+    public void SpawnStarted() {
+        _lightSprite2DFadeManager.StartFadeOut();
+    }
     public void SpawningComplete() {
         _isSpawning = false;
     }

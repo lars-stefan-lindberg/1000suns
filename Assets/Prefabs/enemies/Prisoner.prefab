@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 5213114004992624181}
   - component: {fileID: -3361849556270991201}
   - component: {fileID: 2591660405728026287}
+  - component: {fileID: 2809307486220679348}
   m_Layer: 0
   m_Name: Prisoner
   m_TagString: Enemy
@@ -287,3 +288,18 @@ MonoBehaviour:
   glowMode:
     enable: 0
     glowRadius: 1
+--- !u!114 &2809307486220679348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5873467829969753878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9bcd0a9374b64dbdbf3f1e233e90d97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _fadeOutSpeed: 0.74
+  _fadeInSpeed: 1
+  _fadeOutAlpha: 0
