@@ -14,7 +14,8 @@ GameObject:
   - component: {fileID: 7910505371833981931}
   - component: {fileID: 5070591708931821238}
   - component: {fileID: -7193632763787341785}
-  - component: {fileID: -7430519155212213329}
+  - component: {fileID: 6024528175874719028}
+  - component: {fileID: 8771242031137239840}
   m_Layer: 2
   m_Name: PowerUp
   m_TagString: Untagged
@@ -184,7 +185,7 @@ MonoBehaviour:
   type: 0
   spriteMode: 0
   sprite: {fileID: 0}
-  color: {r: 0.5, g: 0.5, b: 0.5, a: 0.901}
+  color: {r: 0.5, g: 0.5, b: 0.5, a: 0}
   flipX: 0
   flipY: 0
   lightSpriteTransform:
@@ -206,7 +207,7 @@ MonoBehaviour:
   glowMode:
     enable: 0
     glowRadius: 1
---- !u!114 &-7430519155212213329
+--- !u!114 &6024528175874719028
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -215,9 +216,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 7576074549921435932}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d54171dab6926401384f5ef67502fab1, type: 3}
+  m_Script: {fileID: 11500000, guid: f9bcd0a9374b64dbdbf3f1e233e90d97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flickersPerSecond: 10
-  flickerRangeMin: -0.1
-  flickerRangeMax: 0.1
+  _fadeOutSpeed: 0.78
+  _fadeInSpeed: 1.52
+  _fadeOutAlpha: 0.101
+  _fadeInAlpha: 0.901
+--- !u!114 &8771242031137239840
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7576074549921435932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f60959565714d77a8b803ec3875666, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

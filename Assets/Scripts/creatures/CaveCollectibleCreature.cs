@@ -32,7 +32,7 @@ public class CaveCollectibleCreature : MonoBehaviour
         IsCollected = false;
         IsPermantentlyCollected = false;
         _lightSprite2DFadeManager = GetComponentInChildren<LightSprite2DFadeManager>();
-        _lightSprite2DFadeManager.SetFadedOutState();
+        _lightSprite2DFadeManager.SetFadedInState();
     }
 
     void FixedUpdate()
@@ -109,7 +109,7 @@ public class CaveCollectibleCreature : MonoBehaviour
         }
 
         _blackHole.SetActive(true);
-        _lightSprite2DFadeManager.StartFadeIn();
+        _lightSprite2DFadeManager.StartFadeOut();
         yield return new WaitForSeconds(1f);
         
         _headSpriteRenderer.enabled = false;

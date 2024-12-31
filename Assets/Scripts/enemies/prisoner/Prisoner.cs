@@ -368,7 +368,7 @@ public class Prisoner : MonoBehaviour
         _rigidBody.bodyType = RigidbodyType2D.Static;
         _collider.enabled = false;
         _animator.SetTrigger("death");
-        _lightSprite2DFadeManager.StartFadeIn();
+        _lightSprite2DFadeManager.StartFadeOut();
     }
 
     public bool isSpawningPrisoners = false;
@@ -393,7 +393,7 @@ public class Prisoner : MonoBehaviour
     }
 
     public void SpawnStarted() {
-        _lightSprite2DFadeManager.StartFadeOut();
+        _lightSprite2DFadeManager.StartFadeIn();
     }
     public void SpawningComplete() {
         _isSpawning = false;

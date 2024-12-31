@@ -45,7 +45,7 @@ public class BabyPrisoner : MonoBehaviour
         _rigidBody = GetComponent<Rigidbody2D>();
         _animator = GetComponentInChildren<Animator>();
         _lightSprite2DFadeManager = GetComponentInChildren<LightSprite2DFadeManager>();
-        _lightSprite2DFadeManager.SetFadedOutState();
+        _lightSprite2DFadeManager.SetFadedInState();
         _enemyWidth = _collider.bounds.extents.x;
         originHorizontalPos = transform.position.x;
     }
@@ -178,7 +178,7 @@ public class BabyPrisoner : MonoBehaviour
     public void Despawn() {
         _animator.SetTrigger("despawn");
         SoundFXManager.obj.PlayBabyPrisonerDespawn(transform);
-        _lightSprite2DFadeManager.StartFadeIn();
+        _lightSprite2DFadeManager.StartFadeOut();
         StartCoroutine(DelayedSetInactive(1f));
     }
 
