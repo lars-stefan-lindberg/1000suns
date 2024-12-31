@@ -13,6 +13,7 @@ public class CaveCollectibleCreature : MonoBehaviour
     [SerializeField] private GameObject[] _tailParts;
     [SerializeField] private GameObject _blackHole;
     [SerializeField] private float _floatDistance = 0.25f;
+    private LightSprite2DFadeManager _lightSprite2DFadeManager;
 
     private float _floatDirectionTimer = 0;
     [SerializeField] private float _floatDirectionChangeTime = 1f;
@@ -30,6 +31,8 @@ public class CaveCollectibleCreature : MonoBehaviour
     void Awake() {
         IsCollected = false;
         IsPermantentlyCollected = false;
+        _lightSprite2DFadeManager = GetComponentInChildren<LightSprite2DFadeManager>();
+        _lightSprite2DFadeManager.SetFadedOutState();
     }
 
     void FixedUpdate()
@@ -44,14 +47,16 @@ public class CaveCollectibleCreature : MonoBehaviour
         }
 
         Vector2 headTargetPosition;
-        if(!IsCollected || _preparingTakeOff) { //Don't follow
+        if(!IsCollected) { 
+            headTargetPosition = transform.position;
+        } else if(_preparingTakeOff) {
             headTargetPosition = _head.transform.position;
         }
         else { //Follow
             bool isCaveAvatarFacingLeft = CaveAvatar.obj.IsFacingLeft();
-            Transform avatarHead = CaveAvatar.obj.GetHead();
-            float headTargetX = isCaveAvatarFacingLeft ? avatarHead.position.x + 1.475f : avatarHead.position.x - 1.475f;
-            headTargetPosition = new(headTargetX, avatarHead.position.y);
+            Vector2 mainAvatarTarget = CaveAvatar.obj.GetTarget();
+            float headTargetX = isCaveAvatarFacingLeft ? mainAvatarTarget.x + 1.475f : mainAvatarTarget.x - 1.475f;
+            headTargetPosition = new(headTargetX, mainAvatarTarget.y);
             _headSpriteRenderer.flipX = isCaveAvatarFacingLeft;
         }
 
@@ -104,6 +109,7 @@ public class CaveCollectibleCreature : MonoBehaviour
         }
 
         _blackHole.SetActive(true);
+        _lightSprite2DFadeManager.StartFadeIn();
         yield return new WaitForSeconds(1f);
         
         _headSpriteRenderer.enabled = false;

@@ -39355,26 +39355,6 @@ Transform:
   - {fileID: 1226025223}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &224269427 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8899430469720267306, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
-  m_PrefabInstance: {fileID: 1841166355}
-  m_PrefabAsset: {fileID: 0}
---- !u!212 &224269429 stripped
-SpriteRenderer:
-  m_CorrespondingSourceObject: {fileID: 5682516225393181331, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
-  m_PrefabInstance: {fileID: 1841166355}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &261665933 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 505652035926701708, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
-  m_PrefabInstance: {fileID: 1841166355}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &334166309 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 266758796367557617, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
-  m_PrefabInstance: {fileID: 1841166355}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &349702273
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -39517,7 +39497,7 @@ PrefabInstance:
     - target: {fileID: 4188648597913192878, guid: a5f0f8f450c7d487bbc4d14807798239, type: 3}
       propertyPath: _collectible
       value: 
-      objectReference: {fileID: 1683358656}
+      objectReference: {fileID: 1683358658}
     - target: {fileID: 7462028660673169041, guid: a5f0f8f450c7d487bbc4d14807798239, type: 3}
       propertyPath: m_LocalPosition.x
       value: 602.6671
@@ -39563,16 +39543,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a5f0f8f450c7d487bbc4d14807798239, type: 3}
---- !u!1 &482719974 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2287575153649194879, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
-  m_PrefabInstance: {fileID: 1841166355}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &576284416 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4583524569017896082, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
-  m_PrefabInstance: {fileID: 1841166355}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &626325981
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -40028,11 +39998,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5ccb8f1e22b614b349b2d6a31833ca67, type: 3}
---- !u!1 &1503402761 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7171154800799625678, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
-  m_PrefabInstance: {fileID: 1841166355}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1531678784
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -40141,7 +40106,7 @@ PrefabInstance:
     - target: {fileID: 4188648597913192878, guid: a5f0f8f450c7d487bbc4d14807798239, type: 3}
       propertyPath: _collectible
       value: 
-      objectReference: {fileID: 1683358656}
+      objectReference: {fileID: 1683358658}
     - target: {fileID: 7462028660673169041, guid: a5f0f8f450c7d487bbc4d14807798239, type: 3}
       propertyPath: m_LocalPosition.x
       value: 619.8593
@@ -40244,36 +40209,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9ada687d4765247188b9fb9db4205c22, type: 3}
---- !u!1 &1683358655 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8604602420807551686, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
+--- !u!114 &1683358658 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7389256761924744312, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
   m_PrefabInstance: {fileID: 1841166355}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1683358656
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1683358655}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 059f082e6334449cb8517459b825750b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _lerpSpeed: 0.05
-  _tailPartLerpSpeed: 0.5
-  _head: {fileID: 224269427}
-  _headSpriteRenderer: {fileID: 224269429}
-  _tailParts:
-  - {fileID: 1503402761}
-  - {fileID: 334166309}
-  - {fileID: 576284416}
-  - {fileID: 1917110875}
-  - {fileID: 482719974}
-  _blackHole: {fileID: 261665933}
-  _floatDistance: 0.25
-  _floatDirectionChangeTime: 1
 --- !u!1 &1734935032 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5873467829969753878, guid: 97caebb36b7df4895a595d2740614fcf, type: 3}
@@ -40576,7 +40522,11 @@ PrefabInstance:
     - target: {fileID: 5769145254539207023, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
       propertyPath: _collectible
       value: 
-      objectReference: {fileID: 1683358656}
+      objectReference: {fileID: 1683358658}
+    - target: {fileID: 7389256761924744312, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
+      propertyPath: _floatDistance
+      value: 0.25
+      objectReference: {fileID: 0}
     - target: {fileID: 8604602420807551686, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
       propertyPath: m_Name
       value: CaveCollectibleCreature
@@ -40589,16 +40539,8 @@ PrefabInstance:
     - {fileID: 3194047749858963257, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 8604602420807551686, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1683358656}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
---- !u!1 &1917110875 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7283953593606165663, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
-  m_PrefabInstance: {fileID: 1841166355}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1932718144
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -40687,7 +40629,7 @@ PrefabInstance:
     - target: {fileID: 4188648597913192878, guid: a5f0f8f450c7d487bbc4d14807798239, type: 3}
       propertyPath: _collectible
       value: 
-      objectReference: {fileID: 1683358656}
+      objectReference: {fileID: 1683358658}
     - target: {fileID: 7462028660673169041, guid: a5f0f8f450c7d487bbc4d14807798239, type: 3}
       propertyPath: m_LocalPosition.x
       value: 640.375

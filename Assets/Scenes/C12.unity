@@ -48869,6 +48869,10 @@ PrefabInstance:
       propertyPath: _collectible
       value: 
       objectReference: {fileID: 1746427561}
+    - target: {fileID: 7389256761924744312, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
+      propertyPath: _floatDistance
+      value: 0.25
+      objectReference: {fileID: 0}
     - target: {fileID: 8604602420807551686, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
       propertyPath: m_Name
       value: CaveCollectibleCreature
@@ -48881,81 +48885,19 @@ PrefabInstance:
     - {fileID: 3194047749858963257, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 8604602420807551686, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1746427561}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
---- !u!1 &1746427552 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 505652035926701708, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
-  m_PrefabInstance: {fileID: 1746427551}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1746427553 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2287575153649194879, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
-  m_PrefabInstance: {fileID: 1746427551}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1746427554 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7283953593606165663, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
-  m_PrefabInstance: {fileID: 1746427551}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1746427555 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4583524569017896082, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
-  m_PrefabInstance: {fileID: 1746427551}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1746427556 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 266758796367557617, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
-  m_PrefabInstance: {fileID: 1746427551}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1746427557 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7171154800799625678, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
-  m_PrefabInstance: {fileID: 1746427551}
-  m_PrefabAsset: {fileID: 0}
---- !u!212 &1746427558 stripped
-SpriteRenderer:
-  m_CorrespondingSourceObject: {fileID: 5682516225393181331, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
-  m_PrefabInstance: {fileID: 1746427551}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1746427559 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8899430469720267306, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
-  m_PrefabInstance: {fileID: 1746427551}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1746427560 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8604602420807551686, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
-  m_PrefabInstance: {fileID: 1746427551}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1746427561
+--- !u!114 &1746427561 stripped
 MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 7389256761924744312, guid: 3a71678d2b2e6474288af8da366a4bd0, type: 3}
+  m_PrefabInstance: {fileID: 1746427551}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1746427560}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 059f082e6334449cb8517459b825750b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _lerpSpeed: 0.05
-  _tailPartLerpSpeed: 0.5
-  _head: {fileID: 1746427559}
-  _headSpriteRenderer: {fileID: 1746427558}
-  _tailParts:
-  - {fileID: 1746427557}
-  - {fileID: 1746427556}
-  - {fileID: 1746427555}
-  - {fileID: 1746427554}
-  - {fileID: 1746427553}
-  _blackHole: {fileID: 1746427552}
-  _floatDistance: 0.25
-  _floatDirectionChangeTime: 1
 --- !u!4 &1935370038 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1811493771940002750, guid: 85681cff689914034886db86c695de5b, type: 3}

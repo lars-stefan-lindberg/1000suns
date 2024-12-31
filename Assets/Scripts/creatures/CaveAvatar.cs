@@ -111,8 +111,14 @@ public class CaveAvatar : MonoBehaviour
         return _headSpriteRenderer.flipX;
     }
 
-    public Transform GetHead() {
-        return _head.transform;
+    public Vector2 GetTarget() {
+        if(IsFollowingPlayer) {
+            bool isPlayerFacingLeft = PlayerMovement.obj.isFacingLeft();
+            _headSpriteRenderer.flipX = isPlayerFacingLeft;   
+            return isPlayerFacingLeft ? _playerTargetRight.position : _playerTargetLeft.position;
+        } else {
+            return _target.transform.position;
+        }
     }
 
     void OnDestroy() {
