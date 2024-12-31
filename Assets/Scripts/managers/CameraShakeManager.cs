@@ -8,11 +8,12 @@ public class CameraShakeManager : MonoBehaviour
     private CinemachineVirtualCamera _activeVirtualCamera;
 
     [ContextMenu("ShakeCamera")]
-    public void ShakeCamera(float intensity, float time) {
+    public void ShakeCamera(float amplitude, float frequency, float time) {
         _activeVirtualCamera = (CinemachineVirtualCamera)CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera;
         if (_activeVirtualCamera != null) {
             CinemachineBasicMultiChannelPerlin cinemachineBasicMultiChannelPerlin = _activeVirtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
-            cinemachineBasicMultiChannelPerlin.m_AmplitudeGain = intensity;
+            cinemachineBasicMultiChannelPerlin.m_AmplitudeGain = amplitude;
+            cinemachineBasicMultiChannelPerlin.m_FrequencyGain = frequency;
             _shakeTimer = time;
         }
     }

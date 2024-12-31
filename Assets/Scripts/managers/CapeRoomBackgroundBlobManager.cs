@@ -35,7 +35,7 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
             }
 
             //Shake screen
-            CameraShakeManager.obj.ShakeCamera(1.5f, 4f);
+            CameraShakeManager.obj.ShakeCamera(1.94f, 1.84f, 4f);
 
             //Turn background white, and then slowly fade back to black
             CapeRoomFadeManager.obj.StartFadeOut();

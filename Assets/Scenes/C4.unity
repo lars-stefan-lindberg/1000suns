@@ -181,7 +181,7 @@ Transform:
   m_GameObject: {fileID: 134282264}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 372.25, y: 35.5, z: -0.15}
+  m_LocalPosition: {x: 372.25, y: 35.5, z: -1.15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1199,7 +1199,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -2027969955
   m_SortingLayer: -2
-  m_SortingOrder: 0
+  m_SortingOrder: -5
   m_Sprite: {fileID: 21300000, guid: 50dc5f9cedc3140c7b83a825829c3304, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -1882,7 +1882,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68bb026fafb42b14791938953eaace77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_NoiseProfile: {fileID: 11400000, guid: 69ce8388f6785dd4c8c39915efece2f4, type: 2}
+  m_NoiseProfile: {fileID: 11400000, guid: a3468e7c1f97a4329b23eb1124b1f486, type: 2}
   m_PivotOffset: {x: 0, y: 0, z: 0}
   m_AmplitudeGain: 0
   m_FrequencyGain: 1
@@ -1909,7 +1909,7 @@ MonoBehaviour:
   m_TargetMovementOnly: 1
   m_ScreenX: 0.5
   m_ScreenY: 0.5
-  m_CameraDistance: 10
+  m_CameraDistance: 1.15
   m_DeadZoneWidth: 0
   m_DeadZoneHeight: 0
   m_DeadZoneDepth: 0
@@ -1996,7 +1996,7 @@ Transform:
   m_GameObject: {fileID: 768139353}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 372, y: 42, z: -0.15}
+  m_LocalPosition: {x: 372, y: 42, z: -1.15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -19737,12 +19737,12 @@ MonoBehaviour:
   type: 0
   spriteMode: 0
   sprite: {fileID: 21300000, guid: 6592d6be03fd808449716a11558d506f, type: 3}
-  color: {r: 0.5989379, g: 0.29214135, b: 0.6132076, a: 0.642}
+  color: {r: 0.6383824, g: 0.3285422, b: 0.6509434, a: 0.711}
   flipX: 0
   flipY: 0
   lightSpriteTransform:
     applyRotation: 1
-    scale: {x: 1, y: 1}
+    scale: {x: 0.5, y: 0.5}
     rotation: 0
     position: {x: 0, y: 0}
   lightSpriteShape:

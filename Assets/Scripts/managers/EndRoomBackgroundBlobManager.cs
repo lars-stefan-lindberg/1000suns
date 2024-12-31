@@ -37,7 +37,7 @@ public class EndRoomBackgroundBlobManager : MonoBehaviour
             }
 
             //Shake screen
-            CameraShakeManager.obj.ShakeCamera(1.5f, 5f);
+            CameraShakeManager.obj.ShakeCamera(1.94f, 1.84f, 5f);
 
             //Start end song
             MusicManager.obj.PlayEndSong();

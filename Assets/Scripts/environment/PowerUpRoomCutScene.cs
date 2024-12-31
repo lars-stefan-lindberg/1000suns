@@ -56,7 +56,7 @@ public class PowerUpRoomCutScene : MonoBehaviour
         _animator.SetTrigger("enableFast");
         Player.obj.FlashFor(4.5f);
 
-        CameraShakeManager.obj.ShakeCamera(1f, 4.9f);
+        CameraShakeManager.obj.ShakeCamera(1.94f, 1.84f, 4.9f);
 
         yield return new WaitForSeconds(2.5f);
         Player.obj.SetBlackCape();
