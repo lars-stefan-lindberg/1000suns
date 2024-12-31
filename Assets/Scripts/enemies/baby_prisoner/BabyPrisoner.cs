@@ -38,11 +38,14 @@ public class BabyPrisoner : MonoBehaviour
     private readonly float playScaredSoundEffectInterval = 1f;
     private float playScaredSoundEffectTimer = 0f;
     private AudioSource _escapeAudioSource;
+    private LightSprite2DFadeManager _lightSprite2DFadeManager;
 
     void Start() {
         _collider = GetComponent<BoxCollider2D>();
         _rigidBody = GetComponent<Rigidbody2D>();
         _animator = GetComponentInChildren<Animator>();
+        _lightSprite2DFadeManager = GetComponentInChildren<LightSprite2DFadeManager>();
+        _lightSprite2DFadeManager.SetFadedOutState();
         _enemyWidth = _collider.bounds.extents.x;
         originHorizontalPos = transform.position.x;
     }
@@ -175,6 +178,7 @@ public class BabyPrisoner : MonoBehaviour
     public void Despawn() {
         _animator.SetTrigger("despawn");
         SoundFXManager.obj.PlayBabyPrisonerDespawn(transform);
+        _lightSprite2DFadeManager.StartFadeIn();
         StartCoroutine(DelayedSetInactive(1f));
     }
 
