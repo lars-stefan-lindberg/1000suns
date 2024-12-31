@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 6241764702360821823}
   - component: {fileID: 5213114004992624181}
   - component: {fileID: -3361849556270991201}
+  - component: {fileID: 2591660405728026287}
   m_Layer: 0
   m_Name: Prisoner
   m_TagString: Enemy
@@ -248,3 +249,41 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67574abbeb46043b180e1fab4d16c3b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2591660405728026287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5873467829969753878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d62ac029b1017974ead8b6ad01623c82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lightLayer: 0
+  type: 0
+  spriteMode: 0
+  sprite: {fileID: 21300000, guid: 6592d6be03fd808449716a11558d506f, type: 3}
+  color: {r: 0.4811321, g: 0.4811321, b: 0.4811321, a: 0.601}
+  flipX: 0
+  flipY: 0
+  lightSpriteTransform:
+    applyRotation: 0
+    scale: {x: 0.75, y: 0.75}
+    rotation: 0
+    position: {x: 0, y: 0}
+  lightSpriteShape:
+    update: 0
+  meshMode:
+    enable: 0
+    alpha: 0.5
+    shader: 0
+    materials:
+    - {fileID: 0}
+    sortingLayer:
+      name: Default
+      Order: 0
+  glowMode:
+    enable: 0
+    glowRadius: 1
