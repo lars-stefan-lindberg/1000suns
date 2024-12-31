@@ -740,6 +740,44 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92a516df6f4934fb6a25d64e4a2e2339, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1687283046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1687283032}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d62ac029b1017974ead8b6ad01623c82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lightLayer: 0
+  type: 0
+  spriteMode: 0
+  sprite: {fileID: 21300000, guid: 6592d6be03fd808449716a11558d506f, type: 3}
+  color: {r: 0.4811321, g: 0.4811321, b: 0.4811321, a: 0.601}
+  flipX: 0
+  flipY: 0
+  lightSpriteTransform:
+    applyRotation: 0
+    scale: {x: 0.5, y: 0.5}
+    rotation: 0
+    position: {x: 0, y: 0}
+  lightSpriteShape:
+    update: 0
+  meshMode:
+    enable: 0
+    alpha: 0.5
+    shader: 0
+    materials:
+    - {fileID: 0}
+    sortingLayer:
+      name: Default
+      Order: 0
+  glowMode:
+    enable: 0
+    glowRadius: 1
 --- !u!1001 &1880755965
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1191,6 +1229,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1167462561473728010, guid: 6716a012b459548df95048eb346289ed, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1687283039}
+    - targetCorrespondingSourceObject: {fileID: 1167462561473728010, guid: 6716a012b459548df95048eb346289ed, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1687283046}
   m_SourcePrefab: {fileID: 100100000, guid: 6716a012b459548df95048eb346289ed, type: 3}
 --- !u!114 &5452273966832040760
 MonoBehaviour:
