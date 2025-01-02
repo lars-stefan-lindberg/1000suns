@@ -4,9 +4,10 @@ using UnityEngine;
 public class BreakableFloor : MonoBehaviour
 {
     private SpriteRenderer _spriteRenderer;
+    private Transform _spriteRendererTransform;
     [SerializeField] private BoxCollider2D _floorCollider;
     private BoxCollider2D _playerOnTopDetectionCollider;
-    public ParticleSystem shakeAnimation;
+    [SerializeField] private ParticleSystem _shakeAnimation;
 
     public bool unbreakable = false;
     public int collisionsBeforeBreak = 3;
@@ -20,10 +21,13 @@ public class BreakableFloor : MonoBehaviour
     public float shakeTime = 0.12f;
     public float shakeFrameWait = 0.08f;
     private float _originYPosition;
+    private float[] _shakeTargetsY;
 
     private void Awake() {
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        _spriteRendererTransform = _spriteRenderer.transform;
         _originYPosition = _spriteRenderer.transform.position.y;
+        _shakeTargetsY = new float[2] {_originYPosition - shakeDistance, _originYPosition + shakeDistance};
         _playerOnTopDetectionCollider = GetComponent<BoxCollider2D>();
     }
 
@@ -56,7 +60,7 @@ public class BreakableFloor : MonoBehaviour
         if(_breakFloor) {
             _breakFloor = false;
             SoundFXManager.obj.PlayBreakableWallBreak(transform);
-            shakeAnimation.Emit(numberOfShakeParticles);
+            _shakeAnimation.Emit(numberOfShakeParticles);
             _floorCollider.enabled = false;
             _playerOnTopDetectionCollider.enabled = false;
             _fadeSprite = true;
@@ -71,18 +75,15 @@ public class BreakableFloor : MonoBehaviour
     private IEnumerator ShakeWall() {
         yield return new WaitForSeconds(0.05f);
         SoundFXManager.obj.PlayBreakableWallCrackling(transform);
-        shakeAnimation.Emit(numberOfShakeParticles);
-        float downY = _originYPosition - shakeDistance;
-        float upY = _originYPosition + shakeDistance;
-        float[] positions = new float[2] {downY, upY};
+        _shakeAnimation.Emit(numberOfShakeParticles);
         float time = 0f;
         int index = 1;
         while(time <= 1.0) {
             time += (Time.deltaTime / shakeTime) + shakeFrameWait;
             index += 1;
-            _spriteRenderer.transform.position = new Vector2(_spriteRenderer.transform.position.x, positions[index % 2]);
+            _spriteRendererTransform.position = new Vector2(_spriteRendererTransform.position.x, _shakeTargetsY[index % 2]);
             yield return new WaitForSeconds(shakeFrameWait);
         }
-        _spriteRenderer.transform.position = new Vector2(_spriteRenderer.transform.position.x, _originYPosition);
+        _spriteRendererTransform.position = new Vector2(_spriteRendererTransform.position.x, _originYPosition);
     }
 }
