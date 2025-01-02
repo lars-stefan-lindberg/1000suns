@@ -31,7 +31,7 @@ public class LevelSwitcher : MonoBehaviour
             
             SceneManager.SetActiveScene(SceneManager.GetSceneByName(_nextScene));
 
-            PlayerMovement.PlayerDirection playerDirection = getPlayerDirection(other);
+            PlayerMovement.PlayerDirection playerDirection = GetPlayerDirection(other);
             StartCoroutine(ActivateNextRoomCameraAndTransitionPlayer(playerDirection));
 
             StartCoroutine(MutePrisonersOffscreen());
@@ -40,7 +40,7 @@ public class LevelSwitcher : MonoBehaviour
     }
 
     private float _collisionMargin = 0.5f;
-    private PlayerMovement.PlayerDirection getPlayerDirection(Collider2D playerCollider) {
+    private PlayerMovement.PlayerDirection GetPlayerDirection(Collider2D playerCollider) {
         Bounds playerCollisionBounds = playerCollider.bounds;
         Bounds levelSwitcherBounds = _collider.bounds;
 

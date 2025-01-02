@@ -208,7 +208,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     }
 
     private float _transitionDistanceX = 1;
-    private float _transitionDistanceY = 2f;
+    private float _transitionDistanceUp = 2.5f;
+    private float _transitionDistanceDown = 1.5f;
     private IEnumerator TransitionToNextRoomCoroutine(PlayerDirection direction) {
         float target = 0;
         if(direction == PlayerDirection.LEFT || direction == PlayerDirection.RIGHT) {
@@ -222,9 +223,9 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             }
         } else if(direction == PlayerDirection.UP || direction == PlayerDirection.DOWN) {
             if(direction == PlayerDirection.UP)
-                target = transform.position.y + _transitionDistanceY;
+                target = transform.position.y + _transitionDistanceUp;
             if(direction == PlayerDirection.DOWN)
-                target = transform.position.y - _transitionDistanceY;
+                target = transform.position.y - _transitionDistanceDown;
             while(transform.position.y != target) {
                 transform.position = new Vector2(transform.position.x, Mathf.MoveTowards(transform.position.y, target, Time.deltaTime * 5f));
                 yield return null;
