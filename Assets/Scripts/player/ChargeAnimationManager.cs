@@ -38,7 +38,8 @@ public class ChargeAnimationMgr : MonoBehaviour
 
     public void FullyChargedPoweredUp() {
         _animator.SetBool("fullyCharged", true);
-        _animator.SetBool("poweredUp", true);
+        //Save for future reference, if I want to change the fully charged powered up animation
+        //_animator.SetBool("poweredUp", true);
     }
 
     public void Cancel() {
@@ -48,7 +49,7 @@ public class ChargeAnimationMgr : MonoBehaviour
 
     public void HardCancel() {
         _animator.SetBool("fullyCharged", false);
-        _animator.SetBool("poweredUp", false);
+        //_animator.SetBool("poweredUp", false);
         _animator.enabled = false;
         _fadeStartColor.a = 0;
         _spriteRenderer.color = _fadeStartColor;
@@ -63,7 +64,7 @@ public class ChargeAnimationMgr : MonoBehaviour
         }
 
         _animator.SetBool("fullyCharged", false);
-        _animator.SetBool("poweredUp", false);
+        //_animator.SetBool("poweredUp", false);
         _animator.enabled = false;
         _spriteRenderer.enabled = false;
     }

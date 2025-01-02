@@ -113,10 +113,10 @@ public class PlayerPush : MonoBehaviour
         if(_buildingUpPower && _buildUpPower < maxForce)
             pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().Charge();
         else if(_buildUpPower >= maxForce) {
-            if(Player.obj.hasPowerUp)
-                pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().FullyChargedPoweredUp();
-            else
-                pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().FullyCharged();
+            // if(Player.obj.hasPowerUp)
+            //     pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().FullyChargedPoweredUp();
+            // else
+            pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().FullyCharged();
         }
 
         if(_buildingUpPower) {
