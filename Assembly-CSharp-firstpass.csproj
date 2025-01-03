@@ -19,7 +19,7 @@
     <RootNamespace></RootNamespace>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <AssemblyName>Febucci.TextAnimator.Runtime</AssemblyName>
+    <AssemblyName>Assembly-CSharp-firstpass</AssemblyName>
     <TargetFramework>netstandard2.1</TargetFramework>
     <BaseDirectory>.</BaseDirectory>
   </PropertyGroup>
@@ -54,7 +54,7 @@
     <UnityProjectGenerator>Package</UnityProjectGenerator>
     <UnityProjectGeneratorVersion>2.0.22</UnityProjectGeneratorVersion>
     <UnityProjectGeneratorStyle>SDK</UnityProjectGeneratorStyle>
-    <UnityProjectType>Game:1</UnityProjectType>
+    <UnityProjectType>GamePlugins:3</UnityProjectType>
     <UnityBuildTarget>StandaloneOSX:2</UnityBuildTarget>
     <UnityVersion>2022.3.20f1</UnityVersion>
   </PropertyGroup>
@@ -64,86 +64,19 @@
     <Analyzer Include="/Applications/Unity/Hub/Editor/2022.3.20f1/Unity.app/Contents/Tools/Unity.SourceGenerators/Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Behaviors/Built-in/ShakeBehavior.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Appearances/Built-in/OffsetAppearance.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Behaviors/Built-in/RainbowBehavior.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Appearances/Built-in/DiagonalExpandAppearance.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Parsing/_Core/TagParserBase.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Utilities/Tween.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Parsing/Regions/Styles/StylesParser.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Behaviors/Built-in/RotationBehavior.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Behaviors/Built-in/SizeBehavior.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Components/Typewriter/_Core/MessageEvent.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Parsing/Regions/_Core/RegionBase.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Appearances/Built-in/SizeAppearance.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Parsing/_Core/PlainTagParser.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Settings/TextAnimatorSettings.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Appearances/Built-in/RotatingAppearance.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Appearances/Built-in/RandomDirectionAppearance.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Special/CompositeAnimation.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Appearances/Built-in/HorizontalExpandAppearance.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Special/Curves/_Core/ColorCurve.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Parsing/Regions/_Core/ModifierInfo.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Special/Curves/_Core/AnimationData.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Styles/StyleSheetScriptable.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Behaviors/Built-in/BounceBehavior.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Actions/Built-in/WaitForAction.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Utilities/TextUtilities.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Utilities/FormatUtils.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Behaviors/Built-in/WaveBehavior.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Components/Typewriter/_Core/TypewriterCore.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Parsing/Markers/Actions/ActionParser.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Parsing/TextParser.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Special/Curves/_Core/TimeMode.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Components/Animator/_Core/TAnimCore.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Parsing/Regions/Animations/AnimationRegion.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Special/CompositeWithEmission.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/_Core/AnimationsDatabase.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Appearances/Built-in/VerticalExpandAppearance.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Components/Typewriter/Built-in/TypewriterByCharacter.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Parsing/_Core/ITagProvider.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Components/Animator/_Core/AnimationLoop.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Appearances/_Core/AppearanceScriptableBase.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Appearances/Built-in/FadeAppearance.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Parsing/Regions/Animations/AnimationParser.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Parsing/Markers/Actions/ActionDatabase.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Special/Curves/Built-in/UniformCurveAnimation.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Components/Typewriter/Built-in/TypewriterByWord.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Special/Curves/_Core/EmissionCurve.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/_Core/EffectInfoAttribute.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Behaviors/_Core/BehaviorScriptableSine.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Parsing/Markers/Events/EventMarker.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Parsing/_Core/WordInfo.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Components/Typewriter/_Core/CharacterEvent.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Behaviors/Built-in/FadeBehavior.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Special/Curves/Built-in/VertexCurveAnimation.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Behaviors/Built-in/DangleBehavior.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Components/Animator/_Core/TimeData.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Parsing/Markers/Actions/ActionMarker.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Behaviors/Built-in/WiggleBehavior.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Parsing/Regions/_Core/TagRange.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Behaviors/_Core/BehaviorScriptableBase.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Components/Typewriter/_Core/TypingInfo.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Behaviors/Built-in/PendulumBehavior.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Actions/Built-in/SpeedAction.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Actions/Built-in/WaitAnyInputAction.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Special/Curves/_Core/FloatCurve.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Behaviors/Built-in/SwingBehavior.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Parsing/_Core/MeshData.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Parsing/Markers/_Core/MarkerBase.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Parsing/_Core/CharInfo.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Parsing/_Core/CharacterData.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/_Core/DefaultValueAttribute.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/_Core/AnimationScriptableBase.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Parsing/Markers/Events/EventParser.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Actions/_Core/ActionScriptableBase.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Animations/Behaviors/Built-in/SlideBehavior.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Components/Animator/_Core/TimeScale.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Scriptables/Styles/Style.cs" />
-    <Compile Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Parsing/_Core/Database.cs" />
+    <Compile Include="Assets/Plugins/DOTween/Modules/DOTweenModuleEPOOutline.cs" />
+    <Compile Include="Assets/Plugins/DOTween/Modules/DOTweenModuleUI.cs" />
+    <Compile Include="Assets/Plugins/DOTween/Modules/DOTweenModuleUtils.cs" />
+    <Compile Include="Assets/Plugins/DOTween/Modules/DOTweenModuleAudio.cs" />
+    <Compile Include="Assets/Plugins/DOTween/Modules/DOTweenModuleSprite.cs" />
+    <Compile Include="Assets/Plugins/DOTween/Modules/DOTweenModuleUnityVersion.cs" />
+    <Compile Include="Assets/Plugins/DOTween/Modules/DOTweenModulePhysics.cs" />
+    <Compile Include="Assets/Plugins/DOTween/Modules/DOTweenModulePhysics2D.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets/Plugins/Febucci/Text Animator/Scripts/Runtime/Febucci.TextAnimator.Runtime.asmdef" />
+    <None Include="Assets/Plugins/DOTween/DOTween.XML" />
+    <None Include="Assets/Plugins/DOTween/DOTween.dll" />
+    <None Include="Assets/Plugins/DOTween/readme.txt" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
@@ -478,68 +411,16 @@
       <HintPath>/Applications/Unity/Hub/Editor/2022.3.20f1/Unity.app/Contents/Managed/UnityEngine/UnityEditor.UnityConnectModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEditor.Graphs">
-      <HintPath>/Applications/Unity/Hub/Editor/2022.3.20f1/Unity.app/Contents/Managed/UnityEditor.Graphs.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEditor.WebGL.Extensions">
-      <HintPath>/Applications/Unity/Hub/Editor/2022.3.20f1/PlaybackEngines/WebGLSupport/UnityEditor.WebGL.Extensions.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEditor.OSXStandalone.Extensions">
-      <HintPath>/Applications/Unity/Hub/Editor/2022.3.20f1/Unity.app/Contents/PlaybackEngines/MacStandaloneSupport/UnityEditor.OSXStandalone.Extensions.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEditor.iOS.Extensions">
-      <HintPath>/Applications/Unity/Hub/Editor/2022.3.20f1/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEditor.WindowsStandalone.Extensions">
-      <HintPath>/Applications/Unity/Hub/Editor/2022.3.20f1/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.VisualScripting.YamlDotNet">
-      <HintPath>Library/PackageCache/com.unity.visualscripting@1.9.1/Editor/VisualScripting.Core/Dependencies/YamlDotNet/Unity.VisualScripting.YamlDotNet.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Unity.Collections.LowLevel.ILSupport">
       <HintPath>Library/PackageCache/com.unity.collections@1.2.4/Unity.Collections.LowLevel.ILSupport/Unity.Collections.LowLevel.ILSupport.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="unityplastic">
-      <HintPath>Library/PackageCache/com.unity.collab-proxy@2.3.1/Lib/Editor/PlasticSCM/unityplastic.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.Plastic.Antlr3.Runtime">
-      <HintPath>Library/PackageCache/com.unity.collab-proxy@2.3.1/Lib/Editor/PlasticSCM/Unity.Plastic.Antlr3.Runtime.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.Plastic.Newtonsoft.Json">
-      <HintPath>Library/PackageCache/com.unity.collab-proxy@2.3.1/Lib/Editor/PlasticSCM/Unity.Plastic.Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="DOTween">
       <HintPath>Assets/Plugins/DOTween/DOTween.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="log4netPlastic">
-      <HintPath>Library/PackageCache/com.unity.collab-proxy@2.3.1/Lib/Editor/PlasticSCM/log4netPlastic.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.VisualScripting.IonicZip">
-      <HintPath>Library/PackageCache/com.unity.visualscripting@1.9.1/Editor/VisualScripting.Core/Dependencies/DotNetZip/Unity.VisualScripting.IonicZip.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Unity.VisualScripting.Antlr3.Runtime">
       <HintPath>Library/PackageCache/com.unity.visualscripting@1.9.1/Runtime/VisualScripting.Flow/Dependencies/NCalc/Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.VisualScripting.TextureAssets">
-      <HintPath>Library/PackageCache/com.unity.visualscripting@1.9.1/Editor/VisualScripting.Core/EditorAssetResources/Unity.VisualScripting.TextureAssets.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="DOTweenEditor">
-      <HintPath>Assets/Plugins/DOTween/Editor/DOTweenEditor.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEditor.iOS.Extensions.Xcode">
@@ -1042,17 +923,253 @@
       <HintPath>/Applications/Unity/Hub/Editor/2022.3.20f1/Unity.app/Contents/NetStandard/compat/2.1.0/shims/netfx/mscorlib.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Unity.2D.IK.Runtime">
+      <HintPath>Library/ScriptAssemblies/Unity.2D.IK.Runtime.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.RenderPipelines.Core.Runtime">
+      <HintPath>Library/ScriptAssemblies/Unity.RenderPipelines.Core.Runtime.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="com.unity.cinemachine.editor">
+      <HintPath>Library/ScriptAssemblies/com.unity.cinemachine.editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.Burst.Editor">
+      <HintPath>Library/ScriptAssemblies/Unity.Burst.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.2D.Common.Path.Editor">
+      <HintPath>Library/ScriptAssemblies/Unity.2D.Common.Path.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.2D.PixelPerfect.Editor">
+      <HintPath>Library/ScriptAssemblies/Unity.2D.PixelPerfect.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.Rider.Editor">
+      <HintPath>Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.2D.Aseprite.Common">
+      <HintPath>Library/ScriptAssemblies/Unity.2D.Aseprite.Common.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.2D.Sprite.Editor">
+      <HintPath>Library/ScriptAssemblies/Unity.2D.Sprite.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.RenderPipelines.Universal.Config.Runtime">
+      <HintPath>Library/ScriptAssemblies/Unity.RenderPipelines.Universal.Config.Runtime.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.RenderPipelines.Core.Editor">
+      <HintPath>Library/ScriptAssemblies/Unity.RenderPipelines.Core.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.VisualScripting.Flow">
+      <HintPath>Library/ScriptAssemblies/Unity.VisualScripting.Flow.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.Mathematics.Editor">
+      <HintPath>Library/ScriptAssemblies/Unity.Mathematics.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.2D.Tilemap.Extras.Editor">
+      <HintPath>Library/ScriptAssemblies/Unity.2D.Tilemap.Extras.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.RenderPipelines.Core.ShaderLibrary">
+      <HintPath>Library/ScriptAssemblies/Unity.RenderPipelines.Core.ShaderLibrary.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.Collections">
+      <HintPath>Library/ScriptAssemblies/Unity.Collections.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.2D.SpriteShape.Runtime">
+      <HintPath>Library/ScriptAssemblies/Unity.2D.SpriteShape.Runtime.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.2D.PixelPerfect">
+      <HintPath>Library/ScriptAssemblies/Unity.2D.PixelPerfect.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="PPv2URPConverters">
+      <HintPath>Library/ScriptAssemblies/PPv2URPConverters.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.2D.Aseprite.Editor">
+      <HintPath>Library/ScriptAssemblies/Unity.2D.Aseprite.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.RenderPipelines.Universal.Editor">
+      <HintPath>Library/ScriptAssemblies/Unity.RenderPipelines.Universal.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary">
+      <HintPath>Library/ScriptAssemblies/Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="PsdPlugin">
+      <HintPath>Library/ScriptAssemblies/PsdPlugin.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.RenderPipelines.Universal.Runtime">
+      <HintPath>Library/ScriptAssemblies/Unity.RenderPipelines.Universal.Runtime.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.PlasticSCM.Editor">
+      <HintPath>Library/ScriptAssemblies/Unity.PlasticSCM.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.Burst">
+      <HintPath>Library/ScriptAssemblies/Unity.Burst.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.Timeline.Editor">
+      <HintPath>Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.VisualScripting.Shared.Editor">
+      <HintPath>Library/ScriptAssemblies/Unity.VisualScripting.Shared.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.ShaderGraph.Editor">
+      <HintPath>Library/ScriptAssemblies/Unity.ShaderGraph.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.VisualStudio.Editor">
+      <HintPath>Library/ScriptAssemblies/Unity.VisualStudio.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="UnityEditor.UI">
       <HintPath>Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.VisualScripting.Core">
+      <HintPath>Library/ScriptAssemblies/Unity.VisualScripting.Core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.2D.Animation.Runtime">
+      <HintPath>Library/ScriptAssemblies/Unity.2D.Animation.Runtime.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.2D.Tilemap.Extras">
+      <HintPath>Library/ScriptAssemblies/Unity.2D.Tilemap.Extras.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Unity.VisualScripting.Core.Editor">
+      <HintPath>Library/ScriptAssemblies/Unity.VisualScripting.Core.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.InternalAPIEditorBridge.005">
+      <HintPath>Library/ScriptAssemblies/Unity.InternalAPIEditorBridge.005.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.VisualScripting.Flow.Editor">
+      <HintPath>Library/ScriptAssemblies/Unity.VisualScripting.Flow.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.InternalAPIEngineBridge.001">
+      <HintPath>Library/ScriptAssemblies/Unity.InternalAPIEngineBridge.001.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.2D.Common.Runtime">
+      <HintPath>Library/ScriptAssemblies/Unity.2D.Common.Runtime.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.RenderPipeline.Universal.ShaderLibrary">
+      <HintPath>Library/ScriptAssemblies/Unity.RenderPipeline.Universal.ShaderLibrary.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.Timeline">
+      <HintPath>Library/ScriptAssemblies/Unity.Timeline.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.InputSystem">
+      <HintPath>Library/ScriptAssemblies/Unity.InputSystem.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.InputSystem.ForUI">
+      <HintPath>Library/ScriptAssemblies/Unity.InputSystem.ForUI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.VisualScripting.SettingsProvider.Editor">
+      <HintPath>Library/ScriptAssemblies/Unity.VisualScripting.SettingsProvider.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.InternalAPIEditorBridge.001">
+      <HintPath>Library/ScriptAssemblies/Unity.InternalAPIEditorBridge.001.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.2D.Psdimporter.Editor">
+      <HintPath>Library/ScriptAssemblies/Unity.2D.Psdimporter.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.VisualScripting.State.Editor">
+      <HintPath>Library/ScriptAssemblies/Unity.VisualScripting.State.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.Mathematics">
+      <HintPath>Library/ScriptAssemblies/Unity.Mathematics.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.2D.Common.Editor">
+      <HintPath>Library/ScriptAssemblies/Unity.2D.Common.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.RenderPipelines.Universal.Shaders">
+      <HintPath>Library/ScriptAssemblies/Unity.RenderPipelines.Universal.Shaders.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro.Editor">
+      <HintPath>Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.Searcher.Editor">
+      <HintPath>Library/ScriptAssemblies/Unity.Searcher.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.VisualScripting.State">
+      <HintPath>Library/ScriptAssemblies/Unity.VisualScripting.State.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Cinemachine">
+      <HintPath>Library/ScriptAssemblies/Cinemachine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.2D.SpriteShape.Editor">
+      <HintPath>Library/ScriptAssemblies/Unity.2D.SpriteShape.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.2D.Tilemap.Editor">
+      <HintPath>Library/ScriptAssemblies/Unity.2D.Tilemap.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.2D.Animation.Editor">
+      <HintPath>Library/ScriptAssemblies/Unity.2D.Animation.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.2D.IK.Editor">
+      <HintPath>Library/ScriptAssemblies/Unity.2D.IK.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="Febucci.TextAnimator.Runtime.csproj" />
+    <ProjectReference Include="Febucci.Attributes.Editor.csproj" />
+    <ProjectReference Include="Febucci.TextAnimator.Editor.csproj" />
     <ProjectReference Include="Febucci.Attributes.Runtime.csproj" />
+    <ProjectReference Include="Febucci.TextAnimator.TMP.Runtime.csproj" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <ItemGroup>

@@ -102,7 +102,7 @@ public class Prisoner : MonoBehaviour
         {
             Projectile projectile = collision.gameObject.GetComponent<Projectile>();
 
-            bool hitFromTheLeft = projectile.rigidBody.position.x < _rigidBody.position.x;
+            bool hitFromTheLeft = collision.bounds.center.x < _rigidBody.position.x;
             applyGotHitState(projectile.power, hitFromTheLeft);
         }
     }

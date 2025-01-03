@@ -39,7 +39,7 @@ public class Orb : MonoBehaviour
         if (other.transform.CompareTag("Projectile"))
         {
             Projectile projectile = other.gameObject.GetComponent<Projectile>();
-            bool hitFromTheLeft = projectile.rigidBody.position.x < _rigidBody.position.x;
+            bool hitFromTheLeft = other.bounds.center.x < _rigidBody.position.x;
             MoveHorizontal(projectile.power, hitFromTheLeft);
         }
     }

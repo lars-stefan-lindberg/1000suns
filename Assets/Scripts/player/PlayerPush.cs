@@ -1,12 +1,14 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using DG.Tweening;
+using Cinemachine;
 
 public class PlayerPush : MonoBehaviour
 {
     public static PlayerPush obj;
 
-    private SpriteRenderer _playerSpriteRenderer;
+    private BoxCollider2D _collider;
 
     public float minBuildUpPowerTime = 0.3f;
 
@@ -37,7 +39,7 @@ public class PlayerPush : MonoBehaviour
     private void Awake()
     {
         obj = this;
-        _playerSpriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        _collider = GetComponent<BoxCollider2D>();
     }
 
     public void OnShoot(InputAction.CallbackContext context)
@@ -145,6 +147,9 @@ public class PlayerPush : MonoBehaviour
     void Push(float power, bool forcePushJump)
     {
         PlayerMovement.obj.TriggerForcePushAnimation();
+        ShockWaveManager.obj.CallShockWave(_collider.bounds.center);
+        Player.obj.FlashOnce();
+        CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.VirtualCameraGameObject.transform.DOShakePosition(0.13f, new Vector3(0.15f, 0.15f, 0), 30, 90, false, true, ShakeRandomnessMode.Harmonic);
         StartCoroutine(DelayedProjectile(projectileDelay, power, forcePushJump));
     }
 
@@ -153,12 +158,13 @@ public class PlayerPush : MonoBehaviour
         platform.MovePlatform(PlayerMovement.obj.isFacingLeft(), power);
     }
 
+    public float playerOffsetY = 0.1f;
     private IEnumerator DelayedProjectile(float delay, float power, bool forcePushJump) {
         yield return new WaitForSeconds(delay);
         SoundFXManager.obj.PlayForcePushExecute(transform);
-        int playerFacingDirection = _playerSpriteRenderer.flipX ? -1 : 1;
+        int playerFacingDirection = PlayerMovement.obj.isFacingLeft() ? -1 : 1;
         ProjectileManager.obj.shootProjectile(
-            new Vector3(gameObject.transform.position.x + (playerOffset * playerFacingDirection) , gameObject.transform.position.y, gameObject.transform.position.z),
+            new Vector3(_collider.bounds.center.x + (playerOffset * playerFacingDirection) , gameObject.transform.position.y - playerOffsetY, gameObject.transform.position.z),
             playerFacingDirection,
             power,
             Player.obj.hasPowerUp);

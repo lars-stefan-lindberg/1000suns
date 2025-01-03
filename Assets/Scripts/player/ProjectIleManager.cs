@@ -20,6 +20,6 @@ public class ProjectileManager : MonoBehaviour
     public void shootProjectile(Vector3 spawnLocation, int horizontalDirection, float power, bool isPoweredUp)
     {
         GameObject projectilePrefab = Instantiate(this.projectile, spawnLocation, transform.rotation);
-        projectilePrefab.GetComponent<Projectile>().shoot(horizontalDirection, power, isPoweredUp);
+        projectilePrefab.GetComponent<Projectile>().Shoot(horizontalDirection, power, isPoweredUp);
     }
 }
