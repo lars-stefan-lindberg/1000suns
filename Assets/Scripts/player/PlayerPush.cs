@@ -148,7 +148,7 @@ public class PlayerPush : MonoBehaviour
     {
         PlayerMovement.obj.TriggerForcePushAnimation();
         ShockWaveManager.obj.CallShockWave(_collider.bounds.center);
-        Player.obj.FlashOnce();
+        Player.obj.ForcePushFlash();
         CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.VirtualCameraGameObject.transform.DOShakePosition(0.13f, new Vector3(0.15f, 0.15f, 0), 30, 90, false, true, ShakeRandomnessMode.Harmonic);
         StartCoroutine(DelayedProjectile(projectileDelay, power, forcePushJump));
     }

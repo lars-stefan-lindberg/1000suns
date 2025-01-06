@@ -87,9 +87,9 @@ public class Player : MonoBehaviour
         hasPowerUp = _hasPowerUp;
     }
 
-    [ContextMenu("Flash once")]
-    public void FlashOnce() {
-        _playerFlash.FlashOnce();
+    [ContextMenu("Force push flash")]
+    public void ForcePushFlash() {
+        _playerFlash.FlashFor(0.1f, 0.17f);
     }
 
     [ContextMenu("Flash")]
