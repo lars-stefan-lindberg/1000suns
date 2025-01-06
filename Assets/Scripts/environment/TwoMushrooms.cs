@@ -1,18 +1,15 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class BigMushroom : MonoBehaviour
+public class TwoMushrooms : MonoBehaviour
 {
     private Animator _animator;
-    private ParticleSystem _particles;
     private BoxCollider2D _collider;
     [SerializeField] private Transform _anchorTransform;
     private bool _playerEntered;
 
     void Awake() {
         _animator = GetComponentInChildren<Animator>();
-        _particles = GetComponent<ParticleSystem>();
         _collider = GetComponentInChildren<BoxCollider2D>();
     }
 
@@ -25,12 +22,11 @@ public class BigMushroom : MonoBehaviour
             Vector2 mushroomTop = new(mushRoomBounds.center.x, mushRoomBounds.center.y + mushRoomBounds.extents.y); 
             bool landedOnMushroom = playerBottom.y > mushroomTop.y - _collisionMargin;
 
-            if(landedOnMushroom && Player.obj.rigidBody.velocity.y < 0) {
-                _animator.SetTrigger("bounce");
-                _particles.Emit(5);
-                _playerEntered = true;
+            _animator.SetTrigger("wiggle");
+            _playerEntered = true;
+
+            if(landedOnMushroom)
                 StartCoroutine(Squeeze(_squeezeX, _squeezeY, _squeezeTime));
-            }
         }
     }
 
