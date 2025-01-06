@@ -111,6 +111,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             Player.obj.SetHasPowerUp(false);
         }
         _frameVelocity.x = isFacingLeft() ? speed : -speed;
+        GhostTrailManager.obj.ShowGhosts();
     }
 
     public void TriggerForcePushAnimation() {
@@ -127,12 +128,15 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _frameVelocity.x = isFacingLeft() ? -initialForcePushJumpSpeed : initialForcePushJumpSpeed;
         PlayerPush.obj.ResetBuiltUpPower();
         Player.obj.SetHasPowerUp(false);
+        PlayerPush.obj.ExecuteForcePushVfx();
+        GhostTrailManager.obj.ShowGhosts();
     }
 
     public void ExecutePoweredForcePushWithProjectile() {
         isForcePushJumping = true;
         forcePushJumpOnGroundTimer = 0;
         _frameVelocity.x = isFacingLeft() ? initialForcePushJumpSpeed : -initialForcePushJumpSpeed;
+        GhostTrailManager.obj.ShowGhosts();
     }
 
     public bool isFalling = false;

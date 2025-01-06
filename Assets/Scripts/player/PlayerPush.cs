@@ -147,10 +147,14 @@ public class PlayerPush : MonoBehaviour
     void Push(float power, bool forcePushJump)
     {
         PlayerMovement.obj.TriggerForcePushAnimation();
+        ExecuteForcePushVfx();
+        StartCoroutine(DelayedProjectile(projectileDelay, power, forcePushJump));
+    }
+
+    public void ExecuteForcePushVfx() {
         ShockWaveManager.obj.CallShockWave(_collider.bounds.center);
         Player.obj.ForcePushFlash();
         CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.VirtualCameraGameObject.transform.DOShakePosition(0.13f, new Vector3(0.15f, 0.15f, 0), 30, 90, false, true, ShakeRandomnessMode.Harmonic);
-        StartCoroutine(DelayedProjectile(projectileDelay, power, forcePushJump));
     }
 
     private IEnumerator DelayedMovePlatform(float delay, float power) {
