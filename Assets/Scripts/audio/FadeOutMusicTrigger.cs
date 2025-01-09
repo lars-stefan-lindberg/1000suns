@@ -19,5 +19,7 @@ public class FadeOutMusicTrigger : MonoBehaviour
         }
         MusicManager.obj.StopPlaying();
         SoundMixerManager.obj.SetMusicVolume(musicVolume);
+        AmbienceManager.obj.PlayCapeRoomAmbience();
+        AmbienceManager.obj.FadeInAmbienceSource2And3(3f);
     }
 }

@@ -13,7 +13,8 @@ public class SwitchToAmbienceOnlyTrigger : MonoBehaviour
     private IEnumerator FadeOutMusicAndStartAmbience() {
         float musicVolume = SoundMixerManager.obj.GetMusicVolume();
         StartCoroutine(SoundMixerManager.obj.StartMusicFade(5f, 0.001f));
-        AmbienceManager.obj.PlayAmbience();
+        AmbienceManager.obj.PlayCaveAmbience();
+        AmbienceManager.obj.FadeInAmbienceSource1(2f);
         while(SoundMixerManager.obj.GetMusicVolume() > 0.001f) {
             yield return null;
         }

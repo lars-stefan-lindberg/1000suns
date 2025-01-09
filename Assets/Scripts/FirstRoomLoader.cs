@@ -26,11 +26,8 @@ public class FirstRoomLoader : MonoBehaviour
     }
 
     private IEnumerator AmbienceFadeIn() {
-        float v = SoundMixerManager.obj.GetAmbienceVolume();
-        SoundMixerManager.obj.SetAmbienceVolume(0.001f);
-        AmbienceManager.obj.PlayAmbience();
-        StartCoroutine(SoundMixerManager.obj.StartAmbienceFade(3f, v));
-
+        AmbienceManager.obj.PlayCaveAmbience();
+        AmbienceManager.obj.FadeInAmbienceSource1(2f);
         yield return null;
     }
 

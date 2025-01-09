@@ -26,6 +26,7 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
             _startCutscene = false;
 
             PlayerMovement.obj.Freeze();
+            StartCoroutine(FadeOutAndStopAmbience());
 
             SoundFXManager.obj.PlayCapePickUp(Camera.main.transform);
             //Loop through all children, get animators, and increase speed of animation
@@ -44,6 +45,16 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
             //Fade out blobs, show tutorial, and then play music
             StartCoroutine(FadeOutBlobSpritesAndTutorialAndPlayMusic());
         }
+    }
+
+    private IEnumerator FadeOutAndStopAmbience() {
+        float ambienceVolume = SoundMixerManager.obj.GetAmbienceVolume();
+        StartCoroutine(SoundMixerManager.obj.StartAmbienceFade(1f, 0.001f));
+        while(SoundMixerManager.obj.GetAmbienceVolume() > 0.001f) {
+            yield return null;
+        }
+        AmbienceManager.obj.StopAmbience();
+        SoundMixerManager.obj.SetAmbienceVolume(ambienceVolume);
     }
 
     private IEnumerator FadeOutDelay() {
