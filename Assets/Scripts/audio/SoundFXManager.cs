@@ -19,6 +19,9 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip forcePushStartCharging;
     public AudioClip forcePushChargeLoop;
     public AudioClip forcePushExecute;
+    public AudioClip genericDeath;
+    public AudioClip shadowDeath;
+    public AudioClip shadowSpawn;
     #endregion
 
     #region Block
@@ -120,6 +123,15 @@ public class SoundFXManager : MonoBehaviour
     }
     public AudioSource PlayForcePushChargeLoop(Transform spawnTransform) {
         return PlayLoopedSound(forcePushChargeLoop, spawnTransform, 1f);
+    }
+    public void PlayPlayerGenericDeath(Transform spawnTransform) {
+        PlaySound(genericDeath, spawnTransform, 1f);
+    }
+    public void PlayPlayerShadowDeath(Transform spawnTransform) {
+        PlaySound(shadowDeath, spawnTransform, 1f);
+    }
+    public void PlayPlayerShadowSpawn(Transform spawnTransform) {
+        PlaySound(shadowSpawn, spawnTransform, 1f);
     }
 
     public AudioSource PlayBlockSliding(Transform spawnTransform, float soundDurationPercentage) {

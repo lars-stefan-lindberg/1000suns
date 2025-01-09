@@ -58,6 +58,7 @@ public class LevelManager : MonoBehaviour
                 if(Player.obj.hasCape)
                     Player.obj.SetHasCape(true);
                 Player.obj.PlaySpawn();
+                SoundFXManager.obj.PlayPlayerShadowSpawn(Player.obj.transform);
                 
                 IEnumerable<GameObject> levelSwitchers = sceneGameObjects.Where(gameObject => gameObject.CompareTag("LevelSwitcher"));
                 foreach(GameObject levelSwitcherGameObject in levelSwitchers) {
