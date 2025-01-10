@@ -28,6 +28,8 @@ public class EndRoomBackgroundBlobManager : MonoBehaviour
         if(_startCutscene) {
             _startCutscene = false;
 
+            AmbienceManager.obj.FadeOutAmbienceSource2And3(1f);
+
             //Play big blob sound
 
             //Loop through all children, get animators, and increase speed of animation
