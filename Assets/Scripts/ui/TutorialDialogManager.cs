@@ -96,6 +96,11 @@ public class TutorialDialogManager : MonoBehaviour
         _confirmButton.enabled = false;
     }
 
+    public void Focus() {
+        if(_confirmButton.enabled == true)
+            EventSystem.current.SetSelectedGameObject(_confirmButton.gameObject);
+    }
+
     void OnDestroy() {
         obj = null;
     }

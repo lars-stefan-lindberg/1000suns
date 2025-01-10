@@ -27,6 +27,7 @@ public class EndRoomBackgroundBlobManager : MonoBehaviour
     {
         if(_startCutscene) {
             _startCutscene = false;
+            GameEventManager.obj.IsPauseAllowed = false;
 
             AmbienceManager.obj.FadeOutAmbienceSource2And3(1f);
 
@@ -85,6 +86,7 @@ public class EndRoomBackgroundBlobManager : MonoBehaviour
         yield return new WaitForSeconds(5f);
         //Show credits
         creditsUI.SetActive(true);
+        GameEventManager.obj.IsPauseAllowed = true;
         SceneFadeManager.obj.StartFadeIn();
     }
 

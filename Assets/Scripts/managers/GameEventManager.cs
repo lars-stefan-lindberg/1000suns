@@ -13,6 +13,8 @@ public class GameEventManager : MonoBehaviour
     public bool CaveLevelStarted { get; set; }
     public bool AfterPowerUpRoomsCompletedWallBreak { get; set; }
 
+    public bool IsPauseAllowed { get; set; }
+
     void Awake() {
         obj = this;
         ResetGameEvents();
@@ -26,6 +28,7 @@ public class GameEventManager : MonoBehaviour
         PowerUpRoomsFloorBroken = false;
         CaveLevelStarted = false;
         AfterPowerUpRoomsCompletedWallBreak = false;
+        IsPauseAllowed = true;
     }
 
     void OnDestroy() {

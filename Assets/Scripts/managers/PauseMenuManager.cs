@@ -31,6 +31,8 @@ public class PauseMenuManager : MonoBehaviour
 
     public void OnPause(InputAction.CallbackContext context)
     {
+        if(!GameEventManager.obj.IsPauseAllowed)
+            return;
         if (context.performed)
         {
             if(_isPaused) {
@@ -58,12 +60,19 @@ public class PauseMenuManager : MonoBehaviour
 
         EventSystem.current.SetSelectedGameObject(null);
         _pauseMenu.SetActive(false);
-        PlayerMovement.obj.EnablePlayerMovement();
+            
         for (int i = 0; i < _menuObjects.Length; i++)
         {
             _menuObjects[i].GetComponentInChildren<TextMeshProUGUI>().color = _buttonColor;
         }
         Time.timeScale = 1f;
+        if(DialogueController.obj != null && DialogueController.obj.IsDisplayed()) {
+            DialogueController.obj.FocusDialogue();
+        } else if(TutorialDialogManager.obj != null && !TutorialDialogManager.obj.tutorialCompleted) {
+            TutorialDialogManager.obj.Focus();
+        } else {
+            PlayerMovement.obj.EnablePlayerMovement();
+        }
         _isPaused = false;
     }
 

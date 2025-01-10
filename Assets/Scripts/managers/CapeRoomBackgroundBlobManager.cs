@@ -25,6 +25,7 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
         if(_startCutscene) {
             _startCutscene = false;
 
+            GameEventManager.obj.IsPauseAllowed = false;
             PlayerMovement.obj.Freeze();
             StartCoroutine(FadeOutAndStopAmbience());
 
@@ -79,6 +80,7 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
             yield return null;
         }
 
+        GameEventManager.obj.IsPauseAllowed = true;
         PlayerMovement.obj.Freeze();
         Time.timeScale = 0;
         _tutorialCanvas.SetActive(true);

@@ -26,6 +26,7 @@ public class EnterCapeRoomTrigger : MonoBehaviour
     private void OnTriggerExit2D(Collider2D collider) {
         if(collider.transform.CompareTag("Player") && !_isTriggered) {
             PlayerMovement.obj.Freeze();
+            GameEventManager.obj.IsPauseAllowed = false;
             StartCoroutine(EnterCapeRoomSequence());
             _isTriggered = true;
         }
@@ -77,5 +78,6 @@ public class EnterCapeRoomTrigger : MonoBehaviour
         yield return new WaitForSeconds(1);
 
         PlayerMovement.obj.UnFreeze();
+        GameEventManager.obj.IsPauseAllowed = true;
     }
 }

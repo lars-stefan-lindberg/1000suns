@@ -8,6 +8,7 @@ using Febucci.UI;
 
 public class DialogueController : MonoBehaviour
 {
+    public static DialogueController obj;
     [SerializeField] private TypewriterByCharacter _typeWriter;
     [SerializeField] private float _typeSpeed = 10;
     [SerializeField] private GameObject _continueButton;
@@ -26,6 +27,7 @@ public class DialogueController : MonoBehaviour
     private const float MAX_TYPE_TIME = 0.1f;
 
     void Awake() {
+        obj = this;
         EventSystem.current.SetSelectedGameObject(_continueButton);
         _animator = GetComponent<Animator>();
         _typeWriter.onTextShowed.AddListener(() => {
@@ -140,7 +142,16 @@ public class DialogueController : MonoBehaviour
         _isDisplayed = false;
     }
 
+    public bool IsDisplayed() {
+        return _isDisplayed;
+    }
+
+    public void FocusDialogue() {
+        EventSystem.current.SetSelectedGameObject(_continueButton);
+    }
+
     void OnDestroy() {
         _typeWriter.onTextShowed.RemoveAllListeners();
+        obj = null;
     }
 }

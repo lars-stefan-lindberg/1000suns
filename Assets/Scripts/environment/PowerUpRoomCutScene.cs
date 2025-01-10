@@ -41,6 +41,7 @@ public class PowerUpRoomCutScene : MonoBehaviour
     }
 
     private IEnumerator StartCutscene() {
+        GameEventManager.obj.IsPauseAllowed = false;
         PlayerMovement.obj.Freeze();
 
         yield return new WaitForSeconds(1);
@@ -77,6 +78,7 @@ public class PowerUpRoomCutScene : MonoBehaviour
 
         yield return new WaitForSeconds(2f);
         PlayerMovement.obj.UnFreeze();
+        GameEventManager.obj.IsPauseAllowed = true;
 
         _cutsceneFinished = true;
         GameEventManager.obj.FirstPowerUpPicked = true;
