@@ -4,11 +4,12 @@ using UnityEngine;
 public class FloatyPlatform : MonoBehaviour
 {
     private BoxCollider2D _collider;
+    [SerializeField] private BoxCollider2D _childCollider;
     private Rigidbody2D _rigidBody;
     private SpriteRenderer _spriteRenderer;
 
     public float idleMoveSpeed;
-    private float _idleVerticalTargetPosition;
+    //private float _idleVerticalTargetPosition;
     public bool isPlayerOnPlatform = false;
     public float startingVerticalPosition;
     public float idleVerticalDistance = 0.25f;
@@ -24,7 +25,7 @@ public class FloatyPlatform : MonoBehaviour
     public float fallTimer = 0f;
     private bool _startFallCountDown = false;
 
-    private float _idleTargetVerticalPosition = 0;
+    //private float _idleTargetVerticalPosition = 0;
     private float _prisonerPushPower = 2f;
 
     private FallingPlatformFlash _fallingPlatformFlash;
@@ -44,46 +45,43 @@ public class FloatyPlatform : MonoBehaviour
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _blockingCastLayerMask = LayerMask.GetMask(new[] { "Ground", "Default", "JumpThroughs" });
         startingVerticalPosition = transform.position.y;
-        _idleVerticalTargetPosition = startingVerticalPosition - idleVerticalDistance;
+        //_idleVerticalTargetPosition = startingVerticalPosition - idleVerticalDistance;
         _fallingPlatformFlash = GetComponent<FallingPlatformFlash>();
         _startingPosition = transform.position;
         _fadeStartColor = new Color(_spriteRenderer.color.r, _spriteRenderer.color.g, _spriteRenderer.color.b, 0);
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    public float _playerOffset = 0.1f;
+    void OnTriggerEnter2D(Collider2D collider)
     {
-        if(collision.transform.CompareTag("FloatingPlatform"))
+        if(collider.transform.CompareTag("FloatingPlatform"))
         {
-            FloatyPlatform floatyPlatform = collision.gameObject.GetComponent<FloatyPlatform>();
+            FloatyPlatform floatyPlatform = collider.GetComponentInParent<FloatyPlatform>();
             if(floatyPlatform.isPlayerOnPlatform && floatyPlatform.IsFalling()) {
+                collider.enabled = false;
                 floatyPlatform._collider.enabled = false;
                 RegisterPlayerOnPlatform();
             }
         }
-        if(collision.transform.CompareTag("Player"))
+        if(collider.transform.CompareTag("Player"))
         {
-            //Check if player is landing on top of platform
-            Bounds playerBounds = collision.collider.bounds;
-            Vector2 playerBottom = new(playerBounds.center.x, playerBounds.center.y - playerBounds.extents.y);
-            Bounds platformBounds = _collider.bounds;
-            Vector2 platformTop = new(platformBounds.center.x, platformBounds.center.y + platformBounds.extents.y);
-            if(platformTop.y < playerBottom.y)
-                RegisterPlayerOnPlatform();
+            _isPlayerCollisionTriggered = true;
         }
-        if(collision.transform.CompareTag("Enemy")) {
-            Prisoner prisoner = collision.gameObject.GetComponent<Prisoner>();
+        if(collider.transform.CompareTag("Enemy")) {
+            Prisoner prisoner = collider.gameObject.GetComponent<Prisoner>();
             if(prisoner.isGrounded) {
-                bool hitFromRight = collision.transform.position.x > transform.position.x;
+                bool hitFromRight = collider.transform.position.x > transform.position.x;
                 MovePlatform(!hitFromRight, _prisonerPushPower);
             }
         }
     }
 
-    private void OnCollisionExit2D(Collision2D collision)
+    void OnTriggerExit2D(Collider2D collider)
     {
-        if (collision.transform.CompareTag("Player"))
+        if (collider.transform.CompareTag("Player"))
         {
             isPlayerOnPlatform = false;
+            _isPlayerCollisionTriggered = false;
             PlayerMovement.obj.platformRigidBody = null;
             PlayerPush.obj.platform = null;
         }
@@ -104,8 +102,16 @@ public class FloatyPlatform : MonoBehaviour
     public bool somethingToTheRight = false;
     public bool somethingToTheLeft = false;
     private bool _startFlashing = true;
+
+    private bool _isPlayerCollisionTriggered = false;
     private void Update()
     {
+        if(_isPlayerCollisionTriggered) {
+            if(PlayerMovement.obj.isGrounded) {
+                _isPlayerCollisionTriggered = false;
+                RegisterPlayerOnPlatform();
+            }
+        }
         if(_startFallCountDown) {
             fallTimer += Time.deltaTime;
             if(_startFlashing) {
@@ -148,7 +154,8 @@ public class FloatyPlatform : MonoBehaviour
                 _respawning = false;
                 transform.position = _startingPosition;
                 StartCoroutine(FadeInSprite());
-                _collider.enabled = true; //If it was set to false from another platform
+                _childCollider.enabled = true; //If it was set to false from another platform
+                _collider.enabled = true;
             }
         }
         // if (!isPlayerOnPlatform && _rigidBody.velocity.x == 0)

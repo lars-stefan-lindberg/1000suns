@@ -22,7 +22,7 @@ public class Player : MonoBehaviour
     {
         obj = this;
         _animator = GetComponentInChildren<Animator>();
-        _collider = GetComponentInChildren<BoxCollider2D>();
+        _collider = GetComponent<BoxCollider2D>();
         _groundLayerMasks = LayerMask.GetMask("Ground");
         _playerFlash = GetComponentInChildren<PlayerFlash>();
 

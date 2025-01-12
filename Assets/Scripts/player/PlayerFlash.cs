@@ -5,7 +5,6 @@ using UnityEngine;
 public class PlayerFlash : MonoBehaviour
 {
     [ColorUsage(true, true)]
-    [SerializeField] private Color _flashColor = Color.white;
     [SerializeField] private float _flashIntensity = 0.5f;
     [SerializeField] private float _defaultFlashSpeed = 0.27f;
     private float _flashSpeed;
