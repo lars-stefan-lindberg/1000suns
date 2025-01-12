@@ -173,6 +173,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         StartCoroutine(FreezeDuration(freezeDuration));
     }
 
+    public bool IsFrozen() {
+        return _freezePlayer;
+    }
+    
     public void Freeze() {
         DisablePlayerMovement();
         _freezePlayer = true;

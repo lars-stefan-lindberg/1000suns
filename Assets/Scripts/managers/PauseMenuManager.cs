@@ -70,7 +70,7 @@ public class PauseMenuManager : MonoBehaviour
             DialogueController.obj.FocusDialogue();
         } else if(TutorialDialogManager.obj != null && !TutorialDialogManager.obj.tutorialCompleted) {
             TutorialDialogManager.obj.Focus();
-        } else {
+        } else if(!PlayerMovement.obj.IsFrozen()) {
             PlayerMovement.obj.EnablePlayerMovement();
         }
         _isPaused = false;
