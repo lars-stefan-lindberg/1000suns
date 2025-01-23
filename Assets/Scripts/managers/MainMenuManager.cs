@@ -6,6 +6,7 @@ using System.Linq;
 using System.Collections;
 using TMPro;
 using System.Collections.Generic;
+using UnityEngine.InputSystem;
 
 public class MainMenuManager : MonoBehaviour
 {
@@ -22,6 +23,8 @@ public class MainMenuManager : MonoBehaviour
 
     [SerializeField] private GameObject _playButton;
     [SerializeField] private Button _optionsButton;
+    [SerializeField] private Button _keyboardConfigButton;
+    [SerializeField] private Button _controllerConfigButton;
     private Color _optionsButtonColor;
     [SerializeField] private Button _backButton;
     private Color _backButtonColor;
@@ -31,13 +34,24 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private Slider _ambienceSlider;
 
     [SerializeField] private GameObject _optionsMenu;
+    [SerializeField] private GameObject _keyboardConfigMenu;
+    [SerializeField] private GameObject _controllerConfigMenu;
     [SerializeField] private GameObject _titleMenu;
+
+    [SerializeField] private TextMeshProUGUI _keyboardConfigInstructionsConfirmActionKeyText;
+    public InputActionAsset actions;
+    public InputActionReference confirmActionReference;
+    private string confirmActionKeyboardDisplayString;
 
     void Awake() {
         EventSystem.current.SetSelectedGameObject(_playButton);
         _optionsButtonColor = _optionsButton.GetComponentInChildren<TextMeshProUGUI>().color;
         _backButtonColor = _backButton.GetComponentInChildren<TextMeshProUGUI>().color;
         MusicManager.obj.PlayTitleSong();
+        var rebinds = PlayerPrefs.GetString("rebinds");
+        if (!string.IsNullOrEmpty(rebinds))
+            actions.LoadBindingOverridesFromJson(rebinds);
+        confirmActionKeyboardDisplayString = confirmActionReference.action.GetBindingDisplayString(InputBinding.MaskByGroup("Keyboard"));
     }
 
     void Update() {
@@ -110,19 +124,67 @@ public class MainMenuManager : MonoBehaviour
         IsFadingOut = true;
     }
 
-    public void ShowOptionsMenu() {
+    public void OnOptionsButtonClicked() {
         SoundFXManager.obj.PlayUIConfirm();
+        ShowOptionsMenu();
+    }
 
+    public void ShowOptionsMenu() {
         _musicSlider.value = SoundMixerManager.obj.GetMusicVolume();
         _soundFXSlider.value = SoundMixerManager.obj.GetSoundFXVolume();
         _ambienceSlider.value = SoundMixerManager.obj.GetAmbienceVolume();
 
         _titleMenu.SetActive(false);
+        _keyboardConfigMenu.SetActive(false);
+        _controllerConfigMenu.SetActive(false);
         _optionsMenu.SetActive(true);
         EventSystem.current.SetSelectedGameObject(_musicSliderGameObject);
 
         //Reset color of options button from animation
         TextMeshProUGUI textMeshPro = _optionsButton.GetComponentInChildren<TextMeshProUGUI>();
+        textMeshPro.color = _optionsButtonColor;
+    }
+
+    public void ShowKeyboardConfigMenu() {
+        SoundFXManager.obj.PlayUIConfirm();
+
+        _optionsMenu.SetActive(false);
+
+        _keyboardConfigMenu.SetActive(true);
+        var rebinds = PlayerPrefs.GetString("rebinds");
+        if (!string.IsNullOrEmpty(rebinds))
+            actions.LoadBindingOverridesFromJson(rebinds);
+
+        //Get display string from confirm key
+        _keyboardConfigInstructionsConfirmActionKeyText.text = confirmActionKeyboardDisplayString;
+        EventSystem.current.SetSelectedGameObject(FindFirstObjectByType<Button>().gameObject);
+
+        //Reset color of keyboard config button from animation
+        TextMeshProUGUI textMeshPro = _keyboardConfigButton.GetComponentInChildren<TextMeshProUGUI>();
+        textMeshPro.color = _optionsButtonColor;
+    }
+
+    public void LeaveKeyboardConfigMenu() {
+        var rebinds = actions.SaveBindingOverridesAsJson();
+        PlayerPrefs.SetString("rebinds", rebinds);
+
+        SoundFXManager.obj.PlayUIBack();
+        ShowOptionsMenu();
+    }
+
+    public void KeyboardRebindEventHandler() {
+        _keyboardConfigInstructionsConfirmActionKeyText.text = confirmActionReference.action.GetBindingDisplayString(InputBinding.MaskByGroup("Keyboard"));
+    }
+
+    public void ShowControllerConfigMenu() {
+        SoundFXManager.obj.PlayUIConfirm();
+
+        _optionsMenu.SetActive(false);
+        _controllerConfigMenu.SetActive(true);
+        EventSystem.current.SetSelectedGameObject(FindFirstObjectByType<Button>().gameObject);
+
+        //Reset color of controller config button from animation
+        TextMeshProUGUI textMeshPro = _controllerConfigButton.GetComponentInChildren<TextMeshProUGUI>();
         textMeshPro.color = _optionsButtonColor;
     }
 

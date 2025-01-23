@@ -18,4 +18,8 @@ public class UIElement : MonoBehaviour, IMoveHandler
             SoundFXManager.obj.PlayUIBrowse();
         }
     }
+
+    public void OnClick() {
+        SoundFXManager.obj.PlayUIConfirm();
+    }
 }

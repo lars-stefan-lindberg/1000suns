@@ -39,7 +39,6 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("OnTriggerEnter2D, collision" + collision.gameObject.name);
         if(collision.transform.CompareTag("Enemy") || 
             collision.transform.CompareTag("Block") || 
             collision.transform.CompareTag("Ground") || 
