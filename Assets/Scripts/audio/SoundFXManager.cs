@@ -37,6 +37,12 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip[] fallingSpikeHit;
     #endregion
 
+    #region Mushrooms
+    public AudioClip[] mushroomBigBounce;
+    public AudioClip[] mushroomSmallBounce;
+    public AudioClip[] mushroomSmallRattle;
+    #endregion
+
     public AudioClip[] breakableWallCrackling;
     public AudioClip breakableWallBreak;
 
@@ -45,6 +51,11 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip uiBack;
     public AudioClip uiConfirm;
     public AudioClip uiPlay;
+    #endregion
+
+    #region Dialogue
+    public AudioClip dialogueOpen;
+    public AudioClip dialogueClose;
     #endregion
 
     #region BabyPrisoner
@@ -90,6 +101,14 @@ public class SoundFXManager : MonoBehaviour
     public void PlayUIPlay() {
         PlaySound(uiPlay, Camera.main.transform, 1f);
     }
+
+    public void PlayDialogueOpen() {
+        PlaySound(dialogueOpen, Camera.main.transform, 1f);
+    }
+    public void PlayDialogueClose() {
+        PlaySound(dialogueClose, Camera.main.transform, 1f);
+    }
+
 
     public void PlayJump(Transform spawnTransform) {
         PlayRandomSound(jump, spawnTransform, 1f);
@@ -163,6 +182,16 @@ public class SoundFXManager : MonoBehaviour
     }
     public void PlayFallingSpikeHit(Transform spawnTransform) {
         PlayRandomSound(fallingSpikeHit, spawnTransform, 1f);
+    }
+
+    public void PlayMushroomBigBounce(Transform spawnTransform) {
+        PlayRandomSound(mushroomBigBounce, spawnTransform, 1f);
+    }
+    public void PlayMushroomSmallBounce(Transform spawnTransform) {
+        PlayRandomSound(mushroomSmallBounce, spawnTransform, 1f);
+    }
+    public void PlayMushroomSmallRattle(Transform spawnTransform) {
+        PlayRandomSound(mushroomSmallRattle, spawnTransform, 1f);
     }
 
     public void PlayBabyPrisonerCrawl(Transform spawnTransform) {

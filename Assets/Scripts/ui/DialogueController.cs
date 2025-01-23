@@ -41,6 +41,7 @@ public class DialogueController : MonoBehaviour
     }
 
     public async void ShowDialogue(DialogueContent dialogueContent) {
+        SoundFXManager.obj.PlayDialogueOpen();
         InitializeConversation(dialogueContent);
         await IsDialogDisplayed();
         DisplayNextParagraph();
@@ -117,6 +118,7 @@ public class DialogueController : MonoBehaviour
     private async void EndConversation() {
         _paragraphs.Clear();
         _conversationEnded = false;
+        SoundFXManager.obj.PlayDialogueClose();
         _animator.SetTrigger("hide");
         await IsDialogHidden();
 

@@ -26,6 +26,7 @@ public class BigMushroom : MonoBehaviour
             bool landedOnMushroom = playerBottom.y > mushroomTop.y - _collisionMargin;
 
             if(landedOnMushroom && Player.obj.rigidBody.velocity.y < 0) {
+                SoundFXManager.obj.PlayMushroomBigBounce(transform);
                 _animator.SetTrigger("bounce");
                 _particles.Emit(5);
                 _playerEntered = true;
