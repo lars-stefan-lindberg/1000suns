@@ -12,7 +12,7 @@ public class PlayerPush : MonoBehaviour
 
     public float minBuildUpPowerTime = 0.3f;
 
-    public int playerOffset = 1;
+    private float _playerOffset = 0.5f;
     public float maxForce = 3;
     public float powerUpMaxForce = 4;
     public float powerBuildUpPerFixedUpdate = 1.2f;
@@ -168,7 +168,7 @@ public class PlayerPush : MonoBehaviour
         SoundFXManager.obj.PlayForcePushExecute(transform);
         int playerFacingDirection = PlayerMovement.obj.isFacingLeft() ? -1 : 1;
         ProjectileManager.obj.shootProjectile(
-            new Vector3(_collider.bounds.center.x + (playerOffset * playerFacingDirection) , gameObject.transform.position.y - playerOffsetY, gameObject.transform.position.z),
+            new Vector3(_collider.bounds.center.x + (_playerOffset * playerFacingDirection) , gameObject.transform.position.y - playerOffsetY, gameObject.transform.position.z),
             playerFacingDirection,
             power,
             Player.obj.hasPowerUp);

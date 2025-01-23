@@ -39,6 +39,7 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        Debug.Log("OnTriggerEnter2D, collision" + collision.gameObject.name);
         if(collision.transform.CompareTag("Enemy") || 
             collision.transform.CompareTag("Block") || 
             collision.transform.CompareTag("Ground") || 
@@ -56,6 +57,6 @@ public class Projectile : MonoBehaviour
         _rigidBody.velocity = Vector3.zero;
         _collider.enabled = false;
         _particles.Stop();
-        Destroy(gameObject, 2);
+        Destroy(gameObject, 1);
     }
 }
