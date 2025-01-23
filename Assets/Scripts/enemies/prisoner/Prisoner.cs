@@ -66,6 +66,9 @@ public class Prisoner : MonoBehaviour
     private AudioSource _gotHitAudioSource;
     private bool _isFadingOutHitSound = false;
     public bool offScreen = false;
+    private Rigidbody2D _blockInContact;
+    private float _edgeRecoveryCoolDownTime = 2;
+    private float _edgeRecoveryCoolDownTimer = 0;
 
     private void Awake()
     {
@@ -105,6 +108,18 @@ public class Prisoner : MonoBehaviour
             bool hitFromTheLeft = collision.bounds.center.x < _rigidBody.position.x;
             applyGotHitState(projectile.power, hitFromTheLeft);
         }
+        if (collision.transform.CompareTag("Block"))
+        {
+            _blockInContact = collision.GetComponent<Rigidbody2D>();
+        }
+    }
+
+     private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.transform.CompareTag("Block"))
+        {
+            _blockInContact = null;
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -123,7 +138,6 @@ public class Prisoner : MonoBehaviour
             isStatic = true;
             _rigidBody.velocity = new Vector2(0,0);
         }
-
     }
 
     private void applyGotHitState(float hitPower, bool hitFromTheLeft)
@@ -157,6 +171,20 @@ public class Prisoner : MonoBehaviour
         else
             _animator.speed = 1;
 
+        if(_blockInContact != null) {
+            float blockVelocity = _blockInContact.velocity.x;
+            if(blockVelocity > 0) {
+                bool isWallToTheRight = Physics2D.Raycast(_collider.transform.position, Vector2.right, frontCheck, groundLayer);
+                if(isWallToTheRight) {
+                    _blockInContact.velocity = new Vector2(0,0);
+                }
+            } else if(blockVelocity < 0) {
+                bool isWallToTheLeft = Physics2D.Raycast(_collider.transform.position, Vector2.left, frontCheck, groundLayer);
+                if(isWallToTheLeft) {
+                    _blockInContact.velocity = new Vector2(0,0);
+                }
+            }
+        }
         //Check if grounded
         Vector3 groundLineCastPosition = _collider.transform.position;
         //Debug.DrawLine(
@@ -274,7 +302,11 @@ public class Prisoner : MonoBehaviour
 
         //Check if landed on edge. Try to recover by moving to one side -> either fall, or reach stable ground
         if(!isGrounded && _rigidBody.velocity == Vector2.zero) {
-            _rigidBody.velocity = new Vector2(7, 0);
+            _edgeRecoveryCoolDownTimer += Time.deltaTime;
+            if(_edgeRecoveryCoolDownTimer >= _edgeRecoveryCoolDownTime) {
+                _edgeRecoveryCoolDownTimer = 0;
+                _rigidBody.velocity = new Vector2(7, 0);
+            }
         }
 
         if(isStuck)
