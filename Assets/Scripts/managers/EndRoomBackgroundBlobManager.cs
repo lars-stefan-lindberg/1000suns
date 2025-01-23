@@ -91,7 +91,7 @@ public class EndRoomBackgroundBlobManager : MonoBehaviour
     }
 
     private IEnumerator PlayerFadeAway() {
-        PlayerMovement.obj.Freeze(3f);
+        PlayerMovement.obj.Freeze(5f);
         yield return new WaitForSeconds(4f);
         Player.obj.gameObject.SetActive(false);
         tempPlayerObj.SetActive(true);
