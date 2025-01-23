@@ -35,6 +35,7 @@ public class MainMenuManager : MonoBehaviour
 
     [SerializeField] private GameObject _optionsMenu;
     [SerializeField] private GameObject _keyboardConfigMenu;
+    [SerializeField] private Button _firstKeyboardMenuButton;
     [SerializeField] private GameObject _controllerConfigMenu;
     [SerializeField] private GameObject _titleMenu;
 
@@ -157,7 +158,7 @@ public class MainMenuManager : MonoBehaviour
 
         //Get display string from confirm key
         _keyboardConfigInstructionsConfirmActionKeyText.text = confirmActionKeyboardDisplayString;
-        EventSystem.current.SetSelectedGameObject(FindFirstObjectByType<Button>().gameObject);
+        EventSystem.current.SetSelectedGameObject(_firstKeyboardMenuButton.gameObject);
 
         //Reset color of keyboard config button from animation
         TextMeshProUGUI textMeshPro = _keyboardConfigButton.GetComponentInChildren<TextMeshProUGUI>();
