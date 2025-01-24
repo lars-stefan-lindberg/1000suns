@@ -27,6 +27,8 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private Button _controllerConfigButton;
     private Color _optionsButtonColor;
     [SerializeField] private Button _backButton;
+    [SerializeField] private Button _controllerConfigMenuBackButton;
+    [SerializeField] private Button _keyboardConfigMenuBackButton;
     private Color _backButtonColor;
     [SerializeField] private GameObject _musicSliderGameObject;
     [SerializeField] private Slider _musicSlider;
@@ -37,11 +39,18 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject _keyboardConfigMenu;
     [SerializeField] private Button _firstKeyboardMenuButton;
     [SerializeField] private GameObject _controllerConfigMenu;
+    [SerializeField] private GameObject _controllerConfigMenuShowConfig;
+    [SerializeField] private GameObject _controllerConfigMenuShowAttachController;
+    [SerializeField] private Button _firstControllerMenuButton;
     [SerializeField] private GameObject _titleMenu;
 
     [SerializeField] private TextMeshProUGUI _keyboardConfigInstructionsConfirmActionKeyText;
+    [SerializeField] private Image _gamepadConfigInstructionsConfirmActionKeyIcon;
+    [SerializeField] private Image _gamepadConfigInstructionsResetButtonActionKeyIcon;
+    [SerializeField] private Sprite _gamepadConfirmIcon;
     public InputActionAsset actions;
     public InputActionReference confirmActionReference;
+    public InputActionReference resetButtonActionReference;
     private string confirmActionKeyboardDisplayString;
 
     void Awake() {
@@ -137,7 +146,7 @@ public class MainMenuManager : MonoBehaviour
 
         _titleMenu.SetActive(false);
         _keyboardConfigMenu.SetActive(false);
-        _controllerConfigMenu.SetActive(false);
+        HideControllerConfigMenu();
         _optionsMenu.SetActive(true);
         EventSystem.current.SetSelectedGameObject(_musicSliderGameObject);
 
@@ -171,22 +180,81 @@ public class MainMenuManager : MonoBehaviour
 
         SoundFXManager.obj.PlayUIBack();
         ShowOptionsMenu();
+        EventSystem.current.SetSelectedGameObject(_keyboardConfigButton.gameObject);
+
+        //Reset color of back button from animation
+        TextMeshProUGUI textMeshPro = _keyboardConfigMenuBackButton.GetComponentInChildren<TextMeshProUGUI>();
+        textMeshPro.color = _backButtonColor;
     }
 
-    public void KeyboardRebindEventHandler() {
+    public void KeyboardConfirmRebindEventHandler() {
         _keyboardConfigInstructionsConfirmActionKeyText.text = confirmActionReference.action.GetBindingDisplayString(InputBinding.MaskByGroup("Keyboard"));
+    }
+
+    public void GamepadConfirmRebindEventHandler() {
+        Sprite sprite = GamepadIconManager.obj.GetIcon(confirmActionReference.action);
+        _gamepadConfigInstructionsConfirmActionKeyIcon.sprite = sprite;        
     }
 
     public void ShowControllerConfigMenu() {
         SoundFXManager.obj.PlayUIConfirm();
 
         _optionsMenu.SetActive(false);
-        _controllerConfigMenu.SetActive(true);
-        EventSystem.current.SetSelectedGameObject(FindFirstObjectByType<Button>().gameObject);
+        var rebinds = PlayerPrefs.GetString("rebinds");
+            if (!string.IsNullOrEmpty(rebinds))
+                actions.LoadBindingOverridesFromJson(rebinds);
+
+        Sprite confirmButtonSprite = GamepadIconManager.obj.GetIcon(confirmActionReference.action);
+        _gamepadConfigInstructionsConfirmActionKeyIcon.sprite = confirmButtonSprite;
+
+        Sprite resetButtonSprite = GamepadIconManager.obj.GetIcon(resetButtonActionReference.action);
+        _gamepadConfigInstructionsResetButtonActionKeyIcon.sprite = resetButtonSprite;
+
+        if(Gamepad.current != null) {
+            _controllerConfigMenu.SetActive(true);
+            _controllerConfigMenuShowConfig.SetActive(true);
+            EventSystem.current.SetSelectedGameObject(_firstControllerMenuButton.gameObject);
+        } else {
+            _controllerConfigMenu.SetActive(true);
+            _controllerConfigMenuShowAttachController.SetActive(true);
+        }
 
         //Reset color of controller config button from animation
         TextMeshProUGUI textMeshPro = _controllerConfigButton.GetComponentInChildren<TextMeshProUGUI>();
         textMeshPro.color = _optionsButtonColor;
+    }
+
+    private string GetGampepadDeviceLayoutName() {
+        //Assumption that the confirm button layout can be used for any button
+        InputAction action = confirmActionReference.action;
+        var controls = action.controls;
+        foreach (var control in controls)
+        {
+            if (control.path.Contains("Gamepad"))
+            {
+                return control.device.layout;
+            }
+        }
+        return default(string);
+    }
+
+    private void HideControllerConfigMenu() {
+        _controllerConfigMenu.SetActive(false);
+        _controllerConfigMenuShowAttachController.SetActive(false);
+        _controllerConfigMenuShowConfig.SetActive(false);
+    }
+
+    public void LeaveControllerConfigMenu() {
+        var rebinds = actions.SaveBindingOverridesAsJson();
+        PlayerPrefs.SetString("rebinds", rebinds);
+
+        SoundFXManager.obj.PlayUIBack();
+        ShowOptionsMenu();
+        EventSystem.current.SetSelectedGameObject(_controllerConfigButton.gameObject);
+
+        //Reset color of back button from animation
+        TextMeshProUGUI textMeshPro = _controllerConfigMenuBackButton.GetComponentInChildren<TextMeshProUGUI>();
+        textMeshPro.color = _backButtonColor;
     }
 
     public void ShowTitleMenu() {
@@ -212,4 +280,10 @@ public class MainMenuManager : MonoBehaviour
     public void ChangeAmbienceVolume(float volume) {
         SoundMixerManager.obj.SetAmbienceVolume(volume);
     }
+
+    public void ExitGame()
+    {
+        Debug.Log("Exiting game...");
+        Application.Quit();
+    }    
 }
