@@ -7,6 +7,7 @@ using System.Collections;
 using TMPro;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
+using UnityEngine.Events;
 
 public class MainMenuManager : MonoBehaviour
 {
@@ -69,23 +70,12 @@ public class MainMenuManager : MonoBehaviour
             actions.LoadBindingOverridesFromJson(rebinds);
         confirmActionKeyboardDisplayString = confirmActionReference.action.GetBindingDisplayString(InputBinding.MaskByGroup("Keyboard"));
 
-        if(Gamepad.current != null) {
-            _gamepadGeneralConfirmIcon.gameObject.SetActive(true);
-            _gamepadGeneralCancelIcon.gameObject.SetActive(true);
-            _keyboardGeneralCancelText.gameObject.SetActive(false);
-            _keyboardGeneralConfirmText.gameObject.SetActive(false);
-            Sprite confirmButtonSprite = GamepadIconManager.obj.GetIcon(confirmActionReference.action);
-            _gamepadGeneralConfirmIcon.sprite = confirmButtonSprite;
-            Sprite cancelButtonSprite = GamepadIconManager.obj.GetIcon(cancelActionReference.action);
-            _gamepadGeneralCancelIcon.sprite = cancelButtonSprite;
-        } else {
-            _gamepadGeneralConfirmIcon.gameObject.SetActive(false);
-            _gamepadGeneralCancelIcon.gameObject.SetActive(false);
-            _keyboardGeneralCancelText.gameObject.SetActive(true);
-            _keyboardGeneralConfirmText.gameObject.SetActive(true);
-            _keyboardGeneralConfirmText.text = confirmActionKeyboardDisplayString;
-            _keyboardGeneralCancelText.text = cancelActionReference.action.GetBindingDisplayString(InputBinding.MaskByGroup("Keyboard"));
-        }
+        InputDeviceListener.OnInputDeviceStream += HandleInputDeviceChanged;
+        HandleInputDeviceChanged(InputDeviceListener.obj.GetCurrentInputDevice());
+    }
+
+    void OnDestroy() {
+        InputDeviceListener.OnInputDeviceStream -= HandleInputDeviceChanged;
     }
 
     void Update() {
@@ -310,6 +300,30 @@ public class MainMenuManager : MonoBehaviour
             LeaveKeyboardConfigMenu();
         } else if(_controllerConfigMenu.activeSelf) {
             LeaveControllerConfigMenu();
+        }
+    }
+
+    public void HandleInputDeviceChanged(InputDeviceListener.Device device) {
+        UpdateCancelConfirmUI(device);
+    }
+
+    public void UpdateCancelConfirmUI(InputDeviceListener.Device device) {
+        if(device == InputDeviceListener.Device.Gamepad) {
+            _gamepadGeneralConfirmIcon.gameObject.SetActive(true);
+            _gamepadGeneralCancelIcon.gameObject.SetActive(true);
+            _keyboardGeneralCancelText.gameObject.SetActive(false);
+            _keyboardGeneralConfirmText.gameObject.SetActive(false);
+            Sprite confirmButtonSprite = GamepadIconManager.obj.GetIcon(confirmActionReference.action);
+            _gamepadGeneralConfirmIcon.sprite = confirmButtonSprite;
+            Sprite cancelButtonSprite = GamepadIconManager.obj.GetIcon(cancelActionReference.action);
+            _gamepadGeneralCancelIcon.sprite = cancelButtonSprite;
+        } else {
+            _gamepadGeneralConfirmIcon.gameObject.SetActive(false);
+            _gamepadGeneralCancelIcon.gameObject.SetActive(false);
+            _keyboardGeneralCancelText.gameObject.SetActive(true);
+            _keyboardGeneralConfirmText.gameObject.SetActive(true);
+            _keyboardGeneralConfirmText.text = confirmActionKeyboardDisplayString;
+            _keyboardGeneralCancelText.text = cancelActionReference.action.GetBindingDisplayString(InputBinding.MaskByGroup("Keyboard"));
         }
     }
 
