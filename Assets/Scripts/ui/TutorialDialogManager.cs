@@ -87,16 +87,18 @@ public class TutorialDialogManager : MonoBehaviour
         obj = this;
 
         //Show keyboard, or gamepad, use power icon/text
-        if(InputDeviceListener.obj.GetCurrentInputDevice() == InputDeviceListener.Device.Gamepad) {
-            _gamepadConfigInstructionsUsePowerActionKeyIcon.gameObject.SetActive(true);
-            _keyboardConfigInstructionsUsePowerActionKeyText.gameObject.SetActive(false);
-            Sprite userPowerButtonSprite = GamepadIconManager.obj.GetIcon(_usePowerActionReference.action);
-            _gamepadConfigInstructionsUsePowerActionKeyIcon.sprite = userPowerButtonSprite;
-        } else { //Use keyboard
-            _gamepadConfigInstructionsUsePowerActionKeyIcon.gameObject.SetActive(false);
-            _keyboardConfigInstructionsUsePowerActionKeyText.gameObject.SetActive(true);
-            userPowerActionKeyboardDisplayString = _usePowerActionReference.action.GetBindingDisplayString(InputBinding.MaskByGroup("Keyboard"));
-            _keyboardConfigInstructionsUsePowerActionKeyText.text = userPowerActionKeyboardDisplayString;
+        if(_gamepadConfigInstructionsUsePowerActionKeyIcon != null)  {
+            if(InputDeviceListener.obj.GetCurrentInputDevice() == InputDeviceListener.Device.Gamepad) {
+                _gamepadConfigInstructionsUsePowerActionKeyIcon.gameObject.SetActive(true);
+                _keyboardConfigInstructionsUsePowerActionKeyText.gameObject.SetActive(false);
+                Sprite userPowerButtonSprite = GamepadIconManager.obj.GetIcon(_usePowerActionReference.action);
+                _gamepadConfigInstructionsUsePowerActionKeyIcon.sprite = userPowerButtonSprite;
+            } else { //Use keyboard
+                _gamepadConfigInstructionsUsePowerActionKeyIcon.gameObject.SetActive(false);
+                _keyboardConfigInstructionsUsePowerActionKeyText.gameObject.SetActive(true);
+                userPowerActionKeyboardDisplayString = _usePowerActionReference.action.GetBindingDisplayString(InputBinding.MaskByGroup("Keyboard"));
+                _keyboardConfigInstructionsUsePowerActionKeyText.text = userPowerActionKeyboardDisplayString;
+            }
         }
 
         Image[] images = GetComponentsInChildren<Image>();

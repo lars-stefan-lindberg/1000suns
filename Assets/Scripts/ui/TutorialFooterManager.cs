@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class TutorialFooterManager : MonoBehaviour
@@ -17,6 +18,25 @@ public class TutorialFooterManager : MonoBehaviour
     [SerializeField] private Color _fadeAlpha;
 
     [SerializeField] private Image _panel;
+
+    [Header("Device UIs")]
+    [SerializeField] private GameObject _keyboardInstructions;
+    [SerializeField] private GameObject _gamepadInstructions;
+
+    [Header("Action references")]
+    [SerializeField] private InputActionReference _usePowerActionReference;
+    [SerializeField] private InputActionReference _jumpActionReference;
+    [SerializeField] private InputActionReference _directionActionReference;
+
+    [Header("Gamepad icon containers")]
+    [SerializeField] private Image _gamepadUsePowerIcon;
+    [SerializeField] private Image _gamepadJumpIcon;
+
+    [Header("Keyboard text containers")]
+    [SerializeField] private TextMeshProUGUI _keyboardUsePowerText;
+    [SerializeField] private TextMeshProUGUI _keyboardForwardText;
+    [SerializeField] private TextMeshProUGUI _keyboardJumpText;
+
     private float _panelMaxAlpha;
 
     private List<Image> _images = new();
@@ -82,6 +102,27 @@ public class TutorialFooterManager : MonoBehaviour
 
     void Awake() {
         obj = this;
+
+        if(_gamepadInstructions != null) {
+            if(InputDeviceListener.obj.GetCurrentInputDevice() == InputDeviceListener.Device.Gamepad) {
+                _gamepadInstructions.SetActive(true);
+                _gamepadJumpIcon.gameObject.SetActive(true);
+                _gamepadUsePowerIcon.gameObject.SetActive(true);
+
+                _gamepadJumpIcon.sprite = GamepadIconManager.obj.GetIcon(_jumpActionReference.action);
+                _gamepadUsePowerIcon.sprite = GamepadIconManager.obj.GetIcon(_usePowerActionReference.action);
+            } else {
+                _keyboardInstructions.SetActive(true);
+                _keyboardForwardText.gameObject.SetActive(true);
+                _keyboardUsePowerText.gameObject.SetActive(true);
+                _keyboardJumpText.gameObject.SetActive(true);
+
+                _keyboardUsePowerText.text = _usePowerActionReference.action.GetBindingDisplayString(InputBinding.MaskByGroup("Keyboard"));
+                _keyboardForwardText.text = GetKeyboardForwardDisplayString();
+                _keyboardJumpText.text = _jumpActionReference.action.GetBindingDisplayString(InputBinding.MaskByGroup("Keyboard"));
+            }
+        }
+
         Image[] images = GetComponentsInChildren<Image>();
         foreach(Image image in images) {
             if(!image.gameObject.CompareTag("TutorialPanel")) {
@@ -93,6 +134,17 @@ public class TutorialFooterManager : MonoBehaviour
             _texts.Add(text);
         }
         _panelMaxAlpha = 246f/255f;
+    }
+
+    private string GetKeyboardForwardDisplayString() {
+        InputAction action = _directionActionReference.action;
+        int bindingIndex = action.bindings.IndexOf(x => x.effectivePath == "<Keyboard>/rightArrow");
+
+        if (bindingIndex != -1)
+        {
+            return action.GetBindingDisplayString(bindingIndex);
+        }
+        return "";
     }
 
     void OnDestroy() {
