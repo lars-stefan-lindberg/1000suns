@@ -22,13 +22,14 @@ public class TwoMushrooms : MonoBehaviour
             Vector2 mushroomTop = new(mushRoomBounds.center.x, mushRoomBounds.center.y + mushRoomBounds.extents.y); 
             bool landedOnMushroom = playerBottom.y > mushroomTop.y - _collisionMargin;
 
-            SoundFXManager.obj.PlayMushroomSmallRattle(transform);
             _animator.SetTrigger("wiggle");
             _playerEntered = true;
 
             if(landedOnMushroom) {
                 SoundFXManager.obj.PlayMushroomSmallBounce(transform);
                 StartCoroutine(Squeeze(_squeezeX, _squeezeY, _squeezeTime));
+            } else {
+                SoundFXManager.obj.PlayMushroomSmallRattle(transform);
             }
         }
     }
