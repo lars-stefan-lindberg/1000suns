@@ -69,9 +69,10 @@ public class SoundFXManager : MonoBehaviour
 
     #region Prisoner
     public AudioClip[] prisonerCrawl;
-    public AudioClip prisonerSpawn;
+    public AudioClip[] prisonerSpawn;
     public AudioClip prisonerHit;
     public AudioClip prisonerSlide;
+    public AudioClip prisonerDeath;
     #endregion
 
     #region CapeRoom
@@ -217,13 +218,16 @@ public class SoundFXManager : MonoBehaviour
         PlayRandomSound(prisonerCrawl, spawnTransform, 1f);
     }
     public void PlayPrisonerSpawn(Transform spawnTransform) {
-        PlaySound(prisonerSpawn, spawnTransform, 1f);
+        PlayRandomSound(prisonerSpawn, spawnTransform, 1f);
     }
     public AudioSource PlayPrisonerHit(Transform spawnTransform) {
         return PlayLoopedSound(prisonerHit, spawnTransform, 1f);
     }
     public void PlayPrisonerSlide(Transform spawnTransform) {
         PlaySound(prisonerSlide, spawnTransform, 1f);
+    }
+    public void PlayPrisonerDeath(Transform spawnTransform) {
+        PlaySound(prisonerDeath, spawnTransform, 1f);
     }
 
     public void PlayCapeIntroduction(Transform spawnTransform) {

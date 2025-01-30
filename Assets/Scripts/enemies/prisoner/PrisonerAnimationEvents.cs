@@ -23,4 +23,8 @@ public class PrisonerAnimationEvents : MonoBehaviour
     public void PlaySlide() {
         SoundFXManager.obj.PlayPrisonerSlide(gameObject.transform);
     }
+
+    public void PlayDeath() {
+        SoundFXManager.obj.PlayPrisonerDeath(gameObject.transform);
+    }
 }
