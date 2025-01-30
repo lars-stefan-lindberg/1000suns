@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class TutorialDialogManager : MonoBehaviour
@@ -16,12 +17,16 @@ public class TutorialDialogManager : MonoBehaviour
     [Range(0.1f, 10f), SerializeField] private float _fadeInSpeed = 2f;
 
     [SerializeField] private Color _fadeAlpha;
+    [SerializeField] private InputActionReference _usePowerActionReference;
+    [SerializeField] private Image _gamepadConfigInstructionsUsePowerActionKeyIcon;
 
     private List<Image> _images = new();
     private List<TextMeshProUGUI> _texts = new();
     private Button _confirmButton;
 
     public bool tutorialCompleted = false;
+    private string userPowerActionKeyboardDisplayString;
+    [SerializeField] private TextMeshProUGUI _keyboardConfigInstructionsUsePowerActionKeyText;
 
     [ContextMenu("StartFadeIn")]
     public void StartFadeIn() {
@@ -80,6 +85,20 @@ public class TutorialDialogManager : MonoBehaviour
 
     void Awake() {
         obj = this;
+
+        //Show keyboard, or gamepad, use power icon/text
+        if(InputDeviceListener.obj.GetCurrentInputDevice() == InputDeviceListener.Device.Gamepad) {
+            _gamepadConfigInstructionsUsePowerActionKeyIcon.gameObject.SetActive(true);
+            _keyboardConfigInstructionsUsePowerActionKeyText.gameObject.SetActive(false);
+            Sprite userPowerButtonSprite = GamepadIconManager.obj.GetIcon(_usePowerActionReference.action);
+            _gamepadConfigInstructionsUsePowerActionKeyIcon.sprite = userPowerButtonSprite;
+        } else { //Use keyboard
+            _gamepadConfigInstructionsUsePowerActionKeyIcon.gameObject.SetActive(false);
+            _keyboardConfigInstructionsUsePowerActionKeyText.gameObject.SetActive(true);
+            userPowerActionKeyboardDisplayString = _usePowerActionReference.action.GetBindingDisplayString(InputBinding.MaskByGroup("Keyboard"));
+            _keyboardConfigInstructionsUsePowerActionKeyText.text = userPowerActionKeyboardDisplayString;
+        }
+
         Image[] images = GetComponentsInChildren<Image>();
         foreach(Image image in images) {
             if(!image.gameObject.CompareTag("TutorialDialogConfirmButton")) {
