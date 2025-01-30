@@ -9,7 +9,7 @@ public class WaitForGamepadAttachment : MonoBehaviour
     [SerializeField] private GameObject _attachGamepad;
     private bool isGamepadAttached = false;
 
-    void FixedUpdate() {
+    void Update() {
         if(Gamepad.current != null) {
             if(!isGamepadAttached) {
                 _configMenu.SetActive(true);

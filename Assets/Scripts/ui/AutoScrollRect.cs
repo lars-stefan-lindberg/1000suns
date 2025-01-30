@@ -21,7 +21,7 @@ public class AutoScrollRect : MonoBehaviour
 
     private RectTransform m_SelectedRectTransform;
 
-    void FixedUpdate()
+    void Update()
     {
         UpdateScrollToSelected(m_templateScrollRect, m_ContentRectTransform, m_templateViewportTransform);
     }
@@ -61,14 +61,14 @@ public class AutoScrollRect : MonoBehaviour
             float step = selectedPosition - above;
             float newY = currentScrollRectPosition + step;
             float newNormalizedY = newY / contentHeightDifference;
-            scrollRect.normalizedPosition = Vector2.Lerp(scrollRect.normalizedPosition, new Vector2(0, newNormalizedY), scrollSpeed * Time.deltaTime);
+            scrollRect.normalizedPosition = Vector2.Lerp(scrollRect.normalizedPosition, new Vector2(0, newNormalizedY), scrollSpeed * Time.unscaledDeltaTime);
         }
         else if (selectedPosition < below)
         {
             float step = selectedPosition - below;
             float newY = currentScrollRectPosition + step;
             float newNormalizedY = newY / contentHeightDifference;
-            scrollRect.normalizedPosition = Vector2.Lerp(scrollRect.normalizedPosition, new Vector2(0, newNormalizedY), scrollSpeed * Time.deltaTime);
+            scrollRect.normalizedPosition = Vector2.Lerp(scrollRect.normalizedPosition, new Vector2(0, newNormalizedY), scrollSpeed * Time.unscaledDeltaTime);
         }
     }
 }
