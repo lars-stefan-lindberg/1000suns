@@ -33,6 +33,7 @@ public class PrisonerSpawner : MonoBehaviour
         GameObject newPrisoner = Instantiate(prisoner, new Vector2(randomHorizontalPosition, _leftPoint.transform.position.y), transform.rotation);
         newPrisoner.transform.parent = transform;
         newPrisoner.transform.SetParent(null);
+        newPrisoner.GetComponent<Prisoner>().muteDeathSoundFX = true;
     }
 
     private float GetRandomHorizontalPosition()

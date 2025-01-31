@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -25,6 +23,7 @@ public class PrisonerAnimationEvents : MonoBehaviour
     }
 
     public void PlayDeath() {
-        SoundFXManager.obj.PlayPrisonerDeath(gameObject.transform);
+        if(!prisoner.muteDeathSoundFX && !prisoner.offScreen)
+            SoundFXManager.obj.PlayPrisonerDeath(gameObject.transform);
     }
 }

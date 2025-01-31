@@ -66,6 +66,7 @@ public class Prisoner : MonoBehaviour
     private AudioSource _gotHitAudioSource;
     private bool _isFadingOutHitSound = false;
     public bool offScreen = false;
+    public bool muteDeathSoundFX = false;
     private Rigidbody2D _blockInContact;
     private float _edgeRecoveryCoolDownTime = 2;
     private float _edgeRecoveryCoolDownTimer = 0;
