@@ -8,7 +8,7 @@ public class FirstRoomLoader : MonoBehaviour
     {
         if(!GameEventManager.obj.CaveLevelStarted) {
             SceneFadeManager.obj.SetFadedOutState();
-            SceneFadeManager.obj.SetFadeInSpeed(1f);
+            SceneFadeManager.obj.SetFadeInSpeed(0.5f);
             SceneFadeManager.obj.StartFadeIn();
 
             StartCoroutine(AmbienceFadeIn());
