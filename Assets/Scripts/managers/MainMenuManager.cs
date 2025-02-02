@@ -90,6 +90,7 @@ public class MainMenuManager : MonoBehaviour
     }
 
     public void StartGame() {
+        _playButton.GetComponent<Button>().interactable = false;
         StartCoroutine(StartGameCoroutine());
     }
 

@@ -22,6 +22,7 @@ public class PauseMenuManager : MonoBehaviour
     [SerializeField] private GameObject _pauseMainMenu;
     [SerializeField] private GameObject _keyboardConfigMenu;
     [SerializeField] private TextMeshProUGUI _keyboardConfigInstructionsConfirmActionKeyText;
+    [SerializeField] private Button _quitButton;
     [SerializeField] private Button _firstKeyboardMenuButton;
     [SerializeField] private Button _keyboardConfigMenuBackButton;
     [SerializeField] private Button _keyboardConfigMenuButton;
@@ -100,6 +101,7 @@ public class PauseMenuManager : MonoBehaviour
     }
 
     public void QuitButtonHandler() {
+        _quitButton.interactable = false;
         SoundFXManager.obj.PlayUIBack();
         Quit();
     }
