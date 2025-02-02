@@ -19,14 +19,13 @@ public class CaveCollectibleCreature : MonoBehaviour
     [SerializeField] private float _floatDirectionChangeTime = 1f;
     private bool _floatUp = true;
 
-    private bool IsIdle => !_preparingTakeOff || (!IsCollected && !IsPermantentlyCollected);
+    private bool IsIdle => !IsCollected && !IsPermantentlyCollected;
 
     private bool _startedTakeOff = false;
-    private bool _preparingTakeOff = false;
     private float _squeezeX = 1.25f;
     private float _squeezeY = 0.65f;
     private float _squeezeTime = 0.08f;
-    private int _numberOfSqueezes = 4;
+    private int _numberOfSqueezes = 3;
 
     void Awake() {
         IsCollected = false;
@@ -40,7 +39,6 @@ public class CaveCollectibleCreature : MonoBehaviour
         if(IsPermantentlyCollected) {
             if(!_startedTakeOff) {
                 _startedTakeOff = true;
-                _preparingTakeOff = true;
                 SoundFXManager.obj.PlayCollectiblePickup(transform);
                 StartCoroutine(PrepareTakeOff(_squeezeX, _squeezeY, _squeezeTime));
             }
@@ -49,10 +47,7 @@ public class CaveCollectibleCreature : MonoBehaviour
         Vector2 headTargetPosition;
         if(!IsCollected) { 
             headTargetPosition = transform.position;
-        } else if(_preparingTakeOff) {
-            headTargetPosition = _head.transform.position;
-        }
-        else { //Follow
+        }else { //Follow
             bool isCaveAvatarFacingLeft = CaveAvatar.obj.IsFacingLeft();
             Vector2 mainAvatarTarget = CaveAvatar.obj.GetTarget();
             float headTargetX = isCaveAvatarFacingLeft ? mainAvatarTarget.x + 1.475f : mainAvatarTarget.x - 1.475f;
@@ -109,11 +104,13 @@ public class CaveCollectibleCreature : MonoBehaviour
         }
 
         _blackHole.SetActive(true);
-        _lightSprite2DFadeManager.StartFadeOut();
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.5f);
         
         _headSpriteRenderer.enabled = false;
         _blackHole.GetComponent<BlackHole>().Despawn();
+        
+        yield return new WaitForSeconds(1f);
+        _lightSprite2DFadeManager.StartFadeOut();
 
         Destroy(gameObject, 5);
     }
