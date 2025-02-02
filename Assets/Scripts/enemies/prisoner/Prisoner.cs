@@ -413,10 +413,22 @@ public class Prisoner : MonoBehaviour
         if(isSpawningSoul) {
             GameObject prisonerSoul = Instantiate(this.prisonerSoul, transform.position, transform.rotation);
             prisonerSoul.GetComponent<PrisonerSoul>().Target = prisonerSoulTarget;
-            gameObject.SetActive(false);
+            StartCoroutine(DelayedKill());
         } else {
-            Destroy(gameObject);
+            StartCoroutine(DelayedKill());
         }
+    }
+
+    //Used to give death sound time to complete before destroying the prisoner game object
+    private IEnumerator DelayedKill() {
+        Destroy(_spriteRenderer);
+        if(_gotHitAudioSource != null)
+            SoundFXManager.obj.FadeOutAndStopSound(_gotHitAudioSource, 0.2f);
+        _rigidBody.bodyType = RigidbodyType2D.Static;
+        _collider.enabled = false;
+        _lightSprite2DFadeManager.StartFadeOut();
+        yield return new WaitForSeconds(2f);
+        Destroy(gameObject);
     }
 
     private void SpawnPrisoners() {
