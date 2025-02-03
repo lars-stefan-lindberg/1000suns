@@ -80,6 +80,7 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip capePickUp;
     #endregion
 
+    public AudioClip revealSecret;
     public AudioClip collectiblePickup;
 
     void Start() {
@@ -235,6 +236,10 @@ public class SoundFXManager : MonoBehaviour
     }
     public void PlayCapePickUp(Transform spawnTransform) {
         PlayNonSpatiallyAwareSound(capePickUp, spawnTransform, 1f);
+    }
+
+    public void PlayRevealSecret(Transform spawnTransform) {
+        PlayNonSpatiallyAwareSound(revealSecret, spawnTransform, 1f);
     }
 
     public AudioSource PlaySound(AudioClip clip, Transform spawnTransform, float volume)

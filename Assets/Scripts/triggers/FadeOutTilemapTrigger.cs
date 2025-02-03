@@ -12,6 +12,7 @@ public class FadeOutTilemap : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other) {
         if(other.gameObject.CompareTag("Player")) {
             _visibleLayerAnimator.SetTrigger("reveal");
+            SoundFXManager.obj.PlayRevealSecret(transform);
             _collider.enabled = false;
             Destroy(gameObject, 5);
         }

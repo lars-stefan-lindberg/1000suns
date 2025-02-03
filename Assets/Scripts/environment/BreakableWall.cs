@@ -25,6 +25,7 @@ public class BreakableWall : MonoBehaviour
     public float shakeTime = 0.12f;
     public float shakeFrameWait = 0.08f;
     private float _originXPosition;
+    public bool isSecret = true;
 
     private void Awake() {
         _spriteRenderer = GetComponent<SpriteRenderer>();
@@ -59,6 +60,8 @@ public class BreakableWall : MonoBehaviour
             if(background != null)
                 background.SetActive(false);
             SoundFXManager.obj.PlayBreakableWallBreak(transform);
+            if(isSecret)
+                SoundFXManager.obj.PlayRevealSecret(transform);
             _visibleLayerAnimator.SetTrigger("reveal");
             _collider.enabled = false;
             _fadeSprite = true;
