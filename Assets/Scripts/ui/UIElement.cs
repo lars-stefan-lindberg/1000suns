@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -15,9 +16,5 @@ public class UIElement : MonoBehaviour, IMoveHandler
         if(eventData.moveDir == MoveDirection.Up || eventData.moveDir == MoveDirection.Down) {
             SoundFXManager.obj.PlayUIBrowse();
         }
-    }
-
-    public void OnClick() {
-        SoundFXManager.obj.PlayUIConfirm();
     }
 }

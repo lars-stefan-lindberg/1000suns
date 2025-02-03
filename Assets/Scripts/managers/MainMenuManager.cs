@@ -153,6 +153,8 @@ public class MainMenuManager : MonoBehaviour
 
     public void OnOptionsButtonClicked() {
         SoundFXManager.obj.PlayUIConfirm();
+        
+        ResetButtonColor();
         ShowOptionsMenu();
     }
 
@@ -170,6 +172,8 @@ public class MainMenuManager : MonoBehaviour
 
     public void ShowKeyboardConfigMenu() {
         SoundFXManager.obj.PlayUIConfirm();
+
+        ResetButtonColor();
 
         _optionsMenu.SetActive(false);
 
@@ -215,6 +219,8 @@ public class MainMenuManager : MonoBehaviour
 
     public void ShowControllerConfigMenu() {
         SoundFXManager.obj.PlayUIConfirm();
+
+        ResetButtonColor();
 
         _optionsMenu.SetActive(false);
         var rebinds = PlayerPrefs.GetString("rebinds");
@@ -273,14 +279,7 @@ public class MainMenuManager : MonoBehaviour
     }
 
     public void OnNavigateBack() {
-        //Reset selected button color
-        GameObject currentlySelected = EventSystem.current.currentSelectedGameObject;
-        TextMeshProUGUI[] textMeshProUGUIs = currentlySelected.GetComponentsInChildren<TextMeshProUGUI>();
-        //Regular button
-        if(textMeshProUGUIs.Length == 1)
-            textMeshProUGUIs[0].color = GetMainButtonTextColor();
-        else
-            textMeshProUGUIs[1].color = GetMainButtonTextColor(); //Rebind element
+        ResetButtonColor();
 
         if(_optionsMenu.activeSelf) {
             ShowTitleMenu();
@@ -289,6 +288,17 @@ public class MainMenuManager : MonoBehaviour
         } else if(_controllerConfigMenu.activeSelf) {
             LeaveControllerConfigMenu();
         }
+    }
+
+    private void ResetButtonColor() {
+        //Reset selected button color
+        GameObject currentlySelected = EventSystem.current.currentSelectedGameObject;
+        TextMeshProUGUI[] textMeshProUGUIs = currentlySelected.GetComponentsInChildren<TextMeshProUGUI>();
+        //Regular button
+        if(textMeshProUGUIs.Length == 1)
+            textMeshProUGUIs[0].color = GetMainButtonTextColor();
+        else
+            textMeshProUGUIs[1].color = GetMainButtonTextColor(); //Rebind element
     }
 
     public void HandleInputDeviceChanged(InputDeviceListener.Device device) {

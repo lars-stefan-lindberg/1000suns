@@ -151,6 +151,8 @@ public class PauseMenuManager : MonoBehaviour
     public void ShowKeyboardConfigMenu() {
         SoundFXManager.obj.PlayUIConfirm();
 
+        ResetButtonColor();
+
         _pauseMainMenu.SetActive(false);
 
         _keyboardConfigMenu.SetActive(true);
@@ -175,6 +177,8 @@ public class PauseMenuManager : MonoBehaviour
 
     public void ShowControllerConfigMenu() {
         SoundFXManager.obj.PlayUIConfirm();
+
+        ResetButtonColor();
 
         _pauseMainMenu.SetActive(false);
 
@@ -215,14 +219,7 @@ public class PauseMenuManager : MonoBehaviour
     }
 
     public void OnNavigateBack() {
-        //Reset selected button color
-        GameObject currentlySelected = EventSystem.current.currentSelectedGameObject;
-        TextMeshProUGUI[] textMeshProUGUIs = currentlySelected.GetComponentsInChildren<TextMeshProUGUI>();
-        //Regular button
-        if(textMeshProUGUIs.Length == 1)
-            textMeshProUGUIs[0].color = _buttonColor;
-        else
-            textMeshProUGUIs[1].color = _buttonColor; //Rebind element
+        ResetButtonColor();
 
         if(_pauseMainMenu.activeSelf) {
             if(_isPaused)
@@ -232,6 +229,17 @@ public class PauseMenuManager : MonoBehaviour
         } else if(_controllerConfigMenu.activeSelf) {
             LeaveControllerConfigMenu();
         }
+    }
+
+    private void ResetButtonColor() {
+        //Reset selected button color
+        GameObject currentlySelected = EventSystem.current.currentSelectedGameObject;
+        TextMeshProUGUI[] textMeshProUGUIs = currentlySelected.GetComponentsInChildren<TextMeshProUGUI>();
+        //Regular button
+        if(textMeshProUGUIs.Length == 1)
+            textMeshProUGUIs[0].color = _buttonColor;
+        else
+            textMeshProUGUIs[1].color = _buttonColor; //Rebind element
     }
 
     void OnDestroy() {
