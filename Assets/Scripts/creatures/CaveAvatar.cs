@@ -121,6 +121,10 @@ public class CaveAvatar : MonoBehaviour
         }
     }
 
+    public bool IsFloatingUp() {
+        return _floatUp;
+    }
+
     void OnDestroy() {
         obj = null;
     }

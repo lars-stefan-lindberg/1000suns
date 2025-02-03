@@ -17,6 +17,11 @@ public class CaveAvatarMirror : MonoBehaviour
     [SerializeField] private float _floatDirectionChangeTime = 1f;
     private bool _floatUp = true;
 
+    void Awake() {
+        //Make sure to sync floating to the main cave avatar
+        _floatUp = CaveAvatar.obj.IsFloatingUp();
+    }
+
     void FixedUpdate()
     {
         Vector2 headTargetPosition;
