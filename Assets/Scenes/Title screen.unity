@@ -1085,7 +1085,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 863324984}
         m_TargetAssemblyTypeName: MainMenuManager, Assembly-CSharp
-        m_MethodName: LeaveControllerConfigMenu
+        m_MethodName: OnNavigateBack
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5396,7 +5396,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 863324984}
         m_TargetAssemblyTypeName: MainMenuManager, Assembly-CSharp
-        m_MethodName: ShowTitleMenu
+        m_MethodName: OnNavigateBack
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7622,7 +7622,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 863324984}
         m_TargetAssemblyTypeName: MainMenuManager, Assembly-CSharp
-        m_MethodName: LeaveKeyboardConfigMenu
+        m_MethodName: OnNavigateBack
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

@@ -11,6 +11,7 @@ using UnityEngine.Events;
 
 public class MainMenuManager : MonoBehaviour
 {
+    public static MainMenuManager obj;
     [SerializeField] private SceneField _persistentGameplay;
     [SerializeField] private SceneField _caveRoom1;
     [SerializeField] private SceneField _titleScreen;
@@ -30,7 +31,6 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private Button _backButton;
     [SerializeField] private Button _controllerConfigMenuBackButton;
     [SerializeField] private Button _keyboardConfigMenuBackButton;
-    private Color _backButtonColor;
     [SerializeField] private GameObject _musicSliderGameObject;
     [SerializeField] private Slider _musicSlider;
     [SerializeField] private Slider _soundFXSlider;
@@ -61,9 +61,10 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _keyboardGeneralConfirmText;
 
     void Awake() {
+        obj = this;
+
         EventSystem.current.SetSelectedGameObject(_playButton);
         _optionsButtonColor = _optionsButton.GetComponentInChildren<TextMeshProUGUI>().color;
-        _backButtonColor = _backButton.GetComponentInChildren<TextMeshProUGUI>().color;
         MusicManager.obj.PlayTitleSong();
         var rebinds = PlayerPrefs.GetString("rebinds");
         if (!string.IsNullOrEmpty(rebinds))
@@ -76,6 +77,7 @@ public class MainMenuManager : MonoBehaviour
 
     void OnDestroy() {
         InputDeviceListener.OnInputDeviceStream -= HandleInputDeviceChanged;
+        obj = null;
     }
 
     void Update() {
@@ -164,10 +166,6 @@ public class MainMenuManager : MonoBehaviour
         HideControllerConfigMenu();
         _optionsMenu.SetActive(true);
         EventSystem.current.SetSelectedGameObject(_musicSliderGameObject);
-
-        //Reset color of options button from animation
-        TextMeshProUGUI textMeshPro = _optionsButton.GetComponentInChildren<TextMeshProUGUI>();
-        textMeshPro.color = _optionsButtonColor;
     }
 
     public void ShowKeyboardConfigMenu() {
@@ -183,10 +181,6 @@ public class MainMenuManager : MonoBehaviour
         //Get display string from confirm key
         _keyboardConfigInstructionsConfirmActionKeyText.text = confirmActionKeyboardDisplayString;
         EventSystem.current.SetSelectedGameObject(_firstKeyboardMenuButton.gameObject);
-
-        //Reset color of keyboard config button from animation
-        TextMeshProUGUI textMeshPro = _keyboardConfigButton.GetComponentInChildren<TextMeshProUGUI>();
-        textMeshPro.color = _optionsButtonColor;
     }
 
     public void LeaveKeyboardConfigMenu() {
@@ -196,10 +190,6 @@ public class MainMenuManager : MonoBehaviour
         SoundFXManager.obj.PlayUIBack();
         ShowOptionsMenu();
         EventSystem.current.SetSelectedGameObject(_keyboardConfigButton.gameObject);
-
-        //Reset color of back button from animation
-        TextMeshProUGUI textMeshPro = _keyboardConfigMenuBackButton.GetComponentInChildren<TextMeshProUGUI>();
-        textMeshPro.color = _backButtonColor;
     }
 
     public void KeyboardConfirmRebindEventHandler() {
@@ -245,10 +235,6 @@ public class MainMenuManager : MonoBehaviour
             _controllerConfigMenu.SetActive(true);
             _controllerConfigMenuShowAttachController.SetActive(true);
         }
-
-        //Reset color of controller config button from animation
-        TextMeshProUGUI textMeshPro = _controllerConfigButton.GetComponentInChildren<TextMeshProUGUI>();
-        textMeshPro.color = _optionsButtonColor;
     }
 
     private void HideControllerConfigMenu() {
@@ -264,10 +250,6 @@ public class MainMenuManager : MonoBehaviour
         SoundFXManager.obj.PlayUIBack();
         ShowOptionsMenu();
         EventSystem.current.SetSelectedGameObject(_controllerConfigButton.gameObject);
-
-        //Reset color of back button from animation
-        TextMeshProUGUI textMeshPro = _controllerConfigMenuBackButton.GetComponentInChildren<TextMeshProUGUI>();
-        textMeshPro.color = _backButtonColor;
     }
 
     public void ShowTitleMenu() {
@@ -276,10 +258,6 @@ public class MainMenuManager : MonoBehaviour
         _optionsMenu.SetActive(false);
         _titleMenu.SetActive(true);
         EventSystem.current.SetSelectedGameObject(_optionsButton.gameObject);
-
-        //Reset color of back button from animation
-        TextMeshProUGUI textMeshPro = _backButton.GetComponentInChildren<TextMeshProUGUI>();
-        textMeshPro.color = _backButtonColor;
     }
 
     public void ChangeMusicVolume(float volume) {
@@ -295,6 +273,15 @@ public class MainMenuManager : MonoBehaviour
     }
 
     public void OnNavigateBack() {
+        //Reset selected button color
+        GameObject currentlySelected = EventSystem.current.currentSelectedGameObject;
+        TextMeshProUGUI[] textMeshProUGUIs = currentlySelected.GetComponentsInChildren<TextMeshProUGUI>();
+        //Regular button
+        if(textMeshProUGUIs.Length == 1)
+            textMeshProUGUIs[0].color = GetMainButtonTextColor();
+        else
+            textMeshProUGUIs[1].color = GetMainButtonTextColor(); //Rebind element
+
         if(_optionsMenu.activeSelf) {
             ShowTitleMenu();
         } else if(_keyboardConfigMenu.activeSelf) {
@@ -326,6 +313,10 @@ public class MainMenuManager : MonoBehaviour
             _keyboardGeneralConfirmText.text = confirmActionKeyboardDisplayString;
             _keyboardGeneralCancelText.text = cancelActionReference.action.GetBindingDisplayString(InputBinding.MaskByGroup("Keyboard"));
         }
+    }
+
+    public Color GetMainButtonTextColor() {
+        return _optionsButtonColor;
     }
 
     public void ExitGame()

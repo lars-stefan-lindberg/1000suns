@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
@@ -85,6 +84,7 @@ public class PauseMenuManager : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(null);
         _pauseMenu.SetActive(false);
             
+        //Reset color of main pause menu objects
         for (int i = 0; i < _menuObjects.Length; i++)
         {
             _menuObjects[i].GetComponentInChildren<TextMeshProUGUI>().color = _buttonColor;
@@ -161,10 +161,6 @@ public class PauseMenuManager : MonoBehaviour
         //Get display string from confirm key
         _keyboardConfigInstructionsConfirmActionKeyText.text = confirmActionKeyboardDisplayString;
         EventSystem.current.SetSelectedGameObject(_firstKeyboardMenuButton.gameObject);
-
-        //Reset color of keyboard config button from animation
-        TextMeshProUGUI textMeshPro = _keyboardConfigMenuButton.GetComponentInChildren<TextMeshProUGUI>();
-        textMeshPro.color = _buttonColor;
     }
 
     public void LeaveKeyboardConfigMenu() {
@@ -175,10 +171,6 @@ public class PauseMenuManager : MonoBehaviour
         _keyboardConfigMenu.SetActive(false);
         _pauseMainMenu.SetActive(true);
         EventSystem.current.SetSelectedGameObject(_keyboardConfigMenuButton.gameObject);
-
-        //Reset color of back button from animation
-        TextMeshProUGUI textMeshPro = _keyboardConfigMenuBackButton.GetComponentInChildren<TextMeshProUGUI>();
-        textMeshPro.color = _buttonColor;
     }
 
     public void ShowControllerConfigMenu() {
@@ -204,10 +196,6 @@ public class PauseMenuManager : MonoBehaviour
             _controllerConfigMenu.SetActive(true);
             _controllerConfigMenuShowAttachController.SetActive(true);
         }
-
-        //Reset color of controller config button from animation
-        TextMeshProUGUI textMeshPro = _controllerConfigMenuButton.GetComponentInChildren<TextMeshProUGUI>();
-        textMeshPro.color = _buttonColor;
     }
 
     public void LeaveControllerConfigMenu() {
@@ -227,6 +215,15 @@ public class PauseMenuManager : MonoBehaviour
     }
 
     public void OnNavigateBack() {
+        //Reset selected button color
+        GameObject currentlySelected = EventSystem.current.currentSelectedGameObject;
+        TextMeshProUGUI[] textMeshProUGUIs = currentlySelected.GetComponentsInChildren<TextMeshProUGUI>();
+        //Regular button
+        if(textMeshProUGUIs.Length == 1)
+            textMeshProUGUIs[0].color = _buttonColor;
+        else
+            textMeshProUGUIs[1].color = _buttonColor; //Rebind element
+
         if(_pauseMainMenu.activeSelf) {
             if(_isPaused)
                 ResumeGame();
