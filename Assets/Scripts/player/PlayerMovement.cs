@@ -9,7 +9,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     [SerializeField] private bool isDevMode = true;
     [SerializeField] private ScriptableStats _stats;
-    private SpriteRenderer _spriteRenderer;
+    public SpriteRenderer spriteRenderer;
     public GameObject anchor;
     private BoxCollider2D _collider;
     private Animator _animator;
@@ -42,7 +42,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         obj = this;
         _collider = GetComponent<BoxCollider2D>();
         _animator = GetComponentInChildren<Animator>();
-        _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         _powerJumpForce = _stats.JumpPower * 2f;
         _platformLayerMasks = LayerMask.GetMask("JumpThroughs");
         _ceilingLayerMasks = LayerMask.GetMask("Ground");
@@ -82,19 +82,19 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     private void FlipPlayer(float _xValue)
     {
         if (_xValue < 0)
-            _spriteRenderer.flipX = true;
+            spriteRenderer.flipX = true;
         else if (_xValue > 0)
-            _spriteRenderer.flipX = false;
+            spriteRenderer.flipX = false;
     }
 
     public void FlipPlayer()
     {
-        _spriteRenderer.flipX = !_spriteRenderer.flipX;
+        spriteRenderer.flipX = !spriteRenderer.flipX;
     }
 
     public bool isFacingLeft()
     {
-        return _spriteRenderer.flipX;
+        return spriteRenderer.flipX;
     }
 
     private float _poweredFallDashMultiplierFalling = 1.35f;
