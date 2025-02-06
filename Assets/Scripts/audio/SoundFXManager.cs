@@ -83,6 +83,7 @@ public class SoundFXManager : MonoBehaviour
 
     public AudioClip revealSecret;
     public AudioClip collectiblePickup;
+    public AudioClip floatingPlatformWallHit;
 
     private Dictionary<AudioClip[], int> lastPickedIndices = new();
 
@@ -92,6 +93,11 @@ public class SoundFXManager : MonoBehaviour
 
     public void PlayCollectiblePickup(Transform spawnTransform) {
         PlaySound(collectiblePickup, spawnTransform, 1f);
+    }
+
+    public void PlayFloatingPlatformWallHit(Transform spawnTransform) {
+        Debug.Log("Playing floating platform wall hit sound...");
+        //PlaySound(floatingPlatformWallHit, spawnTransform, 1f);
     }
 
     public void PlayUIBrowse() {

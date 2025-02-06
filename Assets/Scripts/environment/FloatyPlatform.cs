@@ -131,10 +131,14 @@ public class FloatyPlatform : MonoBehaviour
         somethingToTheRight = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.right, blockingCastDistance, _blockingCastLayerMask);
         somethingToTheLeft = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.left, blockingCastDistance, _blockingCastLayerMask);
 
-        if (somethingToTheRight && _rigidBody.velocity.x > 0)
+        if (somethingToTheRight && _rigidBody.velocity.x > 0) {
             movePlatform = false;
-        if (somethingToTheLeft && _rigidBody.velocity.x < 0)
+            SoundFXManager.obj.PlayFloatingPlatformWallHit(transform);
+        }
+        if (somethingToTheLeft && _rigidBody.velocity.x < 0) {
             movePlatform = false;
+            SoundFXManager.obj.PlayFloatingPlatformWallHit(transform);
+        }
 
         if (movePlatform)
         {
