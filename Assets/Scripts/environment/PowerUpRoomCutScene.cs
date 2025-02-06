@@ -63,6 +63,8 @@ public class PowerUpRoomCutScene : MonoBehaviour
         Player.obj.SetBlackCape();
         yield return new WaitForSeconds(2.5f);
 
+        GameEventManager.obj.FirstPowerUpPicked = true;
+        
         _animator.SetTrigger("disableFast");
         SetIsPicked();
 
@@ -81,7 +83,6 @@ public class PowerUpRoomCutScene : MonoBehaviour
         GameEventManager.obj.IsPauseAllowed = true;
 
         _cutsceneFinished = true;
-        GameEventManager.obj.FirstPowerUpPicked = true;
 
         yield return null;
     }
