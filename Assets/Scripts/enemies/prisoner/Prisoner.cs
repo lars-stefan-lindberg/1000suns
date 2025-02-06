@@ -157,6 +157,12 @@ public class Prisoner : MonoBehaviour
                 _rigidBody.AddForce(new Vector2(damagePower * forceMultiplier, 0));
             else
                 _rigidBody.AddForce(new Vector2(damagePower * -forceMultiplier, 0));
+
+            //Make sure prisoner is moving in the same direction as it got hit, to create sense of "awareness"
+            if(hitFromTheLeft && IsFacingRight())
+                FlipHorizontal();
+            else if(!hitFromTheLeft && !IsFacingRight())
+                FlipHorizontal();
             horizontalMoveSpeedDuringHit = _rigidBody.velocity;
         }
     }
