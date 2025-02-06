@@ -188,20 +188,34 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         EnablePlayerMovement();
     }
 
-    public void StopInTime() {
-        Freeze();
+    private bool _isTransitioningBetweenLevels = false;
+    public void SetTransitioningBetweenLevels() {
+        //Special case since we want to handle "shoot" action separately. You should still be able to charge, but not release in between levels
+        _playerInput.currentActionMap.FindAction("Movement").Disable();
+        _playerInput.currentActionMap.FindAction("Jump").Disable();
+        _freezePlayer = true;
+        _movementInput = new Vector2(0,0);
+        
+        _isTransitioningBetweenLevels = true;
+        
         _stopMovement = true;
         _stopCollisions = true;
         Player.obj.rigidBody.gravityScale = 0;
         _animator.speed = 0;
     }
 
-    public void StartInTime() {
+    public void EnablePlayerAfterLevelTransition() {
         UnFreeze();
         Player.obj.rigidBody.gravityScale = 1;
         _animator.speed = 1;
         _stopMovement = false;
         _stopCollisions = false;
+
+        _isTransitioningBetweenLevels = false;
+    }
+
+    public bool IsTransitioningBetweenLevels() {
+        return _isTransitioningBetweenLevels;
     }
 
     public enum PlayerDirection {
@@ -241,7 +255,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         }
 
         yield return new WaitForSeconds(0.5f);
-        StartInTime();
+        EnablePlayerAfterLevelTransition();
         yield return null;
     }
 

@@ -56,6 +56,10 @@ public class PlayerPush : MonoBehaviour
                 }
             }
             if(context.canceled) {
+                if(PlayerMovement.obj.IsTransitioningBetweenLevels()) {
+                    ResetBuiltUpPower();
+                    return;
+                }
                 //Need to check that we are building power before we can push. If not the push will be executed on button release.
                 if(_buildingUpPower && _buildUpPowerTime >= minBuildUpPowerTime)
                 {

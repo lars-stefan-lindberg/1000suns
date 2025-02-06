@@ -24,7 +24,7 @@ public class LevelSwitcher : MonoBehaviour
             return;
         if(other.CompareTag("Player")) {
             if(_enablePlayerTransition)
-                PlayerMovement.obj.StopInTime();
+                PlayerMovement.obj.SetTransitioningBetweenLevels();
 
             StartCoroutine(LoadScenesCoroutine());
             StartCoroutine(UnloadScenes());
