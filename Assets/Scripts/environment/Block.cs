@@ -62,6 +62,10 @@ public class Block : MonoBehaviour
             float clipLength = projectile.power / PlayerPush.obj.maxForce;
             if(_slideSoundAudioSource == null || !_slideSoundAudioSource.isPlaying) {
                 _slideSoundAudioSource = SoundFXManager.obj.PlayBlockSliding(transform, clipLength);
+            } else {
+                _slideSoundAudioSource.Stop();
+                _slideSoundAudioSource = null;
+                _slideSoundAudioSource = SoundFXManager.obj.PlayBlockSliding(transform, clipLength);
             }
         } else if(collision.transform.CompareTag("Enemy")) {
             if(HitUnderneath(collision)) {
