@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class SoundFXManager : MonoBehaviour
@@ -82,6 +83,8 @@ public class SoundFXManager : MonoBehaviour
 
     public AudioClip revealSecret;
     public AudioClip collectiblePickup;
+
+    private Dictionary<AudioClip[], int> lastPickedIndices = new();
 
     void Start() {
         obj = this;
@@ -308,14 +311,34 @@ public class SoundFXManager : MonoBehaviour
         return audioSource;
     }
 
-    public void PlayRandomSound(AudioClip[] clip, Transform spawnTransform, float volume)
+    public void PlayRandomSound(AudioClip[] clips, Transform spawnTransform, float volume)
     {
-        int random = Random.Range(0, clip.Length);
+        int random = GetRandomIndex(clips);
 
         AudioSource audioSource = Instantiate(spatiallyAwareSoundFXObject, spawnTransform.position, Quaternion.identity);
-        audioSource.clip = clip[random];
+        audioSource.clip = clips[random];
         audioSource.volume = volume;
         PlaySound(audioSource, audioSource.clip.length);
+    }
+
+    //Used to make sure that we don't play the same sound clip two times in a row
+    private int GetRandomIndex(AudioClip[] clips) {
+        if (!lastPickedIndices.ContainsKey(clips))
+        {
+            lastPickedIndices[clips] = -1;
+        }
+
+        int lastPickedIndex = lastPickedIndices[clips];
+        int newIndex;
+
+        do
+        {
+            newIndex = Random.Range(0, clips.Length);
+        }
+        while (newIndex == lastPickedIndex && clips.Length > 1);
+
+        lastPickedIndices[clips] = newIndex;
+        return newIndex;
     }
 
     public void PlaySound(AudioSource audioSource, float clipLength) {
