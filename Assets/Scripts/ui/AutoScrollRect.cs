@@ -21,6 +21,10 @@ public class AutoScrollRect : MonoBehaviour
 
     private RectTransform m_SelectedRectTransform;
 
+    public void ResetScrollRect() {
+        m_templateScrollRect.normalizedPosition = new Vector2(0, 1);
+    }
+
     void Update()
     {
         UpdateScrollToSelected(m_templateScrollRect, m_ContentRectTransform, m_templateViewportTransform);

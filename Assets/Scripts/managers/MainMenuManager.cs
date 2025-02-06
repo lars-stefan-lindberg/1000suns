@@ -38,6 +38,7 @@ public class MainMenuManager : MonoBehaviour
 
     [SerializeField] private GameObject _optionsMenu;
     [SerializeField] private GameObject _keyboardConfigMenu;
+    [SerializeField] private AutoScrollRect _keyboardConfigAutoScroll;
     [SerializeField] private Button _firstKeyboardMenuButton;
     [SerializeField] private GameObject _controllerConfigMenu;
     [SerializeField] private GameObject _controllerConfigMenuShowConfig;
@@ -192,6 +193,9 @@ public class MainMenuManager : MonoBehaviour
         PlayerPrefs.SetString("rebinds", rebinds);
 
         SoundFXManager.obj.PlayUIBack();
+        EventSystem.current.SetSelectedGameObject(null);
+        _keyboardConfigAutoScroll.ResetScrollRect();
+
         ShowOptionsMenu();
         EventSystem.current.SetSelectedGameObject(_keyboardConfigButton.gameObject);
     }

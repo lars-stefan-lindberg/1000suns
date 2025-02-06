@@ -20,6 +20,7 @@ public class PauseMenuManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _collectibleCountText;
     [SerializeField] private GameObject _pauseMainMenu;
     [SerializeField] private GameObject _keyboardConfigMenu;
+    [SerializeField] private AutoScrollRect _keyboardConfigAutoScroll;
     [SerializeField] private TextMeshProUGUI _keyboardConfigInstructionsConfirmActionKeyText;
     [SerializeField] private Button _quitButton;
     [SerializeField] private Button _firstKeyboardMenuButton;
@@ -170,6 +171,9 @@ public class PauseMenuManager : MonoBehaviour
         PlayerPrefs.SetString("rebinds", rebinds);
 
         SoundFXManager.obj.PlayUIBack();
+        EventSystem.current.SetSelectedGameObject(null);
+        _keyboardConfigAutoScroll.ResetScrollRect();
+
         _keyboardConfigMenu.SetActive(false);
         _pauseMainMenu.SetActive(true);
         EventSystem.current.SetSelectedGameObject(_keyboardConfigMenuButton.gameObject);
