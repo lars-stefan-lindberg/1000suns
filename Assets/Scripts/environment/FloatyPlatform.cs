@@ -186,7 +186,9 @@ public class FloatyPlatform : MonoBehaviour
 
         movePlatform = true;
         float power = force * basePushPower;
-        _rigidBody.velocity = new Vector2(isFacingLeft ? power : -power, 0);
+        //To avoid decreasing the velocity
+        if(power >= _rigidBody.velocity.magnitude)
+            _rigidBody.velocity = new Vector2(isFacingLeft ? power : -power, 0);
     }
 
     private void StartRespawning() {
