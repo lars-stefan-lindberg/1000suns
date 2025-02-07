@@ -14,12 +14,12 @@ public class FadeOutMusicTrigger : MonoBehaviour
     private IEnumerator FadeOutAndStopMusic() {
         float musicVolume = SoundMixerManager.obj.GetMusicVolume();
         StartCoroutine(SoundMixerManager.obj.StartMusicFade(3f, 0.001f));
+        AmbienceManager.obj.PlayCapeRoomAmbience();
+        AmbienceManager.obj.FadeInAmbienceSource2And3(3f);
         while(SoundMixerManager.obj.GetMusicVolume() > 0.001f) {
             yield return null;
         }
         MusicManager.obj.StopPlaying();
         SoundMixerManager.obj.SetMusicVolume(musicVolume);
-        AmbienceManager.obj.PlayCapeRoomAmbience();
-        AmbienceManager.obj.FadeInAmbienceSource2And3(3f);
     }
 }
