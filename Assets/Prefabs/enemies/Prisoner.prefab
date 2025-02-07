@@ -200,7 +200,7 @@ MonoBehaviour:
   prisonerSoulTarget: {fileID: 0}
   groundLayer:
     serializedVersion: 2
-    m_Bits: 136
+    m_Bits: 137
   defaultSpeed: 3
   movementDirection: 0
   gravityAcceleration: 0.5
@@ -236,6 +236,7 @@ MonoBehaviour:
   attackSpeedMultiplier: 2
   isStuck: 0
   offScreen: 0
+  muteDeathSoundFX: 0
   isSpawningPrisoners: 0
   prisonersToSpawn: []
 --- !u!114 &-3361849556270991201
@@ -303,3 +304,4 @@ MonoBehaviour:
   _fadeOutSpeed: 0.74
   _fadeInSpeed: 1
   _fadeOutAlpha: 0
+  _fadeInAlpha: 1

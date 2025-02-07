@@ -167,6 +167,9 @@ public class Prisoner : MonoBehaviour
         }
     }
 
+
+    private float _isStuckCooldownTimer = 0;
+    private readonly float _isStuckCooldownTime = 1.5f;
     void Update()
     {
         if(_killed) {
@@ -177,6 +180,15 @@ public class Prisoner : MonoBehaviour
             return;
         else
             _animator.speed = 1;
+
+
+        //If stuck, give a second or two to recover
+        if(isStuck && _isStuckCooldownTimer < _isStuckCooldownTime) {
+            _isStuckCooldownTimer += Time.deltaTime;
+            return;
+        } else {
+            _isStuckCooldownTimer = 0;
+        }
 
         if(_blockInContact != null) {
             float blockVelocity = _blockInContact.velocity.x;
@@ -224,9 +236,13 @@ public class Prisoner : MonoBehaviour
             
             Vector2 groundLineBehindCastPosition = _collider.transform.position + _collider.transform.right * enemyWidth * groundBehindCheck;
             bool isGroundFloorBehind = Physics2D.Linecast(groundLineBehindCastPosition, groundLineBehindCastPosition + Vector2.down, groundLayer);
+
+            //Check for prisoner in front and behind
             
             if((isWallAhead && isWallBehind) || (!isGroundFloorAhead && !isGroundFloorBehind) && !hasBeenHit) {
                 isStuck = true;
+            } else {
+                isStuck = false;
             }
         } else
             isStuck = false;
