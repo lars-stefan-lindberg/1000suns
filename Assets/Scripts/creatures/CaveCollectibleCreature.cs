@@ -25,7 +25,7 @@ public class CaveCollectibleCreature : MonoBehaviour
     private float _squeezeX = 1.25f;
     private float _squeezeY = 0.65f;
     private float _squeezeTime = 0.08f;
-    private int _numberOfSqueezes = 3;
+    private int _numberOfSqueezes = 2;
 
     void Awake() {
         IsCollected = false;
@@ -78,10 +78,6 @@ public class CaveCollectibleCreature : MonoBehaviour
 
     private IEnumerator PrepareTakeOff(float xSqueeze, float ySqueeze, float seconds)
     {
-        yield return new WaitForSeconds(0.1f);
-        foreach(GameObject tail in _tailParts) {
-            tail.SetActive(false);
-        }
         Vector3 originalSize = Vector3.one;
         Vector3 newSize = new Vector3(xSqueeze, ySqueeze, originalSize.z);
         int squeezeCounter = 0;
@@ -104,12 +100,15 @@ public class CaveCollectibleCreature : MonoBehaviour
         }
 
         _blackHole.SetActive(true);
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.3f);
         
+        foreach(GameObject tail in _tailParts) {
+            tail.SetActive(false);
+        }
         _headSpriteRenderer.enabled = false;
         _blackHole.GetComponent<BlackHole>().Despawn();
         
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.3f);
         _lightSprite2DFadeManager.StartFadeOut();
 
         Destroy(gameObject, 5);
