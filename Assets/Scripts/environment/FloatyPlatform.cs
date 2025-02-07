@@ -43,7 +43,7 @@ public class FloatyPlatform : MonoBehaviour
         _collider = GetComponent<BoxCollider2D>();
         _rigidBody = GetComponent<Rigidbody2D>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
-        _blockingCastLayerMask = LayerMask.GetMask(new[] { "Ground", "Default", "JumpThroughs" });
+        _blockingCastLayerMask = LayerMask.GetMask(new[] { "Ground", "Default", "JumpThroughs", "Enemies" });
         startingVerticalPosition = transform.position.y;
         //_idleVerticalTargetPosition = startingVerticalPosition - idleVerticalDistance;
         _fallingPlatformFlash = GetComponent<FallingPlatformFlash>();
@@ -54,6 +54,7 @@ public class FloatyPlatform : MonoBehaviour
     public float _playerOffset = 0.1f;
     void OnTriggerEnter2D(Collider2D collider)
     {
+        Debug.Log("collision detected");
         if(collider.transform.CompareTag("FloatingPlatform"))
         {
             FloatyPlatform floatyPlatform = collider.GetComponentInParent<FloatyPlatform>();
@@ -68,6 +69,7 @@ public class FloatyPlatform : MonoBehaviour
             _isPlayerCollisionTriggered = true;
         }
         if(collider.transform.CompareTag("Enemy")) {
+            Debug.Log("Collided with prisoner");
             Prisoner prisoner = collider.gameObject.GetComponent<Prisoner>();
             if(prisoner.isGrounded) {
                 bool hitFromRight = collider.transform.position.x > transform.position.x;

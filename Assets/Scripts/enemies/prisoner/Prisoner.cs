@@ -11,7 +11,8 @@ public class Prisoner : MonoBehaviour
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
     private LightSprite2DFadeManager _lightSprite2DFadeManager;
-    public LayerMask groundLayer;
+    public LayerMask groundLayer; //Used to check if grounded
+    public LayerMask collisionLayer; //Raycast for collisions like other prisoners, walls, blocks
 
     public float defaultSpeed = 3;
     private static float _defaultGravity = 1;
@@ -193,12 +194,12 @@ public class Prisoner : MonoBehaviour
         if(_blockInContact != null) {
             float blockVelocity = _blockInContact.velocity.x;
             if(blockVelocity > 0) {
-                bool isWallToTheRight = Physics2D.Raycast(_collider.transform.position, Vector2.right, frontCheck, groundLayer);
+                bool isWallToTheRight = Physics2D.Raycast(_collider.transform.position, Vector2.right, frontCheck, collisionLayer);
                 if(isWallToTheRight) {
                     _blockInContact.velocity = new Vector2(0,0);
                 }
             } else if(blockVelocity < 0) {
-                bool isWallToTheLeft = Physics2D.Raycast(_collider.transform.position, Vector2.left, frontCheck, groundLayer);
+                bool isWallToTheLeft = Physics2D.Raycast(_collider.transform.position, Vector2.left, frontCheck, collisionLayer);
                 if(isWallToTheLeft) {
                     _blockInContact.velocity = new Vector2(0,0);
                 }
@@ -228,8 +229,8 @@ public class Prisoner : MonoBehaviour
 
         //Check if space to move is too small. If so go into idle state
         if(isGrounded) {
-            bool isWallAhead = Physics2D.Raycast(_collider.transform.position, new Vector3(-_collider.transform.right.x, 0, 0), frontCheck, groundLayer);
-            bool isWallBehind = Physics2D.Raycast(_collider.transform.position, new Vector3(_collider.transform.right.x, 0, 0), behindCheck, groundLayer);
+            bool isWallAhead = Physics2D.Raycast(_collider.transform.position, new Vector3(-_collider.transform.right.x, 0, 0), frontCheck, collisionLayer);
+            bool isWallBehind = Physics2D.Raycast(_collider.transform.position, new Vector3(_collider.transform.right.x, 0, 0), behindCheck, collisionLayer);
             
             Vector2 groundLineAheadCastPosition = _collider.transform.position - _collider.transform.right * enemyWidth * groundAheadCheck;
             isGroundFloorAhead = Physics2D.Linecast(groundLineAheadCastPosition, groundLineAheadCastPosition + Vector2.down, groundLayer);
@@ -254,7 +255,7 @@ public class Prisoner : MonoBehaviour
             isGroundFloorAhead = Physics2D.Linecast(groundLineAheadCastPosition, groundLineAheadCastPosition + Vector2.down, groundLayer);
 
             //Wall check
-            bool isWallAhead = Physics2D.Raycast(_collider.transform.position, new Vector3(-_collider.transform.right.x, 0, 0), frontCheck, groundLayer);
+            bool isWallAhead = Physics2D.Raycast(_collider.transform.position, new Vector3(-_collider.transform.right.x, 0, 0), frontCheck, collisionLayer);
 
             //Collision with another enemy, but only if not already hit
             _otherHit = Physics2D.Raycast(_collider.transform.position, new Vector3(-_collider.transform.right.x, 0, 0), frontCheck);
