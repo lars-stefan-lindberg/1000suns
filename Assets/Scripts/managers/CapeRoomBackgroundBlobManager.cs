@@ -80,7 +80,6 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
             yield return null;
         }
 
-        GameEventManager.obj.IsPauseAllowed = true;
         PlayerMovement.obj.Freeze();
         Time.timeScale = 0;
         _tutorialCanvas.SetActive(true);
@@ -96,6 +95,8 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
         PlayerMovement.obj.UnFreeze();
 
         MusicManager.obj.PlayCaveSong();
+
+        GameEventManager.obj.IsPauseAllowed = true;
     }
 
     void OnDestroy() {

@@ -235,6 +235,11 @@ public class PauseMenuManager : MonoBehaviour
         }
     }
 
+    public void RetryRoomHandler() {
+        ResumeGame();
+        Reaper.obj.KillPlayerGeneric();
+    }
+
     private void ResetButtonColor() {
         //Reset selected button color
         GameObject currentlySelected = EventSystem.current.currentSelectedGameObject;
