@@ -31,6 +31,7 @@ public class Prisoner : MonoBehaviour
     public float groundBehindCheck = 1.96f;
     public float isGroundedCheckOffset = 0.55f; //TODO: Get dynamic value based on enemy height
     public float frontCheck = 0.51f;
+    public float frontCheckHitBlock = 1f;
     public float behindCheck = 1.4f;
     private RaycastHit2D _otherHit; //Enemy or boulder
 
@@ -69,7 +70,7 @@ public class Prisoner : MonoBehaviour
     public bool offScreen = false;
     public bool muteDeathSoundFX = false;
     private Rigidbody2D _blockInContact;
-    private float _edgeRecoveryCoolDownTime = 2;
+    private float _edgeRecoveryCoolDownTime = 0.1f;
     private float _edgeRecoveryCoolDownTimer = 0;
 
     private void Awake()
@@ -191,15 +192,17 @@ public class Prisoner : MonoBehaviour
             _isStuckCooldownTimer = 0;
         }
 
+        //To check if we should stop a block when cornered to a wall
         if(_blockInContact != null) {
             float blockVelocity = _blockInContact.velocity.x;
             if(blockVelocity > 0) {
-                bool isWallToTheRight = Physics2D.Raycast(_collider.transform.position, Vector2.right, frontCheck, collisionLayer);
+                bool isWallToTheRight = Physics2D.Raycast(_collider.transform.position, Vector2.right, frontCheckHitBlock, collisionLayer);
                 if(isWallToTheRight) {
                     _blockInContact.velocity = new Vector2(0,0);
                 }
             } else if(blockVelocity < 0) {
-                bool isWallToTheLeft = Physics2D.Raycast(_collider.transform.position, Vector2.left, frontCheck, collisionLayer);
+                //Debug.DrawLine(_collider.transform.position, new Vector2(_collider.transform.position.x - frontCheckHitBlock, _collider.transform.position.y), Color.yellow);
+                bool isWallToTheLeft = Physics2D.Raycast(_collider.transform.position, Vector2.left, frontCheckHitBlock, collisionLayer);
                 if(isWallToTheLeft) {
                     _blockInContact.velocity = new Vector2(0,0);
                 }
@@ -310,7 +313,7 @@ public class Prisoner : MonoBehaviour
         }
 
         if(!isStatic && !hasBeenHit && !isRecovering && isGrounded && !isStuck) {
-            Debug.DrawRay(transform.position, (IsFacingRight() ? Vector3.right : Vector3.left) * playerCastDistance, Color.red);
+            //Debug.DrawRay(transform.position, (IsFacingRight() ? Vector3.right : Vector3.left) * playerCastDistance, Color.red);
             RaycastHit2D hit = Physics2D.Raycast(transform.position, IsFacingRight() ? Vector3.right : Vector3.left, playerCastDistance);
 
             if(hit.transform != null) {
@@ -329,7 +332,7 @@ public class Prisoner : MonoBehaviour
             _edgeRecoveryCoolDownTimer += Time.deltaTime;
             if(_edgeRecoveryCoolDownTimer >= _edgeRecoveryCoolDownTime) {
                 _edgeRecoveryCoolDownTimer = 0;
-                _rigidBody.velocity = new Vector2(7, 0);
+                _rigidBody.velocity = new Vector2(5, 0);
             }
         }
 

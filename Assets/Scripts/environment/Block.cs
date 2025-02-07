@@ -22,6 +22,8 @@ public class Block : MonoBehaviour
 
     private float _grounderDistance = 0.1f;
 
+    private Prisoner _prisonerInContact;
+
     private void Awake()
     {
         _rigidBody = GetComponent<Rigidbody2D>();
@@ -39,8 +41,10 @@ public class Block : MonoBehaviour
                 _rigidBody.bodyType = RigidbodyType2D.Static;
 
             if(HitUnderneath(collision)) {
-                if(PlayerMovement.obj.isGrounded)
+                if(PlayerMovement.obj.isGrounded) {
+                    _rigidBody.bodyType = RigidbodyType2D.Static;
                     Reaper.obj.KillPlayerGeneric();
+                }
                 else
                     isPlayerBeneath = true;
             }
@@ -50,6 +54,14 @@ public class Block : MonoBehaviour
             _rigidBody.bodyType = RigidbodyType2D.Dynamic;
             Projectile projectile = collision.gameObject.GetComponent<Projectile>();
             bool hitFromTheLeft = Player.obj.transform.position.x < _rigidBody.position.x;
+
+            //Check for prisoner is stuck to a wall. We assume that the prisoner is on the correct side of the block since the projectile is hitting
+            if(_prisonerInContact != null) {
+                if(_prisonerInContact.isStuck) {
+                    return;
+                }
+            }
+
             float power = basePushPower * projectile.power;
             _rigidBody.velocity = new Vector2(hitFromTheLeft ? power : -power, 0);
             bool somethingToTheRight = Physics2D.Raycast(_collider.bounds.center, Vector2.right, _wallCheckCastDistance, groundLayer);
@@ -68,6 +80,7 @@ public class Block : MonoBehaviour
                 _slideSoundAudioSource = SoundFXManager.obj.PlayBlockSliding(transform, clipLength);
             }
         } else if(collision.transform.CompareTag("Enemy")) {
+            _prisonerInContact = collision.GetComponent<Prisoner>();
             if(HitUnderneath(collision)) {
                 Prisoner prisoner = collision.GetComponent<Prisoner>();
                 if(prisoner.isGrounded) {
@@ -85,6 +98,8 @@ public class Block : MonoBehaviour
             _rigidBody.bodyType = RigidbodyType2D.Dynamic;
             isPlayerBeneath = false;
         }
+        if(collision.transform.CompareTag("Enemy"))
+            _prisonerInContact = null;
     }
 
     public float deceleration = 1f;
