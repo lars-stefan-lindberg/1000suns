@@ -137,9 +137,12 @@ public class Prisoner : MonoBehaviour
             }
         }
         if (collision.transform.CompareTag("Player")) {
-            Reaper.obj.KillPlayerShadow();
+            //Make sure that the prisoner can't be force pushed after player is killed
             isStatic = true;
+            isImmuneToForcePush = true;
             _rigidBody.velocity = new Vector2(0,0);
+
+            Reaper.obj.KillPlayerShadow();
         }
     }
 
