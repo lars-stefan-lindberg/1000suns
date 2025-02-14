@@ -335,7 +335,21 @@ public class Prisoner : MonoBehaviour
             _edgeRecoveryCoolDownTimer += Time.deltaTime;
             if(_edgeRecoveryCoolDownTimer >= _edgeRecoveryCoolDownTime) {
                 _edgeRecoveryCoolDownTimer = 0;
-                _rigidBody.velocity = new Vector2(5, 0);
+
+                //Check if ground to right or left, and apply force accordingly
+                Vector2 groundLineAheadCastPosition = _collider.transform.position - _collider.transform.right * enemyWidth * groundAheadCheck;
+                isGroundFloorAhead = Physics2D.Linecast(groundLineAheadCastPosition, groundLineAheadCastPosition + Vector2.down, groundLayer);
+                if(IsFacingRight()) {
+                    if(!isGroundFloorAhead) {
+                        _rigidBody.velocity = new Vector2(5, 0);
+                    } else
+                        _rigidBody.velocity = new Vector2(-5, 0);
+                } else {
+                    if(!isGroundFloorAhead) {
+                        _rigidBody.velocity = new Vector2(-5, 0);
+                    } else
+                        _rigidBody.velocity = new Vector2(5, 0);
+                }
             }
         }
 
