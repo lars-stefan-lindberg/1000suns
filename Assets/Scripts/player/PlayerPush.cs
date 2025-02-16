@@ -53,6 +53,7 @@ public class PlayerPush : MonoBehaviour
                     _buildUpPower = defaultPower;
                     _buildingUpPower = true;
                     _buildUpPowerTime = 0;
+                    Player.obj.StartChargeFlash();
                 }
             }
             if(context.canceled) {
@@ -111,6 +112,7 @@ public class PlayerPush : MonoBehaviour
         _buildUpPower = defaultPower;
         _buildUpPowerTime = 0;
         pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().Cancel();
+        Player.obj.EndChargeFlash();
     }
 
     private void FixedUpdate()

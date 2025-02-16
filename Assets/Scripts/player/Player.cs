@@ -17,6 +17,7 @@ public class Player : MonoBehaviour
     private Animator _animator;
     private LayerMask _groundLayerMasks;
     private PlayerFlash _playerFlash;
+    private PlayerChargeFlash _playerChargeFlash;
 
     void Awake()
     {
@@ -25,6 +26,7 @@ public class Player : MonoBehaviour
         _collider = GetComponent<BoxCollider2D>();
         _groundLayerMasks = LayerMask.GetMask("Ground");
         _playerFlash = GetComponentInChildren<PlayerFlash>();
+        _playerChargeFlash = GetComponentInChildren<PlayerChargeFlash>();
 
         SetHasCape(true);
         CanFallDash = true;
@@ -99,6 +101,14 @@ public class Player : MonoBehaviour
     }
     public void FlashFor(float duration) {
         _playerFlash.FlashFor(duration, 0.05f);
+    }
+
+    //Not sure about this flashing effect when charging, so leaving it out for now
+    public void StartChargeFlash() {
+        //_playerChargeFlash.StartFlashing();
+    }
+    public void EndChargeFlash() {
+       // _playerChargeFlash.EndFlashing();
     }
 
     public void SetCaveStartingCoordinates() {
