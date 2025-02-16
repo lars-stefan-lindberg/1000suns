@@ -9,9 +9,9 @@ using UnityEngine.SceneManagement;
 public class PauseMenuManager : MonoBehaviour
 {
     public static PauseMenuManager obj;
+    public bool isNavigatingToMenu = true;
     [SerializeField] private GameObject _pauseMenu;
     [SerializeField] private GameObject _firstSelectedPauseMenuItem;
-    [SerializeField] private GameObject[] _menuObjects;
     [SerializeField] private SceneField _titleScreen;
     [SerializeField] private GameObject _persistentGameplay;
     [SerializeField] private Slider _musicSlider;
@@ -38,14 +38,12 @@ public class PauseMenuManager : MonoBehaviour
     public InputActionReference confirmActionReference;
     public InputActionReference resetButtonActionReference;
     
-    private Color _buttonColor;
     private string confirmActionKeyboardDisplayString;
 
     private bool _isPaused = false;
 
     void Awake() {
         obj = this;
-        _buttonColor = _menuObjects[0].GetComponentInChildren<TextMeshProUGUI>().color;
 
         var rebinds = PlayerPrefs.GetString("rebinds");
         if (!string.IsNullOrEmpty(rebinds))
@@ -85,11 +83,6 @@ public class PauseMenuManager : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(null);
         _pauseMenu.SetActive(false);
             
-        //Reset color of main pause menu objects
-        for (int i = 0; i < _menuObjects.Length; i++)
-        {
-            _menuObjects[i].GetComponentInChildren<TextMeshProUGUI>().color = _buttonColor;
-        }
         Time.timeScale = 1f;
         if(DialogueController.obj != null && DialogueController.obj.IsDisplayed()) {
             DialogueController.obj.FocusDialogue();
@@ -99,6 +92,7 @@ public class PauseMenuManager : MonoBehaviour
             PlayerMovement.obj.EnablePlayerMovement();
         }
         _isPaused = false;
+        isNavigatingToMenu = true;
     }
 
     public void QuitButtonHandler() {
@@ -152,8 +146,6 @@ public class PauseMenuManager : MonoBehaviour
     public void ShowKeyboardConfigMenu() {
         SoundFXManager.obj.PlayUIConfirm();
 
-        ResetButtonColor();
-
         _pauseMainMenu.SetActive(false);
 
         _keyboardConfigMenu.SetActive(true);
@@ -181,8 +173,6 @@ public class PauseMenuManager : MonoBehaviour
 
     public void ShowControllerConfigMenu() {
         SoundFXManager.obj.PlayUIConfirm();
-
-        ResetButtonColor();
 
         _pauseMainMenu.SetActive(false);
 
@@ -215,15 +205,13 @@ public class PauseMenuManager : MonoBehaviour
         _controllerConfigMenuShowAttachController.SetActive(false);
         _controllerConfigMenuShowConfig.SetActive(false);
         _pauseMainMenu.SetActive(true);
-        EventSystem.current.SetSelectedGameObject(_controllerConfigMenuButton.gameObject);
 
-        //Reset color of back button from animation
-        TextMeshProUGUI textMeshPro = _controllerConfigMenuBackButton.GetComponentInChildren<TextMeshProUGUI>();
-        textMeshPro.color = _buttonColor;
+        EventSystem.current.SetSelectedGameObject(null); //Make sure that the event system "catches up", and can select the config menu button on the next line
+        EventSystem.current.SetSelectedGameObject(_controllerConfigMenuButton.gameObject);
     }
 
     public void OnNavigateBack() {
-        ResetButtonColor();
+        isNavigatingToMenu = true;
 
         if(_pauseMainMenu.activeSelf) {
             if(_isPaused)
@@ -238,17 +226,6 @@ public class PauseMenuManager : MonoBehaviour
     public void RetryRoomHandler() {
         ResumeGame();
         Reaper.obj.KillPlayerGeneric();
-    }
-
-    private void ResetButtonColor() {
-        //Reset selected button color
-        GameObject currentlySelected = EventSystem.current.currentSelectedGameObject;
-        TextMeshProUGUI[] textMeshProUGUIs = currentlySelected.GetComponentsInChildren<TextMeshProUGUI>();
-        //Regular button
-        if(textMeshProUGUIs.Length == 1)
-            textMeshProUGUIs[0].color = _buttonColor;
-        else
-            textMeshProUGUIs[1].color = _buttonColor; //Rebind element
     }
 
     void OnDestroy() {

@@ -622,7 +622,6 @@ GameObject:
   - component: {fileID: 3915052108957583034}
   - component: {fileID: 1580362862746748689}
   - component: {fileID: 1445450213694028578}
-  - component: {fileID: 9127803382185700827}
   - component: {fileID: 8071196482605114617}
   m_Layer: 5
   m_Name: TriggerRebindButton
@@ -710,7 +709,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 3
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -747,39 +746,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 8071196482605114617}
-        m_TargetAssemblyTypeName: UIElement, Assembly-CSharp
-        m_MethodName: OnClick
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!95 &9127803382185700827
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6284705656435709138}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: fed5c56608ede43fa8eb6f9b7a425e13, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &8071196482605114617
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -792,8 +758,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a0b58d83d16b4ec0a574429192bffde, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _topMenuOption: 1
-  _bottomMenuOption: 0
+  changeColor: {r: 1, g: 1, b: 1, a: 1}
+  _isBouncy: 0
 --- !u!1 &8116783207897557959
 GameObject:
   m_ObjectHideFlags: 0

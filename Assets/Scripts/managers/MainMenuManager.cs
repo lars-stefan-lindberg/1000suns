@@ -12,6 +12,7 @@ using UnityEngine.Events;
 public class MainMenuManager : MonoBehaviour
 {
     public static MainMenuManager obj;
+    public bool isNavigatingToMenu = true;
     [SerializeField] private SceneField _persistentGameplay;
     [SerializeField] private SceneField _caveRoom1;
     [SerializeField] private SceneField _titleScreen;
@@ -153,10 +154,11 @@ public class MainMenuManager : MonoBehaviour
     }
 
     public void OnOptionsButtonClicked() {
+        isNavigatingToMenu = true;
         SoundFXManager.obj.PlayUIConfirm();
         
-        ResetButtonColor();
         ShowOptionsMenu();
+        EventSystem.current.SetSelectedGameObject(_musicSliderGameObject);
     }
 
     public void ShowOptionsMenu() {
@@ -168,13 +170,10 @@ public class MainMenuManager : MonoBehaviour
         _keyboardConfigMenu.SetActive(false);
         HideControllerConfigMenu();
         _optionsMenu.SetActive(true);
-        EventSystem.current.SetSelectedGameObject(_musicSliderGameObject);
     }
 
     public void ShowKeyboardConfigMenu() {
         SoundFXManager.obj.PlayUIConfirm();
-
-        ResetButtonColor();
 
         _optionsMenu.SetActive(false);
 
@@ -224,8 +223,7 @@ public class MainMenuManager : MonoBehaviour
     public void ShowControllerConfigMenu() {
         SoundFXManager.obj.PlayUIConfirm();
 
-        ResetButtonColor();
-
+        EventSystem.current.SetSelectedGameObject(null); //Make sure we unselect the controller config menu option. If we show attach controller screen, no other UI element will be selected, and going back won't select the controller config menu option
         _optionsMenu.SetActive(false);
         var rebinds = PlayerPrefs.GetString("rebinds");
             if (!string.IsNullOrEmpty(rebinds))
@@ -259,6 +257,7 @@ public class MainMenuManager : MonoBehaviour
 
         SoundFXManager.obj.PlayUIBack();
         ShowOptionsMenu();
+
         EventSystem.current.SetSelectedGameObject(_controllerConfigButton.gameObject);
     }
 
@@ -283,7 +282,7 @@ public class MainMenuManager : MonoBehaviour
     }
 
     public void OnNavigateBack() {
-        ResetButtonColor();
+        isNavigatingToMenu = true;
 
         if(_optionsMenu.activeSelf) {
             ShowTitleMenu();
@@ -292,17 +291,6 @@ public class MainMenuManager : MonoBehaviour
         } else if(_controllerConfigMenu.activeSelf) {
             LeaveControllerConfigMenu();
         }
-    }
-
-    private void ResetButtonColor() {
-        //Reset selected button color
-        GameObject currentlySelected = EventSystem.current.currentSelectedGameObject;
-        TextMeshProUGUI[] textMeshProUGUIs = currentlySelected.GetComponentsInChildren<TextMeshProUGUI>();
-        //Regular button
-        if(textMeshProUGUIs.Length == 1)
-            textMeshProUGUIs[0].color = GetMainButtonTextColor();
-        else
-            textMeshProUGUIs[1].color = GetMainButtonTextColor(); //Rebind element
     }
 
     public void HandleInputDeviceChanged(InputDeviceListener.Device device) {
