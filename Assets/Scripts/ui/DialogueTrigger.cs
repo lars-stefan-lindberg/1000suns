@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class DialogueTrigger : MonoBehaviour
@@ -12,9 +13,14 @@ public class DialogueTrigger : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other) {
         if(other.CompareTag("Player")) {
-            _dialogueController.ShowDialogue(_dialogueContent, true);
-            PlayerMovement.obj.Freeze();
             _collider.enabled = false;
+            StartCoroutine(SetupDialogue());
         }
+    }
+
+    private IEnumerator SetupDialogue() {
+        PlayerMovement.obj.Freeze();
+        yield return new WaitForSeconds(0.5f);
+        _dialogueController.ShowDialogue(_dialogueContent, true);
     }
 }

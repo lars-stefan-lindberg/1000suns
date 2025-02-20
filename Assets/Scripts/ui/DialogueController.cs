@@ -1,10 +1,8 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using Febucci;
 using Febucci.UI;
+using DG.Tweening;
 
 public class DialogueController : MonoBehaviour
 {
@@ -16,23 +14,17 @@ public class DialogueController : MonoBehaviour
     [SerializeField] private GameObject _leftPortrait;
     [SerializeField] private GameObject _rightPortrait;
     [SerializeField] private RectTransform _textBox;
+    [SerializeField] private RectTransform _background;
     private Queue<string> _paragraphs = new();
-    private Animator _animator;
 
     private bool _conversationEnded;
     private string p;
-    private Coroutine _typeDialogueCoroutine;
     private bool _isTyping;
 
     private bool _isDisplayed = false;
 
-    private const string HTML_ALPHA = "<color=#00000000>";
-    private const float MAX_TYPE_TIME = 0.1f;
-
     void Awake() {
         obj = this;
-        EventSystem.current.SetSelectedGameObject(_continueButton);
-        _animator = GetComponent<Animator>();
         _typeWriter.onTextShowed.AddListener(() => {
             _isTyping = false;
             _continueIcon.SetActive(true);
@@ -43,7 +35,7 @@ public class DialogueController : MonoBehaviour
         });
     }
 
-    public async void ShowDialogue(DialogueContent dialogueContent, bool leftMode) {
+    public void ShowDialogue(DialogueContent dialogueContent, bool leftMode) {
         if(leftMode) {
             _leftPortrait.SetActive(true);
             _rightPortrait.SetActive(false);
@@ -57,24 +49,12 @@ public class DialogueController : MonoBehaviour
         }
         SoundFXManager.obj.PlayDialogueOpen();
         InitializeConversation(dialogueContent);
-        await IsDialogDisplayed();
-        DisplayNextParagraph();
-    }
-
-    async Task IsDialogDisplayed() {
-        while(!_isDisplayed) {
-            await Task.Delay(100);
-        }
-    }
-
-    async Task IsDialogHidden() {
-        while(_isDisplayed) {
-            await Task.Delay(100);
-        }
-    }
-
-    public void HideDialogue() {
-        EndConversation();
+        _background.DOLocalRotate(new Vector3(0f, 0f, 0f), 1, RotateMode.FastBeyond360)
+              .SetEase(Ease.Linear).OnComplete(() => {
+                    _isDisplayed = true;
+                    DisplayNextParagraph();
+                    EventSystem.current.SetSelectedGameObject(_continueButton);
+                });
     }
 
     public void DisplayNextParagraph() {
@@ -88,7 +68,6 @@ public class DialogueController : MonoBehaviour
         if(!_isTyping) {
             p = _paragraphs.Dequeue();
             _typeWriter.ShowText(p);
-            //_typeDialogueCoroutine = StartCoroutine(TypeDialogueText(p));
         } else {
             FinishParagraphEarly();
         }
@@ -98,64 +77,30 @@ public class DialogueController : MonoBehaviour
         }
     }
 
-    // private IEnumerator TypeDialogueText(string p) {
-    //     _isTyping = true;
-    //     _continueIcon.SetActive(false);
-
-    //     _dialogueText.text = "";
-    //     string originalText = p;
-    //     string displayedText;
-    //     int alphaIndex = 0;
-    //     foreach(char c in p.ToCharArray()) {
-    //         alphaIndex++;
-    //         _dialogueText.text = originalText;
-
-    //         displayedText = _dialogueText.text.Insert(alphaIndex, HTML_ALPHA);
-    //         _dialogueText.text = displayedText;
-
-    //         yield return new WaitForSeconds(MAX_TYPE_TIME / _typeSpeed);
-    //     }
-    //     _isTyping = false;
-    //     _continueIcon.SetActive(true);
-    // }
-
     private void InitializeConversation(DialogueContent dialogueContent) {
-        if(!gameObject.activeSelf) {
-            gameObject.SetActive(true);
-        }
-
         for(int i = 0; i < dialogueContent.paragraphs.Length; ++i) {
             _paragraphs.Enqueue(dialogueContent.paragraphs[i]);
         }
     }
 
-    private async void EndConversation() {
+    private void EndConversation() {
         _paragraphs.Clear();
         _conversationEnded = false;
         SoundFXManager.obj.PlayDialogueClose();
-        _animator.SetTrigger("hide");
-        await IsDialogHidden();
-
-        if(gameObject.activeSelf) {
-            gameObject.SetActive(false);
-        }
-        PlayerMovement.obj.UnFreeze();
+        _background.DOLocalRotate(new Vector3(90f, 0f, 0f), 1, RotateMode.FastBeyond360)
+              .SetEase(Ease.Linear).OnComplete(() => {
+                _isDisplayed = false;
+                if(gameObject.activeSelf) {
+                    gameObject.SetActive(false);
+                }
+                PlayerMovement.obj.UnFreeze();
+              });
     }
 
     private void FinishParagraphEarly() {
-        //StopCoroutine(_typeDialogueCoroutine);
-        //_dialogueText.text = p;
         _typeWriter.SkipTypewriter();
         _isTyping = false;
         _continueIcon.SetActive(true);
-    }
-
-    public void SetDialogDisplayed() {
-        _isDisplayed = true;
-    }
-
-    public void SetDialogHidden() {
-        _isDisplayed = false;
     }
 
     public bool IsDisplayed() {
