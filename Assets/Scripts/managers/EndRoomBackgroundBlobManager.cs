@@ -28,6 +28,7 @@ public class EndRoomBackgroundBlobManager : MonoBehaviour
         if(_startCutscene) {
             _startCutscene = false;
             GameEventManager.obj.IsPauseAllowed = false;
+            PlayerStatsManager.obj.PauseTimer();
 
             AmbienceManager.obj.FadeOutAmbienceSource2And3(1f);
 

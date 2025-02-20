@@ -17,6 +17,7 @@ public class Reaper : MonoBehaviour
     public void KillPlayerGeneric() {
         if(!playerKilled){
             playerKilled = true;
+            PlayerStatsManager.obj.numberOfDeaths += 1;
             PlayerMovement.obj.Freeze(genericDeathAnimationTime);
             SoundFXManager.obj.PlayPlayerGenericDeath(Player.obj.transform);
             Player.obj.PlayGenericDeathAnimation();
@@ -27,6 +28,7 @@ public class Reaper : MonoBehaviour
     public void KillPlayerShadow() {
         if(!playerKilled){
             playerKilled = true;
+            PlayerStatsManager.obj.numberOfDeaths += 1;
             PlayerMovement.obj.Freeze(shadowDeathAnimationTime);
             SoundFXManager.obj.PlayPlayerShadowDeath(Player.obj.transform);
             Player.obj.PlayShadowDeathAnimation();

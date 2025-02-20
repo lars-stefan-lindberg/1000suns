@@ -62,6 +62,7 @@ public class PauseMenuManager : MonoBehaviour
             } else {
                 SoundFXManager.obj.PlayUIBack();
                 PlayerMovement.obj.DisablePlayerMovement();
+                PlayerStatsManager.obj.PauseTimer();
 
                 _musicSlider.value = SoundMixerManager.obj.GetMusicVolume();
                 _soundFXSlider.value = SoundMixerManager.obj.GetSoundFXVolume();
@@ -93,6 +94,8 @@ public class PauseMenuManager : MonoBehaviour
         }
         _isPaused = false;
         isNavigatingToMenu = true;
+
+        PlayerStatsManager.obj.ResumeTimer();
     }
 
     public void QuitButtonHandler() {

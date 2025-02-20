@@ -7,6 +7,8 @@ using UnityEngine.UI;
 public class CreditsScreen : MonoBehaviour
 {
     [SerializeField] private GameObject _collectibleCountLabel;
+    [SerializeField] private GameObject _deathCountLabel;
+    [SerializeField] private GameObject _timeCountLabel;
     [SerializeField] private TextMeshProUGUI _scrollKeyboardText;
     [SerializeField] private Image _scrollGamepadIcon;
     [SerializeField] private TextMeshProUGUI _scrollText;
@@ -18,6 +20,12 @@ public class CreditsScreen : MonoBehaviour
 
         TextMeshProUGUI collectiblesText = _collectibleCountLabel.GetComponent<TextMeshProUGUI>();
         collectiblesText.text = CollectibleManager.obj.GetNumberOfCollectiblesPicked() + " out of " + CollectibleManager.NUMBER_OF_PRISONER_COLLECTIBLES;
+
+        TextMeshProUGUI deathCountText = _deathCountLabel.GetComponent<TextMeshProUGUI>();
+        deathCountText.text = PlayerStatsManager.obj.numberOfDeaths.ToString();
+
+        TextMeshProUGUI timeCountText = _timeCountLabel.GetComponent<TextMeshProUGUI>();
+        timeCountText.text = PlayerStatsManager.obj.GetTimeDisplayString();
 
         InputDeviceListener.OnInputDeviceStream += HandleInputDeviceChanged;
         HandleInputDeviceChanged(InputDeviceListener.obj.GetCurrentInputDevice());

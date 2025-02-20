@@ -15,6 +15,8 @@ public class FirstRoomLoader : MonoBehaviour
             StartCoroutine(DelayedEnablePlayerMovement());
 
             GameEventManager.obj.CaveLevelStarted = true;
+
+            PlayerStatsManager.obj.ResumeTimer();
         }
     }
 
