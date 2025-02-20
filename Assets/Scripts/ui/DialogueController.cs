@@ -13,6 +13,9 @@ public class DialogueController : MonoBehaviour
     [SerializeField] private float _typeSpeed = 10;
     [SerializeField] private GameObject _continueButton;
     [SerializeField] private GameObject _continueIcon;
+    [SerializeField] private GameObject _leftPortrait;
+    [SerializeField] private GameObject _rightPortrait;
+    [SerializeField] private RectTransform _textBox;
     private Queue<string> _paragraphs = new();
     private Animator _animator;
 
@@ -40,7 +43,18 @@ public class DialogueController : MonoBehaviour
         });
     }
 
-    public async void ShowDialogue(DialogueContent dialogueContent) {
+    public async void ShowDialogue(DialogueContent dialogueContent, bool leftMode) {
+        if(leftMode) {
+            _leftPortrait.SetActive(true);
+            _rightPortrait.SetActive(false);
+            _textBox.offsetMin = new Vector2(0, 0);
+            _textBox.offsetMax = new Vector2(0, 0);
+        } else {
+            _leftPortrait.SetActive(false);
+            _rightPortrait.SetActive(true);
+            _textBox.offsetMin = new Vector2(-287, 0); //left, bottom
+            _textBox.offsetMax = new Vector2(287, 0); //right, top
+        }
         SoundFXManager.obj.PlayDialogueOpen();
         InitializeConversation(dialogueContent);
         await IsDialogDisplayed();

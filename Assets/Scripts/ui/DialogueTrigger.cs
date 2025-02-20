@@ -12,7 +12,7 @@ public class DialogueTrigger : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other) {
         if(other.CompareTag("Player")) {
-            _dialogueController.ShowDialogue(_dialogueContent);
+            _dialogueController.ShowDialogue(_dialogueContent, true);
             PlayerMovement.obj.Freeze();
             _collider.enabled = false;
         }
