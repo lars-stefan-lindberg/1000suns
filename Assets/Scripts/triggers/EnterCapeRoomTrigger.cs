@@ -41,7 +41,7 @@ public class EnterCapeRoomTrigger : MonoBehaviour
 
         _cape.GetComponent<Cape>().StopHover();
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2.5f);
 
         //Fade in beam of light
         SoundFXManager.obj.PlayCapeIntroduction(_cape.transform);
@@ -75,7 +75,7 @@ public class EnterCapeRoomTrigger : MonoBehaviour
         _defaultCamera.enabled = true;
         zoomedCameraVcam.enabled = false;
 
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(2);
 
         PlayerMovement.obj.UnFreeze();
         GameEventManager.obj.IsPauseAllowed = true;
