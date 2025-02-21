@@ -9,10 +9,6 @@ public class DialogueTrigger : MonoBehaviour
 
     void Awake() {
         _collider = GetComponent<BoxCollider2D>();
-        if (DialogueController.obj != null)
-        {
-            DialogueController.obj.OnDialogueEnd += OnDialogueCompleted;
-        }
     }
 
     private void OnDestroy()
@@ -26,6 +22,10 @@ public class DialogueTrigger : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other) {
         if(other.CompareTag("Player")) {
             _collider.enabled = false;
+            if (DialogueController.obj != null)
+            {
+                DialogueController.obj.OnDialogueEnd += OnDialogueCompleted;
+            }
             StartCoroutine(SetupDialogue());
         }
     }
