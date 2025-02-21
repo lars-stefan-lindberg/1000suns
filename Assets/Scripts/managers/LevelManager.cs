@@ -12,6 +12,9 @@ public class LevelManager : MonoBehaviour
 
     private Collider2D _playerSpawningCollider;
 
+    private Dictionary<string, bool> levelCompletionMap = new Dictionary<string, bool>();
+
+
     void Awake() {
         obj = this;
     }
@@ -34,7 +37,13 @@ public class LevelManager : MonoBehaviour
         if(mode == LoadSceneMode.Single) {
             if(scene.name != _titleScreen.SceneName) {
                 GameObject[] sceneGameObjects = scene.GetRootGameObjects();
-                GameObject playerSpawnPoint = sceneGameObjects.First(gameObject => gameObject.CompareTag("PlayerSpawnPoint"));
+
+                GameObject playerSpawnPoint;
+                if(IsLevelCompleted(scene.name)) {
+                    playerSpawnPoint = sceneGameObjects.First(gameObject => gameObject.CompareTag("AlternatePlayerSpawnPoint"));
+                } else {
+                    playerSpawnPoint = sceneGameObjects.First(gameObject => gameObject.CompareTag("PlayerSpawnPoint"));
+                }
                 _playerSpawningCollider = playerSpawnPoint.GetComponent<Collider2D>();
                 
                 //If we have multiple cameras in room, activate the first/default one when loading the room. This will also
@@ -77,5 +86,35 @@ public class LevelManager : MonoBehaviour
                 PlayerMovement.obj.FlipPlayer();
             else if(!isLeftSideOfScreen && !PlayerMovement.obj.isFacingLeft())
                 PlayerMovement.obj.FlipPlayer();
+    }
+
+    private bool IsLevelCompleted(string levelId)
+    {
+        if (levelCompletionMap.TryGetValue(levelId, out bool isCompleted))
+        {
+            return isCompleted;
+        }
+        else
+        {
+            Debug.LogWarning($"Level {levelId} not found!");
+            return false;
+        }
+    }
+
+    public void SetLevelCompleted(string levelId)
+    {
+        if (levelCompletionMap.ContainsKey(levelId))
+        {
+            levelCompletionMap[levelId] = true;
+        }
+        else
+        {
+            Debug.LogWarning($"Level {levelId} not found! Adding it as completed.");
+            levelCompletionMap[levelId] = true; // Adds the level if not found
+        }
+    }
+
+    public void ResetLevels() {
+        levelCompletionMap.Clear();
     }
 }
