@@ -7,6 +7,7 @@ using DG.Tweening;
 public class DialogueController : MonoBehaviour
 {
     public static DialogueController obj;
+    public event System.Action OnDialogueEnd;
     [SerializeField] private TypewriterByCharacter _typeWriter;
     [SerializeField] private float _typeSpeed = 10;
     [SerializeField] private GameObject _continueButton;
@@ -44,12 +45,12 @@ public class DialogueController : MonoBehaviour
         } else {
             _leftPortrait.SetActive(false);
             _rightPortrait.SetActive(true);
-            _textBox.offsetMin = new Vector2(-287, 0); //left, bottom
-            _textBox.offsetMax = new Vector2(287, 0); //right, top
+            _textBox.offsetMin = new Vector2(-288, 0); //left, bottom
+            _textBox.offsetMax = new Vector2(-288, 0); //right, top
         }
         SoundFXManager.obj.PlayDialogueOpen();
         InitializeConversation(dialogueContent);
-        _background.DOLocalRotate(new Vector3(0f, 0f, 0f), 1, RotateMode.FastBeyond360)
+        _background.DOLocalRotate(new Vector3(0f, 0f, 0f), 0.5f, RotateMode.FastBeyond360)
               .SetEase(Ease.Linear).OnComplete(() => {
                     _isDisplayed = true;
                     DisplayNextParagraph();
@@ -87,13 +88,13 @@ public class DialogueController : MonoBehaviour
         _paragraphs.Clear();
         _conversationEnded = false;
         SoundFXManager.obj.PlayDialogueClose();
-        _background.DOLocalRotate(new Vector3(90f, 0f, 0f), 1, RotateMode.FastBeyond360)
+        _background.DOLocalRotate(new Vector3(90f, 0f, 0f), 0.5f, RotateMode.FastBeyond360)
               .SetEase(Ease.Linear).OnComplete(() => {
                 _isDisplayed = false;
-                if(gameObject.activeSelf) {
-                    gameObject.SetActive(false);
-                }
-                PlayerMovement.obj.UnFreeze();
+                _typeWriter.ShowText("");
+                _continueIcon.SetActive(false);
+                EventSystem.current.SetSelectedGameObject(null);
+                OnDialogueEnd?.Invoke();
               });
     }
 

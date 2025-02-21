@@ -9,6 +9,18 @@ public class DialogueTrigger : MonoBehaviour
 
     void Awake() {
         _collider = GetComponent<BoxCollider2D>();
+        if (DialogueController.obj != null)
+        {
+            DialogueController.obj.OnDialogueEnd += OnDialogueCompleted;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (DialogueController.obj != null)
+        {
+            DialogueController.obj.OnDialogueEnd -= OnDialogueCompleted;
+        }
     }
 
     void OnTriggerEnter2D(Collider2D other) {
@@ -22,5 +34,9 @@ public class DialogueTrigger : MonoBehaviour
         PlayerMovement.obj.Freeze();
         yield return new WaitForSeconds(0.5f);
         _dialogueController.ShowDialogue(_dialogueContent, true);
+    }
+
+    private void OnDialogueCompleted() {
+        PlayerMovement.obj.UnFreeze();
     }
 }

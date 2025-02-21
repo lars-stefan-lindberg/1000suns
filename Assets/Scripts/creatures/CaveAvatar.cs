@@ -106,6 +106,11 @@ public class CaveAvatar : MonoBehaviour
         _target = target;
     }
 
+    public void FollowPlayer() {
+        _target = null;
+        IsFollowingPlayer = true;
+    }
+
     public bool IsFacingLeft()
     {
         return _headSpriteRenderer.flipX;
