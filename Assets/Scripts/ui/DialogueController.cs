@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Febucci.UI;
 using DG.Tweening;
+using System;
 
 public class DialogueController : MonoBehaviour
 {
@@ -67,8 +68,15 @@ public class DialogueController : MonoBehaviour
         }
 
         if(!_isTyping) {
-            p = _paragraphs.Dequeue();
-            _typeWriter.ShowText(p);
+            try {
+                p = _paragraphs.Dequeue();
+                _typeWriter.ShowText(p);
+
+            }catch (InvalidOperationException)
+            {
+                //Debug.Log(e);
+                return;
+            }
         } else {
             FinishParagraphEarly();
         }
