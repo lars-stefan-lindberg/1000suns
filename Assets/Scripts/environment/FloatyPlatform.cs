@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -107,7 +108,7 @@ public class FloatyPlatform : MonoBehaviour
     private void Update()
     {
         if(_isPlayerCollisionTriggered) {
-            if(PlayerMovement.obj.isGrounded) {
+            if(PlayerMovement.obj.isGrounded && IsPlayerAbovePlatform()) {
                 _isPlayerCollisionTriggered = false;
                 RegisterPlayerOnPlatform();
             }
@@ -164,6 +165,11 @@ public class FloatyPlatform : MonoBehaviour
         }
         // if (!isPlayerOnPlatform && _rigidBody.velocity.x == 0)
         //     MoveIdlePlatform();
+    }
+
+    private bool IsPlayerAbovePlatform()
+    {
+        return Player.obj.transform.position.y > transform.position.y;
     }
 
     // private void MoveIdlePlatform()
