@@ -40,6 +40,7 @@ public class LevelManager : MonoBehaviour
 
                 GameObject playerSpawnPoint;
                 if(IsLevelCompleted(scene.name)) {
+                    Debug.Log("Level has been completed. Scene: " + scene.name + ". Loading alternative spawn point.");
                     playerSpawnPoint = sceneGameObjects.First(gameObject => gameObject.CompareTag("AlternatePlayerSpawnPoint"));
                 } else {
                     playerSpawnPoint = sceneGameObjects.First(gameObject => gameObject.CompareTag("PlayerSpawnPoint"));
@@ -96,7 +97,7 @@ public class LevelManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"Level {levelId} not found!");
+            //Debug.LogWarning($"Level {levelId} not found!");
             return false;
         }
     }
