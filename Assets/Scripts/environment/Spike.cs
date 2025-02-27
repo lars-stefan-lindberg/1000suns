@@ -43,17 +43,19 @@ public class Spike : MonoBehaviour
     [SerializeField] private float _raycastOffsetY = 0;
 
     private void Update() {
-        Debug.DrawRay(new Vector2(transform.position.x - _raycastOffsetX, transform.position.y + _raycastOffsetY), Vector3.down * (castDistance + _raycastOffsetY), Color.red);
-        Debug.DrawRay(new Vector2(transform.position.x + _raycastOffsetX, transform.position.y + _raycastOffsetY), Vector3.down * (castDistance + _raycastOffsetY), Color.red);
+        // Debug.DrawRay(new Vector2(transform.position.x - _raycastOffsetX, transform.position.y + _raycastOffsetY), Vector3.down * (castDistance + _raycastOffsetY), Color.red);
+        // Debug.DrawRay(new Vector2(transform.position.x + _raycastOffsetX, transform.position.y + _raycastOffsetY), Vector3.down * (castDistance + _raycastOffsetY), Color.red);
+        Debug.DrawRay(new Vector2(transform.position.x, transform.position.y + _raycastOffsetY), Vector3.down * (castDistance + _raycastOffsetY), Color.red);
         if (!_isFalling && !_hasDetectedPlayer) {
-            RaycastHit2D hitLeft = Physics2D.Raycast(new Vector2(transform.position.x - _raycastOffsetX, transform.position.y + _raycastOffsetY), Vector3.down, castDistance + _raycastOffsetY);
-            RaycastHit2D hitRight = Physics2D.Raycast(new Vector2(transform.position.x + _raycastOffsetX, transform.position.y + _raycastOffsetY), Vector3.down, castDistance + _raycastOffsetY);
+            //RaycastHit2D hitLeft = Physics2D.Raycast(new Vector2(transform.position.x - _raycastOffsetX, transform.position.y + _raycastOffsetY), Vector3.down, castDistance + _raycastOffsetY);
+            //RaycastHit2D hitRight = Physics2D.Raycast(new Vector2(transform.position.x + _raycastOffsetX, transform.position.y + _raycastOffsetY), Vector3.down, castDistance + _raycastOffsetY);
+            RaycastHit2D hitRight = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + _raycastOffsetY), Vector3.down, castDistance + _raycastOffsetY);
             bool hit = false;
-            if(hitLeft.transform != null) {
-                if(hitLeft.transform.CompareTag("Player")) {
-                    hit = true;
-                }
-            }
+            // if(hitLeft.transform != null) {
+            //     if(hitLeft.transform.CompareTag("Player")) {
+            //         hit = true;
+            //     }
+            // }
             if(hitRight.transform != null) {
                 if(hitRight.transform.CompareTag("Player")) {
                     hit = true;
