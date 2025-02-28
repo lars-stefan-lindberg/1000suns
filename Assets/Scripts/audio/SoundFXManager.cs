@@ -32,6 +32,13 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip[] blockWallImpact;
     #endregion
 
+    #region MonsterDoor
+    public AudioClip monsterDoorDestroy;
+    public AudioClip prisonerSoulAbsorb1;
+    public AudioClip prisonerSoulAbsorb2;
+    public AudioClip prisonerSoulAbsorb3;
+    #endregion
+
     #region FallingSpike
     public AudioClip[] fallingSpikeCrackling;
     public AudioClip[] fallingSpikeFall;
@@ -238,6 +245,20 @@ public class SoundFXManager : MonoBehaviour
     }
     public void PlayPrisonerDeath(Transform spawnTransform) {
         PlaySound(prisonerDeath, spawnTransform, 1f);
+    }
+
+    public void PlayMonsterDoorDestroy(Transform spawnTransform) {
+        PlaySound(monsterDoorDestroy, spawnTransform, 1f);
+    }
+
+    public void PlayPrisonerSoulAbsorb1(Transform spawnTransform) {
+        PlaySound(prisonerSoulAbsorb1, spawnTransform, 1f);
+    }    
+    public void PlayPrisonerSoulAbsorb2(Transform spawnTransform) {
+        PlaySound(prisonerSoulAbsorb2, spawnTransform, 1f);
+    }    
+    public void PlayPrisonerSoulAbsorb3(Transform spawnTransform) {
+        PlaySound(prisonerSoulAbsorb3, spawnTransform, 1f);
     }
 
     public void PlayCapeIntroduction(Transform spawnTransform) {

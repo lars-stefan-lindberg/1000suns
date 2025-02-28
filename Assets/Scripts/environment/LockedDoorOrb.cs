@@ -26,7 +26,20 @@ public class LockedDoorOrb : MonoBehaviour
             Destroy(other.gameObject);
             if(_numberOfSoulsCount == numberOfSoulsBeforeUnlock) {
                 lockedDoor.GetComponent<LockedDoor>().PlayDeathAnimation();
+                SoundFXManager.obj.PlayMonsterDoorDestroy(transform);
                 StartCoroutine(FadeOut());
+            } else {
+                switch(_numberOfSoulsCount) {
+                    case 1:
+                        SoundFXManager.obj.PlayPrisonerSoulAbsorb1(transform);
+                        break;
+                    case 2:
+                        SoundFXManager.obj.PlayPrisonerSoulAbsorb2(transform);
+                        break;
+                    default:
+                        SoundFXManager.obj.PlayPrisonerSoulAbsorb3(transform);
+                        break;
+                }
             }
         }
     }
