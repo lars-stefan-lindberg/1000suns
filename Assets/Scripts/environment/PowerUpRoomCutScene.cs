@@ -8,6 +8,7 @@ public class PowerUpRoomCutScene : MonoBehaviour
 
     [SerializeField] private CinemachineVirtualCamera _defaultCamera;
     [SerializeField] private GameObject _zoomedCamera;
+    [SerializeField] private GameObject _tutorialCanvas;
 
     [SerializeField] private float _recoveryTime = 10;
     private float _recoveryTimer = 0;
@@ -75,6 +76,15 @@ public class PowerUpRoomCutScene : MonoBehaviour
         zoomedCameraVcam.enabled = false;
         
         yield return new WaitForSeconds(2f);
+
+        Time.timeScale = 0;
+        _tutorialCanvas.SetActive(true);
+        TutorialDialogManager.obj.StartFadeIn();
+        while(!TutorialDialogManager.obj.tutorialCompleted) {
+            yield return null;
+        }
+        _tutorialCanvas.SetActive(false);
+        Time.timeScale = 1;
 
         PlayerMovement.obj.SetNewPowerRecevied();
 
