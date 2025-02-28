@@ -93,9 +93,25 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip floatingPlatformWallHit;
 
     private Dictionary<AudioClip[], int> lastPickedIndices = new();
+    private Dictionary<string, float> lastPlayedTimes = new();
+    private const float DEFAULT_COOLDOWN = 0.1f; // Default cooldown of 0.1 seconds
 
     void Start() {
         obj = this;
+    }
+
+    private bool CanPlaySound(string audioId, float cooldown = DEFAULT_COOLDOWN) {
+        if (!lastPlayedTimes.ContainsKey(audioId)) {
+            lastPlayedTimes[audioId] = -cooldown; // Allow first play
+            return true;
+        }
+
+        float timeSinceLastPlay = Time.time - lastPlayedTimes[audioId];
+        return timeSinceLastPlay >= cooldown;
+    }
+
+    private void UpdateSoundPlayTime(string audioId) {
+        lastPlayedTimes[audioId] = Time.time;
     }
 
     public void PlayCollectiblePickup(Transform spawnTransform) {
@@ -235,7 +251,10 @@ public class SoundFXManager : MonoBehaviour
         PlayRandomSound(prisonerCrawl, spawnTransform, 1f);
     }
     public void PlayPrisonerSpawn(Transform spawnTransform) {
-        PlayRandomSound(prisonerSpawn, spawnTransform, 1f);
+        if (CanPlaySound("prisonerSpawn", 0.5f)) {
+            PlayRandomSound(prisonerSpawn, spawnTransform, 1f);
+        }
+        UpdateSoundPlayTime("prisonerSpawn");
     }
     public AudioSource PlayPrisonerHit(Transform spawnTransform) {
         return PlayLoopedSound(prisonerHit, spawnTransform, 1f);
@@ -252,13 +271,13 @@ public class SoundFXManager : MonoBehaviour
     }
 
     public void PlayPrisonerSoulAbsorb1(Transform spawnTransform) {
-        PlaySound(prisonerSoulAbsorb1, spawnTransform, 1f);
+            PlaySound(prisonerSoulAbsorb1, spawnTransform, 1f);
     }    
     public void PlayPrisonerSoulAbsorb2(Transform spawnTransform) {
-        PlaySound(prisonerSoulAbsorb2, spawnTransform, 1f);
+            PlaySound(prisonerSoulAbsorb2, spawnTransform, 1f);
     }    
     public void PlayPrisonerSoulAbsorb3(Transform spawnTransform) {
-        PlaySound(prisonerSoulAbsorb3, spawnTransform, 1f);
+            PlaySound(prisonerSoulAbsorb3, spawnTransform, 1f);
     }
 
     public void PlayCapeIntroduction(Transform spawnTransform) {
