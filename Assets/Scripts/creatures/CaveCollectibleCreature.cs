@@ -3,15 +3,20 @@ using UnityEngine;
 
 public class CaveCollectibleCreature : MonoBehaviour
 {
-    public bool IsCollected {get; set;}
+    public bool IsPicked {get; set;}
     public bool IsPermantentlyCollected {get; set;}
+    public bool IsDespawned = false;
+    public Transform portal;
+
+    [SerializeField] private string _id;
+
+    private BoxCollider2D _collider;
 
     [SerializeField] private float _lerpSpeed = 2;
     [SerializeField] private float _tailPartLerpSpeed = 0.04f;
     [SerializeField] private GameObject _head;
     [SerializeField] private SpriteRenderer _headSpriteRenderer;
     [SerializeField] private GameObject[] _tailParts;
-    [SerializeField] private GameObject _blackHole;
     [SerializeField] private float _floatDistance = 0.25f;
     private LightSprite2DFadeManager _lightSprite2DFadeManager;
 
@@ -19,19 +24,37 @@ public class CaveCollectibleCreature : MonoBehaviour
     [SerializeField] private float _floatDirectionChangeTime = 1f;
     private bool _floatUp = true;
 
-    private bool IsIdle => !IsCollected && !IsPermantentlyCollected;
-
     private bool _startedTakeOff = false;
     private float _squeezeX = 1.25f;
     private float _squeezeY = 0.65f;
     private float _squeezeTime = 0.08f;
-    private int _numberOfSqueezes = 2;
+    private int _numberOfSqueezes = 3;
+
+    private bool _hasTarget = false;
+    private Transform _targetTransform;
 
     void Awake() {
-        IsCollected = false;
+        if(CollectibleManager.obj.IsCollectiblePicked(_id)) {
+            gameObject.SetActive(true);
+            Destroy(gameObject);
+        }
+        _collider = GetComponent<BoxCollider2D>();
+        IsPicked = false;
         IsPermantentlyCollected = false;
         _lightSprite2DFadeManager = GetComponentInChildren<LightSprite2DFadeManager>();
         _lightSprite2DFadeManager.SetFadedInState();
+    }
+
+    void OnTriggerEnter2D(Collider2D other) {
+        if(other.gameObject.CompareTag("Player")) {
+            _collider.enabled = false;
+            IsPicked = true;
+        }
+    }
+
+    public void SetSaved() {
+        DontDestroyOnLoad(gameObject); 
+        transform.SetParent(CollectibleManager.obj.transform);
     }
 
     void FixedUpdate()
@@ -39,24 +62,41 @@ public class CaveCollectibleCreature : MonoBehaviour
         if(IsPermantentlyCollected) {
             if(!_startedTakeOff) {
                 _startedTakeOff = true;
+                _targetTransform = portal; //Portal needs to be set before this is called
                 SoundFXManager.obj.PlayCollectiblePickup(transform);
                 StartCoroutine(PrepareTakeOff(_squeezeX, _squeezeY, _squeezeTime));
             }
         }
 
         Vector2 headTargetPosition;
-        if(!IsCollected) { 
+        if(!IsPicked) { 
             headTargetPosition = transform.position;
-        }else { //Follow
+        } else { //Follow
             bool isCaveAvatarFacingLeft = CaveAvatar.obj.IsFacingLeft();
-            Vector2 mainAvatarTarget = CaveAvatar.obj.GetTarget();
-            float headTargetX = isCaveAvatarFacingLeft ? mainAvatarTarget.x + 1.475f : mainAvatarTarget.x - 1.475f;
-            headTargetPosition = new(headTargetX, mainAvatarTarget.y);
-            _headSpriteRenderer.flipX = isCaveAvatarFacingLeft;
+            Transform target;   
+            if(!_hasTarget) {
+                CaveCollectibleCreature followingCollectible = CollectibleManager.obj.GetCaveCollectibleToFollow();
+                if(followingCollectible == null) {
+                    target = CaveAvatar.obj.GetHeadTransform();
+                } else {
+                    target = followingCollectible.GetHeadTransform();
+                }
+                _targetTransform = target;
+                _hasTarget = true;
+            } else {
+                target = _targetTransform;
+            }
+            float headTargetX;
+            if(!IsPermantentlyCollected) {
+                headTargetX = isCaveAvatarFacingLeft ? target.position.x + 1.475f : target.position.x - 1.475f;
+                _headSpriteRenderer.flipX = isCaveAvatarFacingLeft;
+            } else
+                headTargetX = target.position.x;
+            headTargetPosition = new(headTargetX, target.position.y);
         }
 
         //If uncollected collectible, go into idle/floating state
-        if(IsIdle) {
+        if(!IsPicked) {
             _floatDirectionTimer += Time.deltaTime;
             if(_floatDirectionTimer > _floatDirectionChangeTime) {
                 _floatUp = !_floatUp;
@@ -76,8 +116,14 @@ public class CaveCollectibleCreature : MonoBehaviour
         _tailParts[4].transform.position = Vector2.Lerp(_tailParts[4].transform.position, _tailParts[3].transform.position, _tailPartLerpSpeed);
     }
 
+    public Transform GetHeadTransform() {
+        return _head.transform;
+    }
+
     private IEnumerator PrepareTakeOff(float xSqueeze, float ySqueeze, float seconds)
     {
+        yield return new WaitForSeconds(2f); //TODO wait until black hole reached instead
+
         Vector3 originalSize = Vector3.one;
         Vector3 newSize = new Vector3(xSqueeze, ySqueeze, originalSize.z);
         int squeezeCounter = 0;
@@ -99,18 +145,37 @@ public class CaveCollectibleCreature : MonoBehaviour
             squeezeCounter += 1;
         }
 
-        _blackHole.SetActive(true);
-        yield return new WaitForSeconds(0.3f);
-        
         foreach(GameObject tail in _tailParts) {
             tail.SetActive(false);
         }
         _headSpriteRenderer.enabled = false;
-        _blackHole.GetComponent<BlackHole>().Despawn();
         
         yield return new WaitForSeconds(0.3f);
         _lightSprite2DFadeManager.StartFadeOut();
 
-        Destroy(gameObject, 5);
+        gameObject.SetActive(false);
+        IsDespawned = true;
+
+        Destroy(gameObject, 1);
+    }
+
+    public void SetStartingPosition(Vector2 position) {
+        float horizontalPosition = PlayerMovement.obj.isFacingLeft() ? position.x + 1.475f : position.x - 1.475f;
+        SetPosition(new Vector2(horizontalPosition, position.y));
+    }
+
+    public void SetPosition(Vector2 target) {
+        bool isPlayerFacingLeft = PlayerMovement.obj.isFacingLeft();
+        _headSpriteRenderer.flipX = isPlayerFacingLeft;   
+
+        transform.position = target;
+        _head.transform.position = target;
+        for (int i = 0; i < _tailParts.Length; i++) {
+            _tailParts[i].transform.position = target;
+        }
+    }
+
+    public string GetId() {
+        return _id;
     }
 }

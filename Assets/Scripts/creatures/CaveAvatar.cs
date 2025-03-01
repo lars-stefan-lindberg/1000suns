@@ -126,6 +126,10 @@ public class CaveAvatar : MonoBehaviour
         }
     }
 
+    public Transform GetHeadTransform() {
+        return _head.transform;
+    }
+
     public bool IsFloatingUp() {
         return _floatUp;
     }

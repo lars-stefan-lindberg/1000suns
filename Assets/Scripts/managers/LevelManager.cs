@@ -55,7 +55,21 @@ public class LevelManager : MonoBehaviour
 
                 Player.obj.transform.position = _playerSpawningCollider.transform.position;
                 AdjustSpawnFaceDirection(Camera.main.transform.position.x, playerSpawnPoint.transform.position.x);
+
                 CaveAvatar.obj.SetStartingPosition();
+                //If there are collectibles following, set start positions for them
+                if(CollectibleManager.obj.GetNumberOfCreaturesFollowingPlayer() > 0) {
+                    CaveCollectibleCreature previousCollectible = null;
+                    foreach(CaveCollectibleCreature collectible in CollectibleManager.obj.GetFollowingCaveCollectibleCreatures()) {
+                        if(previousCollectible == null) {
+                            collectible.SetStartingPosition(CaveAvatar.obj.GetHeadTransform().position);
+                        } else {
+                            collectible.SetStartingPosition(previousCollectible.GetHeadTransform().position);
+                        }
+                        previousCollectible = collectible;
+                    }
+                }
+
                 Player.obj.SetHasPowerUp(false);
                 Player.obj.gameObject.SetActive(true);
                 PlayerMovement.obj.SetStartingOnGround();

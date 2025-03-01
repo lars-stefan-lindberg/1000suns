@@ -11,7 +11,9 @@ public class CaveCollectibleCreatureContainer : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other) {
         if(other.gameObject.CompareTag("Player")) {
             _collider.enabled = false;
-            _collectible.IsCollected = true;
+            _collectible.IsPicked = true;
+            DontDestroyOnLoad(_collectible.gameObject); 
+            _collectible.transform.SetParent(null);
         }
     }
 
