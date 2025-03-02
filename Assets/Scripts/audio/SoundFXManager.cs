@@ -59,6 +59,8 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip uiBack;
     public AudioClip uiConfirm;
     public AudioClip uiPlay;
+    public AudioClip uiSlider;
+
     #endregion
 
     #region Dialogue
@@ -140,6 +142,10 @@ public class SoundFXManager : MonoBehaviour
     }
     public void PlayUIPlay() {
         PlaySound(uiPlay, Camera.main.transform, 1f);
+    }
+    public void PlayUISlider()
+    {
+        PlaySound(uiSlider, Camera.main.transform, 1f);
     }
 
     public void PlayDialogueOpen() {

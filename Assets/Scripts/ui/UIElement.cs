@@ -53,7 +53,10 @@ public class UIElement : MonoBehaviour, IMoveHandler, ISelectHandler, IDeselectH
     {
         if(eventData.moveDir == MoveDirection.Up || eventData.moveDir == MoveDirection.Down) {
             SoundFXManager.obj.PlayUIBrowse();
-        }
+        } 
+        // else if(eventData.moveDir == MoveDirection.Left || eventData.moveDir == MoveDirection.Right) {
+        //     SoundFXManager.obj.PlayUIBrowse();
+        // }
     }
 
     private readonly float moveDownLength = 5f;

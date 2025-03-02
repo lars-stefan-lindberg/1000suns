@@ -5,9 +5,7 @@ using UnityEngine.EventSystems;
 using System.Linq;
 using System.Collections;
 using TMPro;
-using System.Collections.Generic;
 using UnityEngine.InputSystem;
-using UnityEngine.Events;
 
 public class MainMenuManager : MonoBehaviour
 {
