@@ -268,14 +268,17 @@ public class MainMenuManager : MonoBehaviour
     }
 
     public void ChangeMusicVolume(float volume) {
+        SoundFXManager.obj.PlayUISlider();
         SoundMixerManager.obj.SetMusicVolume(volume);
     }
 
     public void ChangeSoundFxVolume(float volume) {
+        SoundFXManager.obj.PlayUISlider();
         SoundMixerManager.obj.SetSoundFXVolume(volume);
     }    
     
     public void ChangeAmbienceVolume(float volume) {
+        SoundFXManager.obj.PlayUISlider();
         SoundMixerManager.obj.SetAmbienceVolume(volume);
     }
 
