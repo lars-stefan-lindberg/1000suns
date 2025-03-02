@@ -13,10 +13,11 @@ public class LightSprite2DFadeManager : MonoBehaviour
     public bool IsFadingIn { get; private set; }
     public bool IsFadingOut { get; private set; }
 
-    void Awake() {
+    void Start() {
         _lightSprite2D = GetComponent<LightSprite2D>();
         _fadeOutStartColor = _lightSprite2D.color;
-        _fadeOutStartColor.a = 0f;
+        _fadeOutStartColor.a = _fadeInAlpha;
+        _lightSprite2D.color = _fadeOutStartColor;
     }
 
     void Update() {

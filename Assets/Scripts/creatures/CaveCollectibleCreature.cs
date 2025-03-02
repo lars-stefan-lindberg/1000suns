@@ -27,22 +27,21 @@ public class CaveCollectibleCreature : MonoBehaviour
     private bool _startedTakeOff = false;
     private float _squeezeX = 1.25f;
     private float _squeezeY = 0.65f;
-    private float _squeezeTime = 0.08f;
+    private float _squeezeTime = 0.16f;
     private int _numberOfSqueezes = 3;
 
     private bool _hasTarget = false;
     private Transform _targetTransform;
 
     void Awake() {
-        if(CollectibleManager.obj.IsCollectiblePicked(_id)) {
-            gameObject.SetActive(true);
+        if(CollectibleManager.obj != null && CollectibleManager.obj.IsCollectiblePicked(_id)) {
+            gameObject.SetActive(false);
             Destroy(gameObject);
         }
         _collider = GetComponent<BoxCollider2D>();
         IsPicked = false;
         IsPermantentlyCollected = false;
         _lightSprite2DFadeManager = GetComponentInChildren<LightSprite2DFadeManager>();
-        _lightSprite2DFadeManager.SetFadedInState();
     }
 
     void OnTriggerEnter2D(Collider2D other) {
@@ -95,8 +94,7 @@ public class CaveCollectibleCreature : MonoBehaviour
             headTargetPosition = new(headTargetX, target.position.y);
         }
 
-        //If uncollected collectible, go into idle/floating state
-        if(!IsPicked) {
+        if(IsTargetReached(_head.transform.position, headTargetPosition)) {
             _floatDirectionTimer += Time.deltaTime;
             if(_floatDirectionTimer > _floatDirectionChangeTime) {
                 _floatUp = !_floatUp;
@@ -116,34 +114,51 @@ public class CaveCollectibleCreature : MonoBehaviour
         _tailParts[4].transform.position = Vector2.Lerp(_tailParts[4].transform.position, _tailParts[3].transform.position, _tailPartLerpSpeed);
     }
 
+    private float _targetReachedMargin = 0.5f;
+    private bool IsTargetReached(Vector2 position, Vector2 target) {
+        if(
+            IsWithinInterval(position.x, target.x - _targetReachedMargin, target.x + _targetReachedMargin)
+            && IsWithinInterval(position.y, target.y - _targetReachedMargin, target.y + _targetReachedMargin)
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    private bool IsWithinInterval(float value, float lowerBound, float upperBound)
+    {
+        return value >= lowerBound && value <= upperBound;
+    }
+
     public Transform GetHeadTransform() {
         return _head.transform;
     }
 
     private IEnumerator PrepareTakeOff(float xSqueeze, float ySqueeze, float seconds)
     {
-        yield return new WaitForSeconds(2f); //TODO wait until black hole reached instead
-
-        Vector3 originalSize = Vector3.one;
-        Vector3 newSize = new Vector3(xSqueeze, ySqueeze, originalSize.z);
-        int squeezeCounter = 0;
-        while(squeezeCounter < _numberOfSqueezes) {
-            float time = 0f;
-            while (time <= 1.0)
-            {
-                time += Time.deltaTime / seconds;
-                _headSpriteRenderer.transform.localScale = Vector3.Lerp(originalSize, newSize, time);
-                yield return null;
-            }
-            time = 0f;
-            while(time <= 1.0)
-            {
-                time += Time.deltaTime / seconds;
-                _headSpriteRenderer.transform.localScale = Vector3.Lerp(newSize, originalSize, time);
-                yield return null;
-            }
-            squeezeCounter += 1;
-        }
+        // Vector3 originalSize = Vector3.one;
+        // Vector3 newSize = new Vector3(xSqueeze, ySqueeze, originalSize.z);
+        // int squeezeCounter = 0;
+        // while(squeezeCounter < _numberOfSqueezes) {
+        //     float time = 0f;
+        //     while (time <= 1.0)
+        //     {
+        //         time += Time.deltaTime / seconds;
+        //         _headSpriteRenderer.transform.localScale = Vector3.Lerp(originalSize, newSize, time);
+        //         yield return null;
+        //     }
+        //     time = 0f;
+        //     while(time <= 1.0)
+        //     {
+        //         time += Time.deltaTime / seconds;
+        //         _headSpriteRenderer.transform.localScale = Vector3.Lerp(newSize, originalSize, time);
+        //         yield return null;
+        //     }
+        //     squeezeCounter += 1;
+        // }
+        
+        yield return new WaitUntil(() => IsTargetReached(_head.transform.position, _targetTransform.position));
+        yield return new WaitForSeconds(0.2f);
 
         foreach(GameObject tail in _tailParts) {
             tail.SetActive(false);
@@ -151,6 +166,7 @@ public class CaveCollectibleCreature : MonoBehaviour
         _headSpriteRenderer.enabled = false;
         
         yield return new WaitForSeconds(0.3f);
+        _lightSprite2DFadeManager.SetFadedInState();
         _lightSprite2DFadeManager.StartFadeOut();
 
         gameObject.SetActive(false);

@@ -120,7 +120,7 @@ public class MainMenuManager : MonoBehaviour
         Player.obj.CanFallDash = false;
         Player.obj.CanForcePushJump = false;
         CollectibleManager.obj.ResetCollectibles();
-        //TODO reset number of lives died
+        PlayerStatsManager.obj.numberOfDeaths = 0;
 
         SoundMixerManager.obj.SetMasterVolume(masterVolume);
         AsyncOperation loadCaveOperation = SceneManager.LoadSceneAsync(_caveRoom1, LoadSceneMode.Additive);

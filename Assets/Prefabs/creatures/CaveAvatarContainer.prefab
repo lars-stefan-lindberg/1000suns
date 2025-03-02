@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8483464536911661338}
   - component: {fileID: 1556738148401671157}
-  - component: {fileID: 68646571917962179}
   - component: {fileID: 6672579893439281738}
+  - component: {fileID: 68646571917962179}
   m_Layer: 0
   m_Name: Head
   m_TagString: Untagged
@@ -87,22 +87,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &68646571917962179
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2362102421452583756}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f9bcd0a9374b64dbdbf3f1e233e90d97, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _fadeOutSpeed: 0.47
-  _fadeInSpeed: 3.33
-  _fadeOutAlpha: 0
-  _fadeInAlpha: 1
 --- !u!114 &6672579893439281738
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -141,6 +125,22 @@ MonoBehaviour:
   glowMode:
     enable: 0
     glowRadius: 1
+--- !u!114 &68646571917962179
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2362102421452583756}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9bcd0a9374b64dbdbf3f1e233e90d97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _fadeOutSpeed: 0.47
+  _fadeInSpeed: 3.33
+  _fadeOutAlpha: 0
+  _fadeInAlpha: 1
 --- !u!1 &3183850526039139232
 GameObject:
   m_ObjectHideFlags: 0
@@ -192,7 +192,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 059f082e6334449cb8517459b825750b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 
+  IsDespawned: 0
+  portal: {fileID: 0}
+  _id: 
   _lerpSpeed: 0.03
   _tailPartLerpSpeed: 0.5
   _head: {fileID: 2362102421452583756}
@@ -203,7 +205,6 @@ MonoBehaviour:
   - {fileID: 7267978777578563060}
   - {fileID: 4490988558779219449}
   - {fileID: 4970256569397067289}
-  _blackHole: {fileID: 6648035050081132522}
   _floatDistance: 0.23
   _floatDirectionChangeTime: 1
 --- !u!61 &1174619653197358008
