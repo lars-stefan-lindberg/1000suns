@@ -64,6 +64,7 @@ public class SoundFXManager : MonoBehaviour
     #region Dialogue
     public AudioClip dialogueOpen;
     public AudioClip dialogueClose;
+    public AudioClip[] dialogueConfirm;
     #endregion
 
     #region BabyPrisoner
@@ -142,7 +143,9 @@ public class SoundFXManager : MonoBehaviour
     public void PlayDialogueClose() {
         PlaySound(dialogueClose, Camera.main.transform, 1f);
     }
-
+    public void PlayDialogueConfirm() {
+        PlayRandomSound(dialogueConfirm, Camera.main.transform, 1f);
+    }
 
     public void PlayJump(Transform spawnTransform) {
         PlayRandomSound(jump, spawnTransform, 1f);

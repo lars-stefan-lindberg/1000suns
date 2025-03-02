@@ -24,6 +24,7 @@ public class DialogueController : MonoBehaviour
     private bool _isTyping;
 
     private bool _isDisplayed = false;
+    private bool _isFirstParagraph = true;
 
     void Awake() {
         obj = this;
@@ -54,6 +55,7 @@ public class DialogueController : MonoBehaviour
         _background.DOLocalRotate(new Vector3(0f, 0f, 0f), 0.5f, RotateMode.FastBeyond360)
               .SetEase(Ease.Linear).OnComplete(() => {
                     _isDisplayed = true;
+                    _isFirstParagraph = true;
                     DisplayNextParagraph();
                     EventSystem.current.SetSelectedGameObject(_continueButton);
                 });
@@ -70,11 +72,14 @@ public class DialogueController : MonoBehaviour
         if(!_isTyping) {
             try {
                 p = _paragraphs.Dequeue();
+                if(_isFirstParagraph) {
+                    _isFirstParagraph = false;
+                } else {
+                    SoundFXManager.obj.PlayDialogueConfirm();
+                }
                 _typeWriter.ShowText(p);
-
             }catch (InvalidOperationException)
             {
-                //Debug.Log(e);
                 return;
             }
         } else {
@@ -95,6 +100,7 @@ public class DialogueController : MonoBehaviour
     private void EndConversation() {
         _paragraphs.Clear();
         _conversationEnded = false;
+        SoundFXManager.obj.PlayDialogueConfirm();
         SoundFXManager.obj.PlayDialogueClose();
         _background.DOLocalRotate(new Vector3(90f, 0f, 0f), 0.5f, RotateMode.FastBeyond360)
               .SetEase(Ease.Linear).OnComplete(() => {
