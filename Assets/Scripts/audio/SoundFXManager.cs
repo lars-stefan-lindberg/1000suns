@@ -92,6 +92,7 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip revealSecret;
     public AudioClip collectiblePickup;
     public AudioClip floatingPlatformWallHit;
+    public AudioClip brokenFloorReappear;
 
     private Dictionary<AudioClip[], int> lastPickedIndices = new();
     private Dictionary<string, float> lastPlayedTimes = new();
@@ -113,6 +114,10 @@ public class SoundFXManager : MonoBehaviour
 
     private void UpdateSoundPlayTime(string audioId) {
         lastPlayedTimes[audioId] = Time.time;
+    }
+
+    public void PlayBrokenFloorReappear(Transform spawnTransform) {
+        PlaySound(brokenFloorReappear, spawnTransform, 1f);
     }
 
     public void PlayCollectiblePickup(Transform spawnTransform) {

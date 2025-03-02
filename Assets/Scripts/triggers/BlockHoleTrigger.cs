@@ -18,6 +18,7 @@ public class BlockHoleTrigger : MonoBehaviour
             return;
         if(other.gameObject.CompareTag("Player")) {
             _floor.SetActive(true);
+            SoundFXManager.obj.PlayBrokenFloorReappear(transform);
             _fadeInSprite = true;
         }
     }
