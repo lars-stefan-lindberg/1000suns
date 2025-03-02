@@ -102,11 +102,11 @@ public class DialogueController : MonoBehaviour
         _conversationEnded = false;
         SoundFXManager.obj.PlayDialogueConfirm();
         SoundFXManager.obj.PlayDialogueClose();
+        _continueIcon.SetActive(false);
         _background.DOLocalRotate(new Vector3(90f, 0f, 0f), 0.5f, RotateMode.FastBeyond360)
               .SetEase(Ease.Linear).OnComplete(() => {
                 _isDisplayed = false;
                 _typeWriter.ShowText("");
-                _continueIcon.SetActive(false);
                 EventSystem.current.SetSelectedGameObject(null);
                 OnDialogueEnd?.Invoke();
               });
