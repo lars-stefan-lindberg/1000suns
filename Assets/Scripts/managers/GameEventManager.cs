@@ -14,6 +14,7 @@ public class GameEventManager : MonoBehaviour
     public bool AfterPowerUpRoomsCompletedWallBreak { get; set; }
     public bool PowerUpRoomCompletedWallBreak { get; set; }
     public bool C215WallBroken { get; set; }
+    public bool FirstCaveCollectibleConversationEnded { get; set; }
 
     public bool IsPauseAllowed { get; set; }
 
@@ -33,6 +34,7 @@ public class GameEventManager : MonoBehaviour
         PowerUpRoomCompletedWallBreak = false;
         IsPauseAllowed = true;
         C215WallBroken = false;
+        FirstCaveCollectibleConversationEnded = false;
     }
 
     void OnDestroy() {
