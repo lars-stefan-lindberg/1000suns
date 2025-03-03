@@ -534,7 +534,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         if(isForcePushJumping) {
             jumpedWhileForcePushJumping = true;
             SoundFXManager.obj.PlayForcePushJump(gameObject.transform);
-            SoundFXManager.obj.PlayForcePushExecute(gameObject.transform);
         } else
             SoundFXManager.obj.PlayJump(gameObject.transform);
 
