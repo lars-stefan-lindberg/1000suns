@@ -8,6 +8,7 @@ public class LightSprite2DFadeManager : MonoBehaviour
     [Range(0.1f, 10f), SerializeField] private float _fadeInSpeed = 5f;
     [Range(0f, 1f), SerializeField] private float _fadeOutAlpha = 0f;
     [Range(0f, 1f), SerializeField] private float _fadeInAlpha = 1f;
+    [Range(0f, 1f), SerializeField] private float _startAlpha = 1f;
 
     private Color _fadeOutStartColor;
     public bool IsFadingIn { get; private set; }
@@ -16,7 +17,7 @@ public class LightSprite2DFadeManager : MonoBehaviour
     void Start() {
         _lightSprite2D = GetComponent<LightSprite2D>();
         _fadeOutStartColor = _lightSprite2D.color;
-        _fadeOutStartColor.a = _fadeInAlpha;
+        _fadeOutStartColor.a = _startAlpha;
         _lightSprite2D.color = _fadeOutStartColor;
     }
 
