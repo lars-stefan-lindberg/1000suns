@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -48,7 +49,14 @@ public class CaveCollectibleCreature : MonoBehaviour
         if(other.gameObject.CompareTag("Player")) {
             _collider.enabled = false;
             IsPicked = true;
+            StartCoroutine(FadeOutLight());
         }
+    }
+
+    private IEnumerator FadeOutLight()
+    {
+        _lightSprite2DFadeManager.StartFadeOut();
+        yield return null;
     }
 
     public void SetSaved() {
@@ -166,8 +174,6 @@ public class CaveCollectibleCreature : MonoBehaviour
         _headSpriteRenderer.enabled = false;
         
         yield return new WaitForSeconds(0.3f);
-        _lightSprite2DFadeManager.SetFadedInState();
-        _lightSprite2DFadeManager.StartFadeOut();
 
         gameObject.SetActive(false);
         IsDespawned = true;
