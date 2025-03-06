@@ -137,10 +137,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9bcd0a9374b64dbdbf3f1e233e90d97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _fadeOutSpeed: 0.47
-  _fadeInSpeed: 3.33
+  _lightSprite2D: {fileID: 0}
+  _fadeOutSpeed: 1.5
+  _fadeInSpeed: 1.5
   _fadeOutAlpha: 0
   _fadeInAlpha: 1
+  _startAlpha: 1
+  _lightColor: {r: 0.80392164, g: 0.80392164, b: 0.80392164, a: 1}
 --- !u!1 &3183850526039139232
 GameObject:
   m_ObjectHideFlags: 0
@@ -707,6 +710,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78357eb46826c404e8b0497caadfc884, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _lightSprite2DFadeManager: {fileID: 0}
 --- !u!1 &7267978777578563060
 GameObject:
   m_ObjectHideFlags: 0

@@ -171,6 +171,14 @@ public class CaveCollectibleCreature : MonoBehaviour
         foreach(GameObject tail in _tailParts) {
             tail.SetActive(false);
         }
+
+        float fadeMultiplier = 3f;
+        Color startingColor = _headSpriteRenderer.color;
+        while (_headSpriteRenderer.color.a > 0)
+        {
+            _headSpriteRenderer.color = new Color(startingColor.r, startingColor.g, startingColor.b, Mathf.MoveTowards(_headSpriteRenderer.color.a, 0, fadeMultiplier * Time.deltaTime));
+            yield return null;
+        }
         _headSpriteRenderer.enabled = false;
         
         yield return new WaitForSeconds(0.3f);

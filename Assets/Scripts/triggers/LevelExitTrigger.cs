@@ -22,11 +22,13 @@ public class LevelExitTrigger : MonoBehaviour
                 CollectibleManager.obj.CollectiblePickedPermanently(_collectible);
                 if(_portal != null) {
                     _portal.SetActive(true);
+                    _portal.GetComponentInChildren<BlackHole>().FadeInLight();
                 }
                 _isTriggered = true;
             } else if(CollectibleManager.obj.GetNumberOfCreaturesFollowingPlayer() > 0) {
                 if(_portal != null) {
                     _portal.SetActive(true);
+                    _portal.GetComponentInChildren<BlackHole>().FadeInLight();
                 }
             }
         }
