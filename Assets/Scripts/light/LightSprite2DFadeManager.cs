@@ -48,10 +48,8 @@ public class LightSprite2DFadeManager : MonoBehaviour
     }
 
     public void StartFadeOut() {
-        if(_lightSprite2D.color.a >= _fadeInAlpha) {
-            _lightSprite2D.color = _lightColor;
-            IsFadingOut = true;
-        }
+        _lightSprite2D.color = _lightColor;
+        IsFadingOut = true;
     }
     public void SetFadedInState() {
         _lightColor.a = _fadeInAlpha;
