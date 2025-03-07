@@ -12,7 +12,7 @@ public class MainMenuManager : MonoBehaviour
     public static MainMenuManager obj;
     public bool isNavigatingToMenu = true;
     [SerializeField] private SceneField _persistentGameplay;
-    [SerializeField] private SceneField _caveRoom1;
+    [SerializeField] private SceneField _introScene;
     [SerializeField] private SceneField _titleScreen;
 
     [SerializeField] private Image _fadeOutImage;
@@ -121,28 +121,21 @@ public class MainMenuManager : MonoBehaviour
         Player.obj.CanForcePushJump = false;
         CollectibleManager.obj.ResetCollectibles();
         PlayerStatsManager.obj.numberOfDeaths = 0;
+        PlayerMovement.obj.DisablePlayerMovement();
 
         SoundMixerManager.obj.SetMasterVolume(masterVolume);
-        AsyncOperation loadCaveOperation = SceneManager.LoadSceneAsync(_caveRoom1, LoadSceneMode.Additive);
-        while(!loadCaveOperation.isDone) {
+        AsyncOperation loadIntroSceneOperation = SceneManager.LoadSceneAsync(_introScene, LoadSceneMode.Additive);
+        while(!loadIntroSceneOperation.isDone) {
             yield return null;
         }
-        Scene caveRoom1 = SceneManager.GetSceneByName(_caveRoom1.SceneName);
-        SceneManager.SetActiveScene(caveRoom1);
-        
-        Player.obj.SetCaveStartingCoordinates();
-        CaveAvatar.obj.SetCaveStartingCoordinates();
-        PlayerMovement.obj.DisablePlayerMovement();
-        
-        GameObject[] sceneGameObjects = caveRoom1.GetRootGameObjects();
+        Scene introScene = SceneManager.GetSceneByName(_introScene.SceneName);
+        SceneManager.SetActiveScene(introScene);
+
+        GameObject[] sceneGameObjects = introScene.GetRootGameObjects();
         GameObject cameras = sceneGameObjects.First(gameObject => gameObject.CompareTag("Cameras"));
         CameraManager cameraManager = cameras.GetComponent<CameraManager>();
         cameraManager.ActivateMainCamera(PlayerMovement.PlayerDirection.NO_DIRECTION);
-
-        GameObject levelSwitcherGameObject = sceneGameObjects.First(gameObject => gameObject.CompareTag("LevelSwitcher"));
-        LevelSwitcher levelSwitcher = levelSwitcherGameObject.GetComponent<LevelSwitcher>();
-        levelSwitcher.LoadNextRoom();
-
+        
         SceneManager.UnloadSceneAsync(_titleScreen.SceneName);
     }
 

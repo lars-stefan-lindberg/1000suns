@@ -5388,6 +5388,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _typeWriter: {fileID: 700819959}
   _dialogueContent: {fileID: 11400000, guid: f40a094a8712f4519a74be3d4d3a38ed, type: 2}
+  _caveRoom1:
+    _sceneAsset: {fileID: 102900000, guid: 66a80f4954e9b4192bf4800b9e46bedd, type: 3}
+    _sceneName: C1
+  _introScene:
+    _sceneAsset: {fileID: 102900000, guid: 9b6a4ea7d98b4475b842f572275fe422, type: 3}
+    _sceneName: Intro
+  _gameObjectsToDisable:
+  - {fileID: 700819957}
+  - {fileID: 507352399}
+  - {fileID: 132284745}
 --- !u!1 &823362522
 GameObject:
   m_ObjectHideFlags: 3
@@ -5595,7 +5605,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1366699762
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5615,7 +5625,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1366699761}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 45e653bab7fb20e499bda25e1b646fea, type: 3}
   m_Name: 
@@ -5674,11 +5684,11 @@ PrefabInstance:
     - target: {fileID: 1640666783861761076, guid: ca5cf7dfab0d74a6da9795de99d8cb45, type: 3}
       propertyPath: _mainCamera
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1366699761}
     - target: {fileID: 1640666783861761076, guid: ca5cf7dfab0d74a6da9795de99d8cb45, type: 3}
       propertyPath: _alternativeCamera
       value: 
-      objectReference: {fileID: 1366699761}
+      objectReference: {fileID: 0}
     - target: {fileID: 6614296378824542132, guid: ca5cf7dfab0d74a6da9795de99d8cb45, type: 3}
       propertyPath: m_Name
       value: Cameras (2)

@@ -3,11 +3,16 @@ using UnityEngine;
 using Febucci.UI;
 using System;
 using System.Collections;
+using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class IntroController : MonoBehaviour
 {
     [SerializeField] private TypewriterByCharacter _typeWriter;
     [SerializeField] private DialogueContent _dialogueContent;
+    [SerializeField] private SceneField _caveRoom1;
+    [SerializeField] private SceneField _introScene;
+    [SerializeField] private GameObject[] _gameObjectsToDisable;
     private Queue<string> _paragraphs = new();
 
     private bool _conversationEnded;
@@ -33,7 +38,32 @@ public class IntroController : MonoBehaviour
             yield return null;
         }
         yield return new WaitForSeconds(3f);
-        //LevelManager.obj.LoadNextScene();
+        
+        foreach(GameObject gameObject in _gameObjectsToDisable) {
+            gameObject.SetActive(false);
+        }
+
+        AsyncOperation loadCaveOperation = SceneManager.LoadSceneAsync(_caveRoom1, LoadSceneMode.Additive);
+        while(!loadCaveOperation.isDone) {
+            yield return null;
+        }
+        Scene caveRoom1 = SceneManager.GetSceneByName(_caveRoom1.SceneName);
+        SceneManager.SetActiveScene(caveRoom1);
+        
+        Player.obj.SetCaveStartingCoordinates();
+        CaveAvatar.obj.SetCaveStartingCoordinates();
+        PlayerMovement.obj.DisablePlayerMovement();
+        
+        GameObject[] sceneGameObjects = caveRoom1.GetRootGameObjects();
+        GameObject cameras = sceneGameObjects.First(gameObject => gameObject.CompareTag("Cameras"));
+        CameraManager cameraManager = cameras.GetComponent<CameraManager>();
+        cameraManager.ActivateMainCamera(PlayerMovement.PlayerDirection.NO_DIRECTION);
+
+        GameObject levelSwitcherGameObject = sceneGameObjects.First(gameObject => gameObject.CompareTag("LevelSwitcher"));
+        LevelSwitcher levelSwitcher = levelSwitcherGameObject.GetComponent<LevelSwitcher>();
+        levelSwitcher.LoadNextRoom();
+
+        SceneManager.UnloadSceneAsync(_introScene.SceneName);
     }
 
     void Awake() {
