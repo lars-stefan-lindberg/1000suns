@@ -1,0 +1,34 @@
+using System.Collections;
+using UnityEngine;
+
+public class TeleportationTrigger : MonoBehaviour
+{
+    [SerializeField] private BoxCollider2D _spawnPoint;
+    [SerializeField] private GameObject _soul;
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            StartCoroutine(TeleportPlayer());
+        }
+    }
+
+    private IEnumerator TeleportPlayer() {
+        PlayerMovement.obj.Freeze();
+        PlayerMovement.obj.spriteRenderer.enabled = false;
+
+        GameObject soul = Instantiate(_soul, Player.obj.transform.position, Player.obj.transform.rotation);
+        PrisonerSoul prisonerSoul = soul.GetComponent<PrisonerSoul>();
+        prisonerSoul.Target = _spawnPoint.transform;
+        while (!prisonerSoul.IsTargetReached) {
+            Player.obj.transform.position = prisonerSoul.transform.position;
+            yield return null;
+        }
+        Destroy(prisonerSoul.gameObject);
+        //Play player spawn animation
+        PlayerMovement.obj.spriteRenderer.enabled = true;
+        PlayerMovement.obj.UnFreeze();
+        yield return null;
+    }
+}
