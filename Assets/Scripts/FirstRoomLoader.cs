@@ -20,7 +20,7 @@ public class FirstRoomLoader : MonoBehaviour
     void Update() {
         if(!SceneFadeManager.obj.IsFadingIn) {
             SceneFadeManager.obj.SetFadeInSpeed(5f);
-            Destroy(this, 5);
+            Destroy(this, 10);
         }
     }
 
