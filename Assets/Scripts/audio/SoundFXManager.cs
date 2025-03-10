@@ -23,6 +23,8 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip genericDeath;
     public AudioClip shadowDeath;
     public AudioClip shadowSpawn;
+    public AudioClip landHeavy;
+    public AudioClip longFall;
     #endregion
 
     #region Block
@@ -199,6 +201,12 @@ public class SoundFXManager : MonoBehaviour
     }
     public void PlayPlayerShadowSpawn(Transform spawnTransform) {
         PlaySound(shadowSpawn, spawnTransform, 1f);
+    }
+    public void PlayPlayerLongFall() {
+        PlaySound(longFall, Camera.main.transform, 1f);
+    }
+    public void PlayPlayerLandHeavy() {
+        PlaySound(landHeavy, Camera.main.transform, 1f);
     }
 
     public AudioSource PlayBlockSliding(Transform spawnTransform, float soundDurationPercentage) {

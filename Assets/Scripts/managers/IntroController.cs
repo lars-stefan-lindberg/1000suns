@@ -49,12 +49,19 @@ public class IntroController : MonoBehaviour
         }
         Scene caveRoom1 = SceneManager.GetSceneByName(_caveRoom1.SceneName);
         SceneManager.SetActiveScene(caveRoom1);
+
+        GameObject[] sceneGameObjects = caveRoom1.GetRootGameObjects();
+        GameObject playerSpawnPoint = sceneGameObjects.First(gameObject => gameObject.CompareTag("PlayerSpawnPoint"));
+        Collider2D _playerSpawningCollider = playerSpawnPoint.GetComponent<Collider2D>();
         
-        Player.obj.SetCaveStartingCoordinates();
-        CaveAvatar.obj.SetCaveStartingCoordinates();
+        Player.obj.gameObject.SetActive(true);
+        PlayerMovement.obj.SetStartingOnGround();
+        PlayerMovement.obj.isGrounded = true;
+        PlayerMovement.obj.CancelJumping();
+        Player.obj.transform.position = _playerSpawningCollider.transform.position;
+        CaveAvatar.obj.transform.position = _playerSpawningCollider.transform.position;
         PlayerMovement.obj.DisablePlayerMovement();
         
-        GameObject[] sceneGameObjects = caveRoom1.GetRootGameObjects();
         GameObject cameras = sceneGameObjects.First(gameObject => gameObject.CompareTag("Cameras"));
         CameraManager cameraManager = cameras.GetComponent<CameraManager>();
         cameraManager.ActivateMainCamera(PlayerMovement.PlayerDirection.NO_DIRECTION);

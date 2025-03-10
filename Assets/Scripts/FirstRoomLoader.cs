@@ -7,10 +7,7 @@ public class FirstRoomLoader : MonoBehaviour
     void Start()
     {
         if(!GameEventManager.obj.CaveLevelStarted) {
-            SceneFadeManager.obj.SetFadedOutState();
-            SceneFadeManager.obj.SetFadeInSpeed(0.5f);
-            SceneFadeManager.obj.StartFadeIn();
-
+            StartCoroutine(FadeInAndPlaySounds());
             StartCoroutine(AmbienceFadeIn());
             StartCoroutine(DelayedEnablePlayerMovement());
 
@@ -27,6 +24,18 @@ public class FirstRoomLoader : MonoBehaviour
         }
     }
 
+    private IEnumerator FadeInAndPlaySounds() {
+        SoundFXManager.obj.PlayPlayerLongFall();
+        yield return new WaitForSeconds(1.7f);
+        SoundFXManager.obj.PlayPlayerLandHeavy();
+        yield return new WaitForSeconds(2f);
+        SceneFadeManager.obj.SetFadedOutState();
+        SceneFadeManager.obj.SetFadeInSpeed(0.2f);
+        SceneFadeManager.obj.StartFadeIn();
+
+        yield return null;
+    }
+
     private IEnumerator AmbienceFadeIn() {
         AmbienceManager.obj.PlayCaveAmbience();
         AmbienceManager.obj.FadeInAmbienceSource1(2f);
@@ -34,7 +43,7 @@ public class FirstRoomLoader : MonoBehaviour
     }
 
     private IEnumerator DelayedEnablePlayerMovement() {
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(5);
         PlayerMovement.obj.EnablePlayerMovement();
     }
 }

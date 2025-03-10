@@ -82,7 +82,7 @@ public class CaveAvatar : MonoBehaviour
     }
 
     public void SetCaveStartingCoordinates() {
-        SetPosition(new Vector2(233.875f, 78.375f));
+        SetPosition(new Vector2(191.975f, 24.89f));
     }
 
     public void SetStartingPosition() {
