@@ -31,7 +31,9 @@ public class IntroController : MonoBehaviour
         yield return new WaitForSeconds(3f);
         SceneFadeManager.obj.StartFadeIn();
         yield return new WaitForSeconds(7f);
-        ShowText();
+        StartText();
+        yield return new WaitForSeconds(5f);
+        DisplayNextParagraph();
         yield return new WaitForSeconds(11f);
         SceneFadeManager.obj.StartFadeOut(0.2f);
         while(SceneFadeManager.obj.IsFadingOut) {
@@ -82,12 +84,7 @@ public class IntroController : MonoBehaviour
         });
     }
 
-    [ContextMenu("Start cutscene")]
-    public void StartCutscene() {
-        ShowText();
-    }
-
-    public void ShowText() {
+    public void StartText() {
         InitializeConversation(_dialogueContent);
         DisplayNextParagraph();
     }
