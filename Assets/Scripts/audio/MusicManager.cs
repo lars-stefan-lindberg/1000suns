@@ -15,6 +15,7 @@ public class MusicManager : MonoBehaviour
     [SerializeField] private AudioClip _caveSongIntro;
     [SerializeField] private AudioClip _caveSongLoop;
 
+    [SerializeField] private AudioClip _introSong;
     [SerializeField] private AudioClip _endSong;
 
     private AudioSource _introSource;
@@ -68,6 +69,11 @@ public class MusicManager : MonoBehaviour
     [ContextMenu("Play end song")]
     public void PlayEndSong() {
         PlayOneTime(_endSong);
+    }
+
+    [ContextMenu("Play intro song")]
+    public void PlayIntroSong() {
+        PlayOneTime(_introSong);
     }
 
     private void PlayIntroAndLoop(AudioClip introClip, AudioClip loopClip) {

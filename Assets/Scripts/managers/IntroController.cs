@@ -27,6 +27,8 @@ public class IntroController : MonoBehaviour
     private IEnumerator Cutscene()
     {
         SceneFadeManager.obj.SetFadedOutState();
+        yield return new WaitForSeconds(0.4f);
+        MusicManager.obj.PlayIntroSong();
         SceneFadeManager.obj.SetFadeInSpeed(0.2f);
         yield return new WaitForSeconds(3f);
         SceneFadeManager.obj.StartFadeIn();
@@ -44,6 +46,9 @@ public class IntroController : MonoBehaviour
         foreach(GameObject gameObject in _gameObjectsToDisable) {
             gameObject.SetActive(false);
         }
+
+        yield return new WaitForSeconds(6f);
+        MusicManager.obj.StopPlaying();
 
         AsyncOperation loadCaveOperation = SceneManager.LoadSceneAsync(_caveRoom1, LoadSceneMode.Additive);
         while(!loadCaveOperation.isDone) {
