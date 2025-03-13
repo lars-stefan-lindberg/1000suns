@@ -34,9 +34,9 @@ public class IntroController : MonoBehaviour
         SceneFadeManager.obj.StartFadeIn();
         yield return new WaitForSeconds(7f);
         StartText();
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(7f);
         DisplayNextParagraph();
-        yield return new WaitForSeconds(11f);
+        yield return new WaitForSeconds(13f);
         SceneFadeManager.obj.StartFadeOut(0.2f);
         while(SceneFadeManager.obj.IsFadingOut) {
             yield return null;
@@ -47,7 +47,7 @@ public class IntroController : MonoBehaviour
             gameObject.SetActive(false);
         }
 
-        yield return new WaitForSeconds(6f);
+        yield return new WaitForSeconds(2f);
         MusicManager.obj.StopPlaying();
 
         AsyncOperation loadCaveOperation = SceneManager.LoadSceneAsync(_caveRoom1, LoadSceneMode.Additive);
