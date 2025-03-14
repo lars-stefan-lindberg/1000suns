@@ -7,6 +7,8 @@ public class GameEventManager : MonoBehaviour
     //Cutscene events
     public bool PrisonerIntroSeen { get; set; }
     public bool BabyPrisonerAlerted { get; set; }
+    public bool FirstPrisonerFightStarted { get; set; }
+    public bool FirstPrisonerKilled { get; set; }
     public bool CapePicked { get; set; }
     public bool FirstPowerUpPicked { get; set; }
     public bool PowerUpRoomsFloorBroken { get; set; }
@@ -35,6 +37,8 @@ public class GameEventManager : MonoBehaviour
         IsPauseAllowed = true;
         C215WallBroken = false;
         FirstCaveCollectibleConversationEnded = false;
+        FirstPrisonerFightStarted = false;
+        FirstPrisonerKilled = false;
     }
 
     void OnDestroy() {

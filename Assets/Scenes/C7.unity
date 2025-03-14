@@ -301,7 +301,7 @@ GameObject:
   m_Component:
   - component: {fileID: 356484517}
   - component: {fileID: 356484516}
-  - component: {fileID: 356484515}
+  - component: {fileID: 356484518}
   m_Layer: 2
   m_Name: LowerMusicTrigger
   m_TagString: Untagged
@@ -309,19 +309,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &356484515
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 356484514}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fffaa5dd5f5884ecc9268bd50d01ac2b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _lowerVolume: 0.2
 --- !u!61 &356484516
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -382,6 +369,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &356484518
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 356484514}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2767cbc44310456dbb8e7ebe1b09b55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &419992893
 PrefabInstance:
   m_ObjectHideFlags: 0

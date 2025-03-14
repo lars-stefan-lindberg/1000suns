@@ -1,12 +1,12 @@
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class LockedDoorOrb : MonoBehaviour
 {
     public GameObject lockedDoor;
     public int numberOfSoulsBeforeUnlock = 0;
+    public UnityEvent DoorDestroyed;
     private Animator _animator;
     private int _numberOfSoulsCount = 0;
     private SpriteRenderer _spriteRenderer;
@@ -27,6 +27,7 @@ public class LockedDoorOrb : MonoBehaviour
             if(_numberOfSoulsCount == numberOfSoulsBeforeUnlock) {
                 lockedDoor.GetComponent<LockedDoor>().PlayDeathAnimation();
                 SoundFXManager.obj.PlayMonsterDoorDestroy(transform);
+                DoorDestroyed?.Invoke();
                 StartCoroutine(FadeOut());
             } else {
                 switch(_numberOfSoulsCount) {
