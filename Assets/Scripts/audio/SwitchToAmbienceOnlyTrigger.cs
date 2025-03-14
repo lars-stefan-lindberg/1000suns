@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class SwitchToAmbienceOnlyTrigger : MonoBehaviour
 {
+    [SerializeField] private float _fadeDuration = 5f;
+
     void OnTriggerEnter2D(Collider2D other) {
         if(other.CompareTag("Player")) {
             StartCoroutine(FadeOutMusicAndStartAmbience());
@@ -12,7 +14,7 @@ public class SwitchToAmbienceOnlyTrigger : MonoBehaviour
 
     private IEnumerator FadeOutMusicAndStartAmbience() {
         float musicVolume = SoundMixerManager.obj.GetMusicVolume();
-        StartCoroutine(SoundMixerManager.obj.StartMusicFade(5f, 0.001f));
+        StartCoroutine(SoundMixerManager.obj.StartMusicFade(_fadeDuration, 0.001f));
         AmbienceManager.obj.PlayCaveAmbience();
         AmbienceManager.obj.FadeInAmbienceSource1(2f);
         while(SoundMixerManager.obj.GetMusicVolume() > 0.001f) {

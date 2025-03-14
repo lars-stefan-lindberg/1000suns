@@ -9,6 +9,7 @@ public class GameEventManager : MonoBehaviour
     public bool BabyPrisonerAlerted { get; set; }
     public bool FirstPrisonerFightStarted { get; set; }
     public bool FirstPrisonerKilled { get; set; }
+    public bool FirstCaveMiniBossKilled { get; set; }
     public bool CapePicked { get; set; }
     public bool FirstPowerUpPicked { get; set; }
     public bool PowerUpRoomsFloorBroken { get; set; }
@@ -39,6 +40,7 @@ public class GameEventManager : MonoBehaviour
         FirstCaveCollectibleConversationEnded = false;
         FirstPrisonerFightStarted = false;
         FirstPrisonerKilled = false;
+        FirstCaveMiniBossKilled = false;
     }
 
     void OnDestroy() {
