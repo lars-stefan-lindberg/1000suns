@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class FreezePlayer : MonoBehaviour
@@ -15,8 +16,15 @@ public class FreezePlayer : MonoBehaviour
         if(_hasBeenTriggered)
             return;
         if(other.CompareTag("Player")) {
-            PlayerMovement.obj.Freeze(4f);
+            StartCoroutine(FreezeAndPlayIntro());
             _hasBeenTriggered = true;
         }
+    }
+
+    private IEnumerator FreezeAndPlayIntro() {
+        PlayerMovement.obj.Freeze(8f);
+        MusicManager.obj.PlayPowerUpIntroSong();
+        Destroy(gameObject);
+        yield return null;
     }
 }

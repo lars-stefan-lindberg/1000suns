@@ -15,6 +15,8 @@ public class MusicManager : MonoBehaviour
     [SerializeField] private AudioClip _caveSongLoop;
 
     [SerializeField] private AudioClip _introSong;
+    [SerializeField] private AudioClip _powerUpIntroSong;
+    [SerializeField] private AudioClip _powerUpPickupSong;
     [SerializeField] private AudioClip _caveIntense1Intro;
     [SerializeField] private AudioClip _caveIntense1Loop;    
     [SerializeField] private AudioClip _caveIntense2Intro;
@@ -54,6 +56,16 @@ public class MusicManager : MonoBehaviour
     [ContextMenu("Play intro song")]
     public void PlayIntroSong() {
         PlayOneTime(_introSong);
+    }
+
+    [ContextMenu("Play power up intro song")]
+    public void PlayPowerUpIntroSong() {
+        PlayOneTime(_powerUpIntroSong);
+    }
+
+    [ContextMenu("Play power up pickup song")]
+    public void PlayPowerUpPickupSong() {
+        PlayOneTime(_powerUpPickupSong);
     }
 
     [ContextMenu("Play cave intense 1")]
@@ -293,7 +305,32 @@ public class MusicManager : MonoBehaviour
     }
 
     public bool IsPlaying() {
-        return _introSource != null || _loopSource != null || _oneTimeSource != null;
+        return (_introSource != null && _introSource.isPlaying) || 
+               (_loopSource != null && _loopSource.isPlaying) || 
+               (_oneTimeSource != null && _oneTimeSource.isPlaying);
+    }
+
+    void FixedUpdate() {
+        // Check for audio sources that are not playing but still exist
+        if (_introSource != null && !_introSource.isPlaying) {
+            Destroy(_introSource.gameObject);
+            _introSource = null;
+        }
+        
+        if (_loopSource != null && !_loopSource.isPlaying) {
+            Destroy(_loopSource.gameObject);
+            _loopSource = null;
+        }
+        
+        if (_oneTimeSource != null && !_oneTimeSource.isPlaying) {
+            Destroy(_oneTimeSource.gameObject);
+            _oneTimeSource = null;
+        }
+        
+        if (_nextBarSource != null && !_nextBarSource.isPlaying) {
+            Destroy(_nextBarSource.gameObject);
+            _nextBarSource = null;
+        }
     }
 
     void OnDestroy() {
