@@ -13,6 +13,7 @@ public class MusicManager : MonoBehaviour
 
     [SerializeField] private AudioClip _caveSongIntro;
     [SerializeField] private AudioClip _caveSongLoop;    
+    [SerializeField] private AudioClip _caveSongOutro;    
     [SerializeField] private AudioClip _caveSongFirstIntro;
     [SerializeField] private AudioClip _caveSongFirstLoop;    
     [SerializeField] private AudioClip _caveSongSecondIntro;
@@ -48,6 +49,9 @@ public class MusicManager : MonoBehaviour
     public void PlayCaveSong() {
         PlayIntroAndLoop(_caveSongIntro, _caveSongLoop);
     }    
+    public void PlayCaveSongOutro() {
+        PlayOneTime(_caveSongOutro);
+    }
     [ContextMenu("Play cave first song")]
     public void PlayCaveFirstSong() {
         PlayIntroAndLoop(_caveSongFirstIntro, _caveSongFirstLoop);
