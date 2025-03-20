@@ -70,6 +70,9 @@ public class PauseMenuManager : MonoBehaviour
 
                 _collectibleCountText.text = CollectibleManager.obj.GetNumberOfCollectiblesPicked().ToString();
 
+                // Apply muffled music effect when pausing
+                StartCoroutine(SoundMixerManager.obj.StartMusicMuffle(0.5f));
+
                 _isPaused = true;
                 _pauseMenu.SetActive(true);
                 EventSystem.current.SetSelectedGameObject(_firstSelectedPauseMenuItem);
@@ -80,6 +83,9 @@ public class PauseMenuManager : MonoBehaviour
 
     public void ResumeGame() {
         SoundFXManager.obj.PlayUIConfirm();
+
+        // Gradually unmute the music when resuming
+        StartCoroutine(SoundMixerManager.obj.StartMusicUnmuffle(0.5f));
 
         EventSystem.current.SetSelectedGameObject(null);
         _pauseMenu.SetActive(false);
