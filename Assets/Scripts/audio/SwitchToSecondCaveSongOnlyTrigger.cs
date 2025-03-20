@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class SwitchToMusicOnlyGenericTrigger : MonoBehaviour
+public class SwitchToSecondCaveSongOnlyTrigger : MonoBehaviour
 {
     void Awake() {
         if(GameEventManager.obj.AfterPowerUpRoomsCompletedWallBreak) {
@@ -18,7 +18,7 @@ public class SwitchToMusicOnlyGenericTrigger : MonoBehaviour
 
     private IEnumerator FadeOutAmbienceAndStartMusic() {
         if(!MusicManager.obj.IsPlaying()) {
-            MusicManager.obj.PlayCaveSong();
+            MusicManager.obj.PlayCaveSecondSong();
         }
 
         float ambienceVolume = SoundMixerManager.obj.GetAmbienceVolume();
