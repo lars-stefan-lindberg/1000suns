@@ -303,7 +303,7 @@ GameObject:
   - component: {fileID: 356484516}
   - component: {fileID: 356484518}
   m_Layer: 2
-  m_Name: SwitchToAmbienceOnlyTrigger
+  m_Name: ChangeAudioTrigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -363,7 +363,7 @@ Transform:
   m_GameObject: {fileID: 356484514}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 518.25, y: 32.25, z: 0}
+  m_LocalPosition: {x: 521.25, y: 32.25, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -378,9 +378,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 356484514}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2767cbc44310456dbb8e7ebe1b09b55, type: 3}
+  m_Script: {fileID: 11500000, guid: 076167dde84c940c3a97aea5dd59f517, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _fadeDuration: 1.5
 --- !u!1001 &419992893
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -31485,7 +31486,6 @@ SceneRoots:
   - {fileID: 2065922507833376867}
   - {fileID: 2094113610}
   - {fileID: 1820917502894125578}
-  - {fileID: 356484517}
   - {fileID: 2044556506}
   - {fileID: 1348681960}
   - {fileID: 1304371993}
@@ -31496,3 +31496,4 @@ SceneRoots:
   - {fileID: 1362674623}
   - {fileID: 1750414360}
   - {fileID: 1490384016}
+  - {fileID: 356484517}

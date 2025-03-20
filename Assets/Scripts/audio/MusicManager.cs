@@ -12,7 +12,10 @@ public class MusicManager : MonoBehaviour
     [SerializeField] private AudioClip _titleSongLoop;
 
     [SerializeField] private AudioClip _caveSongIntro;
-    [SerializeField] private AudioClip _caveSongLoop;
+    [SerializeField] private AudioClip _caveSongLoop;    
+    [SerializeField] private AudioClip _caveSongFirstIntro;
+    [SerializeField] private AudioClip _caveSongFirstLoop;
+    public AudioClip caveBeforeFirstPrisonerLoop;
 
     [SerializeField] private AudioClip _introSong;
     [SerializeField] private AudioClip _powerUpIntroSong;
@@ -42,6 +45,10 @@ public class MusicManager : MonoBehaviour
     [ContextMenu("Play cave song")]
     public void PlayCaveSong() {
         PlayIntroAndLoop(_caveSongIntro, _caveSongLoop);
+    }    
+    [ContextMenu("Play cave first song")]
+    public void PlayCaveFirstSong() {
+        PlayIntroAndLoop(_caveSongFirstIntro, _caveSongFirstLoop);
     }
     [ContextMenu("Play cave loop")]
     public void PlayCaveLoop() {
@@ -66,6 +73,11 @@ public class MusicManager : MonoBehaviour
     [ContextMenu("Play power up pickup song")]
     public void PlayPowerUpPickupSong() {
         PlayOneTime(_powerUpPickupSong);
+    }
+
+    [ContextMenu("Play cave before first prisoner song")]
+    public void PlayCaveBeforeFirstPrisoner() {
+        PlayLoop(caveBeforeFirstPrisonerLoop);
     }
 
     [ContextMenu("Play cave intense 1")]

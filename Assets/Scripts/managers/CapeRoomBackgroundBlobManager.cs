@@ -94,7 +94,7 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
         yield return new WaitForSeconds(2);
         PlayerMovement.obj.UnFreeze();
 
-        MusicManager.obj.PlayCaveSong();
+        MusicManager.obj.PlayCaveFirstSong();
 
         GameEventManager.obj.IsPauseAllowed = true;
     }
