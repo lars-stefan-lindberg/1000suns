@@ -149,7 +149,7 @@ public class Prisoner : MonoBehaviour
     private void applyGotHitState(float hitPower, bool hitFromTheLeft)
     {
         if(!isImmuneToForcePush) {
-            _gotHitAudioSource = SoundFXManager.obj.PlayPrisonerHit(transform);
+            // _gotHitAudioSource = SoundFXManager.obj.PlayPrisonerHit(transform);
             _isFadingOutHitSound = false;
             
             _animator.SetTrigger("hit");
@@ -356,10 +356,10 @@ public class Prisoner : MonoBehaviour
         if(isStuck)
             _rigidBody.velocity = Vector2.zero;
 
-        if(!_isFadingOutHitSound && _gotHitAudioSource != null && !hasBeenHit && isGrounded) {
-            _isFadingOutHitSound = true;
-            SoundFXManager.obj.FadeOutAndStopSound(_gotHitAudioSource, 0.2f);
-        }
+        // if(!_isFadingOutHitSound && _gotHitAudioSource != null && !hasBeenHit && isGrounded) {
+        //     _isFadingOutHitSound = true;
+        //     SoundFXManager.obj.FadeOutAndStopSound(_gotHitAudioSource, 0.2f);
+        // }
 
         //Update animator
         _animator.SetBool("isGrounded", isGrounded);
@@ -438,8 +438,8 @@ public class Prisoner : MonoBehaviour
 
     [ContextMenu("InitiateKill")]
     public void InitiateKill() {
-        if(_gotHitAudioSource != null)
-            SoundFXManager.obj.FadeOutAndStopSound(_gotHitAudioSource, 0.2f);
+        // if(_gotHitAudioSource != null)
+        //     SoundFXManager.obj.FadeOutAndStopSound(_gotHitAudioSource, 0.2f);
         _killed = true;
         _rigidBody.bodyType = RigidbodyType2D.Static;
         _collider.enabled = false;
@@ -465,8 +465,8 @@ public class Prisoner : MonoBehaviour
     //Used to give death sound time to complete before destroying the prisoner game object
     private IEnumerator DelayedKill() {
         Destroy(_spriteRenderer);
-        if(_gotHitAudioSource != null)
-            SoundFXManager.obj.FadeOutAndStopSound(_gotHitAudioSource, 0.2f);
+        // if(_gotHitAudioSource != null)
+        //     SoundFXManager.obj.FadeOutAndStopSound(_gotHitAudioSource, 0.2f);
         _rigidBody.bodyType = RigidbodyType2D.Static;
         _collider.enabled = false;
         _lightSprite2DFadeManager.StartFadeOut();
