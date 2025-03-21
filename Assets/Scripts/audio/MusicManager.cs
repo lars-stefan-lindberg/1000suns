@@ -320,16 +320,11 @@ public class MusicManager : MonoBehaviour
             _loopSource.Stop();
             Destroy(_loopSource.gameObject);
         }
-        if(_oneTimeSource != null) {
-            _oneTimeSource.Stop();
-            Destroy(_oneTimeSource.gameObject);
-        }
     }
 
     public bool IsPlaying() {
         return (_introSource != null && _introSource.isPlaying) || 
-               (_loopSource != null && _loopSource.isPlaying) || 
-               (_oneTimeSource != null && _oneTimeSource.isPlaying);
+               (_loopSource != null && _loopSource.isPlaying);
     }
 
     void FixedUpdate() {

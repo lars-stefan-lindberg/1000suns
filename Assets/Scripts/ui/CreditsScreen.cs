@@ -58,6 +58,8 @@ public class CreditsScreen : MonoBehaviour
         while(SoundMixerManager.obj.GetMusicVolume() > 0.001f) {
             yield return null;
         }
+        //Give SoundMixerManager time to fully complete the fading
+        yield return new WaitForSeconds(0.1f);
         MusicManager.obj.StopPlaying();
         SoundMixerManager.obj.SetMusicVolume(musicVolume);
                 
