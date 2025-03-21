@@ -122,6 +122,7 @@ public class PauseMenuManager : MonoBehaviour
     public void ResumeGame() {
         // Only resume if we're actually paused
         if (_isPaused) {
+            SoundFXManager.obj.PlayUIConfirm();
             // Apply the unmuffled effect - this will immediately restore the volume to the player's preferred level
             StartCoroutine(SoundMixerManager.obj.StartMusicUnmuffle(0.5f));
             
