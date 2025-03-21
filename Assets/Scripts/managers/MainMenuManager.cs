@@ -114,6 +114,7 @@ public class MainMenuManager : MonoBehaviour
         while(!loadPersistentGameplayOperation.isDone) {
             yield return null;
         }
+        GameEventManager.obj.IsPauseAllowed = false;
 
         //Reset player properties
         Player.obj.SetHasCape(false);
