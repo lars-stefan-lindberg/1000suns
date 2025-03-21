@@ -41,6 +41,8 @@ public class PauseMenuManager : MonoBehaviour
     private string confirmActionKeyboardDisplayString;
 
     private bool _isPaused = false;
+    // Track if the music volume slider is currently selected
+    private bool _isMusicSliderSelected = false;
 
     void Awake() {
         obj = this;
@@ -49,6 +51,26 @@ public class PauseMenuManager : MonoBehaviour
         if (!string.IsNullOrEmpty(rebinds))
             actions.LoadBindingOverridesFromJson(rebinds);
         confirmActionKeyboardDisplayString = confirmActionReference.action.GetBindingDisplayString(InputBinding.MaskByGroup("Keyboard"));
+    }
+
+    // Track the last selected game object to detect changes
+    private GameObject _lastSelectedGameObject = null;
+
+    void Update() {
+        // Check if we're paused and if the selected UI element has changed
+        if (_isPaused) {
+            GameObject currentSelected = EventSystem.current.currentSelectedGameObject;
+            
+            // If selection changed
+            if (currentSelected != _lastSelectedGameObject) {
+                OnUIElementSelected(currentSelected);
+                _lastSelectedGameObject = currentSelected;
+            }
+        }
+    }
+
+    void OnDestroy() {
+        obj = null;
     }
 
     public void OnPause(InputAction.CallbackContext context)
@@ -63,45 +85,77 @@ public class PauseMenuManager : MonoBehaviour
                 SoundFXManager.obj.PlayUIBack();
                 PlayerMovement.obj.DisablePlayerMovement();
                 PlayerStatsManager.obj.PauseTimer();
-
-                _musicSlider.value = SoundMixerManager.obj.GetMusicVolume();
+                
+                // Store the current music volume as the player's preferred volume
+                SoundMixerManager.obj.SetPlayerPreferredMusicVolume(SoundMixerManager.obj.GetMusicVolume());
+                
+                // Apply the muffled effect - this will immediately set the volume to the muffled level
+                StartCoroutine(SoundMixerManager.obj.StartMusicMuffle(0.5f));
+                
+                // Set the pause state
+                _isPaused = true;
+                
+                // Set the time scale to 0 to pause the game
+                Time.timeScale = 0f;
+                
+                // Enable the pause menu UI
+                _pauseMenu.SetActive(true);
+                
+                // Set the music slider to reflect the player's preferred volume (not the muffled volume)
+                _musicSlider.value = SoundMixerManager.obj.GetPlayerPreferredMusicVolume();
+                
+                // Disable player movement
+                if (PlayerMovement.obj != null) {
+                    PlayerMovement.obj.enabled = false;
+                }
+                
                 _soundFXSlider.value = SoundMixerManager.obj.GetSoundFXVolume();
                 _ambienceSlider.value = SoundMixerManager.obj.GetAmbienceVolume();
-
+                
                 _collectibleCountText.text = CollectibleManager.obj.GetNumberOfCollectiblesPicked().ToString();
-
-                // Apply muffled music effect when pausing
-                StartCoroutine(SoundMixerManager.obj.StartMusicMuffle(0.5f));
-
-                _isPaused = true;
-                _pauseMenu.SetActive(true);
+                
                 EventSystem.current.SetSelectedGameObject(_firstSelectedPauseMenuItem);
-                Time.timeScale = 0f;
             }
         }
     }
 
     public void ResumeGame() {
-        SoundFXManager.obj.PlayUIConfirm();
-
-        // Gradually unmute the music when resuming
-        StartCoroutine(SoundMixerManager.obj.StartMusicUnmuffle(0.5f));
-
-        EventSystem.current.SetSelectedGameObject(null);
-        _pauseMenu.SetActive(false);
+        // Only resume if we're actually paused
+        if (_isPaused) {
+            // Apply the unmuffled effect - this will immediately restore the volume to the player's preferred level
+            StartCoroutine(SoundMixerManager.obj.StartMusicUnmuffle(0.5f));
             
-        Time.timeScale = 1f;
-        if(DialogueController.obj != null && DialogueController.obj.IsDisplayed()) {
-            DialogueController.obj.FocusDialogue();
-        } else if(TutorialDialogManager.obj != null && !TutorialDialogManager.obj.tutorialCompleted) {
-            TutorialDialogManager.obj.Focus();
-        } else if(!PlayerMovement.obj.IsFrozen()) {
-            PlayerMovement.obj.EnablePlayerMovement();
+            // Set the pause state
+            _isPaused = false;
+            
+            // Set the time scale back to 1 to resume the game
+            Time.timeScale = 1f;
+            
+            // Disable the pause menu UI
+            _pauseMenu.SetActive(false);
+            
+            // Re-enable player movement
+            if (PlayerMovement.obj != null) {
+                PlayerMovement.obj.enabled = true;
+            }
+            
+            // Reset music slider selection state
+            _isMusicSliderSelected = false;
+            _lastSelectedGameObject = null;
+            
+            EventSystem.current.SetSelectedGameObject(null);
+            
+            if(DialogueController.obj != null && DialogueController.obj.IsDisplayed()) {
+                DialogueController.obj.FocusDialogue();
+            } else if(TutorialDialogManager.obj != null && !TutorialDialogManager.obj.tutorialCompleted) {
+                TutorialDialogManager.obj.Focus();
+            } else if(!PlayerMovement.obj.IsFrozen()) {
+                PlayerMovement.obj.EnablePlayerMovement();
+            }
+            
+            isNavigatingToMenu = true;
+            PlayerStatsManager.obj.ResumeTimer();
         }
-        _isPaused = false;
-        isNavigatingToMenu = true;
-
-        PlayerStatsManager.obj.ResumeTimer();
     }
 
     public void QuitButtonHandler() {
@@ -142,21 +196,50 @@ public class PauseMenuManager : MonoBehaviour
 
     public void ChangeMusicVolume(float volume) {
         SoundFXManager.obj.PlayUISlider();
-        SoundMixerManager.obj.SetMusicVolume(volume);
+        
+        // If this is the first time the music slider is used after pausing,
+        // temporarily restore the music clarity for better feedback
+        if (!_isMusicSliderSelected && _isPaused) {
+            _isMusicSliderSelected = true;
+            StartCoroutine(SoundMixerManager.obj.TemporarilyRestoreMusicForVolumeAdjustment(0.3f));
+        }
+        
+        // Set the player's preferred music volume directly
+        SoundMixerManager.obj.SetPlayerPreferredMusicVolume(volume);
     }
 
     public void ChangeSoundFxVolume(float volume) {
         SoundFXManager.obj.PlayUISlider();
+        
+        // If we were previously adjusting music, re-muffle it when switching to another slider
+        if (_isMusicSliderSelected && _isPaused) {
+            _isMusicSliderSelected = false;
+            StartCoroutine(SoundMixerManager.obj.ReapplyMusicMuffleAfterVolumeAdjustment(0.3f));
+        }
+        
         SoundMixerManager.obj.SetSoundFXVolume(volume);
     }
     
     public void ChangeAmbienceVolume(float volume) {
         SoundFXManager.obj.PlayUISlider();
+        
+        // If we were previously adjusting music, re-muffle it when switching to another slider
+        if (_isMusicSliderSelected && _isPaused) {
+            _isMusicSliderSelected = false;
+            StartCoroutine(SoundMixerManager.obj.ReapplyMusicMuffleAfterVolumeAdjustment(0.3f));
+        }
+        
         SoundMixerManager.obj.SetAmbienceVolume(volume);
     }
 
     public void ShowKeyboardConfigMenu() {
         SoundFXManager.obj.PlayUIConfirm();
+        
+        // If we were previously adjusting music, re-muffle it when switching to another menu
+        if (_isMusicSliderSelected && _isPaused) {
+            _isMusicSliderSelected = false;
+            StartCoroutine(SoundMixerManager.obj.ReapplyMusicMuffleAfterVolumeAdjustment(0.3f));
+        }
 
         _pauseMainMenu.SetActive(false);
 
@@ -185,6 +268,12 @@ public class PauseMenuManager : MonoBehaviour
 
     public void ShowControllerConfigMenu() {
         SoundFXManager.obj.PlayUIConfirm();
+        
+        // If we were previously adjusting music, re-muffle it when switching to another menu
+        if (_isMusicSliderSelected && _isPaused) {
+            _isMusicSliderSelected = false;
+            StartCoroutine(SoundMixerManager.obj.ReapplyMusicMuffleAfterVolumeAdjustment(0.3f));
+        }
 
         _pauseMainMenu.SetActive(false);
 
@@ -224,6 +313,11 @@ public class PauseMenuManager : MonoBehaviour
 
     public void OnNavigateBack() {
         isNavigatingToMenu = true;
+        
+        // If we were previously adjusting music, reset the flag
+        if (_isMusicSliderSelected) {
+            _isMusicSliderSelected = false;
+        }
 
         if(_pauseMainMenu.activeSelf) {
             if(_isPaused)
@@ -240,7 +334,32 @@ public class PauseMenuManager : MonoBehaviour
         Reaper.obj.KillPlayerGeneric();
     }
 
-    void OnDestroy() {
-        obj = null;
+    // Called when a UI element is selected
+    public void OnUIElementSelected(GameObject selectedGameObject) {
+        // Only process if we're paused and the selection has changed
+        if (_isPaused && selectedGameObject != _lastSelectedGameObject) {
+            _lastSelectedGameObject = selectedGameObject;
+            
+            // Check if the music slider is being selected
+            if (selectedGameObject == _musicSlider.gameObject) {
+                _isMusicSliderSelected = true;
+                StartCoroutine(SoundMixerManager.obj.TemporarilyRestoreMusicForVolumeAdjustment(0.3f));
+            }
+            // Check if we're moving away from the music slider
+            else if (_isMusicSliderSelected && selectedGameObject != _musicSlider.gameObject) {
+                _isMusicSliderSelected = false;
+                StartCoroutine(SoundMixerManager.obj.ReapplyMusicMuffleAfterVolumeAdjustment(0.3f));
+            }
+        }
+    }
+
+    // Called when the music slider is deselected
+    public void OnMusicSliderDeselected() {
+        if (_isMusicSliderSelected && _isPaused) {
+            _isMusicSliderSelected = false;
+            
+            // Re-apply the muffled effect when the slider is no longer being used
+            StartCoroutine(SoundMixerManager.obj.ReapplyMusicMuffleAfterVolumeAdjustment(0.3f));
+        }
     }
 }
