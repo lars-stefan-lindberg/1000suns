@@ -4,7 +4,6 @@ public class LevelExitTrigger : MonoBehaviour
 {
     [SerializeField] private CaveCollectibleCreature _collectible;
     [SerializeField] private GameObject _portal;
-    private bool _isTriggered = false;
 
     void Awake()
     {
@@ -14,20 +13,23 @@ public class LevelExitTrigger : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (_isTriggered)
-            return;
         if (other.CompareTag("Player")) {
             if(_collectible != null && _collectible.IsPicked) {
                 _collectible.SetSaved();
                 CollectibleManager.obj.CollectiblePickedPermanently(_collectible);
                 if(_portal != null) {
                     _portal.SetActive(true);
+                    foreach (Transform child in _portal.transform) {
+                        child.gameObject.SetActive(true);
+                    }
                     _portal.GetComponentInChildren<BlackHole>().FadeInLight();
                 }
-                _isTriggered = true;
             } else if(CollectibleManager.obj.GetNumberOfCreaturesFollowingPlayer() > 0) {
                 if(_portal != null) {
                     _portal.SetActive(true);
+                    foreach (Transform child in _portal.transform) {
+                        child.gameObject.SetActive(true);
+                    }
                     _portal.GetComponentInChildren<BlackHole>().FadeInLight();
                 }
             }

@@ -9,11 +9,9 @@ public class CaveCollectiblePortalTrigger : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if(_isTriggered)
-            return;
         if(collision.gameObject.CompareTag("Player")) {
-            _isTriggered = true;
-            StartCoroutine(Cutscene());
+            if(_portal.gameObject.activeSelf)
+                StartCoroutine(Cutscene());
         }
     }
 
