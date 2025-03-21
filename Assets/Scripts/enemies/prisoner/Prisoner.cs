@@ -155,6 +155,7 @@ public class Prisoner : MonoBehaviour
             _animator.SetTrigger("hit");
             damagePower = hitPower;
             hasBeenHit = true;
+            isStuck = false;
             hasBeenHitTimeCount = hasBeenHitDuration;   
             _rigidBody.gravityScale = 0;
             _rigidBody.velocity = new Vector2(0, 0);
