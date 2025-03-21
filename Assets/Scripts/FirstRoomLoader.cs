@@ -26,7 +26,7 @@ public class FirstRoomLoader : MonoBehaviour
 
     private IEnumerator FadeInAndPlaySounds() {
         SoundFXManager.obj.PlayPlayerLongFall();
-        yield return new WaitForSeconds(1.7f);
+        yield return new WaitForSeconds(2.5f);
         SoundFXManager.obj.PlayPlayerLandHeavy();
         yield return new WaitForSeconds(2f);
         SceneFadeManager.obj.SetFadedOutState();
