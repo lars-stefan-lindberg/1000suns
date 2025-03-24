@@ -38,8 +38,6 @@ public class BreakableWall : MonoBehaviour
         if(collider.transform.CompareTag("Projectile")){
             var projectile = collider.gameObject.GetComponent<Projectile>();
             if(!isBig && projectile.power >= PlayerPush.obj.maxForce && !unbreakable) {
-                if(otherBreakableWall != null)
-                    otherBreakableWall.SetActive(false);
                 breakWall = true;
             } else if(isBig && projectile.isPoweredUp && projectile.power >= PlayerPush.obj.maxForce && !unbreakable) {
                 breakWall = true;
@@ -63,6 +61,10 @@ public class BreakableWall : MonoBehaviour
             if(isSecret)
                 SoundFXManager.obj.PlayRevealSecret(transform);
             _visibleLayerAnimator.SetTrigger("reveal");
+            //Fade out other breakable wall, if there is one
+            if(otherBreakableWall != null) {
+                StartCoroutine(FadeOutOtherBreakableWall());
+            }
             _collider.enabled = false;
             _fadeSprite = true;
             breakWall = false;
@@ -71,6 +73,17 @@ public class BreakableWall : MonoBehaviour
         if(_fadeSprite) {
             _spriteRenderer.color = new Color(_spriteRenderer.color.r, _spriteRenderer.color.b, _spriteRenderer.color.g, Mathf.MoveTowards(_spriteRenderer.color.a, 0, fadeMultiplier * Time.deltaTime));
         }
+    }
+
+    private IEnumerator FadeOutOtherBreakableWall() {
+        SpriteRenderer otherBreakableWallSpriteRenderer = otherBreakableWall.GetComponent<SpriteRenderer>();
+        Color tempColor = otherBreakableWallSpriteRenderer.color;
+        while(tempColor.a > 0) {
+            tempColor.a = Mathf.MoveTowards(tempColor.a, 0, fadeMultiplier * Time.deltaTime);
+            otherBreakableWallSpriteRenderer.color = tempColor;
+            yield return null;
+        }
+        otherBreakableWall.SetActive(false);
     }
 
     private IEnumerator ShakeWall() {

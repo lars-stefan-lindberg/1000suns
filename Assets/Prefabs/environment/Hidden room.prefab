@@ -4840,7 +4840,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2240511314766629170}
   - component: {fileID: 6538806967875986139}
-  - component: {fileID: 3388502074049486181}
   m_Layer: 3
   m_Name: Hidden room
   m_TagString: Untagged
@@ -4878,20 +4877,6 @@ Grid:
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 0
   m_CellSwizzle: 0
---- !u!114 &3388502074049486181
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 291379467093368927}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 483bad6d90c5c4396b901727cd7b7820, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  reveal: 0
-  visibleLayer: {fileID: 4784712282965838549}
 --- !u!1 &496580317065437089
 GameObject:
   m_ObjectHideFlags: 0
@@ -9881,6 +9866,7 @@ MonoBehaviour:
   shakeDistance: 0.1
   shakeTime: 0.12
   shakeFrameWait: 0.08
+  isSecret: 1
 --- !u!1 &4784712282965838549
 GameObject:
   m_ObjectHideFlags: 0
@@ -10696,6 +10682,7 @@ MonoBehaviour:
   shakeDistance: 0.1
   shakeTime: 0.12
   shakeFrameWait: 0.08
+  isSecret: 1
 --- !u!1 &7775426014942835339
 GameObject:
   m_ObjectHideFlags: 0
