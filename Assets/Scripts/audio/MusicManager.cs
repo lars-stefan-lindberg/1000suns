@@ -322,6 +322,13 @@ public class MusicManager : MonoBehaviour
         }
     }
 
+    public void StopPlayingOneTime() {
+        if(_oneTimeSource != null) {
+            _oneTimeSource.Stop();
+            Destroy(_oneTimeSource);
+        }
+    }
+
     public bool IsPlaying() {
         return (_introSource != null && _introSource.isPlaying) || 
                (_loopSource != null && _loopSource.isPlaying);
