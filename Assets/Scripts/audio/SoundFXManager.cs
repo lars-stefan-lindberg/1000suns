@@ -26,6 +26,7 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip landHeavy;
     public AudioClip longFall;
     public AudioClip teleport;
+    public AudioClip[] pickupCavePowerup;
     #endregion
 
     #region Block
@@ -213,8 +214,11 @@ public class SoundFXManager : MonoBehaviour
     public void PlayPlayerLandHeavy() {
         PlaySound(landHeavy, Camera.main.transform, 1f);
     }
-    public void PlayPlayerTeleport() {
-        PlaySound(teleport, Camera.main.transform, 1f);
+    public void PlayPlayerTeleport(Transform spawnTransform) {
+        PlaySound(teleport, spawnTransform, 1f);
+    }
+    public void PlayPlayerPickupCavePowerup(Transform spawnTransform) {
+        PlayRandomSound(pickupCavePowerup, spawnTransform, 1f);
     }
 
     public AudioSource PlayBlockSliding(Transform spawnTransform, float soundDurationPercentage) {
