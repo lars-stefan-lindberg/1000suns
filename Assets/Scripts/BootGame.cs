@@ -19,6 +19,7 @@ public class BootGame : MonoBehaviour
         while(!loadCommonOperation.isDone) {
             yield return null;
         }
+        GeneralTracker.obj.TrackGameStarted();
 
         AsyncOperation loadTitleScreenOperation = SceneManager.LoadSceneAsync(_titleScreen, LoadSceneMode.Additive);
         while(!loadTitleScreenOperation.isDone) {

@@ -29,6 +29,8 @@ public class LevelSwitcher : MonoBehaviour
             StartCoroutine(LoadScenesCoroutine());
             StartCoroutine(UnloadScenes());
             
+            LevelTracker.obj.StartTimeTracking(_nextScene.SceneName);
+            LevelTracker.obj.StopTimeTracking(_currentScene.SceneName);
             SceneManager.SetActiveScene(SceneManager.GetSceneByName(_nextScene));
 
             PlayerMovement.PlayerDirection playerDirection = GetPlayerDirection(other);
