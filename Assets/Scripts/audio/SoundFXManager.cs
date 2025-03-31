@@ -36,7 +36,7 @@ public class SoundFXManager : MonoBehaviour
     #endregion
 
     #region MonsterDoor
-    public AudioClip monsterDoorDestroy;
+    public AudioClip[] monsterDoorDestroy;
     public AudioClip prisonerSoulAbsorb1;
     public AudioClip prisonerSoulAbsorb2;
     public AudioClip prisonerSoulAbsorb3;
@@ -297,7 +297,7 @@ public class SoundFXManager : MonoBehaviour
     }
 
     public void PlayMonsterDoorDestroy(Transform spawnTransform) {
-        PlaySound(monsterDoorDestroy, spawnTransform, 1f);
+        PlayRandomSound(monsterDoorDestroy, spawnTransform, 1f);
     }
 
     public void PlayPrisonerSoulAbsorb1(Transform spawnTransform) {
