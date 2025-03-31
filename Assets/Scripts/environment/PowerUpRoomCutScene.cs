@@ -113,6 +113,7 @@ public class PowerUpRoomCutScene : MonoBehaviour
     }
 
     private void SetIsPicked() {
+        SoundFXManager.obj.PlayPlayerPickupCavePowerup(transform);
         Player.obj.SetHasPowerUp(true);
         _animator.SetBool("isPicked", true);
         _isPicked = true;
