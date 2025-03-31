@@ -86,7 +86,7 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip[] prisonerSpawn;
     public AudioClip prisonerHit;
     public AudioClip prisonerSlide;
-    public AudioClip prisonerDeath;
+    public AudioClip[] prisonerDeath;
     #endregion
 
     #region CapeRoom
@@ -293,7 +293,7 @@ public class SoundFXManager : MonoBehaviour
         PlaySound(prisonerSlide, spawnTransform, 1f);
     }
     public void PlayPrisonerDeath(Transform spawnTransform) {
-        PlaySound(prisonerDeath, spawnTransform, 1f);
+        PlayRandomSound(prisonerDeath, spawnTransform, 1f);
     }
 
     public void PlayMonsterDoorDestroy(Transform spawnTransform) {
