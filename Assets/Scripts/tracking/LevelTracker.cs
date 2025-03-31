@@ -91,4 +91,10 @@ public class LevelTracker : MonoBehaviour
         
         return 0f;
     }
+
+    public void TrackQuitFromPauseMenu(string levelId) {
+        Tracker.obj.TrackEvent("quit_from_pause_menu", new Dictionary<string, object>{
+            {"level", levelId}
+        });
+    }
 }

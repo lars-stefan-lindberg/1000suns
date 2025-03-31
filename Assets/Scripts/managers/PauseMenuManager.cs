@@ -162,6 +162,7 @@ public class PauseMenuManager : MonoBehaviour
     public void QuitButtonHandler() {
         _quitButton.interactable = false;
         SoundFXManager.obj.PlayUIBack();
+        LevelTracker.obj.TrackQuitFromPauseMenu(SceneManager.GetActiveScene().name); 
         Quit();
     }
 
