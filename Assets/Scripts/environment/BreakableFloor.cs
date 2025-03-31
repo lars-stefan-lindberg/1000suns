@@ -59,7 +59,7 @@ public class BreakableFloor : MonoBehaviour
         }
         if(_breakFloor) {
             _breakFloor = false;
-            SoundFXManager.obj.PlayBreakableWallBreak(transform);
+            SoundFXManager.obj.PlayBrokenFloorDisappear(transform);
             _shakeAnimation.Emit(numberOfShakeParticles);
             _floorCollider.enabled = false;
             _playerOnTopDetectionCollider.enabled = false;
