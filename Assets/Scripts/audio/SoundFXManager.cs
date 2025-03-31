@@ -25,6 +25,7 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip shadowSpawn;
     public AudioClip landHeavy;
     public AudioClip longFall;
+    public AudioClip teleport;
     #endregion
 
     #region Block
@@ -207,6 +208,9 @@ public class SoundFXManager : MonoBehaviour
     }
     public void PlayPlayerLandHeavy() {
         PlaySound(landHeavy, Camera.main.transform, 1f);
+    }
+    public void PlayPlayerTeleport() {
+        PlaySound(teleport, Camera.main.transform, 1f);
     }
 
     public AudioSource PlayBlockSliding(Transform spawnTransform, float soundDurationPercentage) {
