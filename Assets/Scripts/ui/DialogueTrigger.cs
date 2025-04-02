@@ -9,23 +9,25 @@ public class DialogueTrigger : MonoBehaviour
 
     void Awake() {
         _collider = GetComponent<BoxCollider2D>();
+        if (DialogueController.obj != null)
+        {
+            DialogueController.obj.OnDialogueClosed += OnDialogueCompleted;
+            DialogueController.obj.OnDialogueClosing += OnDialogueClosing;
+        }
     }
 
     private void OnDestroy()
     {
         if (DialogueController.obj != null)
         {
-            DialogueController.obj.OnDialogueEnd -= OnDialogueCompleted;
+            DialogueController.obj.OnDialogueClosed -= OnDialogueCompleted;
+            DialogueController.obj.OnDialogueClosing -= OnDialogueClosing;
         }
     }
 
     void OnTriggerEnter2D(Collider2D other) {
         if(other.CompareTag("Player")) {
             _collider.enabled = false;
-            if (DialogueController.obj != null)
-            {
-                DialogueController.obj.OnDialogueEnd += OnDialogueCompleted;
-            }
             StartCoroutine(SetupDialogue());
         }
     }
@@ -33,9 +35,13 @@ public class DialogueTrigger : MonoBehaviour
     private IEnumerator SetupDialogue() {
         PlayerMovement.obj.Freeze();
         yield return new WaitForSeconds(0.5f);
+        SoundFXManager.obj.PlayDialogueOpen();
         _dialogueController.ShowDialogue(_dialogueContent, true);
     }
 
+    private void OnDialogueClosing() {
+        SoundFXManager.obj.PlayDialogueClose();
+    }
     private void OnDialogueCompleted() {
         PlayerMovement.obj.UnFreeze();
     }

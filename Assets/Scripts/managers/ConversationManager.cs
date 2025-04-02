@@ -22,7 +22,8 @@ public class ConversationManager : MonoBehaviour
     {
         if (DialogueController.obj != null)
         {
-            DialogueController.obj.OnDialogueEnd += OnDialogueCompleted;
+            DialogueController.obj.OnDialogueClosed += OnDialogueCompleted;
+            DialogueController.obj.OnDialogueClosing += OnDialogueClosing;
         }
     }
 
@@ -30,7 +31,8 @@ public class ConversationManager : MonoBehaviour
     {
         if (DialogueController.obj != null)
         {
-            DialogueController.obj.OnDialogueEnd -= OnDialogueCompleted;
+            DialogueController.obj.OnDialogueClosed -= OnDialogueCompleted;
+            DialogueController.obj.OnDialogueClosing -= OnDialogueClosing;
         }
     }
 
@@ -39,6 +41,7 @@ public class ConversationManager : MonoBehaviour
         if (conversationList.Count > 0)
         {
             currentDialogueIndex = 0;
+            SoundFXManager.obj.PlayDialogueOpen();
             ShowNextDialogue();
         }
     }
@@ -57,10 +60,14 @@ public class ConversationManager : MonoBehaviour
         }
     }
 
-    public void OnDialogueCompleted()
-    {
+    private void OnDialogueClosing() {
         currentDialogueIndex++;
+        if (currentDialogueIndex == conversationList.Count)
+            SoundFXManager.obj.PlayDialogueClose();
+    }
 
+    private void OnDialogueCompleted()
+    {
         if (currentDialogueIndex < conversationList.Count)
         {
             ShowNextDialogue();

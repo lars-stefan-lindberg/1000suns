@@ -8,7 +8,8 @@ using System;
 public class DialogueController : MonoBehaviour
 {
     public static DialogueController obj;
-    public event System.Action OnDialogueEnd;
+    public event System.Action OnDialogueClosed;
+    public event System.Action OnDialogueClosing;
     [SerializeField] private TypewriterByCharacter _typeWriter;
     [SerializeField] private float _typeSpeed = 10;
     [SerializeField] private GameObject _continueButton;
@@ -50,7 +51,6 @@ public class DialogueController : MonoBehaviour
             _textBox.offsetMin = new Vector2(-288, 0); //left, bottom
             _textBox.offsetMax = new Vector2(-288, 0); //right, top
         }
-        SoundFXManager.obj.PlayDialogueOpen();
         InitializeConversation(dialogueContent);
         _background.DOLocalRotate(new Vector3(0f, 0f, 0f), 0.5f, RotateMode.FastBeyond360)
               .SetEase(Ease.Linear).OnComplete(() => {
@@ -98,17 +98,17 @@ public class DialogueController : MonoBehaviour
     }
 
     private void EndConversation() {
+        OnDialogueClosing?.Invoke();
         _paragraphs.Clear();
         _conversationEnded = false;
         SoundFXManager.obj.PlayDialogueConfirm();
-        SoundFXManager.obj.PlayDialogueClose();
         _continueIcon.SetActive(false);
         _background.DOLocalRotate(new Vector3(90f, 0f, 0f), 0.5f, RotateMode.FastBeyond360)
               .SetEase(Ease.Linear).OnComplete(() => {
                 _isDisplayed = false;
                 _typeWriter.ShowText("");
                 EventSystem.current.SetSelectedGameObject(null);
-                OnDialogueEnd?.Invoke();
+                OnDialogueClosed?.Invoke();
               });
     }
 
