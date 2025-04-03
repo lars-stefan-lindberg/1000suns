@@ -1,15 +1,25 @@
 using System.Collections;
-using System.Collections.Generic;
+using Cinemachine;
+using FunkyCode;
 using UnityEngine;
 
 public class FirstRoomLoader : MonoBehaviour
 {
+    [SerializeField] private GameObject _zoomedCamera;
+    [SerializeField] private GameObject _fullRoomCamera;
+
     void Start()
     {
         if(!GameEventManager.obj.CaveLevelStarted) {
+            _zoomedCamera.SetActive(true);
+            CinemachineVirtualCamera zoomedCamera = _zoomedCamera.GetComponent<CinemachineVirtualCamera>();
+            zoomedCamera.enabled = true;
             StartCoroutine(FadeInAndPlaySounds());
             StartCoroutine(AmbienceFadeIn());
             StartCoroutine(DelayedEnablePlayerMovement());
+            //Set darkness to dark
+            LightingManager2D.Get().profile.DarknessColor = new Color(0.05f, 0.05f, 0.05f, 1f);
+            StartCoroutine(FadeInDarkness());
 
             GameEventManager.obj.CaveLevelStarted = true;
 
@@ -20,7 +30,7 @@ public class FirstRoomLoader : MonoBehaviour
     void Update() {
         if(!SceneFadeManager.obj.IsFadingIn) {
             SceneFadeManager.obj.SetFadeInSpeed(5f);
-            Destroy(this, 10);
+            //Destroy(this, 15);
         }
     }
 
@@ -32,7 +42,6 @@ public class FirstRoomLoader : MonoBehaviour
         SceneFadeManager.obj.SetFadedOutState();
         SceneFadeManager.obj.SetFadeInSpeed(0.2f);
         SceneFadeManager.obj.StartFadeIn();
-        GameEventManager.obj.IsPauseAllowed = true;
 
         yield return null;
     }
@@ -46,5 +55,32 @@ public class FirstRoomLoader : MonoBehaviour
     private IEnumerator DelayedEnablePlayerMovement() {
         yield return new WaitForSeconds(5);
         PlayerMovement.obj.EnablePlayerMovement();
+        GameEventManager.obj.IsPauseAllowed = true;
+        yield return null;
+    }
+
+    private IEnumerator FadeInDarkness() {
+        yield return new WaitForSeconds(10);
+
+        _fullRoomCamera.SetActive(true);
+        CinemachineVirtualCamera fullRoomCamera = _fullRoomCamera.GetComponent<CinemachineVirtualCamera>();
+        CinemachineVirtualCamera zoomedCamera = _zoomedCamera.GetComponent<CinemachineVirtualCamera>();
+        fullRoomCamera.enabled = true;
+        zoomedCamera.enabled = false;
+        _zoomedCamera.SetActive(false);
+
+        yield return new WaitForSeconds(2);
+
+        float fadeSpeed = 0.3f;
+        Color defaultDarkness = new(0.33f, 0.33f, 0.33f, 1f);
+        Color managerDarkness = LightingManager2D.Get().profile.DarknessColor;
+        while (managerDarkness.r <= defaultDarkness.r - 0.02f) {
+            Color color = Color.Lerp(managerDarkness, defaultDarkness, fadeSpeed * Time.deltaTime);
+            LightingManager2D.Get().profile.DarknessColor = color;
+            managerDarkness = LightingManager2D.Get().profile.DarknessColor;
+            yield return null;
+        }
+        LightingManager2D.Get().profile.DarknessColor = defaultDarkness;
+        yield return null;
     }
 }

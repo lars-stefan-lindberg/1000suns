@@ -2,6 +2,7 @@ using FunkyCode;
 using UnityEngine;
 
 //Default darkness lighting rgb: 545454 (in case it gets overwritten)
+//new(0.33f, 0.33f, 0.33f, 1f);
 public class SetDarknessTrigger : MonoBehaviour
 {
     [SerializeField] private Color _darknessColor;

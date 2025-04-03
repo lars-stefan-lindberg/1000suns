@@ -68,10 +68,6 @@ public class IntroController : MonoBehaviour
         Player.obj.transform.position = _playerSpawningCollider.transform.position;
         CaveAvatar.obj.transform.position = _playerSpawningCollider.transform.position;
         PlayerMovement.obj.DisablePlayerMovement();
-        
-        GameObject cameras = sceneGameObjects.First(gameObject => gameObject.CompareTag("Cameras"));
-        CameraManager cameraManager = cameras.GetComponent<CameraManager>();
-        cameraManager.ActivateMainCamera(PlayerMovement.PlayerDirection.NO_DIRECTION);
 
         GameObject levelSwitcherGameObject = sceneGameObjects.First(gameObject => gameObject.CompareTag("LevelSwitcher"));
         LevelSwitcher levelSwitcher = levelSwitcherGameObject.GetComponent<LevelSwitcher>();
