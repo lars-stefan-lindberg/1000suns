@@ -16,10 +16,9 @@ public class FirstRoomLoader : MonoBehaviour
             zoomedCamera.enabled = true;
             StartCoroutine(FadeInAndPlaySounds());
             StartCoroutine(AmbienceFadeIn());
-            StartCoroutine(DelayedEnablePlayerMovement());
             //Set darkness to dark
             LightingManager2D.Get().profile.DarknessColor = new Color(0.05f, 0.05f, 0.05f, 1f);
-            StartCoroutine(FadeInDarkness());
+            StartCoroutine(Cutscene());
 
             GameEventManager.obj.CaveLevelStarted = true;
 
@@ -52,15 +51,11 @@ public class FirstRoomLoader : MonoBehaviour
         yield return null;
     }
 
-    private IEnumerator DelayedEnablePlayerMovement() {
-        yield return new WaitForSeconds(5);
-        PlayerMovement.obj.EnablePlayerMovement();
-        GameEventManager.obj.IsPauseAllowed = true;
-        yield return null;
-    }
-
-    private IEnumerator FadeInDarkness() {
-        yield return new WaitForSeconds(10);
+    private IEnumerator Cutscene() {
+        Player.obj.PlayGetUpAnimation();
+        yield return new WaitForSeconds(8);
+        Player.obj.StartAnimator();
+        yield return new WaitForSeconds(6);
 
         _fullRoomCamera.SetActive(true);
         CinemachineVirtualCamera fullRoomCamera = _fullRoomCamera.GetComponent<CinemachineVirtualCamera>();
@@ -68,9 +63,19 @@ public class FirstRoomLoader : MonoBehaviour
         fullRoomCamera.enabled = true;
         zoomedCamera.enabled = false;
         _zoomedCamera.SetActive(false);
+        StartCoroutine(FadeInDarkness());
 
+        //Zoom out time
+        yield return new WaitForSeconds(4);
+
+        PlayerMovement.obj.EnablePlayerMovement();
+        GameEventManager.obj.IsPauseAllowed = true;
+
+        yield return null;
+    }
+
+    private IEnumerator FadeInDarkness() {
         yield return new WaitForSeconds(2);
-
         float fadeSpeed = 0.3f;
         Color defaultDarkness = new(0.33f, 0.33f, 0.33f, 1f);
         Color managerDarkness = LightingManager2D.Get().profile.DarknessColor;

@@ -55,6 +55,17 @@ public class Player : MonoBehaviour
         _animator.SetTrigger("shadowDeath");
     }
 
+    [ContextMenu("PlayGetUpAnimation")]
+    public void PlayGetUpAnimation() {
+        _animator.SetTrigger("getUp");
+        _animator.speed = 0;
+    }
+
+    [ContextMenu("StartAnimator")]
+    public void StartAnimator() {
+        _animator.speed = 1;
+    }
+
     public void PlaySpawn() {
         rigidBody.bodyType = RigidbodyType2D.Dynamic;
         _collider.enabled = true;
