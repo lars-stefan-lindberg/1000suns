@@ -7,7 +7,7 @@ public class DialogueTrigger : MonoBehaviour
     [SerializeField] private DialogueContent _dialogueContent;
     private BoxCollider2D _collider;
 
-    void Awake() {
+    void Start() {
         _collider = GetComponent<BoxCollider2D>();
         if (DialogueController.obj != null)
         {
@@ -26,6 +26,9 @@ public class DialogueTrigger : MonoBehaviour
     }
 
     void OnTriggerEnter2D(Collider2D other) {
+        if(GameEventManager.obj.C1MonologueEnded) {
+            return;
+        }
         if(other.CompareTag("Player")) {
             _collider.enabled = false;
             StartCoroutine(SetupDialogue());
@@ -44,5 +47,6 @@ public class DialogueTrigger : MonoBehaviour
     }
     private void OnDialogueCompleted() {
         PlayerMovement.obj.UnFreeze();
+        GameEventManager.obj.C1MonologueEnded = true;
     }
 }
