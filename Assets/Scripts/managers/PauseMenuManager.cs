@@ -83,7 +83,7 @@ public class PauseMenuManager : MonoBehaviour
                 ResumeGame();
             } else {
                 SoundFXManager.obj.PlayUIBack();
-                PlayerMovement.obj.DisablePlayerMovement();
+                PlayerManager.obj.DisablePlayerMovement();
                 PlayerStatsManager.obj.PauseTimer();
                 
                 // Store the current music volume as the player's preferred volume
@@ -103,11 +103,6 @@ public class PauseMenuManager : MonoBehaviour
                 
                 // Set the music slider to reflect the player's preferred volume (not the muffled volume)
                 _musicSlider.value = SoundMixerManager.obj.GetPlayerPreferredMusicVolume();
-                
-                // Disable player movement
-                if (PlayerMovement.obj != null) {
-                    PlayerMovement.obj.enabled = false;
-                }
                 
                 _soundFXSlider.value = SoundMixerManager.obj.GetSoundFXVolume();
                 _ambienceSlider.value = SoundMixerManager.obj.GetAmbienceVolume();
@@ -135,11 +130,6 @@ public class PauseMenuManager : MonoBehaviour
             // Disable the pause menu UI
             _pauseMenu.SetActive(false);
             
-            // Re-enable player movement
-            if (PlayerMovement.obj != null) {
-                PlayerMovement.obj.enabled = true;
-            }
-            
             // Reset music slider selection state
             _isMusicSliderSelected = false;
             _lastSelectedGameObject = null;
@@ -150,8 +140,8 @@ public class PauseMenuManager : MonoBehaviour
                 DialogueController.obj.FocusDialogue();
             } else if(TutorialDialogManager.obj != null && !TutorialDialogManager.obj.tutorialCompleted) {
                 TutorialDialogManager.obj.Focus();
-            } else if(!PlayerMovement.obj.IsFrozen()) {
-                PlayerMovement.obj.EnablePlayerMovement();
+            } else if(!PlayerManager.obj.IsFrozen()) {
+                PlayerManager.obj.EnablePlayerMovement();
             }
             
             isNavigatingToMenu = true;
@@ -333,7 +323,7 @@ public class PauseMenuManager : MonoBehaviour
 
     public void RetryRoomHandler() {
         ResumeGame();
-        Reaper.obj.KillPlayerGeneric();
+        PlayerManager.obj.KillPlayerGeneric();
     }
 
     // Called when a UI element is selected
