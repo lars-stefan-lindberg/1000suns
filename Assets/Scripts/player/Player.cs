@@ -68,6 +68,16 @@ public class Player : MonoBehaviour
         _animator.speed = 0;
     }
 
+    [ContextMenu("PlayToBlobAnimation")] 
+    public void PlayToBlobAnimation() {
+        _animator.SetTrigger("toBlob");
+    }
+
+    [ContextMenu("PlayToPlayerAnimation")] 
+    public void PlayToPlayerAnimation() {
+        _animator.SetTrigger("toPlayer");
+    }
+
     [ContextMenu("StartAnimator")]
     public void StartAnimator() {
         _animator.speed = 1;

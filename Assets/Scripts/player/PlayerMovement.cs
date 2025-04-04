@@ -300,15 +300,23 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
                 CancelPowerJumpCharge();
         } else {
             if(_movementInput.y < 0 && value.performed) {
-                Player.obj.rigidBody.velocity = new Vector2(0, 0);
-                _frameVelocity = new Vector2(0, 0);
                 PlayerPush.obj.ResetBuiltUpPower();
-                gameObject.SetActive(false);
-                _playerBlob.transform.position = transform.position;
-                _playerBlob.GetComponent<PlayerBlobMovement>().spriteRenderer.flipX = isFacingLeft();
-                _playerBlob.SetActive(true);
+                Player.obj.PlayToBlobAnimation();
             }
         }
+    }
+
+    public void ToBlob() {
+        Player.obj.rigidBody.velocity = new Vector2(0, 0);
+        _frameVelocity = new Vector2(0, 0);
+        gameObject.SetActive(false);
+        _playerBlob.transform.position = transform.position - new Vector3(0, 0.5f, 0);
+        if(isGrounded) {
+            _playerBlob.GetComponent<PlayerBlobMovement>().SetStartingOnGround();
+            _playerBlob.GetComponent<PlayerBlobMovement>().isGrounded = true;
+        }
+        _playerBlob.GetComponent<PlayerBlobMovement>().spriteRenderer.flipX = isFacingLeft();
+        _playerBlob.SetActive(true);
     }
 
     public void OnJump(InputAction.CallbackContext context)

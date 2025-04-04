@@ -11,4 +11,8 @@ public class PlayerAnimationEvents : MonoBehaviour
     public void PlaySubtleRunStep() {
         SoundFXManager.obj.PlayStep(Player.obj.surface, gameObject.transform, 0.8f);
     }
+
+    public void ToBlob() {
+        PlayerMovement.obj.ToBlob();
+    }
 }

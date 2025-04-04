@@ -17,7 +17,7 @@ public class PlayerBlobMovement : MonoBehaviour
     private PlayerInput _playerInput;
     private Animator _animator;
     private Vector2 _frameVelocity;
-    private bool isGrounded;
+    public bool isGrounded;
     private bool _landed = false;
     private float _frameLeftGrounded = float.MinValue;
     private float _time;
@@ -40,6 +40,11 @@ public class PlayerBlobMovement : MonoBehaviour
         obj = null;
     }
 
+    void OnEnable() {
+        //Reset transform from any previous squeeze
+        anchor.transform.localScale = Vector3.one;
+    }
+
     public void OnMovement(InputAction.CallbackContext value)
     {
         _movementInput = value.ReadValue<Vector2>();
@@ -48,8 +53,13 @@ public class PlayerBlobMovement : MonoBehaviour
             _frameVelocity = new Vector2(0,0);
             gameObject.SetActive(false);
             _player.transform.position = transform.position;
+            if(isGrounded) {
+                _player.GetComponent<PlayerMovement>().SetStartingOnGround();
+                _player.GetComponent<PlayerMovement>().isGrounded = true;
+            }
             _player.GetComponent<PlayerMovement>().spriteRenderer.flipX = IsFacingLeft();
             _player.SetActive(true);
+            _player.GetComponent<Player>().PlayToPlayerAnimation();
         }
     }
 
@@ -109,11 +119,33 @@ public class PlayerBlobMovement : MonoBehaviour
         return spriteRenderer.flipX;
     }
 
+    public bool startingOnGround = true;
+    private bool _startingOnGroundFalseCoroutineStarted;
+    private IEnumerator SetStartingOnGroundToFalse() {
+        yield return new WaitForSeconds(0.1f);
+        startingOnGround = false;
+    }
+
+    public void SetStartingOnGround() {
+        startingOnGround = true;
+        _startingOnGroundFalseCoroutineStarted = false;
+    }
+
     private void CheckCollisions()
     {
         Physics2D.queriesStartInColliders = false;
 
         bool groundHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, _groundLayerMasks);
+
+        //Corner case when spawning
+        if(startingOnGround) {
+            groundHit = true;
+            if(!_startingOnGroundFalseCoroutineStarted) {
+                _startingOnGroundFalseCoroutineStarted = true;
+                StartCoroutine(SetStartingOnGroundToFalse());
+            }
+        }
+
         bool ceilingHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
 
         // Hit a Ceiling
