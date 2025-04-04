@@ -71,6 +71,7 @@ public class ChargeAnimationMgr : MonoBehaviour
 
     void Update()
     {
-        transform.position = new Vector2(Player.obj.transform.position.x, Player.obj.transform.position.y + _playerOffset);
+        if(Player.obj != null)
+            transform.position = new Vector2(Player.obj.transform.position.x, Player.obj.transform.position.y + _playerOffset);
     }
 }
