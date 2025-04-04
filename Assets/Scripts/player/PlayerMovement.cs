@@ -9,6 +9,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     [SerializeField] private bool isDevMode = true;
     [SerializeField] private ScriptableStats _stats;
+    [SerializeField] private GameObject _playerBlob;
+    
     public SpriteRenderer spriteRenderer;
     public GameObject anchor;
     private BoxCollider2D _collider;
@@ -303,6 +305,16 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             }
             else if(_movementInput.y >= 0)
                 CancelPowerJumpCharge();
+        } else {
+            if(_movementInput.y < 0 && value.performed) {
+                Player.obj.rigidBody.velocity = new Vector2(0, 0);
+                _frameVelocity = new Vector2(0, 0);
+                PlayerPush.obj.ResetBuiltUpPower();
+                gameObject.SetActive(false);
+                _playerBlob.transform.position = transform.position;
+                _playerBlob.GetComponent<PlayerBlobMovement>().spriteRenderer.flipX = isFacingLeft();
+                _playerBlob.SetActive(true);
+            }
         }
     }
 

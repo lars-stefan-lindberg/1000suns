@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class DustParticleMgr : MonoBehaviour
@@ -7,8 +5,6 @@ public class DustParticleMgr : MonoBehaviour
     public static DustParticleMgr obj;
 
     public ParticleSystem dust;
-    public GameObject playerAnchor;
-
     
     void Awake()
     {
@@ -23,7 +19,11 @@ public class DustParticleMgr : MonoBehaviour
 
     public void CreateDust()
     {
-        dust.transform.position = playerAnchor.transform.position;
+        if(PlayerBlobMovement.obj != null &&PlayerBlobMovement.obj.gameObject.activeSelf)
+            dust.transform.position = PlayerBlobMovement.obj.anchor.transform.position;
+        else
+            dust.transform.position = PlayerMovement.obj.anchor.transform.position;
+            
         dust.Play();
     }
 }

@@ -6,8 +6,9 @@ public class PlayerBlobMovement : MonoBehaviour
 {
     public static PlayerBlobMovement obj;
 
-    [SerializeField] private GameObject anchor;
-    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private GameObject _player;
+    public GameObject anchor;
+    public SpriteRenderer spriteRenderer;
     [SerializeField] private ScriptableStats _stats;
     [SerializeField] private LayerMask _groundLayerMasks;
     private LayerMask _ceilingLayerMasks;
@@ -42,6 +43,14 @@ public class PlayerBlobMovement : MonoBehaviour
     public void OnMovement(InputAction.CallbackContext value)
     {
         _movementInput = value.ReadValue<Vector2>();
+        if(_movementInput.y > 0 && value.performed) {
+            PlayerBlob.obj.rigidBody.velocity = new Vector2(0,0);
+            _frameVelocity = new Vector2(0,0);
+            gameObject.SetActive(false);
+            _player.transform.position = transform.position;
+            _player.GetComponent<PlayerMovement>().spriteRenderer.flipX = IsFacingLeft();
+            _player.SetActive(true);
+        }
     }
 
     public void OnJump(InputAction.CallbackContext context)
@@ -87,7 +96,7 @@ public class PlayerBlobMovement : MonoBehaviour
         FlipPlayer(_movementInput.x);
     }
 
-    private void FlipPlayer(float _xValue)
+    public void FlipPlayer(float _xValue)
     {
         if (_xValue < 0)
             spriteRenderer.flipX = true;
