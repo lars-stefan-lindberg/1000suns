@@ -1,10 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager obj;
+
+    public enum PlayerDirection {
+        RIGHT,
+        LEFT,
+        UP,
+        DOWN,
+        NO_DIRECTION
+    }
 
     public void DisablePlayerMovement() {
         if(PlayerMovement.obj != null && PlayerMovement.obj.gameObject.activeSelf)
@@ -31,6 +37,20 @@ public class PlayerManager : MonoBehaviour
     public void KillPlayerGeneric() {
         if(PlayerMovement.obj != null && PlayerMovement.obj.gameObject.activeSelf)
             Reaper.obj.KillPlayerGeneric();
+    }
+
+    public void SetTransitioningBetweenLevels() {
+        if(PlayerMovement.obj != null && PlayerMovement.obj.gameObject.activeSelf)
+            PlayerMovement.obj.SetTransitioningBetweenLevels();
+        else if(PlayerBlobMovement.obj != null && PlayerBlobMovement.obj.gameObject.activeSelf)
+            PlayerBlobMovement.obj.SetTransitioningBetweenLevels();
+    }
+
+    public void TransitionToNextRoom(PlayerManager.PlayerDirection direction) {
+        if(PlayerMovement.obj != null && PlayerMovement.obj.gameObject.activeSelf)
+            PlayerMovement.obj.TransitionToNextRoom(direction);
+        else if(PlayerBlobMovement.obj != null && PlayerBlobMovement.obj.gameObject.activeSelf)
+            PlayerBlobMovement.obj.TransitionToNextRoom(direction);
     }
 
     void Awake()

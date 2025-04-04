@@ -135,7 +135,7 @@ public class MainMenuManager : MonoBehaviour
         GameObject[] sceneGameObjects = introScene.GetRootGameObjects();
         GameObject cameras = sceneGameObjects.First(gameObject => gameObject.CompareTag("Cameras"));
         CameraManager cameraManager = cameras.GetComponent<CameraManager>();
-        cameraManager.ActivateMainCamera(PlayerMovement.PlayerDirection.NO_DIRECTION);
+        cameraManager.ActivateMainCamera(PlayerManager.PlayerDirection.NO_DIRECTION);
         
         SceneManager.UnloadSceneAsync(_titleScreen.SceneName);
     }

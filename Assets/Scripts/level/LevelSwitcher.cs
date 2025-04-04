@@ -24,7 +24,7 @@ public class LevelSwitcher : MonoBehaviour
             return;
         if(other.CompareTag("Player")) {
             if(_enablePlayerTransition)
-                PlayerMovement.obj.SetTransitioningBetweenLevels();
+                PlayerManager.obj.SetTransitioningBetweenLevels();
 
             StartCoroutine(LoadScenesCoroutine());
             StartCoroutine(UnloadScenes());
@@ -33,7 +33,7 @@ public class LevelSwitcher : MonoBehaviour
             LevelTracker.obj.StopTimeTracking(_currentScene.SceneName);
             SceneManager.SetActiveScene(SceneManager.GetSceneByName(_nextScene));
 
-            PlayerMovement.PlayerDirection playerDirection = GetPlayerDirection(other);
+            PlayerManager.PlayerDirection playerDirection = GetPlayerDirection(other);
             StartCoroutine(ActivateNextRoomCameraAndTransitionPlayer(playerDirection));
 
             StartCoroutine(MutePrisonersOffscreen());
@@ -42,7 +42,7 @@ public class LevelSwitcher : MonoBehaviour
     }
 
     private float _collisionMargin = 0.5f;
-    private PlayerMovement.PlayerDirection GetPlayerDirection(Collider2D playerCollider) {
+    private PlayerManager.PlayerDirection GetPlayerDirection(Collider2D playerCollider) {
         Bounds playerCollisionBounds = playerCollider.bounds;
         Bounds levelSwitcherBounds = _collider.bounds;
 
@@ -50,23 +50,23 @@ public class LevelSwitcher : MonoBehaviour
         Vector2 playerBottom = new(playerCollisionBounds.center.x, playerCollisionBounds.center.y - playerCollisionBounds.extents.y);
         Vector2 levelSwitcherTop = new(levelSwitcherBounds.center.x, levelSwitcherBounds.center.y + levelSwitcherBounds.extents.y); 
         if(playerBottom.y > levelSwitcherTop.y - _collisionMargin)
-            return PlayerMovement.PlayerDirection.DOWN;
+            return PlayerManager.PlayerDirection.DOWN;
 
         //Check if player colliders jumping up -> direction up
         Vector2 playerTop = new(playerCollisionBounds.center.x, playerCollisionBounds.center.y + playerCollisionBounds.extents.y);
         Vector2 levelSwitcherBottom = new(levelSwitcherBounds.center.x, levelSwitcherBounds.center.y - levelSwitcherBounds.extents.y); 
         if(playerTop.y < levelSwitcherBottom.y + _collisionMargin)
-            return PlayerMovement.PlayerDirection.UP;
+            return PlayerManager.PlayerDirection.UP;
 
         //Check if player collides from right -> direction left
         if(playerCollisionBounds.center.x > levelSwitcherBounds.center.x)
-            return PlayerMovement.PlayerDirection.LEFT;
+            return PlayerManager.PlayerDirection.LEFT;
         
         //Otherwise direction right
-        return PlayerMovement.PlayerDirection.RIGHT;
+        return PlayerManager.PlayerDirection.RIGHT;
     }
 
-    public IEnumerator ActivateNextRoomCameraAndTransitionPlayer(PlayerMovement.PlayerDirection direction) {
+    public IEnumerator ActivateNextRoomCameraAndTransitionPlayer(PlayerManager.PlayerDirection direction) {
         if(_enablePlayerTransition) {
             if(_scenesToLoad.Length > 0) {
                 bool scenesLoaded = false;
@@ -82,7 +82,7 @@ public class LevelSwitcher : MonoBehaviour
                 }
             }
 
-            PlayerMovement.obj.TransitionToNextRoom(direction);
+            PlayerManager.obj.TransitionToNextRoom(direction);
         }
 
         _currentRoomCamera.SetActive(false);

@@ -220,35 +220,28 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         return _isTransitioningBetweenLevels;
     }
 
-    public enum PlayerDirection {
-        RIGHT,
-        LEFT,
-        UP,
-        DOWN,
-        NO_DIRECTION
-    }
-    public void TransitionToNextRoom(PlayerDirection direction) {
+    public void TransitionToNextRoom(PlayerManager.PlayerDirection direction) {
         StartCoroutine(TransitionToNextRoomCoroutine(direction));
     }
 
     private float _transitionDistanceX = 1;
     private float _transitionDistanceUp = 2.5f;
     private float _transitionDistanceDown = 1.5f;
-    private IEnumerator TransitionToNextRoomCoroutine(PlayerDirection direction) {
+    private IEnumerator TransitionToNextRoomCoroutine(PlayerManager.PlayerDirection direction) {
         float target = 0;
-        if(direction == PlayerDirection.LEFT || direction == PlayerDirection.RIGHT) {
-            if(direction == PlayerDirection.RIGHT)
+        if(direction == PlayerManager.PlayerDirection.LEFT || direction == PlayerManager.PlayerDirection.RIGHT) {
+            if(direction == PlayerManager.PlayerDirection.RIGHT)
                 target = transform.position.x + _transitionDistanceX;
-            if(direction == PlayerDirection.LEFT)
+            if(direction == PlayerManager.PlayerDirection.LEFT)
                 target = transform.position.x - _transitionDistanceX;
             while(transform.position.x != target) {
                 transform.position = new Vector2(Mathf.MoveTowards(transform.position.x, target, Time.deltaTime * 5f), transform.position.y);
                 yield return null;
             }
-        } else if(direction == PlayerDirection.UP || direction == PlayerDirection.DOWN) {
-            if(direction == PlayerDirection.UP)
+        } else if(direction == PlayerManager.PlayerDirection.UP || direction == PlayerManager.PlayerDirection.DOWN) {
+            if(direction == PlayerManager.PlayerDirection.UP)
                 target = transform.position.y + _transitionDistanceUp;
-            if(direction == PlayerDirection.DOWN)
+            if(direction == PlayerManager.PlayerDirection.DOWN)
                 target = transform.position.y - _transitionDistanceDown;
             while(transform.position.y != target) {
                 transform.position = new Vector2(transform.position.x, Mathf.MoveTowards(transform.position.y, target, Time.deltaTime * 5f));

@@ -6,11 +6,11 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private GameObject _mainCamera;
     [SerializeField] private GameObject _alternativeCamera;
 
-    public void ActivateMainCamera(PlayerMovement.PlayerDirection direction)
+    public void ActivateMainCamera(PlayerManager.PlayerDirection direction)
     {
         //TODO, change this solution to be more flexible
         //Shitty solution for room 16 where another camera is used if player enters the "exit" of the room
-        if (direction == PlayerMovement.PlayerDirection.LEFT && _alternativeCamera != null)
+        if (direction == PlayerManager.PlayerDirection.LEFT && _alternativeCamera != null)
             ActivateCamera(_alternativeCamera);
         else
             ActivateCamera(_mainCamera);
