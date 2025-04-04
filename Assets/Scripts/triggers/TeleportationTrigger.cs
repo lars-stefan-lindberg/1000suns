@@ -19,13 +19,14 @@ public class TeleportationTrigger : MonoBehaviour
         PlayerMovement.obj.spriteRenderer.enabled = false;
 
         GameObject soul = Instantiate(_soul, Player.obj.transform.position, Player.obj.transform.rotation);
-        SoundFXManager.obj.PlayPlayerTeleport(soul.transform);
+        SoundFXManager.obj.PlayPlayerTeleportStart(soul.transform);
         PrisonerSoul prisonerSoul = soul.GetComponent<PrisonerSoul>();
         prisonerSoul.Target = _spawnPoint.transform;
         while (!prisonerSoul.IsTargetReached) {
             Player.obj.transform.position = prisonerSoul.transform.position;
             yield return null;
         }
+        SoundFXManager.obj.PlayPlayerTeleportEnd(Player.obj.transform);
         Destroy(prisonerSoul.gameObject);
         //Play player spawn animation
         PlayerMovement.obj.spriteRenderer.enabled = true;
