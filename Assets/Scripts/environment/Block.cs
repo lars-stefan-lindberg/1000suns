@@ -53,7 +53,7 @@ public class Block : MonoBehaviour
         {
             _rigidBody.bodyType = RigidbodyType2D.Dynamic;
             Projectile projectile = collision.gameObject.GetComponent<Projectile>();
-            bool hitFromTheLeft = Player.obj.transform.position.x < _rigidBody.position.x;
+            bool hitFromTheLeft = PlayerManager.obj.GetPlayerTransform().position.x < _rigidBody.position.x;
 
             //Check for prisoner is stuck to a wall. We assume that the prisoner is on the correct side of the block since the projectile is hitting
             if(_prisonerInContact != null) {

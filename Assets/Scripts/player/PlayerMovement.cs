@@ -56,6 +56,11 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         obj = null;
     }
 
+    private void OnEnable() {
+        //Reset transform from any previous squeeze
+        anchor.transform.localScale = Vector3.one;
+    }
+
     private void FixedUpdate()
     {
         if(!_stopCollisions)

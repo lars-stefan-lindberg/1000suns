@@ -53,6 +53,22 @@ public class PlayerManager : MonoBehaviour
             PlayerBlobMovement.obj.TransitionToNextRoom(direction);
     }
 
+    public float GetPlayerVerticalVelocity() {
+        if(Player.obj != null && Player.obj.gameObject.activeSelf)
+            return Player.obj.rigidBody.velocity.y;
+        else if(PlayerBlob.obj != null && PlayerBlob.obj.gameObject.activeSelf)
+            return PlayerBlob.obj.rigidBody.velocity.y;
+        return 0;
+    }
+
+    public Transform GetPlayerTransform() {
+        if(Player.obj != null && Player.obj.gameObject.activeSelf)
+            return Player.obj.transform;
+        else if(PlayerBlob.obj != null && PlayerBlob.obj.gameObject.activeSelf)
+            return PlayerBlob.obj.transform;
+        return null;
+    }
+
     void Awake()
     {
         obj = this;
