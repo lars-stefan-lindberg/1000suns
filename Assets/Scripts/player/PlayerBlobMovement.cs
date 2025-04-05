@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using FunkyCode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -26,6 +28,7 @@ public class PlayerBlobMovement : MonoBehaviour
     private bool _stopMovement = false;
     private Vector2 _movementInput;
     private bool _freezePlayer = false;
+    private readonly float _lightSize = 2.7f;
 
     void Awake() {
         obj = this;
@@ -45,6 +48,10 @@ public class PlayerBlobMovement : MonoBehaviour
         anchor.transform.localScale = Vector3.one;
     }
 
+    public float GetLightSize() {
+        return _lightSize;
+    }
+
     public void OnMovement(InputAction.CallbackContext value)
     {
         _movementInput = value.ReadValue<Vector2>();
@@ -59,6 +66,7 @@ public class PlayerBlobMovement : MonoBehaviour
             }
             _player.GetComponent<PlayerMovement>().spriteRenderer.flipX = IsFacingLeft();
             _player.SetActive(true);
+            _player.GetComponent<PlayerMovement>().OnToPlayerHandler();
             _player.GetComponent<Player>().PlayToPlayerAnimation();
         }
     }

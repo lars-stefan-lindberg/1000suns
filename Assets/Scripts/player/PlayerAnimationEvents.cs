@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerAnimationEvents : MonoBehaviour
@@ -10,6 +8,10 @@ public class PlayerAnimationEvents : MonoBehaviour
 
     public void PlaySubtleRunStep() {
         SoundFXManager.obj.PlayStep(Player.obj.surface, gameObject.transform, 0.8f);
+    }
+
+    public void StartTransformationToBlob() {
+        PlayerMovement.obj.StartTransformationToBlob();
     }
 
     public void ToBlob() {

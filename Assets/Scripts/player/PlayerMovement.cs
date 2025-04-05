@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using FunkyCode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -33,6 +34,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public bool isOnPlatform = false;
     public Rigidbody2D platformRigidBody;
     public JumpThroughPlatform jumpThroughPlatform;
+
+    private readonly float _lightSize = 6.6f;
 
     #region Interface
     public event Action<bool, float> GroundedChanged;
@@ -84,6 +87,26 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         GatherInput();
         UpdateAnimator();
         FlipPlayer(_movementInput.x);
+    }
+
+    public void OnToPlayerHandler() {
+        //Ensure smooth light transition between player and blob
+        float lightSize = _playerBlob.GetComponent<PlayerBlobMovement>().GetLightSize();
+        Light2D light2D = GetComponentInChildren<Light2D>();
+        light2D.size = lightSize;
+        StartCoroutine(ChangeLightSize(_lightSize, 0.1f));
+    }
+
+    private IEnumerator ChangeLightSize(float targetSize, float delay) {
+        Light2D light2D = GetComponentInChildren<Light2D>();
+        float time = 0f;
+        while (time <= 1.0)
+        {
+            time += Time.deltaTime / delay;
+            light2D.size = Mathf.Lerp(light2D.size, targetSize, time);
+            yield return null;
+        }
+        light2D.size = targetSize;
     }
 
     private void FlipPlayer(float _xValue)
@@ -311,6 +334,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         }
     }
 
+    public void StartTransformationToBlob() {
+        StartCoroutine(ChangeLightSize(0, 0.3f));
+    }
+
     public void ToBlob() {
         Player.obj.rigidBody.velocity = new Vector2(0, 0);
         _frameVelocity = new Vector2(0, 0);
@@ -322,7 +349,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         }
         _playerBlob.GetComponent<PlayerBlobMovement>().spriteRenderer.flipX = isFacingLeft();
         _playerBlob.SetActive(true);
-        _playerBlob.GetComponent<PlayerBlobMovement>().LandingSqueeze();
     }
 
     public void OnJump(InputAction.CallbackContext context)
