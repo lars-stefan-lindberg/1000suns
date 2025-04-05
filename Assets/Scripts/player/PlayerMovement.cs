@@ -322,6 +322,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         }
         _playerBlob.GetComponent<PlayerBlobMovement>().spriteRenderer.flipX = isFacingLeft();
         _playerBlob.SetActive(true);
+        _playerBlob.GetComponent<PlayerBlobMovement>().LandingSqueeze();
     }
 
     public void OnJump(InputAction.CallbackContext context)
@@ -557,6 +558,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
         StartCoroutine(JumpSqueeze(_jumpSqueezeX, _jumpSqueezeY, _jumpSqueezeTime));
         _jumpToConsume = false;
+    }
+
+    public void JumpSqueeze() {
+        StartCoroutine(JumpSqueeze(_jumpSqueezeX, _jumpSqueezeY, _jumpSqueezeTime));
     }
 
     private void ExecuteAirJump()

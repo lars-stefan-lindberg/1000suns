@@ -413,4 +413,8 @@ public class PlayerBlobMovement : MonoBehaviour
             _landed = false;
         }
     }
+
+    public void LandingSqueeze() {
+        StartCoroutine(JumpSqueeze(_landedSqueezeX, _landedSqueezeY, _landedSqueezeTime));
+    }
 }
