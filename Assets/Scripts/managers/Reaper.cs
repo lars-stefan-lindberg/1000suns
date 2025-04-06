@@ -1,7 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class Reaper : MonoBehaviour
 {
@@ -18,9 +16,8 @@ public class Reaper : MonoBehaviour
         if(!playerKilled){
             playerKilled = true;
             PlayerStatsManager.obj.numberOfDeaths += 1;
-            PlayerMovement.obj.Freeze(genericDeathAnimationTime);
-            SoundFXManager.obj.PlayPlayerGenericDeath(Player.obj.transform);
-            Player.obj.PlayGenericDeathAnimation();
+            PlayerManager.obj.KillPlayerGeneric(genericDeathAnimationTime);
+            SoundFXManager.obj.PlayPlayerGenericDeath(PlayerManager.obj.GetPlayerTransform());
             StartCoroutine(AfterDeathAnimation(genericDeathAnimationTime));
         }
     }
@@ -29,9 +26,8 @@ public class Reaper : MonoBehaviour
         if(!playerKilled){
             playerKilled = true;
             PlayerStatsManager.obj.numberOfDeaths += 1;
-            PlayerMovement.obj.Freeze(shadowDeathAnimationTime);
-            SoundFXManager.obj.PlayPlayerShadowDeath(Player.obj.transform);
-            Player.obj.PlayShadowDeathAnimation();
+            PlayerManager.obj.KillPlayerShadow(shadowDeathAnimationTime);
+            SoundFXManager.obj.PlayPlayerShadowDeath(PlayerManager.obj.GetPlayerTransform());
             StartCoroutine(AfterDeathAnimation(shadowDeathAnimationTime));
         }
     }
@@ -42,7 +38,7 @@ public class Reaper : MonoBehaviour
 
     private IEnumerator AfterDeathAnimation(float waitingTime) {
         yield return new WaitForSeconds(waitingTime);
-        Player.obj.gameObject.SetActive(false);
+        PlayerManager.obj.SetPlayerGameObjectInactive();
         SceneFadeManager.obj.StartFadeOut();
         while(SceneFadeManager.obj.IsFadingOut) {
             yield return null;

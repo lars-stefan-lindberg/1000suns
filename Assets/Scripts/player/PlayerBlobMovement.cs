@@ -122,6 +122,11 @@ public class PlayerBlobMovement : MonoBehaviour
             spriteRenderer.flipX = false;
     }
 
+    public void FlipPlayer()
+    {
+        spriteRenderer.flipX = !spriteRenderer.flipX;
+    }
+
     public bool IsFacingLeft()
     {
         return spriteRenderer.flipX;

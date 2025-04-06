@@ -53,11 +53,14 @@ public class LevelManager : MonoBehaviour
                 CameraManager cameraManager = cameras.GetComponent<CameraManager>();
                 cameraManager.ActivateMainCamera(PlayerManager.PlayerDirection.NO_DIRECTION);
 
-                Player.obj.transform.position = _playerSpawningCollider.transform.position;
+                if(Player.obj != null)
+                    Player.obj.transform.position = _playerSpawningCollider.transform.position;
+                if(PlayerBlob.obj != null)
+                    PlayerBlob.obj.transform.position = _playerSpawningCollider.transform.position - new Vector3(0, 0.5f, 0);
                 AdjustSpawnFaceDirection(Camera.main.transform.position.x, playerSpawnPoint.transform.position.x);
 
                 if(CaveAvatar.obj != null && CaveAvatar.obj.gameObject.activeSelf)
-                CaveAvatar.obj.SetStartingPosition();
+                    CaveAvatar.obj.SetStartingPosition();
                 //If there are collectibles following, set start positions for them
                 if(CollectibleManager.obj.GetNumberOfCreaturesFollowingPlayer() > 0) {
                     CaveCollectibleCreature previousCollectible = null;
@@ -71,19 +74,26 @@ public class LevelManager : MonoBehaviour
                     }
                 }
 
-                Player.obj.SetHasPowerUp(false);
-                Player.obj.gameObject.SetActive(true);
+                if(Player.obj != null)
+                    Player.obj.SetHasPowerUp(false);
+                
+                PlayerManager.obj.EnableLastActivePlayerGameObject();
+                
+                PlayerBlobMovement.obj.SetStartingOnGround();
+                PlayerBlobMovement.obj.isGrounded = true;
+
                 PlayerMovement.obj.SetStartingOnGround();
                 PlayerMovement.obj.isGrounded = true;
                 PlayerMovement.obj.isForcePushJumping = false;
                 PlayerMovement.obj.jumpedWhileForcePushJumping = false;
                 PlayerMovement.obj.CancelJumping();
+                PlayerBlobMovement.obj.CancelJumping();
 
                 Reaper.obj.playerKilled = false;
-                if(Player.obj.hasCape)
+                if(Player.obj != null && Player.obj.hasCape)
                     Player.obj.SetHasCape(true);
-                Player.obj.PlaySpawn();
-                SoundFXManager.obj.PlayPlayerShadowSpawn(Player.obj.transform);
+                PlayerManager.obj.PlaySpawn();
+                SoundFXManager.obj.PlayPlayerShadowSpawn(_playerSpawningCollider.transform);
                 
                 IEnumerable<GameObject> levelSwitchers = sceneGameObjects.Where(gameObject => gameObject.CompareTag("LevelSwitcher"));
                 foreach(GameObject levelSwitcherGameObject in levelSwitchers) {
@@ -98,10 +108,10 @@ public class LevelManager : MonoBehaviour
 
     private void AdjustSpawnFaceDirection(float sceneLoadTriggerPosition, float playerSpawnPointPosition) {
         bool isLeftSideOfScreen = sceneLoadTriggerPosition - playerSpawnPointPosition >= 0;
-            if(isLeftSideOfScreen && PlayerMovement.obj.isFacingLeft())
-                PlayerMovement.obj.FlipPlayer();
-            else if(!isLeftSideOfScreen && !PlayerMovement.obj.isFacingLeft())
-                PlayerMovement.obj.FlipPlayer();
+        if(isLeftSideOfScreen && PlayerManager.obj.IsPlayerFacingLeft())
+            PlayerManager.obj.FlipPlayer();
+        else if(!isLeftSideOfScreen && !PlayerManager.obj.IsPlayerFacingLeft())
+            PlayerManager.obj.FlipPlayer();
     }
 
     private bool IsLevelCompleted(string levelId)

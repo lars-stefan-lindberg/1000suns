@@ -323,7 +323,7 @@ public class PauseMenuManager : MonoBehaviour
 
     public void RetryRoomHandler() {
         ResumeGame();
-        PlayerManager.obj.KillPlayerGeneric();
+        Reaper.obj.KillPlayerGeneric();
     }
 
     // Called when a UI element is selected

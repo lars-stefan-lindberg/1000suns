@@ -41,7 +41,7 @@ public class Block : MonoBehaviour
                 _rigidBody.bodyType = RigidbodyType2D.Static;
 
             if(HitUnderneath(collision)) {
-                if(PlayerMovement.obj.isGrounded) {
+                if(PlayerManager.obj.IsPlayerGrounded()) {
                     _rigidBody.bodyType = RigidbodyType2D.Static;
                     Reaper.obj.KillPlayerGeneric();
                 }
@@ -168,7 +168,7 @@ public class Block : MonoBehaviour
 
     private void FixedUpdate() {
         if(isPlayerBeneath) {
-            if(PlayerMovement.obj.isGrounded)
+            if(PlayerManager.obj.IsPlayerGrounded())
                 Reaper.obj.KillPlayerGeneric();
         }
     }
