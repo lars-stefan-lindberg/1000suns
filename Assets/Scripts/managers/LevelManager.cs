@@ -79,15 +79,17 @@ public class LevelManager : MonoBehaviour
                 
                 PlayerManager.obj.EnableLastActivePlayerGameObject();
                 
-                PlayerBlobMovement.obj.SetStartingOnGround();
-                PlayerBlobMovement.obj.isGrounded = true;
+                if(PlayerBlobMovement.obj != null) {
+                    PlayerBlobMovement.obj.SetStartingOnGround();
+                    PlayerBlobMovement.obj.isGrounded = true;
+                    PlayerBlobMovement.obj.CancelJumping();
+                }
 
                 PlayerMovement.obj.SetStartingOnGround();
                 PlayerMovement.obj.isGrounded = true;
                 PlayerMovement.obj.isForcePushJumping = false;
                 PlayerMovement.obj.jumpedWhileForcePushJumping = false;
                 PlayerMovement.obj.CancelJumping();
-                PlayerBlobMovement.obj.CancelJumping();
 
                 Reaper.obj.playerKilled = false;
                 if(Player.obj != null && Player.obj.hasCape)

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class CaveCollectibleCreature : MonoBehaviour
 {
+    public event Action OnPicked;
     public bool IsPicked {get; set;}
     public bool IsPermantentlyCollected {get; set;}
     public bool IsDespawned = false;
@@ -49,6 +50,7 @@ public class CaveCollectibleCreature : MonoBehaviour
         if(other.gameObject.CompareTag("Player")) {
             _collider.enabled = false;
             IsPicked = true;
+            OnPicked?.Invoke();
             StartCoroutine(FadeOutLight());
         }
     }

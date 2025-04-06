@@ -155,6 +155,7 @@ GameObject:
   - component: {fileID: 874638831613449156}
   - component: {fileID: 4453240479829384478}
   - component: {fileID: 1174619653197358008}
+  - component: {fileID: -4005457591166618301}
   m_Layer: 0
   m_Name: CaveAvatarContainer
   m_TagString: Untagged
@@ -255,6 +256,19 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &-4005457591166618301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3183850526039139232}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c16e20bd081048d6aa8e4c38daee40e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _pickupSound: {fileID: 8300000, guid: eda9d41346b8948e998a3b4326ddfec6, type: 3}
 --- !u!1 &4090376989520435368
 GameObject:
   m_ObjectHideFlags: 0
