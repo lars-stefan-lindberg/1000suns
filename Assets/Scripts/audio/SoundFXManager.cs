@@ -48,6 +48,7 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip[] fallingSpikeCrackling;
     public AudioClip[] fallingSpikeFall;
     public AudioClip[] fallingSpikeHit;
+    public AudioClip[] fallingSpikeHitLiquid;
     #endregion
 
     #region Mushrooms
@@ -255,7 +256,9 @@ public class SoundFXManager : MonoBehaviour
     public void PlayFallingSpikeHit(Transform spawnTransform) {
         PlayRandomSound(fallingSpikeHit, spawnTransform, 1f);
     }
-
+    public void PlayFallingSpikeHitLiquid(Transform spawnTransform) {
+        PlayRandomSound(fallingSpikeHitLiquid, spawnTransform, 1f);
+    }
     public void PlayMushroomBigBounce(Transform spawnTransform) {
         PlayRandomSound(mushroomBigBounce, spawnTransform, 1f);
     }

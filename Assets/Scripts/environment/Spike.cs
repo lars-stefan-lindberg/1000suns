@@ -42,6 +42,8 @@ public class Spike : MonoBehaviour
     private readonly float _raycastOffsetX = 2;
     [SerializeField] private float _raycastOffsetY = 0;
 
+    private bool hitLiquid = false;
+
     private void Update() {
         // Debug.DrawRay(new Vector2(transform.position.x - _raycastOffsetX, transform.position.y + _raycastOffsetY), Vector3.down * (castDistance + _raycastOffsetY), Color.red);
         // Debug.DrawRay(new Vector2(transform.position.x + _raycastOffsetX, transform.position.y + _raycastOffsetY), Vector3.down * (castDistance + _raycastOffsetY), Color.red);
@@ -108,7 +110,9 @@ public class Spike : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision) {
         if(!_isFalling)
             return;
-        SoundFXManager.obj.PlayFallingSpikeHit(transform);
+        if(!hitLiquid) {
+            SoundFXManager.obj.PlayFallingSpikeHit(transform);
+        }
         _hasDetectedPlayer = true;
         _isFalling = false;
         _rigidBody.velocity = Vector3.zero;
@@ -124,6 +128,15 @@ public class Spike : MonoBehaviour
         if(isRespawnable) {
             _isRespawning = true;
             _respawnTimer = 0f;
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.gameObject.CompareTag("ToxicLiquid"))
+        {
+            hitLiquid = true;
+            SoundFXManager.obj.PlayFallingSpikeHitLiquid(transform);
         }
     }
 
@@ -149,5 +162,6 @@ public class Spike : MonoBehaviour
         _isRespawning = false;
         _collider.enabled = true;
         _hasDetectedPlayer = false;
+        hitLiquid = false;
     }
 }
