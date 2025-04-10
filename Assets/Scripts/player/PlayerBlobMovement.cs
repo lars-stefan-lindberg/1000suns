@@ -82,10 +82,23 @@ public class PlayerBlobMovement : MonoBehaviour
         }
         else if (context.canceled)
         {
-            _jumpHeldInput = false;
+            if(!_airJumpPerformed)
+                _jumpHeldInput = false;
         }
     }
 
+    public void ExecuteChargedJump() {
+        if(isGrounded || CanUseCoyote) {
+            _jumpToConsume = true;
+            _jumpHeldInput = true;
+            _timeJumpWasPressed = _time;
+        } else {
+            _airJumpToConsume = true;
+            _jumpHeldInput = true;
+            _timeJumpWasPressed = _time;
+        }
+    }
+        
     public void CancelJumping() {
         _jumpToConsume = false;
     }
@@ -175,6 +188,8 @@ public class PlayerBlobMovement : MonoBehaviour
             _bufferedJumpUsable = true;
             _endedJumpEarly = false;
             _landed = true;
+            _airJumpToConsume = false;
+            _airJumpPerformed = false;
 
             //To avoid "double grounded". Sometimes when player barely reaches up on edge it gets grounded, but still has upwards velocity, and lands again.
             _frameVelocity.y = 0; 
@@ -190,6 +205,8 @@ public class PlayerBlobMovement : MonoBehaviour
     }
 
     private bool _jumpToConsume;
+    private bool _airJumpToConsume = false;
+    private bool _airJumpPerformed = false;
     private float _timeJumpWasPressed;
     private bool _endedJumpEarly;
     private bool _coyoteUsable;
@@ -198,14 +215,23 @@ public class PlayerBlobMovement : MonoBehaviour
     private bool CanUseJump => (isGrounded || CanUseCoyote) && _jumpToConsume;
     private bool CanUseCoyote => _coyoteUsable && !isGrounded && _time < _frameLeftGrounded + _stats.CoyoteTime;
     private bool HasBufferedJump => _bufferedJumpUsable && _time < _timeJumpWasPressed + _stats.JumpBuffer;
+    private bool CanUseAirJump => _airJumpToConsume && !isGrounded && _time > _frameLeftGrounded + _stats.CoyoteTime;
 
     private void HandleJump()
     {
         if (!_endedJumpEarly && !isGrounded && !_jumpHeldInput && PlayerBlob.obj.rigidBody.velocity.y > 0) _endedJumpEarly = true;
 
-        if (!_jumpToConsume && !HasBufferedJump) return;
+        if (!_jumpToConsume && !CanUseAirJump && !HasBufferedJump) return;
 
         if (CanUseJump) ExecuteRegularJump();
+        if (CanUseAirJump) ExecuteAirJump();
+    }
+
+    private void ExecuteAirJump()
+    {
+        ExecuteJump(_stats.JumpPower);
+        _airJumpToConsume = false;
+        _airJumpPerformed = true;
     }
 
     private void ExecuteRegularJump()
