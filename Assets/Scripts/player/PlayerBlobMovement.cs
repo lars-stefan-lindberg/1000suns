@@ -413,9 +413,9 @@ public class PlayerBlobMovement : MonoBehaviour
     private float _landedSqueezeTime = 0.08f;
     private void UpdateAnimator()
     {
-        //_animator.SetBool("isGrounded", isGrounded);
+        _animator.SetBool("isGrounded", isGrounded);
         isMoving = _movementInput.x != 0;
-        //_animator.SetBool("isMoving", isMoving);
+        _animator.SetBool("isMoving", isMoving);
         isFalling = _frameVelocity.y < -_stats.MinimumFallAnimationSpeed;
         //_animator.SetBool("isFalling", isFalling);
         if (_landed)
