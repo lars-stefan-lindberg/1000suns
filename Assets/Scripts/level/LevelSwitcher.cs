@@ -20,8 +20,9 @@ public class LevelSwitcher : MonoBehaviour
     }
 
     void OnTriggerEnter2D(Collider2D other) {
-        if(SceneManager.GetActiveScene().name != _currentScene.SceneName)
+        if(SceneManager.GetActiveScene().name != _currentScene.SceneName) {
             return;
+        }
         if(other.CompareTag("Player")) {
             if(_enablePlayerTransition)
                 PlayerManager.obj.SetTransitioningBetweenLevels();
