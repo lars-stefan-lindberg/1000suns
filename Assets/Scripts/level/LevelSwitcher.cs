@@ -10,6 +10,7 @@ public class LevelSwitcher : MonoBehaviour
     [SerializeField] private SceneField _currentScene;
     [SerializeField] private SceneField _nextScene;
     [SerializeField] private GameObject _currentRoomCamera;
+    [SerializeField] private bool _activateAlternativeCamera = false;
     [SerializeField] private SceneField[] _scenesToLoad;
     [SerializeField] private SceneField[] _scenesToUnload;
     [SerializeField] private bool _enablePlayerTransition = true;
@@ -92,7 +93,11 @@ public class LevelSwitcher : MonoBehaviour
         GameObject[] sceneGameObjects = SceneManager.GetSceneByName(_nextScene).GetRootGameObjects();
         GameObject cameras = sceneGameObjects.First(gameObject => gameObject.CompareTag("Cameras"));
         CameraManager cameraManager = cameras.GetComponent<CameraManager>();
-        cameraManager.ActivateMainCamera(direction);
+        if(_activateAlternativeCamera) {
+            cameraManager.ActivateAlternativeCamera();
+        } else {
+            cameraManager.ActivateMainCamera(direction);
+        }
 
         yield return null;
     }

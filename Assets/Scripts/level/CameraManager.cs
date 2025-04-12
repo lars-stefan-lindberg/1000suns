@@ -16,6 +16,10 @@ public class CameraManager : MonoBehaviour
             ActivateCamera(_mainCamera);
     }
 
+    public void ActivateAlternativeCamera() {
+        ActivateCamera(_alternativeCamera);
+    }
+
     private void ActivateCamera(GameObject camera)
     {
         camera.SetActive(true);
