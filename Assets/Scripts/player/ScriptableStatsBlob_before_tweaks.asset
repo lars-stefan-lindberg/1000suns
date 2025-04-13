@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6563dd16baeb94de88c8ed32ee411520, type: 3}
-  m_Name: ScriptableStatsBlob
+  m_Name: ScriptableStatsBlob_before_tweaks
   m_EditorClassIdentifier: 
   PlayerLayer:
     serializedVersion: 2
@@ -25,11 +25,11 @@ MonoBehaviour:
   GroundingForce: 0
   GrounderDistance: 0.089
   RoofDistance: 0.297
-  JumpPower: 8.5
-  MaxFallSpeed: 20
-  MinimumFallAnimationSpeed: 19
-  FallAcceleration: 25
+  JumpPower: 12
+  MaxFallSpeed: 25.1
+  MinimumFallAnimationSpeed: 23.5
+  FallAcceleration: 50
   CeilingBounceBackSpeed: 0.5
-  JumpEndEarlyGravityModifier: 2
+  JumpEndEarlyGravityModifier: 3
   CoyoteTime: 0.05
   JumpBuffer: 0.02
