@@ -29,6 +29,9 @@ public class PlayerBlobMovement : MonoBehaviour
     private Vector2 _movementInput;
     private bool _freezePlayer = false;
     private readonly float _lightSize = 2.7f;
+    
+    //Not great but it's hard to get this dynamically since the player object is always disabled when player blob is active
+    private readonly float _playerColliderHeight = 1.642559f;  
 
     void Awake() {
         obj = this;
@@ -56,6 +59,9 @@ public class PlayerBlobMovement : MonoBehaviour
     {
         _movementInput = value.ReadValue<Vector2>();
         if(_movementInput.y > 0 && value.performed) {
+            if(!IsEnoughSpaceForPlayer()) {
+                return;
+            }
             PlayerBlob.obj.rigidBody.velocity = new Vector2(0,0);
             _frameVelocity = new Vector2(0,0);
             gameObject.SetActive(false);
@@ -69,6 +75,35 @@ public class PlayerBlobMovement : MonoBehaviour
             _player.GetComponent<PlayerMovement>().OnToPlayerHandler();
             _player.GetComponent<Player>().PlayToPlayerAnimation();
         }
+    }
+
+    public bool IsEnoughSpaceForPlayer()
+    {
+        // Get the collider bounds of the blob
+        Bounds blobBounds = _collider.bounds;
+        
+        // Calculate the bottom left and bottom right corners of the collider
+        Vector2 bottomLeft = new Vector2(blobBounds.min.x, blobBounds.min.y);
+        Vector2 bottomRight = new Vector2(blobBounds.max.x, blobBounds.min.y);
+        
+        // Get the player's collider height to determine how far to cast the rays
+        float rayDistance = _playerColliderHeight;
+        
+        // Direction for the raycasts (upward)
+        Vector2 rayDirection = Vector2.up;
+        
+        // Debug visualization
+        // Debug.DrawRay(bottomLeft, rayDirection * rayDistance, Color.red, 2f);
+        // Debug.DrawRay(bottomRight, rayDirection * rayDistance, Color.red, 2f);
+        
+        // Perform the raycasts
+        RaycastHit2D leftHit = Physics2D.Raycast(bottomLeft, rayDirection, rayDistance, _groundLayerMasks);
+        RaycastHit2D rightHit = Physics2D.Raycast(bottomRight, rayDirection, rayDistance, _groundLayerMasks);
+        
+        // If either raycast hits something, there's not enough space
+        bool hasEnoughSpace = !leftHit && !rightHit;
+        
+        return hasEnoughSpace;
     }
 
     public void OnJump(InputAction.CallbackContext context)

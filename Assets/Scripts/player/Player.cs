@@ -143,8 +143,18 @@ public class Player : MonoBehaviour
         transform.position = new Vector2(191.975f, 24.89f);
     }
 
+
+
     void OnDestroy()
     {
         obj = null; 
+    }
+
+    public float GetColliderHeight()
+    {
+        if (_collider == null)
+            return 0f;
+            
+        return _collider.bounds.size.y;
     }
 }
