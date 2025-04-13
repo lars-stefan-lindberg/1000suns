@@ -29,7 +29,7 @@ public class PlayerBlobMovement : MonoBehaviour
     private Vector2 _movementInput;
     private bool _freezePlayer = false;
     private readonly float _lightSize = 2.7f;
-    
+
     //Not great but it's hard to get this dynamically since the player object is always disabled when player blob is active
     private readonly float _playerColliderHeight = 1.642559f;  
 
@@ -135,6 +135,7 @@ public class PlayerBlobMovement : MonoBehaviour
     }
         
     public void CancelJumping() {
+        _jumpHeldInput = false;
         _jumpToConsume = false;
     }
 
