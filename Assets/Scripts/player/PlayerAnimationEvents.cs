@@ -10,10 +10,6 @@ public class PlayerAnimationEvents : MonoBehaviour
         SoundFXManager.obj.PlayStep(Player.obj.surface, gameObject.transform, 0.8f);
     }
 
-    public void StartTransformationToBlob() {
-        PlayerMovement.obj.StartTransformationToBlob();
-    }
-
     public void ToBlob() {
         PlayerMovement.obj.ToBlob();
     }

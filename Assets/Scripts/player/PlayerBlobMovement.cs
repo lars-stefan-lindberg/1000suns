@@ -28,7 +28,6 @@ public class PlayerBlobMovement : MonoBehaviour
     private bool _stopMovement = false;
     private Vector2 _movementInput;
     private bool _freezePlayer = false;
-    private readonly float _lightSize = 2.7f;
 
     //Not great but it's hard to get this dynamically since the player object is always disabled when player blob is active
     private readonly float _playerColliderHeight = 1.642559f;  
@@ -51,10 +50,6 @@ public class PlayerBlobMovement : MonoBehaviour
         anchor.transform.localScale = Vector3.one;
     }
 
-    public float GetLightSize() {
-        return _lightSize;
-    }
-
     public void OnMovement(InputAction.CallbackContext value)
     {
         _movementInput = value.ReadValue<Vector2>();
@@ -72,7 +67,6 @@ public class PlayerBlobMovement : MonoBehaviour
             }
             _player.GetComponent<PlayerMovement>().spriteRenderer.flipX = IsFacingLeft();
             _player.SetActive(true);
-            _player.GetComponent<PlayerMovement>().OnToPlayerHandler();
             _player.GetComponent<Player>().PlayToPlayerAnimation();
         }
     }
