@@ -19,6 +19,7 @@ public class GameEventManager : MonoBehaviour
     public bool PowerUpRoomCompletedWallBreak { get; set; }
     public bool AfterPowerUpRoomsCompletedWallBreak { get; set; }
     public bool C215WallBroken { get; set; }
+    public bool C275FloorBroken { get; set; }
 
     public bool IsPauseAllowed { get; set; }
 
@@ -38,6 +39,7 @@ public class GameEventManager : MonoBehaviour
         PowerUpRoomCompletedWallBreak = false;
         IsPauseAllowed = true;
         C215WallBroken = false;
+        C275FloorBroken = false;
         FirstCaveCollectibleConversationEnded = false;
         FirstPrisonerFightStarted = false;
         FirstPrisonerKilled = false;
