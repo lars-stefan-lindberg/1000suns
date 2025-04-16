@@ -17,6 +17,11 @@ public class CameraManager : MonoBehaviour
     }
 
     public void ActivateAlternativeCamera() {
+        if(_alternativeCamera == null) {
+            Debug.Log("No alternative camera found when trying to activate it.");
+            ActivateCamera(_mainCamera);
+            return;
+        }
         ActivateCamera(_alternativeCamera);
     }
 

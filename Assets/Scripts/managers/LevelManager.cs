@@ -51,7 +51,11 @@ public class LevelManager : MonoBehaviour
                 //do an early enough reset of any parallax backgrounds.
                 GameObject cameras = sceneGameObjects.First(gameObject => gameObject.CompareTag("Cameras"));
                 CameraManager cameraManager = cameras.GetComponent<CameraManager>();
-                cameraManager.ActivateMainCamera(PlayerManager.PlayerDirection.NO_DIRECTION);
+                if(IsLevelCompleted(scene.name)) {
+                    cameraManager.ActivateAlternativeCamera();
+                } else {
+                    cameraManager.ActivateMainCamera(PlayerManager.PlayerDirection.NO_DIRECTION);
+                }
 
                 if(Player.obj != null)
                     Player.obj.transform.position = _playerSpawningCollider.transform.position;
@@ -59,8 +63,13 @@ public class LevelManager : MonoBehaviour
                     PlayerBlob.obj.transform.position = _playerSpawningCollider.transform.position - new Vector3(0, 0.5f, 0);
                 AdjustSpawnFaceDirection(Camera.main.transform.position.x, playerSpawnPoint.transform.position.x);
 
-                if(CaveAvatar.obj != null && CaveAvatar.obj.gameObject.activeSelf)
-                    CaveAvatar.obj.SetStartingPosition();
+                if(CaveAvatar.obj != null && CaveAvatar.obj.gameObject.activeSelf) {
+                    if(GameEventManager.obj.C26CutsceneCompleted) {
+                        CaveAvatar.obj.SetStartingPositionInRoom27();
+                    } else {
+                        CaveAvatar.obj.SetStartingPosition();
+                    }
+                }
                 //If there are collectibles following, set start positions for them
                 if(CollectibleManager.obj.GetNumberOfCreaturesFollowingPlayer() > 0) {
                     CaveCollectibleCreature previousCollectible = null;

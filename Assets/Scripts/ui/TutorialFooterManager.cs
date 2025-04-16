@@ -106,20 +106,28 @@ public class TutorialFooterManager : MonoBehaviour
         if(_gamepadInstructions != null) {
             if(InputDeviceListener.obj.GetCurrentInputDevice() == InputDeviceListener.Device.Gamepad) {
                 _gamepadInstructions.SetActive(true);
-                _gamepadJumpIcon.gameObject.SetActive(true);
-                _gamepadUsePowerIcon.gameObject.SetActive(true);
-
-                _gamepadJumpIcon.sprite = GamepadIconManager.obj.GetIcon(_jumpActionReference.action);
-                _gamepadUsePowerIcon.sprite = GamepadIconManager.obj.GetIcon(_usePowerActionReference.action);
+                if(_gamepadJumpIcon != null) {
+                    _gamepadJumpIcon.gameObject.SetActive(true);
+                    _gamepadJumpIcon.sprite = GamepadIconManager.obj.GetIcon(_jumpActionReference.action);
+                }
+                if(_gamepadUsePowerIcon != null) {
+                    _gamepadUsePowerIcon.gameObject.SetActive(true);
+                    _gamepadUsePowerIcon.sprite = GamepadIconManager.obj.GetIcon(_usePowerActionReference.action);
+                }
             } else {
                 _keyboardInstructions.SetActive(true);
-                _keyboardForwardText.gameObject.SetActive(true);
-                _keyboardUsePowerText.gameObject.SetActive(true);
-                _keyboardJumpText.gameObject.SetActive(true);
-
-                _keyboardUsePowerText.text = _usePowerActionReference.action.GetBindingDisplayString(InputBinding.MaskByGroup("Keyboard"));
-                _keyboardForwardText.text = GetKeyboardForwardDisplayString();
-                _keyboardJumpText.text = _jumpActionReference.action.GetBindingDisplayString(InputBinding.MaskByGroup("Keyboard"));
+                if(_keyboardForwardText != null) {
+                    _keyboardForwardText.gameObject.SetActive(true);
+                    _keyboardForwardText.text = GetKeyboardForwardDisplayString();
+                }
+                if(_keyboardUsePowerText != null) {
+                    _keyboardUsePowerText.gameObject.SetActive(true);
+                    _keyboardUsePowerText.text = _usePowerActionReference.action.GetBindingDisplayString(InputBinding.MaskByGroup("Keyboard"));
+                }
+                if(_keyboardJumpText != null) {
+                    _keyboardJumpText.gameObject.SetActive(true);
+                    _keyboardJumpText.text = _jumpActionReference.action.GetBindingDisplayString(InputBinding.MaskByGroup("Keyboard"));
+                }
             }
         }
 

@@ -36,8 +36,12 @@ public class CaveAvatar : MonoBehaviour
             _headSpriteRenderer.flipX = isPlayerFacingLeft;   
             headTargetPosition = isPlayerFacingLeft ? _playerTargetRight.position : _playerTargetLeft.position;
         } else {
-            headTargetPosition = _target.transform.position;
-            _headSpriteRenderer.flipX = _head.transform.position.x > _target.transform.position.x;
+            if(_target == null) {
+                headTargetPosition = _head.transform.position;
+            } else {
+                headTargetPosition = _target.transform.position;
+                _headSpriteRenderer.flipX = _head.transform.position.x > _target.transform.position.x;
+            }
         }
 
         //If player is standing still, go into idle/floating state
@@ -88,6 +92,12 @@ public class CaveAvatar : MonoBehaviour
     public void SetStartingPosition() {
         Vector2 headTargetPosition = PlayerMovement.obj.isFacingLeft() ? _playerTargetRight.position : _playerTargetLeft.position;
         SetPosition(headTargetPosition);
+    }
+
+    public void SetStartingPositionInRoom27() {
+        SetPosition(new Vector2(1390.125f, -16f));
+        IsFollowingPlayer = false;
+        _target = null;
     }
 
     public void SetPosition(Vector2 target) {

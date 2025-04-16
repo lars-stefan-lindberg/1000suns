@@ -21,6 +21,7 @@ public class GameEventManager : MonoBehaviour
     public bool C215WallBroken { get; set; }
     public bool C275FloorBroken { get; set; }
     public bool C26CutsceneCompleted { get; set; }
+    public bool C27CutsceneCompleted { get; set; }
 
     public bool IsPauseAllowed { get; set; }
 
@@ -47,6 +48,7 @@ public class GameEventManager : MonoBehaviour
         FirstCaveMiniBossKilled = false;
         C1MonologueEnded = false;
         C26CutsceneCompleted = false;
+        C27CutsceneCompleted = false;
     }
 
     void OnDestroy() {
