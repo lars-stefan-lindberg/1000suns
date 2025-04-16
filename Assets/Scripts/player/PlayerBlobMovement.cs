@@ -54,6 +54,9 @@ public class PlayerBlobMovement : MonoBehaviour
     {
         _movementInput = value.ReadValue<Vector2>();
         if(_movementInput.y > 0 && value.performed) {
+            if(!PlayerPowersManager.obj.CanTurnFromBlobToHuman) {
+                return;
+            }
             if(!IsEnoughSpaceForPlayer()) {
                 return;
             }
@@ -102,6 +105,9 @@ public class PlayerBlobMovement : MonoBehaviour
 
     public void OnJump(InputAction.CallbackContext context)
     {
+        if(!PlayerPowersManager.obj.BlobCanJump) {
+            return;
+        }
         if (context.performed)
         {
             if (isGrounded || CanUseCoyote)

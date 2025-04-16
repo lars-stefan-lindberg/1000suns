@@ -35,6 +35,9 @@ public static PlayerBlobCharge obj;
 
     public void OnShoot(InputAction.CallbackContext context)
     {
+        if(!PlayerPowersManager.obj.BlobCanExtraJump) {
+            return;
+        }
         if (context.performed)
         {
             if (defaultPower < StaminaMgr.obj.GetCurrentStamina()) {
