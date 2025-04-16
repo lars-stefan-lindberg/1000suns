@@ -70,6 +70,7 @@ public class PlayerBlobMovement : MonoBehaviour
             }
             _player.GetComponent<PlayerMovement>().spriteRenderer.flipX = IsFacingLeft();
             _player.SetActive(true);
+            _player.GetComponent<PlayerMovement>().UnFreeze();
             _player.GetComponent<Player>().PlayToPlayerAnimation();
         }
     }
