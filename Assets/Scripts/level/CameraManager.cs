@@ -14,6 +14,7 @@ public class CameraManager : MonoBehaviour
             ActivateCamera(_alternativeCamera);
         else {
             ActivateCamera(_mainCamera);
+            if(_alternativeCamera != null)
             DeactivateCamera(_alternativeCamera);
         }
     }
