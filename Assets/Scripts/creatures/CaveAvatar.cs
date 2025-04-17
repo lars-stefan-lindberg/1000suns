@@ -100,6 +100,12 @@ public class CaveAvatar : MonoBehaviour
         _target = null;
     }
 
+    public void SetStartingPositionInRoom30() {
+        SetPosition(new Vector2(1475.125f, -14.875f));
+        IsFollowingPlayer = false;
+        _target = null;
+    }
+
     public void SetPosition(Vector2 target) {
         bool isPlayerFacingLeft = PlayerMovement.obj.isFacingLeft();
         _headSpriteRenderer.flipX = isPlayerFacingLeft;   

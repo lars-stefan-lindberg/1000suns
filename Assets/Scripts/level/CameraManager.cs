@@ -12,8 +12,10 @@ public class CameraManager : MonoBehaviour
         //Shitty solution for room 16 where another camera is used if player enters the "exit" of the room
         if (direction == PlayerManager.PlayerDirection.LEFT && _alternativeCamera != null)
             ActivateCamera(_alternativeCamera);
-        else
+        else {
             ActivateCamera(_mainCamera);
+            DeactivateCamera(_alternativeCamera);
+        }
     }
 
     public void ActivateAlternativeCamera() {
@@ -23,6 +25,7 @@ public class CameraManager : MonoBehaviour
             return;
         }
         ActivateCamera(_alternativeCamera);
+        DeactivateCamera(_mainCamera);
     }
 
     private void ActivateCamera(GameObject camera)
@@ -30,5 +33,11 @@ public class CameraManager : MonoBehaviour
         camera.SetActive(true);
         CinemachineVirtualCamera cinemachineVirtualCamera = camera.GetComponent<CinemachineVirtualCamera>();
         cinemachineVirtualCamera.enabled = true;
+    }
+
+    private void DeactivateCamera(GameObject camera) {
+        camera.SetActive(false);
+        CinemachineVirtualCamera cinemachineVirtualCamera = camera.GetComponent<CinemachineVirtualCamera>();
+        cinemachineVirtualCamera.enabled = false;
     }
 }

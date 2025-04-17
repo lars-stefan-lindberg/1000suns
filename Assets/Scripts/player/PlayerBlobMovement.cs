@@ -62,17 +62,25 @@ public class PlayerBlobMovement : MonoBehaviour
             }
             PlayerBlob.obj.rigidBody.velocity = new Vector2(0,0);
             _frameVelocity = new Vector2(0,0);
-            gameObject.SetActive(false);
-            _player.transform.position = transform.position;
-            if(isGrounded) {
-                _player.GetComponent<PlayerMovement>().SetStartingOnGround();
-                _player.GetComponent<PlayerMovement>().isGrounded = true;
-            }
-            _player.GetComponent<PlayerMovement>().spriteRenderer.flipX = IsFacingLeft();
-            _player.SetActive(true);
-            _player.GetComponent<PlayerMovement>().UnFreeze();
-            _player.GetComponent<Player>().PlayToPlayerAnimation();
+            ToHuman();
         }
+    }
+
+    public void ToHuman() {
+        gameObject.SetActive(false);
+        _player.transform.position = transform.position;
+        if(isGrounded) {
+            _player.GetComponent<PlayerMovement>().SetStartingOnGround();
+            _player.GetComponent<PlayerMovement>().isGrounded = true;
+        }
+        _player.GetComponent<PlayerMovement>().spriteRenderer.flipX = IsFacingLeft();
+        _player.SetActive(true);
+        if(IsFrozen()) {
+            _player.GetComponent<PlayerMovement>().Freeze();
+        } else {
+            _player.GetComponent<PlayerMovement>().UnFreeze();
+        }
+        _player.GetComponent<Player>().PlayToPlayerAnimation();
     }
 
     public bool IsEnoughSpaceForPlayer()

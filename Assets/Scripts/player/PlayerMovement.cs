@@ -323,6 +323,11 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         }
         _playerBlob.GetComponent<PlayerBlobMovement>().spriteRenderer.flipX = isFacingLeft();
         _playerBlob.SetActive(true);
+        if(IsFrozen()) {
+            _playerBlob.GetComponent<PlayerBlobMovement>().Freeze();
+        } else {
+            _playerBlob.GetComponent<PlayerBlobMovement>().UnFreeze();
+        }
     }
 
     public void OnJump(InputAction.CallbackContext context)
