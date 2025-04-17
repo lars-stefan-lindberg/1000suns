@@ -305,11 +305,12 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         //     else if(_movementInput.y >= 0)
         //         CancelPowerJumpCharge();
         // } else {
+        if(PlayerPowersManager.obj.CanTurnFromHumanToBlob) {
             if(_movementInput.y < 0 && value.performed) {
                 PlayerPush.obj.ResetBuiltUpPower();
                 Player.obj.PlayToBlobAnimation();
             }
-        // }
+        }
     }
 
     public void ToBlob() {

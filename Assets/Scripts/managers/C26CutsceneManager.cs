@@ -74,6 +74,7 @@ public class C26CutsceneManager : MonoBehaviour
         PlayerBlobMovement.obj.UnFreeze();
         GameEventManager.obj.IsPauseAllowed = true;
         GameEventManager.obj.C26CutsceneCompleted = true;
+        PlayerPowersManager.obj.CanTurnFromHumanToBlob = true;
         yield return null;
     }
 
