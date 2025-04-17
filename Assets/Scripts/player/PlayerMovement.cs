@@ -8,7 +8,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 {
     public static PlayerMovement obj;
 
-    [SerializeField] private bool isDevMode = true;
+    public bool isDevMode = true;
     [SerializeField] private ScriptableStats _stats;
     [SerializeField] private GameObject _playerBlob;
     
@@ -292,24 +292,24 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public void OnMovement(InputAction.CallbackContext value)
     {
         _movementInput = value.ReadValue<Vector2>();
-        if(isDevMode) {
-            if (_movementInput.y < 0 && isGrounded && !_buildingUpPowerJump) //Pressing down
-            {
-                if(StaminaMgr.obj.HasEnoughStamina(new StaminaMgr.PowerJump()))
-                {
-                    _buildingUpPowerJump = true;
-                    _buildUpPowerJumpTime = 0;
-                    buildPowerJumpAnimation.GetComponent<BuildPowerJumpAnimationMgr>().Play();
-                }
-            }
-            else if(_movementInput.y >= 0)
-                CancelPowerJumpCharge();
-        } else {
+        // if(isDevMode) {
+        //     if (_movementInput.y < 0 && isGrounded && !_buildingUpPowerJump) //Pressing down
+        //     {
+        //         if(StaminaMgr.obj.HasEnoughStamina(new StaminaMgr.PowerJump()))
+        //         {
+        //             _buildingUpPowerJump = true;
+        //             _buildUpPowerJumpTime = 0;
+        //             buildPowerJumpAnimation.GetComponent<BuildPowerJumpAnimationMgr>().Play();
+        //         }
+        //     }
+        //     else if(_movementInput.y >= 0)
+        //         CancelPowerJumpCharge();
+        // } else {
             if(_movementInput.y < 0 && value.performed) {
                 PlayerPush.obj.ResetBuiltUpPower();
                 Player.obj.PlayToBlobAnimation();
             }
-        }
+        // }
     }
 
     public void ToBlob() {

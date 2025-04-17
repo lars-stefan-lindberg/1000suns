@@ -11,6 +11,11 @@ public class PlayerPowersManager : MonoBehaviour
     void Awake() {
         obj = this;
         ResetGameEvents();
+        if(PlayerMovement.obj.isDevMode) {
+            CanTurnFromBlobToHuman = true;
+            BlobCanJump = true;
+            BlobCanExtraJump = true;
+        }
     }
 
     public void ResetGameEvents() {

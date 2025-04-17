@@ -5,6 +5,7 @@ using UnityEngine.Tilemaps;
 public class FadeOutTilemap : MonoBehaviour
 {
     [SerializeField] private Animator _visibleLayerAnimator;
+    [SerializeField] private bool _playRevealSound = true;
     private BoxCollider2D _collider;
     private Tilemap _tilemap;
 
@@ -20,7 +21,8 @@ public class FadeOutTilemap : MonoBehaviour
             else {
                 DOTween.To(() => _tilemap.color.a, x => _tilemap.color = new Color(_tilemap.color.r, _tilemap.color.g, _tilemap.color.b, x), 0, 1);
             }
-            SoundFXManager.obj.PlayRevealSecret(transform);
+            if(_playRevealSound)
+                SoundFXManager.obj.PlayRevealSecret(transform);
             _collider.enabled = false;
             Destroy(gameObject, 5);
         }
