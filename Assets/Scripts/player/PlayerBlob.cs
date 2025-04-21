@@ -9,6 +9,7 @@ public class PlayerBlob : MonoBehaviour
     private LayerMask _groundLayerMasks;
     public Surface surface = Surface.Rock;
     private float _spawnFreezeDuration = 0.9f;
+    private PlayerChargeFlash _playerChargeFlash;
 
     void Awake()
     {
@@ -16,6 +17,7 @@ public class PlayerBlob : MonoBehaviour
         _collider = GetComponent<BoxCollider2D>();
         _groundLayerMasks = LayerMask.GetMask("Ground");
         _animator = GetComponentInChildren<Animator>();
+        _playerChargeFlash = GetComponentInChildren<PlayerChargeFlash>();
     }
 
     void OnCollisionEnter2D(Collision2D other) {
@@ -39,6 +41,13 @@ public class PlayerBlob : MonoBehaviour
         _collider.enabled = true;
         PlayerBlobMovement.obj.Freeze(_spawnFreezeDuration);
         _animator.SetTrigger("spawn");
+    }
+
+    public void StartChargeFlash() {
+        _playerChargeFlash.StartFlashing();
+    }
+    public void EndChargeFlash() {
+       _playerChargeFlash.EndFlashing();
     }
 
     void OnDestroy()

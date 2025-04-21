@@ -45,8 +45,7 @@ public static PlayerBlobCharge obj;
                 _buildUpPower = defaultPower;
                 _buildingUpPower = true;
                 _buildUpPowerTime = 0;
-                //TODO
-                //Player.obj.StartChargeFlash();
+                PlayerBlob.obj.StartChargeFlash();
             }
         }
         if(context.canceled) {
@@ -82,8 +81,7 @@ public static PlayerBlobCharge obj;
         _buildingUpPower = false;
         _buildUpPower = defaultPower;
         _buildUpPowerTime = 0;
-        //TODO
-        //Player.obj.EndChargeFlash();
+        PlayerBlob.obj.EndChargeFlash();
     }
 
     private void FixedUpdate()

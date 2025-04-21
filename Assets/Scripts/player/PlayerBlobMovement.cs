@@ -60,6 +60,7 @@ public class PlayerBlobMovement : MonoBehaviour
             if(!IsEnoughSpaceForPlayer()) {
                 return;
             }
+            PlayerBlobCharge.obj.ResetBuiltUpPower();
             PlayerBlob.obj.rigidBody.velocity = new Vector2(0,0);
             _frameVelocity = new Vector2(0,0);
             ToHuman();
