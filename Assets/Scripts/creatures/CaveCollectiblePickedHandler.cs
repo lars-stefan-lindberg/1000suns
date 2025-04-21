@@ -17,6 +17,8 @@ public class CaveCollectiblePickedHandler : MonoBehaviour
     }
 
     private void OnDestroy() {
-        _collectible.OnPicked -= PlayPickupSound;
+        if(_collectible != null) {
+            _collectible.OnPicked -= PlayPickupSound;
+        }
     }
 }
