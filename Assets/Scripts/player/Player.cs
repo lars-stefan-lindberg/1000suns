@@ -11,8 +11,6 @@ public class Player : MonoBehaviour
     public float spawnFreezeDuration = 1.4f;
     public Surface surface = Surface.Rock;
     public bool hasCape = false;
-    public bool CanFallDash {get; set;}
-    public bool CanForcePushJump {get; set;}
 
     private Animator _animator;
     private LayerMask _groundLayerMasks;
@@ -29,15 +27,11 @@ public class Player : MonoBehaviour
         _playerChargeFlash = GetComponentInChildren<PlayerChargeFlash>();
 
         SetHasCape(true);
-        CanFallDash = true;
-        CanForcePushJump = true;
     }
 
     void OnEnable()
     {
         SetHasCape(true);
-        CanFallDash = true;
-        CanForcePushJump = true;
     }
 
     void OnCollisionEnter2D(Collision2D other) {

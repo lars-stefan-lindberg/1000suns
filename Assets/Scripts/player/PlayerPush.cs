@@ -73,7 +73,7 @@ public class PlayerPush : MonoBehaviour
                             float power = PlayerMovement.obj.isFacingLeft() ? pushTiltPower : -pushTiltPower;
                             Player.obj.rigidBody.AddForce(new Vector2(power, 0));
                         }
-                    } else if(PlayerMovement.obj.isFalling && Player.obj.CanFallDash) {
+                    } else if(PlayerMovement.obj.isFalling && PlayerPowersManager.obj.CanFallDash) {
                         PlayerMovement.obj.ExecuteFallDash(Player.obj.hasPowerUp && IsFullyCharged(), true);
                     }
 

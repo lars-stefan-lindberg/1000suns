@@ -118,8 +118,7 @@ public class MainMenuManager : MonoBehaviour
 
         //Reset player properties
         Player.obj.SetHasCape(false);
-        Player.obj.CanFallDash = false;
-        Player.obj.CanForcePushJump = false;
+        PlayerPowersManager.obj.ResetGameEvents();
         CollectibleManager.obj.ResetCollectibles();
         PlayerStatsManager.obj.numberOfDeaths = 0;
         PlayerMovement.obj.DisablePlayerMovement();
