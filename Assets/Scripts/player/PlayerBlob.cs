@@ -10,6 +10,7 @@ public class PlayerBlob : MonoBehaviour
     public Surface surface = Surface.Rock;
     private float _spawnFreezeDuration = 0.9f;
     private PlayerChargeFlash _playerChargeFlash;
+    private PlayerFlash _playerFlash;
 
     void Awake()
     {
@@ -17,6 +18,7 @@ public class PlayerBlob : MonoBehaviour
         _collider = GetComponent<BoxCollider2D>();
         _groundLayerMasks = LayerMask.GetMask("Ground");
         _animator = GetComponentInChildren<Animator>();
+        _playerFlash = GetComponentInChildren<PlayerFlash>();
         _playerChargeFlash = GetComponentInChildren<PlayerChargeFlash>();
     }
 
@@ -41,6 +43,22 @@ public class PlayerBlob : MonoBehaviour
         _collider.enabled = true;
         PlayerBlobMovement.obj.Freeze(_spawnFreezeDuration);
         _animator.SetTrigger("spawn");
+    }
+
+    public void SetNewPower() {
+        _animator.SetTrigger("isNewPower");
+    }
+
+    public void SetNewPowerRecevied() {
+        _animator.SetTrigger("newPowerReceived");
+    }
+
+    public void ForcePushFlash() {
+        _playerFlash.FlashFor(0.1f, 0.17f);
+    }
+
+    public void FlashFor(float duration) {
+        _playerFlash.FlashFor(duration, 0.05f);
     }
 
     public void StartChargeFlash() {

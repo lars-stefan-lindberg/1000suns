@@ -117,8 +117,7 @@ public static PlayerBlobCharge obj;
 
     public void ExecuteForcePushVfx() {
         ShockWaveManager.obj.CallShockWave(_collider.bounds.center);
-        //TODO
-        //Player.obj.ForcePushFlash();
+        PlayerBlob.obj.ForcePushFlash();
         CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.VirtualCameraGameObject.transform.DOShakePosition(0.13f, new Vector3(0.15f, 0.15f, 0), 30, 90, false, true, ShakeRandomnessMode.Harmonic);
     }
 
