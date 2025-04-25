@@ -40,7 +40,7 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
             CameraShakeManager.obj.ShakeCamera(1.94f, 1.84f, 4f);
 
             //Turn background white, and then slowly fade back to black
-            CapeRoomFadeManager.obj.StartFadeOut();
+            WhiteFadeManager.obj.StartFadeOut();
             StartCoroutine(FadeOutDelay());
             
             //Fade out blobs, show tutorial, and then play music
@@ -62,7 +62,7 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
 
     private IEnumerator FadeOutDelay() {
         yield return new WaitForSeconds(4);
-        CapeRoomFadeManager.obj.StartFadeIn();
+        WhiteFadeManager.obj.StartFadeIn();
     }
 
     private IEnumerator FadeOutBlobSpritesAndTutorialAndPlayMusic() {

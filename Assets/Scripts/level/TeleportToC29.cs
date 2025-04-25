@@ -1,0 +1,82 @@
+using System.Collections;
+using System.Linq;
+using Cinemachine;
+using FunkyCode;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class TeleportToC29 : MonoBehaviour
+{
+    [SerializeField] private SceneField _sceneToTeleportTo;
+    [SerializeField] private GameObject _cameraToDeactivate;
+    [SerializeField] private GameObject _tutorialCanvas;
+    [SerializeField] private GameObject _shockWaveEmitter;
+    
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Player")) {
+            StartCoroutine(TeleportToC29Routine());
+            GetComponent<BoxCollider2D>().enabled = false;
+        }
+    }
+
+    private IEnumerator TeleportToC29Routine() {
+        PlayerBlobMovement.obj.Freeze();
+        WhiteFadeManager.obj.StartFadeOut();
+
+        yield return new WaitForSeconds(1);
+
+        LightingManager2D.Get().profile.DarknessColor = new Color(0f, 0f, 0f);
+
+        PlayerBlobMovement.obj.ToHuman();
+        Destroy(_shockWaveEmitter);
+        yield return new WaitForSeconds(1f);
+
+        Scene scene = SceneManager.GetSceneByName(_sceneToTeleportTo.SceneName);
+        SceneManager.SetActiveScene(scene);
+        GameObject[] sceneGameObjects = scene.GetRootGameObjects();
+        
+        _cameraToDeactivate.SetActive(false);
+        CinemachineVirtualCamera cinemachineVirtualCamera = _cameraToDeactivate.GetComponent<CinemachineVirtualCamera>();
+        cinemachineVirtualCamera.enabled = false;
+
+        GameObject playerSpawnPoint = sceneGameObjects.First(gameObject => gameObject.CompareTag("AlternatePlayerSpawnPoint"));
+        Collider2D playerSpawningCollider = playerSpawnPoint.GetComponent<Collider2D>();
+        
+        Player.obj.transform.position = playerSpawningCollider.transform.position;
+        PlayerMovement.obj.SetStartingOnGround();
+        PlayerMovement.obj.isGrounded = true;
+        PlayerMovement.obj.isForcePushJumping = false;
+        PlayerMovement.obj.jumpedWhileForcePushJumping = false;
+        PlayerMovement.obj.CancelJumping();
+        Player.obj.SetHasCape(true);
+
+        Player.obj.PlayGetUpAnimation();
+
+        yield return new WaitForSeconds(1f);
+
+        WhiteFadeManager.obj.StartFadeIn();
+
+        yield return new WaitForSeconds(2f);
+
+        Player.obj.StartAnimator();
+
+        yield return new WaitForSeconds(4f);
+
+        //Start tutorial dialogue
+        Time.timeScale = 0;
+        _tutorialCanvas.SetActive(true);
+        TutorialDialogManager.obj.StartFadeIn();
+        while(!TutorialDialogManager.obj.tutorialCompleted) {
+            yield return null;
+        }
+        _tutorialCanvas.SetActive(false);
+        Time.timeScale = 1;
+        PlayerPowersManager.obj.CanTurnFromBlobToHuman = true;
+
+        PlayerMovement.obj.UnFreeze();
+
+        GameEventManager.obj.IsPauseAllowed = true;
+        yield return null;
+    }
+}

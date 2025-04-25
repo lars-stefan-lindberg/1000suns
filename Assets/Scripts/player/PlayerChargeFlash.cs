@@ -43,7 +43,6 @@ public class PlayerChargeFlash : MonoBehaviour
         }
         if(_startFlashing) {
             _flashSpeed = Mathf.Lerp(_flashSpeed, _endFlashSpeed, Time.deltaTime * _timeToFullyChargeSpeed);
-            Debug.Log("_flashspeed: " + _flashSpeed);
             if (_increaseFlash) {
                 if(_currentFlashIntensity == 0f) {
                     _elapsedTimeBetweenBlendAndNonBlend = 0f;

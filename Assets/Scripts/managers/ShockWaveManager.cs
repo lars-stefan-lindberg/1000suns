@@ -5,7 +5,6 @@ public class ShockWaveManager : MonoBehaviour
 {
     public static ShockWaveManager obj;
     [SerializeField] private GameObject _shockWavePrefab;
-    [SerializeField] private float _shockWaveTime = 0.75f;
 
     private Coroutine _shockWaveCoroutine;
 
@@ -15,20 +14,20 @@ public class ShockWaveManager : MonoBehaviour
         obj = this;
     }
 
-    public void CallShockWave(Vector3 spawnLocation) {
+    public void CallShockWave(Vector3 spawnLocation, float shockWaveTime, float startPosition, float endPosition) {
         GameObject shockWave = Instantiate(_shockWavePrefab, spawnLocation, Quaternion.identity);
-        _shockWaveCoroutine = StartCoroutine(ShockWaveAction(shockWave, 0.05f, 0.15f));
+        _shockWaveCoroutine = StartCoroutine(ShockWaveAction(shockWave, shockWaveTime, startPosition, endPosition));
     }
 
-    private IEnumerator ShockWaveAction(GameObject shockWave, float startPosition, float endPosition) {
+    private IEnumerator ShockWaveAction(GameObject shockWave, float shockWaveTime, float startPosition, float endPosition) {
         Material material = shockWave.GetComponent<SpriteRenderer>().material;
         material.SetFloat(_waveDistanceFromCenter, startPosition);
 
         float lerpedAmount;
         float elapsedTime = 0f;
-        while(elapsedTime < _shockWaveTime) {
+        while(elapsedTime < shockWaveTime) {
             elapsedTime += Time.deltaTime;
-            lerpedAmount = Mathf.Lerp(startPosition, endPosition, elapsedTime / _shockWaveTime);
+            lerpedAmount = Mathf.Lerp(startPosition, endPosition, elapsedTime / shockWaveTime);
             material.SetFloat(_waveDistanceFromCenter, lerpedAmount);
 
             yield return null;

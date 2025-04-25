@@ -32,6 +32,16 @@ public class PlayerBlobMovement : MonoBehaviour
     //Not great but it's hard to get this dynamically since the player object is always disabled when player blob is active
     private readonly float _playerColliderHeight = 1.642559f;  
 
+    // --- Hit boost variables ---
+    private bool _isHit = false;
+    private float _hitBoostTimer = 0f;
+    private int _hitBoostPhase = 0; // 0: idle, 1: rising, 2: falling
+    private float _currentHitBoost = 0f;
+    private float _hitBoostDirection = 1f;
+    private float _hitBoostMax = 10f;
+    [SerializeField] private float _hitBoostRiseTime = 0.12f;
+    [SerializeField] private float _hitBoostFallTime = 0.3f;
+
     void Awake() {
         obj = this;
         _collider = GetComponent<BoxCollider2D>();
@@ -321,21 +331,61 @@ public class PlayerBlobMovement : MonoBehaviour
         _frameVelocity.y = jumpPower;
     }
 
+    public void OnHit(float direction, float hitBoost)
+    {
+        _isHit = true;
+        _hitBoostPhase = 1;
+        _hitBoostTimer = 0f;
+        _hitBoostDirection = Mathf.Sign(direction);
+        _currentHitBoost = 0f;
+        _hitBoostMax = hitBoost;
+    }
+
     private void HandleDirection()
     {
+        // --- Hit boost logic ---
+        if (_isHit)
+        {
+            if (_hitBoostPhase == 1) // Rising
+            {
+                _hitBoostTimer += Time.fixedDeltaTime;
+                float t = Mathf.Clamp01(_hitBoostTimer / _hitBoostRiseTime);
+                _currentHitBoost = Mathf.Lerp(0f, _hitBoostMax, t);
+                if (t >= 1f)
+                {
+                    _hitBoostPhase = 2;
+                    _hitBoostTimer = 0f;
+                }
+            }
+            else if (_hitBoostPhase == 2) // Falling
+            {
+                _hitBoostTimer += Time.fixedDeltaTime;
+                float t = Mathf.Clamp01(_hitBoostTimer / _hitBoostFallTime);
+                _currentHitBoost = Mathf.Lerp(_hitBoostMax, 0f, t);
+                if (t >= 1f)
+                {
+                    _isHit = false;
+                    _hitBoostPhase = 0;
+                    _hitBoostTimer = 0f;
+                    _currentHitBoost = 0f;
+                }
+            }
+        }
+        
         if(_freezePlayer) {
             _frameVelocity.x = 0;
             return;
         }
         
+        float boost = _currentHitBoost * _hitBoostDirection;
         if (_movementInput.x == 0)
         {
             var deceleration = isGrounded ? _stats.GroundDeceleration : _stats.AirDeceleration;
-            _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, deceleration * Time.fixedDeltaTime);
+            _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, boost, deceleration * Time.fixedDeltaTime);
         }
         else
         {
-            _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, _movementInput.x * _stats.MaxSpeed, _stats.Acceleration * Time.fixedDeltaTime);
+            _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, _movementInput.x * _stats.MaxSpeed + boost, _stats.Acceleration * Time.fixedDeltaTime);
         }
     }
 
