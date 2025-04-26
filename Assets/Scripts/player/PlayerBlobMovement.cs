@@ -79,7 +79,7 @@ public class PlayerBlobMovement : MonoBehaviour
 
     public void ToHuman() {
         gameObject.SetActive(false);
-        _player.transform.position = transform.position;
+        _player.transform.position = transform.position + new Vector3(0, 0.5f, 0);;
         if(isGrounded) {
             _player.GetComponent<PlayerMovement>().SetStartingOnGround();
             _player.GetComponent<PlayerMovement>().isGrounded = true;
