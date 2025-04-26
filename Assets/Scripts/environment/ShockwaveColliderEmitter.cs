@@ -1,10 +1,9 @@
-using DG.Tweening;
 using UnityEngine;
 
 public class ShockwaveColliderEmitter : MonoBehaviour
 {
     public GameObject shockwavePrefab;
-    [SerializeField] private GameObject _followingCamera;
+
     [Header("Shockwave Timing Settings")]
     public float minInterval = 0.5f;
     public float maxInterval = 2.0f;
@@ -41,7 +40,7 @@ public class ShockwaveColliderEmitter : MonoBehaviour
 
         SoundFXManager.obj.PlayForcePushExecute(transform);
 
-        _followingCamera.transform.DOShakePosition(0.2f, new Vector3(0.3f, 0.3f, 0), 30, 90, false, true, ShakeRandomnessMode.Harmonic);
+        CameraShakeManager.obj.ForcePushShake();
 
         float force = GetDynamicForce(playerDist);
         var shockwaveGameObject = Instantiate(shockwavePrefab, transform.position, Quaternion.identity);

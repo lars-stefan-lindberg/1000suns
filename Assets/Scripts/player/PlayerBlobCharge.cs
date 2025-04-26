@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Cinemachine;
-using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -109,16 +105,14 @@ public static PlayerBlobCharge obj;
     void Push()
     {
         ExecuteForcePushVfx();
-
         SoundFXManager.obj.PlayForcePushExecute(transform);
-        //PlayerBlob.obj.rigidBody.AddForce(new Vector2(0, testPower));
         PlayerBlobMovement.obj.ExecuteChargedJump();
     }
 
     public void ExecuteForcePushVfx() {
         ShockWaveManager.obj.CallShockWave(_collider.bounds.center, 0.2f, 0.05f, 0.15f);
         PlayerBlob.obj.ForcePushFlash();
-        CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.VirtualCameraGameObject.transform.DOShakePosition(0.13f, new Vector3(0.15f, 0.15f, 0), 30, 90, false, true, ShakeRandomnessMode.Harmonic);
+        CameraShakeManager.obj.ForcePushShake();
     }
 
     private void OnDestroy()

@@ -1,5 +1,6 @@
 using UnityEngine;
 using Cinemachine;
+using DG.Tweening;
 
 public class CameraShakeManager : MonoBehaviour
 {
@@ -15,6 +16,18 @@ public class CameraShakeManager : MonoBehaviour
             cinemachineBasicMultiChannelPerlin.m_AmplitudeGain = amplitude;
             cinemachineBasicMultiChannelPerlin.m_FrequencyGain = frequency;
             _shakeTimer = time;
+        }
+    }
+
+    public void ForcePushShake() {
+        _activeVirtualCamera = (CinemachineVirtualCamera)CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera;
+        if(_activeVirtualCamera.Follow == null) {
+            _activeVirtualCamera.VirtualCameraGameObject.transform.DOShakePosition(0.13f, new Vector3(0.15f, 0.15f, 0), 30, 90, false, true, ShakeRandomnessMode.Harmonic);
+        } else {
+            CinemachineBasicMultiChannelPerlin cinemachineBasicMultiChannelPerlin = _activeVirtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+            cinemachineBasicMultiChannelPerlin.m_AmplitudeGain = 4f;
+            cinemachineBasicMultiChannelPerlin.m_FrequencyGain = 2f;
+            _shakeTimer = 0.13f;
         }
     }
 

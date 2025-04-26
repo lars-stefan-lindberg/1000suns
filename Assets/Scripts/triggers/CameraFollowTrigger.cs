@@ -11,7 +11,6 @@ public class CameraFollowTrigger : MonoBehaviour
             cameraFollowGameObject.SetActive(false);
             CinemachineVirtualCamera followCamera = cameraFollowGameObject.GetComponent<CinemachineVirtualCamera>();
             followCamera.enabled = false;
-            followCamera.Follow = PlayerManager.obj.GetPlayerTransform();
 
             staticCameraGameObject.SetActive(true);
             CinemachineVirtualCamera staticCamera = staticCameraGameObject.GetComponent<CinemachineVirtualCamera>();

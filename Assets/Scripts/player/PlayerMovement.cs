@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Cinemachine;
 using FunkyCode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -314,6 +315,11 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     }
 
     public void ToBlob() {
+        ICinemachineCamera activeVirtualCamera = CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera;
+        if(activeVirtualCamera.Follow == transform) {
+            activeVirtualCamera.Follow = _playerBlob.transform;
+        }
+
         Player.obj.rigidBody.velocity = new Vector2(0, 0);
         _frameVelocity = new Vector2(0, 0);
         gameObject.SetActive(false);

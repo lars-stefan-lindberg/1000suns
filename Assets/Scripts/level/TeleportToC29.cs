@@ -26,7 +26,7 @@ public class TeleportToC29 : MonoBehaviour
 
         yield return new WaitForSeconds(1);
 
-        LightingManager2D.Get().profile.DarknessColor = new Color(0.05f, 0.05f, 0.05f);
+        LightingManager2D.Get().profile.DarknessColor = new Color(0.005f, 0.005f, 0.005f);
 
         PlayerBlobMovement.obj.ToHuman();
         Destroy(_shockWaveEmitter);

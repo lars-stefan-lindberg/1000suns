@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Cinemachine;
 using FunkyCode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -78,6 +79,11 @@ public class PlayerBlobMovement : MonoBehaviour
     }
 
     public void ToHuman() {
+        ICinemachineCamera activeVirtualCamera = CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera;
+        if(activeVirtualCamera.Follow == transform) {
+            activeVirtualCamera.Follow = _player.transform;
+        }
+
         gameObject.SetActive(false);
         _player.transform.position = transform.position + new Vector3(0, 0.5f, 0);;
         if(isGrounded) {

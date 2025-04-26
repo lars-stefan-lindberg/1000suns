@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Linq;
+using Cinemachine;
 using FunkyCode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,6 +9,7 @@ public class TeleportToC295 : MonoBehaviour
 {
     [SerializeField] private SceneField _sceneToTeleportTo;
     [SerializeField] private GameObject _lightPortal;
+    [SerializeField] private CinemachineVirtualCamera _followCamera;
 
     void Awake()
     {
@@ -44,6 +46,8 @@ public class TeleportToC295 : MonoBehaviour
         GameObject cameras = sceneGameObjects.First(gameObject => gameObject.CompareTag("Cameras"));
         CameraManager cameraManager = cameras.GetComponent<CameraManager>();
         cameraManager.ActivateMainCamera(PlayerManager.PlayerDirection.NO_DIRECTION);
+
+        _followCamera.Follow = Player.obj.transform;
 
         GameObject playerSpawnPoint = sceneGameObjects.First(gameObject => gameObject.CompareTag("PlayerSpawnPoint"));
         Collider2D playerSpawningCollider = playerSpawnPoint.GetComponent<Collider2D>();
