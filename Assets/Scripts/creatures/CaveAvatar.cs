@@ -22,6 +22,16 @@ public class CaveAvatar : MonoBehaviour
     [SerializeField] private float _floatDirectionChangeTime = 1f;
     private bool _floatUp = true;
 
+    private Coroutine _eyeColorCoroutine;
+    [SerializeField] private float _eyeColorLerpDuration = 0.5f;
+
+    private Vector2 _linearMoveStartPos;
+    private Vector2 _linearMoveTargetPos;
+    private float _linearMoveElapsed = 0f;
+    [SerializeField] private float _moveSpeed = 5f; // units per second for eased movement
+    [SerializeField] private float _linearMoveDuration = 0.5f;
+    private bool _isLinearMoving = false;
+
     void Awake() {
         obj = this;
         IsFollowingPlayer = true;
@@ -40,25 +50,45 @@ public class CaveAvatar : MonoBehaviour
                 headTargetPosition = _head.transform.position;
             } else {
                 headTargetPosition = _target.transform.position;
-                _headSpriteRenderer.flipX = _head.transform.position.x > _target.transform.position.x;
+                _headSpriteRenderer.flipX = _head.transform.position.x >= _target.transform.position.x;
             }
         }
 
-        //If player is standing still, go into idle/floating state
-        if(IsTargetReached(_head.transform.position, headTargetPosition)) {
+        bool isAtTarget = IsTargetReached(_head.transform.position, headTargetPosition);
+
+        // Floating logic: always runs if close enough to target
+        if(isAtTarget) {
             _floatDirectionTimer += Time.deltaTime;
             if(_floatDirectionTimer > _floatDirectionChangeTime) {
                 _floatUp = !_floatUp;
                 _floatDirectionTimer = 0;
             }
             headTargetPosition = new Vector2(headTargetPosition.x, _floatUp ? headTargetPosition.y + _floatDistance : headTargetPosition.y - _floatDistance);
-        } else {
-            _floatDirectionTimer = 0;
-        }
-
-        if(IsFollowingPlayer)
+            // Always float the head when at target, regardless of _target
             _head.transform.position = Vector2.Lerp(_head.transform.position, headTargetPosition, _followPlayerLerpSpeed);
-        else {
+        } else if(IsFollowingPlayer) {
+            _head.transform.position = Vector2.Lerp(_head.transform.position, headTargetPosition, _followPlayerLerpSpeed);
+        } else if(_target != null) {
+            // Eased move logic
+            if(!_isLinearMoving) {
+                _linearMoveStartPos = _head.transform.position;
+                _linearMoveTargetPos = _target.transform.position;
+                float distance = Vector2.Distance(_linearMoveStartPos, _linearMoveTargetPos);
+                _linearMoveDuration = (distance > 0.01f && _moveSpeed > 0.01f) ? distance / _moveSpeed : 0.1f;
+                _linearMoveElapsed = 0f;
+                _isLinearMoving = true;
+            }
+            if(_isLinearMoving) {
+                _linearMoveElapsed += Time.fixedDeltaTime;
+                float t = Mathf.Clamp01(_linearMoveElapsed / _linearMoveDuration);
+                // Smoothstep easing: t = t*t*(3-2*t)
+                float easedT = t * t * (3f - 2f * t);
+                _head.transform.position = Vector2.Lerp(_linearMoveStartPos, _linearMoveTargetPos, easedT);
+                if(t >= 1f) {
+                    _isLinearMoving = false;
+                }
+            }
+        } else {
             _head.transform.position = Vector2.Lerp(_head.transform.position, headTargetPosition, _approachTargetLerpSpeed);
         }
 
@@ -118,8 +148,43 @@ public class CaveAvatar : MonoBehaviour
     }
 
     public void SetTarget(Transform target) {
+        SetTarget(target, 5);
+    }
+
+    public void SetTarget(Transform target, float moveSpeed) {
         IsFollowingPlayer = false;
         _target = target;
+        // Start new eased move if target is set
+        if(_target != null) {
+            _linearMoveStartPos = _head.transform.position;
+            _linearMoveTargetPos = _target.transform.position;
+            _moveSpeed = moveSpeed;
+            float distance = Vector2.Distance(_linearMoveStartPos, _linearMoveTargetPos);
+            _linearMoveDuration = (distance > 0.01f && _moveSpeed > 0.01f) ? distance / _moveSpeed : 0.1f;
+            _linearMoveElapsed = 0f;
+            _isLinearMoving = true;
+        } else {
+            _isLinearMoving = false;
+        }
+    }
+
+    public void SetEyeColor(Color color) {
+        if (_eyeColorCoroutine != null) {
+            StopCoroutine(_eyeColorCoroutine);
+        }
+        _eyeColorCoroutine = StartCoroutine(LerpEyeColor(color, _eyeColorLerpDuration));
+    }
+
+    private IEnumerator LerpEyeColor(Color targetColor, float duration) {
+        Color startColor = _headSpriteRenderer.color;
+        float time = 0f;
+        while (time < duration) {
+            _headSpriteRenderer.color = Color.Lerp(startColor, targetColor, time / duration);
+            time += Time.deltaTime;
+            yield return null;
+        }
+        _headSpriteRenderer.color = targetColor;
+        _eyeColorCoroutine = null;
     }
 
     public void FollowPlayer() {

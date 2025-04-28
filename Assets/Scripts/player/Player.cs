@@ -77,6 +77,10 @@ public class Player : MonoBehaviour
         _animator.speed = 1;
     }
 
+    public void SetAnimatorSpeed(float speed) {
+        _animator.speed = speed;
+    }
+
     public void PlaySpawn() {
         rigidBody.bodyType = RigidbodyType2D.Dynamic;
         _collider.enabled = true;

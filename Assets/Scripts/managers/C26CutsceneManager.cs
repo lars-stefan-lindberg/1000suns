@@ -1,12 +1,19 @@
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class C26CutsceneManager : MonoBehaviour
 {
     [SerializeField] private GameObject _backgroundBlobs;
+    [SerializeField] private Transform _sootFlyTarget1;
+    [SerializeField] private Transform _sootFlyTarget2;
     [SerializeField] private Transform _sootFlyOffTarget;
+    [SerializeField] private DialogueController _dialogueController;
+    [SerializeField] private DialogueContent _dialogueContent1;
+    [SerializeField] private DialogueContent _dialogueContent2;
+    [SerializeField] private ParticleSystem _particleEffect;
+    private int _dialogueIndex = 0;
+
     private bool _startCutscene = false;
     void OnTriggerEnter2D(Collider2D other) {
         if(GameEventManager.obj.C26CutsceneCompleted) {
@@ -26,6 +33,32 @@ public class C26CutsceneManager : MonoBehaviour
         }
     }
 
+    void Start()
+    {
+        if (DialogueController.obj != null)
+        {
+            DialogueController.obj.OnDialogueClosed += OnDialogueCompleted;
+            DialogueController.obj.OnDialogueClosing += OnDialogueClosing;
+        }
+    }
+
+    void OnDestroy()
+    {
+        if (DialogueController.obj != null)
+        {
+            DialogueController.obj.OnDialogueClosed -= OnDialogueCompleted;
+            DialogueController.obj.OnDialogueClosing -= OnDialogueClosing;
+        }
+    }
+
+    private void OnDialogueClosing() {
+        SoundFXManager.obj.PlayDialogueClose();
+    }
+
+    private void OnDialogueCompleted() {
+        _dialogueIndex++;
+    }
+
     void Update()
     {
         if(_startCutscene) {
@@ -37,7 +70,30 @@ public class C26CutsceneManager : MonoBehaviour
     }
 
     private IEnumerator Cutscene() {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1f);
+
+        //Soot flies off
+        CaveAvatar.obj.SetTarget(_sootFlyTarget1, 3f);
+
+        yield return new WaitForSeconds(3f);
+
+        CaveAvatar.obj.SetTarget(_sootFlyTarget2, 3f);
+
+        yield return new WaitForSeconds(0.5f);
+
+        //Set eye color
+        CaveAvatar.obj.SetEyeColor(new Color(0.6226415f, 0.02643288f, 0.02643288f, 1f));
+
+        yield return new WaitForSeconds(1f);
+
+        SoundFXManager.obj.PlayDialogueOpen();
+        _dialogueController.ShowDialogue(_dialogueContent1, false);
+
+        while(_dialogueIndex == 0) {
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(1f);
 
         //Loop through all children, get animators, and increase speed of animation
         Animator[] animators = _backgroundBlobs.GetComponentsInChildren<Animator>();
@@ -45,17 +101,39 @@ public class C26CutsceneManager : MonoBehaviour
             animator.speed = 10;
         }
 
-        //Turn player into blob
+        //Start particle effect
+        _particleEffect.Play();
+        StartCoroutine(GraduallyIncreaseParticleSpeed(_particleEffect, -2, -5, 2.3f, 1f, 7f));
+
+        yield return new WaitForSeconds(2f);
+
+        //Turn player into blob, slowly
+        //Shake screen
+        CameraShakeManager.obj.ShakeCamera(1.94f, 1.84f, 6.5f);
+        Player.obj.FlashFor(6.5f);
+        Player.obj.SetAnimatorSpeed(0.03f);
         Player.obj.PlayToBlobAnimation();
-        yield return new WaitForSeconds(1f);
-        PlayerBlobMovement.obj.Freeze();
+
+        yield return new WaitForSeconds(11f);
+
+        Player.obj.StartAnimator();
+
+        //Loop through all children, get animators, and increase speed of animation
+        foreach(Animator animator in animators) {
+            animator.speed = 5;
+        }
+
+        SoundFXManager.obj.PlayDialogueOpen();
+        _dialogueController.ShowDialogue(_dialogueContent2, false);
+
+        while(_dialogueIndex == 1) {
+            yield return null;
+        }
 
         yield return new WaitForSeconds(2f);
-        
+
         //Soot flies off
-        CaveAvatar.obj.SetTarget(_sootFlyOffTarget);
-
-        yield return new WaitForSeconds(2f);
+        CaveAvatar.obj.SetTarget(_sootFlyOffTarget, 5f);
 
         //When finished, fade out blobs
         SpriteRenderer[] blobSprites = _backgroundBlobs.GetComponentsInChildren<SpriteRenderer>();
@@ -68,8 +146,7 @@ public class C26CutsceneManager : MonoBehaviour
             yield return null;
         }
 
-        //Shake screen
-        //CameraShakeManager.obj.ShakeCamera(1.94f, 1.84f, 5f);
+        yield return new WaitForSeconds(2f);
 
         PlayerBlobMovement.obj.UnFreeze();
         GameEventManager.obj.IsPauseAllowed = true;
@@ -92,5 +169,30 @@ public class C26CutsceneManager : MonoBehaviour
             }
             yield return null;
         }
+    }
+
+    private IEnumerator GraduallyIncreaseParticleSpeed(ParticleSystem ps, float startSpeed, float endSpeed, float startLifetime, float endLifetime, float duration)
+    {
+        var main = ps.main;
+        main.startSpeed = startSpeed;
+        main.startLifetime = startLifetime;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            float currentSpeed = Mathf.Lerp(startSpeed, endSpeed, t);
+            float currentLifetime = Mathf.Lerp(startLifetime, endLifetime, t);
+
+            main.startSpeed = currentSpeed;
+            main.startLifetime = currentLifetime;
+            yield return null;
+        }
+
+        main.startSpeed = endSpeed;
+        main.startLifetime = endLifetime;
+
+        ps.Stop();
     }
 }
