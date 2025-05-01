@@ -7,6 +7,7 @@ public class GameEventManager : MonoBehaviour
     //Cutscene events
     public bool CaveLevelStarted { get; set; }
     public bool C1MonologueEnded { get; set; }
+    public bool CaveAvatarFreed { get; set; }
     public bool CapePicked { get; set; }
     public bool FirstCaveCollectibleConversationEnded { get; set; }
     public bool BabyPrisonerAlerted { get; set; }
@@ -32,6 +33,7 @@ public class GameEventManager : MonoBehaviour
     }
 
     public void ResetGameEvents() {
+        CaveAvatarFreed = false;
         PrisonerIntroSeen = false;
         BabyPrisonerAlerted = false;
         CapePicked = false;

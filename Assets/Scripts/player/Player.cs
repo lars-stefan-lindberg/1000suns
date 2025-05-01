@@ -72,6 +72,14 @@ public class Player : MonoBehaviour
         _animator.SetTrigger("toPlayer");
     }
 
+    public void PlayPullRoots() {
+        _animator.SetTrigger("pullRoots");
+    }
+
+    public void EndPullRoots() {
+        _animator.SetTrigger("endPullRoots");
+    }
+
     [ContextMenu("StartAnimator")]
     public void StartAnimator() {
         _animator.speed = 1;

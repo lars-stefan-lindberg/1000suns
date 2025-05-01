@@ -17,4 +17,10 @@ public class PlayerAnimationEvents : MonoBehaviour
     public void JumpSqueeze() {
         PlayerMovement.obj.JumpSqueeze();
     }
+
+    public void BreakCaveRoots() {
+        SoundFXManager.obj.PlayBreakableWallCrackling(Camera.main.transform);
+        PlayerMovement.obj.NudgePlayer();
+        CaveRootsTrap.obj.StartBreaking();
+    }
 }

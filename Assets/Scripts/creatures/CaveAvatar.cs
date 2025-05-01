@@ -31,6 +31,7 @@ public class CaveAvatar : MonoBehaviour
     [SerializeField] private float _moveSpeed = 5f; // units per second for eased movement
     [SerializeField] private float _linearMoveDuration = 0.5f;
     private bool _isLinearMoving = false;
+    private bool _isFloatingEnabled = true;
 
     void Awake() {
         obj = this;
@@ -58,12 +59,14 @@ public class CaveAvatar : MonoBehaviour
 
         // Floating logic: always runs if close enough to target
         if(isAtTarget) {
-            _floatDirectionTimer += Time.deltaTime;
-            if(_floatDirectionTimer > _floatDirectionChangeTime) {
-                _floatUp = !_floatUp;
-                _floatDirectionTimer = 0;
+            if(_isFloatingEnabled) {
+                _floatDirectionTimer += Time.deltaTime;
+                if(_floatDirectionTimer > _floatDirectionChangeTime) {
+                    _floatUp = !_floatUp;
+                    _floatDirectionTimer = 0;
+                }
+                headTargetPosition = new Vector2(headTargetPosition.x, _floatUp ? headTargetPosition.y + _floatDistance : headTargetPosition.y - _floatDistance);
             }
-            headTargetPosition = new Vector2(headTargetPosition.x, _floatUp ? headTargetPosition.y + _floatDistance : headTargetPosition.y - _floatDistance);
             // Always float the head when at target, regardless of _target
             _head.transform.position = Vector2.Lerp(_head.transform.position, headTargetPosition, _followPlayerLerpSpeed);
         } else if(IsFollowingPlayer) {
@@ -97,6 +100,24 @@ public class CaveAvatar : MonoBehaviour
         _tailParts[2].transform.position = Vector2.Lerp(_tailParts[2].transform.position, _tailParts[1].transform.position, _tailPartLerpSpeed);
         _tailParts[3].transform.position = Vector2.Lerp(_tailParts[3].transform.position, _tailParts[2].transform.position, _tailPartLerpSpeed);
         _tailParts[4].transform.position = Vector2.Lerp(_tailParts[4].transform.position, _tailParts[3].transform.position, _tailPartLerpSpeed);
+    }
+
+    public void NudgeUpwards() {
+        StartCoroutine(NudgeUpwardsCoroutine(0.4f));
+    }
+
+    private IEnumerator NudgeUpwardsCoroutine(float duration) {
+        SetPosition(transform.position + Vector3.up * 0.125f, false);
+        float timer = 0;
+        while(timer < duration) {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        SetPosition(transform.position - Vector3.up * 0.125f, false);
+    }
+
+    public void SetFloatingEnabled(bool enabled) {
+        _isFloatingEnabled = enabled;
     }
 
     public float _targetReachedMargin = 0.5f;
@@ -136,15 +157,28 @@ public class CaveAvatar : MonoBehaviour
         _target = null;
     }
 
-    public void SetPosition(Vector2 target) {
-        bool isPlayerFacingLeft = PlayerMovement.obj.isFacingLeft();
-        _headSpriteRenderer.flipX = isPlayerFacingLeft;   
+    public void SetStartingPositionInRoom1() {
+        SetPosition(new Vector2(241f, 21.25f), false);
+        IsFollowingPlayer = false;
+        _target = null;
+        SetFloatingEnabled(false);
+    }
+
+    public void SetPosition(Vector2 target, bool adjustFlipXToPlayer = true) {
+        if(adjustFlipXToPlayer) {
+            bool isPlayerFacingLeft = PlayerMovement.obj.isFacingLeft();
+            _headSpriteRenderer.flipX = isPlayerFacingLeft;   
+        }
 
         transform.position = target;
         _head.transform.position = target;
         for (int i = 0; i < _tailParts.Length; i++) {
             _tailParts[i].transform.position = target;
         }
+    }
+
+    public void SetFlipX(bool flipX) {
+        _headSpriteRenderer.flipX = flipX;
     }
 
     public void SetTarget(Transform target) {

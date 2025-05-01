@@ -7,6 +7,18 @@ public class FirstRoomLoader : MonoBehaviour
 {
     [SerializeField] private GameObject _zoomedCamera;
     [SerializeField] private GameObject _fullRoomCamera;
+    [SerializeField] private DialogueController _dialogueController;
+    [SerializeField] private DialogueContent _dialogueContent;
+    private bool _dialogCompleted = false;
+
+    void OnDestroy()
+    {
+        if (DialogueController.obj != null)
+        {
+            DialogueController.obj.OnDialogueClosed -= OnDialogueCompleted;
+            DialogueController.obj.OnDialogueClosing -= OnDialogueClosing;
+        }
+    }
 
     void Start()
     {
@@ -23,6 +35,12 @@ public class FirstRoomLoader : MonoBehaviour
             GameEventManager.obj.CaveLevelStarted = true;
 
             PlayerStatsManager.obj.ResumeTimer();
+
+            if (DialogueController.obj != null)
+        {
+            DialogueController.obj.OnDialogueClosed += OnDialogueCompleted;
+            DialogueController.obj.OnDialogueClosing += OnDialogueClosing;
+        }
         }
     }
 
@@ -68,6 +86,16 @@ public class FirstRoomLoader : MonoBehaviour
         //Zoom out time
         yield return new WaitForSeconds(4);
 
+        //Show dialog
+        SoundFXManager.obj.PlayDialogueOpen();
+        _dialogueController.ShowDialogue(_dialogueContent, true);
+
+        while (!_dialogCompleted) {
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(0.5f);
+
         PlayerMovement.obj.EnablePlayerMovement();
         GameEventManager.obj.IsPauseAllowed = true;
 
@@ -87,5 +115,14 @@ public class FirstRoomLoader : MonoBehaviour
         }
         LightingManager2D.Get().profile.DarknessColor = defaultDarkness;
         yield return null;
+    }
+
+
+    private void OnDialogueClosing() {
+        SoundFXManager.obj.PlayDialogueClose();
+    }
+
+    private void OnDialogueCompleted() {
+        _dialogCompleted = true;
     }
 }

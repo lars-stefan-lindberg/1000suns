@@ -18,7 +18,7 @@ public class ConversationManager : MonoBehaviour
         CaveAvatar,
     }
 
-    private void Start()
+    void OnEnable()
     {
         if (DialogueController.obj != null)
         {

@@ -61,12 +61,13 @@ public class IntroController : MonoBehaviour
         GameObject playerSpawnPoint = sceneGameObjects.First(gameObject => gameObject.CompareTag("PlayerSpawnPoint"));
         Collider2D _playerSpawningCollider = playerSpawnPoint.GetComponent<Collider2D>();
         
+        CaveAvatar.obj.gameObject.SetActive(false);
+        
         Player.obj.gameObject.SetActive(true);
         PlayerMovement.obj.SetStartingOnGround();
         PlayerMovement.obj.isGrounded = true;
         PlayerMovement.obj.CancelJumping();
         Player.obj.transform.position = _playerSpawningCollider.transform.position;
-        CaveAvatar.obj.transform.position = _playerSpawningCollider.transform.position;
         PlayerMovement.obj.DisablePlayerMovement();
 
         GameObject levelSwitcherGameObject = sceneGameObjects.First(gameObject => gameObject.CompareTag("LevelSwitcher"));

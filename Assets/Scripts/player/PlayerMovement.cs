@@ -312,6 +312,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
                 Player.obj.PlayToBlobAnimation();
             }
         }
+    } 
+
+    public void NudgePlayer() {
+        Player.obj.rigidBody.AddForce(new Vector2(-1000, 0));
     }
 
     public void ToBlob() {
