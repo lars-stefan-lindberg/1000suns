@@ -15,6 +15,7 @@ public class GameEventManager : MonoBehaviour
     public bool FirstPrisonerFightStarted { get; set; }
     public bool FirstPrisonerKilled { get; set; }
     public bool FirstCaveMiniBossKilled { get; set; }
+    public bool MirrorConversationEnded { get; set; }
     public bool PowerUpRoomsFloorBroken { get; set; }
     public bool FirstPowerUpPicked { get; set; }
     public bool PowerUpRoomCompletedWallBreak { get; set; }
@@ -53,6 +54,7 @@ public class GameEventManager : MonoBehaviour
         C26CutsceneCompleted = false;
         C27CutsceneCompleted = false;
         C30CutsceneCompleted = false;
+        MirrorConversationEnded = false;
     }
 
     void OnDestroy() {
