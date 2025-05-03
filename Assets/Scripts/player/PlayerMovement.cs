@@ -520,14 +520,14 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         if(ceilingHitRight && ceilingHitLeft) {
             _frameVelocity.y *= _stats.CeilingBounceBackSpeed;
         } else if(ceilingHitRight) {
-            bool isAirToTheLeft = !Physics2D.Raycast(topRight - new Vector2(0.125f, 0), Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
+            bool isAirToTheLeft = !Physics2D.Raycast(topRight - new Vector2(0.25f, 0), Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
             if(isAirToTheLeft) {
                 transform.position = new Vector2(transform.position.x - 0.125f, transform.position.y);
             } else {
                 _frameVelocity.y *= _stats.CeilingBounceBackSpeed;
             }
         } else if(ceilingHitLeft) {
-            bool isAirToTheRight = !Physics2D.Raycast(topLeft + new Vector2(0.125f, 0), Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
+            bool isAirToTheRight = !Physics2D.Raycast(topLeft + new Vector2(0.25f, 0), Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
             if(isAirToTheRight) {
                 transform.position = new Vector2(transform.position.x + 0.125f, transform.position.y);
             } else {
