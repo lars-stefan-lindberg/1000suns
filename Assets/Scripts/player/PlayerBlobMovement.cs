@@ -237,9 +237,9 @@ public class PlayerBlobMovement : MonoBehaviour
         bool ceilingHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
 
         // Hit a Ceiling
-        if (ceilingHit)
+        if (ceilingHit && !groundHit)
         {
-            _frameVelocity.y *= _stats.CeilingBounceBackSpeed;
+            HandleCeilingCollisions();
         }
 
         // Landed on the Ground
@@ -264,6 +264,38 @@ public class PlayerBlobMovement : MonoBehaviour
         }
 
         Physics2D.queriesStartInColliders = _cachedQueryStartInColliders;
+    }
+
+    private void HandleCeilingCollisions() {
+        //Check for ceiling hits from top right and left corner of collider
+        Bounds playerBounds = _collider.bounds;
+        Vector2 topRight = new Vector2(playerBounds.max.x, playerBounds.max.y);
+        Vector2 topLeft = new Vector2(playerBounds.min.x, playerBounds.max.y);
+        
+        bool ceilingHitRight = Physics2D.Raycast(topRight, Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
+        bool ceilingHitLeft = Physics2D.Raycast(topLeft, Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
+
+        // Debug visualization
+        // Debug.DrawRay(topRight, Vector2.up * _stats.RoofDistance, Color.red, 2f);
+        // Debug.DrawRay(topLeft, Vector2.up * _stats.RoofDistance, Color.red, 2f);
+
+        if(ceilingHitRight && ceilingHitLeft) {
+            _frameVelocity.y *= _stats.CeilingBounceBackSpeed;
+        } else if(ceilingHitRight) {
+            bool isAirToTheLeft = !Physics2D.Raycast(topRight - new Vector2(0.25f, 0), Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
+            if(isAirToTheLeft) {
+                transform.position = new Vector2(transform.position.x - 0.125f, transform.position.y);
+            } else {
+                _frameVelocity.y *= _stats.CeilingBounceBackSpeed;
+            }
+        } else if(ceilingHitLeft) {
+            bool isAirToTheRight = !Physics2D.Raycast(topLeft + new Vector2(0.25f, 0), Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
+            if(isAirToTheRight) {
+                transform.position = new Vector2(transform.position.x + 0.125f, transform.position.y);
+            } else {
+                _frameVelocity.y *= _stats.CeilingBounceBackSpeed;
+            }
+        }
     }
 
     private bool _jumpToConsume;
