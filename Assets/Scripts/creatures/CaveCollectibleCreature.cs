@@ -5,8 +5,9 @@ using UnityEngine;
 public class CaveCollectibleCreature : MonoBehaviour
 {
     public event Action OnPicked;
+    public event Action OnPermanentlyCollected;
     public bool IsPicked {get; set;}
-    public bool IsPermantentlyCollected {get; set;}
+    public bool IsPermanentlyCollected {get; set;}
     public bool IsDespawned = false;
     public Transform portal;
 
@@ -42,7 +43,7 @@ public class CaveCollectibleCreature : MonoBehaviour
         }
         _collider = GetComponent<BoxCollider2D>();
         IsPicked = false;
-        IsPermantentlyCollected = false;
+        IsPermanentlyCollected = false;
         _lightSprite2DFadeManager = GetComponentInChildren<LightSprite2DFadeManager>();
     }
 
@@ -68,11 +69,11 @@ public class CaveCollectibleCreature : MonoBehaviour
 
     void FixedUpdate()
     {
-        if(IsPermantentlyCollected) {
+        if(IsPermanentlyCollected) {
             if(!_startedTakeOff) {
                 _startedTakeOff = true;
                 _targetTransform = portal; //Portal needs to be set before this is called
-                SoundFXManager.obj.PlayCollectiblePickup(transform);
+                OnPermanentlyCollected?.Invoke();
                 StartCoroutine(PrepareTakeOff(_squeezeX, _squeezeY, _squeezeTime));
             }
         }
@@ -96,7 +97,7 @@ public class CaveCollectibleCreature : MonoBehaviour
                 target = _targetTransform;
             }
             float headTargetX;
-            if(!IsPermantentlyCollected) {
+            if(!IsPermanentlyCollected) {
                 headTargetX = isCaveAvatarFacingLeft ? target.position.x + 1.475f : target.position.x - 1.475f;
                 _headSpriteRenderer.flipX = isCaveAvatarFacingLeft;
             } else

@@ -20,7 +20,7 @@ public class CaveCollectiblePortalTrigger : MonoBehaviour
         yield return new WaitForSeconds(1f);
         var collectibles = CollectibleManager.obj.GetFollowingCaveCollectibleCreatures();
         foreach(var collectible in collectibles) {
-            collectible.IsPermantentlyCollected = true;
+            collectible.IsPermanentlyCollected = true;
             collectible.portal = _portal;
             yield return new WaitUntil(() => collectible.IsDespawned);
         }

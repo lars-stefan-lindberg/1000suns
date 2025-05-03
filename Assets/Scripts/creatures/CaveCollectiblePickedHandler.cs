@@ -10,6 +10,7 @@ public class CaveCollectiblePickedHandler : MonoBehaviour
     {
         _collectible = GetComponent<CaveCollectibleCreature>();
         _collectible.OnPicked += PlayPickupSound;
+        _collectible.OnPermanentlyCollected += PlayPickupSound;
     }
 
     private void PlayPickupSound() {
@@ -19,6 +20,7 @@ public class CaveCollectiblePickedHandler : MonoBehaviour
     private void OnDestroy() {
         if(_collectible != null) {
             _collectible.OnPicked -= PlayPickupSound;
+            _collectible.OnPermanentlyCollected -= PlayPickupSound;
         }
     }
 }
