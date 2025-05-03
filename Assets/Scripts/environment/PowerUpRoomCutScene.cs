@@ -52,7 +52,7 @@ public class PowerUpRoomCutScene : MonoBehaviour
         zoomedCameraVcam.enabled = true;
         _defaultCamera.enabled = false;
 
-        Player.obj.transform.position = new Vector2(1058.875f, Player.obj.transform.position.y);
+        Player.obj.transform.position = new Vector2(1058.75f, Player.obj.transform.position.y);
         PlayerMovement.obj.SetNewPower();
         MusicManager.obj.PlayPowerUpPickupSong();
         yield return new WaitForSeconds(1f);

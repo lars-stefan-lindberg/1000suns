@@ -67,7 +67,7 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
 
     private IEnumerator FadeOutBlobSpritesAndTutorialAndPlayMusic() {
         yield return new WaitForSeconds(2);
-        Player.obj.transform.position = new Vector2(372.35f, Player.obj.transform.position.y);
+        Player.obj.transform.position = new Vector2(372.25f, Player.obj.transform.position.y);
         PlayerMovement.obj.SetNewPower();
 
         yield return new WaitForSeconds(5);
