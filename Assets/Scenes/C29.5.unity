@@ -10896,7 +10896,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 1263572596}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: adaf2fe0281eb491281a7cffd2c8734c, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -10979,6 +10979,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraToDeactivate: {fileID: 1394949233}
   cameraToActivate: {fileID: 2058243864}
+  shouldFollow: 1
 --- !u!61 &1313553636
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -16268,7 +16269,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shockwavePrefab: {fileID: 4323626538525687386, guid: 99b207e5a972741bf972f3d8779622dd, type: 3}
-  _followingCamera: {fileID: 2058243864}
   minInterval: 0.6
   maxInterval: 2
   minPlayerDistance: 2
@@ -16566,7 +16566,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 1846525238}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: adaf2fe0281eb491281a7cffd2c8734c, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
