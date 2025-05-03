@@ -34,6 +34,9 @@ public class PlayerPush : MonoBehaviour
     private AudioSource _forcePushChargeLoopAudioSource;
     private bool _startedForcePushChargeLoop = false;
 
+    //Is used to disable charge while transforming to blob
+    private bool _isChargeDisabled = false;
+
     private void Awake()
     {
         obj = this;
@@ -42,7 +45,7 @@ public class PlayerPush : MonoBehaviour
 
     public void OnShoot(InputAction.CallbackContext context)
     {
-        if(Player.obj.hasCape) {
+        if(Player.obj.hasCape && !_isChargeDisabled) {
             if (context.performed)
             {
                 if (defaultPower < StaminaMgr.obj.GetCurrentStamina()) {
@@ -111,6 +114,16 @@ public class PlayerPush : MonoBehaviour
         _buildUpPowerTime = 0;
         pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().Cancel();
         Player.obj.EndChargeFlash();
+    }
+
+    public void DisableChargeFor(float duration) {
+        _isChargeDisabled = true;
+        StartCoroutine(EnableChargeAfterDelay(duration));
+    }
+
+    private IEnumerator EnableChargeAfterDelay(float delay) {
+        yield return new WaitForSeconds(delay);
+        _isChargeDisabled = false;
     }
 
     private void FixedUpdate()

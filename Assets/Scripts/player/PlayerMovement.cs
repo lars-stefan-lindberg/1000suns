@@ -309,6 +309,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         if(PlayerPowersManager.obj.CanTurnFromHumanToBlob) {
             if(_movementInput.y < 0 && value.performed) {
                 PlayerPush.obj.ResetBuiltUpPower();
+                PlayerPush.obj.DisableChargeFor(0.2f);
                 Player.obj.PlayToBlobAnimation();
             }
         }
