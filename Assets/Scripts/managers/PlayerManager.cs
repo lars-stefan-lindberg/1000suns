@@ -102,7 +102,7 @@ public class PlayerManager : MonoBehaviour
             return Player.obj.rigidBody.velocity.y;
         else if(PlayerBlob.obj != null && PlayerBlob.obj.gameObject.activeSelf)
             return PlayerBlob.obj.rigidBody.velocity.y;
-        return 0;
+        return 0f;    
     }
 
     public Transform GetPlayerTransform() {
