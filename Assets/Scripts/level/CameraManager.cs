@@ -8,15 +8,9 @@ public class CameraManager : MonoBehaviour
 
     public void ActivateMainCamera(PlayerManager.PlayerDirection direction)
     {
-        //TODO, change this solution to be more flexible
-        //Shitty solution for room 16 where another camera is used if player enters the "exit" of the room
-        if (direction == PlayerManager.PlayerDirection.LEFT && _alternativeCamera != null)
-            ActivateCamera(_alternativeCamera);
-        else {
-            ActivateCamera(_mainCamera);
-            if(_alternativeCamera != null)
-            DeactivateCamera(_alternativeCamera);
-        }
+        ActivateCamera(_mainCamera);
+        if(_alternativeCamera != null)
+        DeactivateCamera(_alternativeCamera);
     }
 
     public void ActivateAlternativeCamera() {
