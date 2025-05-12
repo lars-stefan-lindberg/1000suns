@@ -295,7 +295,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _movementInput = movementInput;
     }
 
-    private bool _isTransformingToBlob = false;
+    public bool isTransformingToBlob = false;
     public void OnMovement(InputAction.CallbackContext value)
     {
         _movementInput = value.ReadValue<Vector2>();
@@ -314,9 +314,9 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         // } else {
         if(PlayerPowersManager.obj.CanTurnFromHumanToBlob) {
             if(_movementInput.y < 0 && value.performed) {
-                if(_isTransformingToBlob)
+                if(isTransformingToBlob)
                     return;
-                _isTransformingToBlob = true;
+                isTransformingToBlob = true;
                 PlayerPush.obj.ResetBuiltUpPower();
                 PlayerPush.obj.DisableChargeFor(0.2f);
                 Player.obj.PlayToBlobAnimation();
@@ -349,7 +349,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         } else {
             _playerBlob.GetComponent<PlayerBlobMovement>().UnFreeze();
         }
-        _isTransformingToBlob = false;
+        isTransformingToBlob = false;
     }
 
     public void OnJump(InputAction.CallbackContext context)

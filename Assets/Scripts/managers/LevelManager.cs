@@ -94,6 +94,7 @@ public class LevelManager : MonoBehaviour
                 PlayerMovement.obj.isGrounded = true;
                 PlayerMovement.obj.isForcePushJumping = false;
                 PlayerMovement.obj.jumpedWhileForcePushJumping = false;
+                PlayerMovement.obj.isTransformingToBlob = false;
                 PlayerMovement.obj.CancelJumping();
 
                 Reaper.obj.playerKilled = false;
