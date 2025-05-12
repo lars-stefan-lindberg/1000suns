@@ -64,7 +64,7 @@ public class C35ConversationTrigger : MonoBehaviour
             cinemachineVirtualCamera.Follow = Player.obj.transform;
             cinemachineVirtualCamera.enabled = true;
         }
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2f);
         CaveAvatar.obj.Attack();
         _breakableFloor.Shake();
         yield return new WaitForSeconds(0.8f);
