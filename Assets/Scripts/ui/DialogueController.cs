@@ -7,7 +7,6 @@ using System;
 
 public class DialogueController : MonoBehaviour
 {
-    public static DialogueController obj;
     public event System.Action OnDialogueClosed;
     public event System.Action OnDialogueClosing;
     [SerializeField] private TypewriterByCharacter _typeWriter;
@@ -28,7 +27,6 @@ public class DialogueController : MonoBehaviour
     private bool _isFirstParagraph = true;
 
     void Awake() {
-        obj = this;
         _typeWriter.onTextShowed.AddListener(() => {
             _isTyping = false;
             _continueIcon.SetActive(true);
@@ -128,6 +126,5 @@ public class DialogueController : MonoBehaviour
 
     void OnDestroy() {
         _typeWriter.onTextShowed.RemoveAllListeners();
-        obj = null;
     }
 }

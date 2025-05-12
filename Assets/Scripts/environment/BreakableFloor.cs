@@ -72,6 +72,14 @@ public class BreakableFloor : MonoBehaviour
         }
     }
 
+    public void Shake() {
+        _shakeFloor = true;
+    }
+
+    public void Break() {
+        _breakFloor = true;
+    }
+
     private IEnumerator ShakeWall() {
         yield return new WaitForSeconds(0.05f);
         SoundFXManager.obj.PlayBreakableWallCrackling(transform);

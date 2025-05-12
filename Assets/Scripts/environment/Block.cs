@@ -1,3 +1,4 @@
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -31,6 +32,10 @@ public class Block : MonoBehaviour
         _childCollider = GetComponentInChildren<BoxCollider2D>();
     }
 
+    public void SetGravity(float gravityScale) {
+        _rigidBody.gravityScale = gravityScale;
+    }
+
     public float basePushPower = 7f;
     private bool isPlayerBeneath = false;
     private void OnTriggerEnter2D(Collider2D collision)
@@ -40,7 +45,7 @@ public class Block : MonoBehaviour
             if(_isGrounded)
                 _rigidBody.bodyType = RigidbodyType2D.Static;
 
-            if(HitUnderneath(collision)) {
+            if(HitUnderneath(collision) && _rigidBody.velocity.y < -0.05f) {
                 if(PlayerManager.obj.IsPlayerGrounded()) {
                     _rigidBody.bodyType = RigidbodyType2D.Static;
                     Reaper.obj.KillPlayerGeneric();

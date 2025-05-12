@@ -10,6 +10,7 @@ public class ConversationManager : MonoBehaviour
         public DialogueContent dialogueContent;
         public DialogueActor actor;
     }
+    [SerializeField] private DialogueController _dialogueController;
     [SerializeField] private List<ConversationEntry> conversationList;
     private int currentDialogueIndex = 0;
 
@@ -20,19 +21,19 @@ public class ConversationManager : MonoBehaviour
 
     void OnEnable()
     {
-        if (DialogueController.obj != null)
+        if (_dialogueController != null)
         {
-            DialogueController.obj.OnDialogueClosed += OnDialogueCompleted;
-            DialogueController.obj.OnDialogueClosing += OnDialogueClosing;
+            _dialogueController.OnDialogueClosed += OnDialogueCompleted;
+            _dialogueController.OnDialogueClosing += OnDialogueClosing;
         }
     }
 
     private void OnDestroy()
     {
-        if (DialogueController.obj != null)
+        if (_dialogueController != null)
         {
-            DialogueController.obj.OnDialogueClosed -= OnDialogueCompleted;
-            DialogueController.obj.OnDialogueClosing -= OnDialogueClosing;
+            _dialogueController.OnDialogueClosed -= OnDialogueCompleted;
+            _dialogueController.OnDialogueClosing -= OnDialogueClosing;
         }
     }
 
@@ -52,7 +53,7 @@ public class ConversationManager : MonoBehaviour
         {
             ConversationEntry entry = conversationList[currentDialogueIndex];
             bool leftMode = entry.actor == DialogueActor.Player;
-            DialogueController.obj.ShowDialogue(entry.dialogueContent, leftMode);
+            _dialogueController.ShowDialogue(entry.dialogueContent, leftMode);
         }
         else
         {

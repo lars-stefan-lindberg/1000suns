@@ -64,13 +64,7 @@ public class LevelManager : MonoBehaviour
                 AdjustSpawnFaceDirection(Camera.main.transform.position.x, playerSpawnPoint.transform.position.x);
 
                 if(CaveAvatar.obj != null && CaveAvatar.obj.gameObject.activeSelf) {
-                    if(GameEventManager.obj.C26CutsceneCompleted) {
-                        CaveAvatar.obj.SetStartingPositionInRoom27();
-                    } else if(!GameEventManager.obj.CaveAvatarFreed && !PlayerMovement.obj.isDevMode) {
-                        CaveAvatar.obj.SetStartingPositionInRoom1();
-                    } else {
-                        CaveAvatar.obj.SetStartingPosition();
-                    }
+                    SetCaveAvatarPosition(scene);
                 }
                 //If there are collectibles following, set start positions for them
                 if(CollectibleManager.obj.GetNumberOfCreaturesFollowingPlayer() > 0) {
@@ -127,7 +121,7 @@ public class LevelManager : MonoBehaviour
             PlayerManager.obj.FlipPlayer();
     }
 
-    private bool IsLevelCompleted(string levelId)
+    public bool IsLevelCompleted(string levelId)
     {
         if (levelCompletionMap.TryGetValue(levelId, out bool isCompleted))
         {
@@ -155,5 +149,37 @@ public class LevelManager : MonoBehaviour
 
     public void ResetLevels() {
         levelCompletionMap.Clear();
+    }
+
+    private void SetCaveAvatarPosition(Scene scene) {
+        if (scene.name == "C35") {
+            CaveAvatar.obj.SetStartingPositionInRoom35();
+        } else if(scene.name == "C34") {
+            if(IsLevelCompleted("C34"))
+                CaveAvatar.obj.SetStartingPositionInRoom35();
+            else
+                CaveAvatar.obj.SetStartingPositionInRoom34();
+        } else if(scene.name == "C33") {
+            if(IsLevelCompleted("C33"))
+                CaveAvatar.obj.SetStartingPositionInRoom34();
+            else
+                CaveAvatar.obj.SetStartingPositionInRoom33();
+        } else if(scene.name == "C32") {
+            if(IsLevelCompleted("C32"))
+                CaveAvatar.obj.SetStartingPositionInRoom33();
+            else
+                CaveAvatar.obj.SetStartingPositionInRoom32();
+        } else if(scene.name == "C31") {
+            if(IsLevelCompleted("C31"))
+                CaveAvatar.obj.SetStartingPositionInRoom32();
+            else
+                CaveAvatar.obj.SetStartingPositionInRoom31();
+        } else if(GameEventManager.obj.C26CutsceneCompleted) {
+            CaveAvatar.obj.SetStartingPositionInRoom27();
+        } else if(!GameEventManager.obj.CaveAvatarFreed && !PlayerMovement.obj.isDevMode) {
+            CaveAvatar.obj.SetStartingPositionInRoom1();
+        } else {
+            CaveAvatar.obj.SetStartingPosition();
+        }
     }
 }

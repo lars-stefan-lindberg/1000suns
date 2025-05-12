@@ -5,6 +5,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
+using System.Linq;
+using System;
 
 public class PauseMenuManager : MonoBehaviour
 {
@@ -135,9 +137,10 @@ public class PauseMenuManager : MonoBehaviour
             _lastSelectedGameObject = null;
             
             EventSystem.current.SetSelectedGameObject(null);
-            
-            if(DialogueController.obj != null && DialogueController.obj.IsDisplayed()) {
-                DialogueController.obj.FocusDialogue();
+
+            DialogueController dialogueController = FindActiveDialogueController();
+            if(dialogueController != null && dialogueController.IsDisplayed()) {
+                dialogueController.FocusDialogue();
             } else if(TutorialDialogManager.obj != null && !TutorialDialogManager.obj.tutorialCompleted) {
                 TutorialDialogManager.obj.Focus();
             } else if(!PlayerManager.obj.IsFrozen()) {
@@ -148,6 +151,21 @@ public class PauseMenuManager : MonoBehaviour
             PlayerStatsManager.obj.ResumeTimer();
         }
     }
+
+    private DialogueController FindActiveDialogueController() {
+        Scene activeScene = SceneManager.GetActiveScene();
+        GameObject[] gameObjects = activeScene.GetRootGameObjects();
+        GameObject dialogueObject = null;
+        try {
+            dialogueObject = gameObjects.First(gameObject => gameObject.CompareTag("Dialogue"));
+        }catch(Exception e) {}
+
+        if(dialogueObject == null) {
+            return null;
+        }
+        return dialogueObject.GetComponentInChildren<DialogueController>();
+    }
+        
 
     public void QuitButtonHandler() {
         _quitButton.interactable = false;

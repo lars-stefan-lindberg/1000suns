@@ -9,19 +9,19 @@ public class DialogueTrigger : MonoBehaviour
 
     void Start() {
         _collider = GetComponent<BoxCollider2D>();
-        if (DialogueController.obj != null)
+        if (_dialogueController != null)
         {
-            DialogueController.obj.OnDialogueClosed += OnDialogueCompleted;
-            DialogueController.obj.OnDialogueClosing += OnDialogueClosing;
+            _dialogueController.OnDialogueClosed += OnDialogueCompleted;
+            _dialogueController.OnDialogueClosing += OnDialogueClosing;
         }
     }
 
     private void OnDestroy()
     {
-        if (DialogueController.obj != null)
+        if (_dialogueController != null)
         {
-            DialogueController.obj.OnDialogueClosed -= OnDialogueCompleted;
-            DialogueController.obj.OnDialogueClosing -= OnDialogueClosing;
+            _dialogueController.OnDialogueClosed -= OnDialogueCompleted;
+            _dialogueController.OnDialogueClosing -= OnDialogueClosing;
         }
     }
 

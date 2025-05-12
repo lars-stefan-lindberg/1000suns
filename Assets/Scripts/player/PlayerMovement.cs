@@ -290,6 +290,11 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         EnablePlayerMovement();
     }
 
+    public void SetMovementInput(Vector2 movementInput) {
+        _freezePlayer = false;
+        _movementInput = movementInput;
+    }
+
     public void OnMovement(InputAction.CallbackContext value)
     {
         _movementInput = value.ReadValue<Vector2>();

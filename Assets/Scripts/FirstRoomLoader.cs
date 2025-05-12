@@ -13,10 +13,10 @@ public class FirstRoomLoader : MonoBehaviour
 
     void OnDestroy()
     {
-        if (DialogueController.obj != null)
+        if (_dialogueController != null)
         {
-            DialogueController.obj.OnDialogueClosed -= OnDialogueCompleted;
-            DialogueController.obj.OnDialogueClosing -= OnDialogueClosing;
+            _dialogueController.OnDialogueClosed -= OnDialogueCompleted;
+            _dialogueController.OnDialogueClosing -= OnDialogueClosing;
         }
     }
 
@@ -36,10 +36,10 @@ public class FirstRoomLoader : MonoBehaviour
 
             PlayerStatsManager.obj.ResumeTimer();
 
-            if (DialogueController.obj != null)
+            if (_dialogueController != null)
         {
-            DialogueController.obj.OnDialogueClosed += OnDialogueCompleted;
-            DialogueController.obj.OnDialogueClosing += OnDialogueClosing;
+            _dialogueController.OnDialogueClosed += OnDialogueCompleted;
+            _dialogueController.OnDialogueClosing += OnDialogueClosing;
         }
         }
     }

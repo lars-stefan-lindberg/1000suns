@@ -9,19 +9,19 @@ public class C30CutsceneManager : MonoBehaviour
     [SerializeField] private DialogueContent _dialogueContent;
 
     void Start() {
-        if (DialogueController.obj != null)
+        if (_dialogueController != null)
         {
-            DialogueController.obj.OnDialogueClosed += OnDialogueCompleted;
-            DialogueController.obj.OnDialogueClosing += OnDialogueClosing;
+            _dialogueController.OnDialogueClosed += OnDialogueCompleted;
+            _dialogueController.OnDialogueClosing += OnDialogueClosing;
         }
     }
 
     void OnDestroy()
     {
-        if (DialogueController.obj != null)
+        if (_dialogueController != null)
         {
-            DialogueController.obj.OnDialogueClosed -= OnDialogueCompleted;
-            DialogueController.obj.OnDialogueClosing -= OnDialogueClosing;
+            _dialogueController.OnDialogueClosed -= OnDialogueCompleted;
+            _dialogueController.OnDialogueClosing -= OnDialogueClosing;
         }
     }
 

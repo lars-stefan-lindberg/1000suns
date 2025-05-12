@@ -113,16 +113,17 @@ public class SoundFXManager : MonoBehaviour
 
     private bool CanPlaySound(string audioId, float cooldown = DEFAULT_COOLDOWN) {
         if (!lastPlayedTimes.ContainsKey(audioId)) {
-            lastPlayedTimes[audioId] = -cooldown; // Allow first play
+            lastPlayedTimes[audioId] = Time.time; // Allow first play
             return true;
+        } else {
+            float lastPlayedTime = lastPlayedTimes[audioId];
+            if(lastPlayedTime < Time.time - cooldown) {
+                lastPlayedTimes[audioId] = Time.time;
+                return true;
+            } else {
+                return false;
+            }
         }
-
-        float timeSinceLastPlay = Time.time - lastPlayedTimes[audioId];
-        return timeSinceLastPlay >= cooldown;
-    }
-
-    private void UpdateSoundPlayTime(string audioId) {
-        lastPlayedTimes[audioId] = Time.time;
     }
 
     public void PlayBrokenFloorReappear(Transform spawnTransform) {
@@ -230,7 +231,8 @@ public class SoundFXManager : MonoBehaviour
         return PlaySound(blockSliding, spawnTransform, 1f, soundDurationPercentage);
     }
     public void PlayBlockLand(Transform spawnTransform) {
-        PlaySound(blockLand, spawnTransform, 1f);
+        if(CanPlaySound("blockLand", 0.5f))
+            PlaySound(blockLand, spawnTransform, 1f);
     }
     public void PlayBlockSlideOffEdge(Transform spawnTransform) {
         PlayRandomSound(blockSlideOffEdge, spawnTransform, 1f);
@@ -251,10 +253,14 @@ public class SoundFXManager : MonoBehaviour
         PlayRandomSound(fallingSpikeCrackling, spawnTransform, 1f);
     }
     public void PlayFallingSpikeFall(Transform spawnTransform) {
-        PlayRandomSound(fallingSpikeFall, spawnTransform, 1f);
+        if (CanPlaySound("fallingSpikeFall", 0.5f)) {
+            PlayRandomSound(fallingSpikeFall, spawnTransform, 1f);
+        }
     }
     public void PlayFallingSpikeHit(Transform spawnTransform) {
-        PlayRandomSound(fallingSpikeHit, spawnTransform, 1f);
+        if (CanPlaySound("fallingSpikeHit", 0.5f)) {
+            PlayRandomSound(fallingSpikeHit, spawnTransform, 1f);
+        }
     }
     public void PlayFallingSpikeHitLiquid(Transform spawnTransform) {
         PlayRandomSound(fallingSpikeHitLiquid, spawnTransform, 1f);
@@ -295,7 +301,6 @@ public class SoundFXManager : MonoBehaviour
         if (CanPlaySound("prisonerSpawn", 0.5f)) {
             PlayRandomSound(prisonerSpawn, spawnTransform, 1f);
         }
-        UpdateSoundPlayTime("prisonerSpawn");
     }
     public AudioSource PlayPrisonerHit(Transform spawnTransform) {
         return PlayLoopedSound(prisonerHit, spawnTransform, 1f);

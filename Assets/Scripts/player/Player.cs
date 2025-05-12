@@ -34,6 +34,13 @@ public class Player : MonoBehaviour
         SetHasCape(true);
     }
 
+    public void SetStatic() {
+        rigidBody.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezePositionY;
+        rigidBody.velocity = Vector2.zero;
+        rigidBody.bodyType = RigidbodyType2D.Static;
+
+    }
+
     void OnCollisionEnter2D(Collision2D other) {
         if((_groundLayerMasks.value & (1 << other.gameObject.layer)) != 0) {
             string surfaceTag = other.gameObject.tag;

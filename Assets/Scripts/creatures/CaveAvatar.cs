@@ -35,7 +35,7 @@ public class CaveAvatar : MonoBehaviour
 
     void Awake() {
         obj = this;
-        IsFollowingPlayer = true;
+        IsFollowingPlayer = false;
     }
 
     void FixedUpdate()
@@ -102,6 +102,14 @@ public class CaveAvatar : MonoBehaviour
         _tailParts[4].transform.position = Vector2.Lerp(_tailParts[4].transform.position, _tailParts[3].transform.position, _tailPartLerpSpeed);
     }
 
+    [ContextMenu("Attack")]
+    public void Attack() {
+        //ShockWaveManager.obj.CallShockWave(_head.transform.position, 0.7f, 0, 0.25f);
+        //Player.obj.ForcePushFlash();
+        CameraShakeManager.obj.ForcePushShake();
+        SoundFXManager.obj.PlayForcePushExecute(transform);
+    }
+
     public void NudgeUpwards() {
         StartCoroutine(NudgeUpwardsCoroutine(0.4f));
     }
@@ -157,13 +165,47 @@ public class CaveAvatar : MonoBehaviour
         _target = null;
     }
 
+    public void SetStartingPositionInRoom31() {
+        SetPosition(new Vector2(1518f, -5.25f));
+        IsFollowingPlayer = false;
+        _target = null;
+        _headSpriteRenderer.flipX = true;
+    }
+
+    public void SetStartingPositionInRoom32() {
+        SetPosition(new Vector2(1598.75f, -16.875f));
+        IsFollowingPlayer = false;
+        _target = null;
+        _headSpriteRenderer.flipX = true;
+    }
+
+    public void SetStartingPositionInRoom33() {
+        SetPosition(new Vector2(1639.875f, -9.125f));
+        IsFollowingPlayer = false;
+        _target = null;
+        _headSpriteRenderer.flipX = true;
+    }
+
+    public void SetStartingPositionInRoom34() {
+        SetPosition(new Vector2(1797f, -14.125f));
+        IsFollowingPlayer = false;
+        _target = null;
+        _headSpriteRenderer.flipX = true;
+    }
+
+    public void SetStartingPositionInRoom35() {
+        SetPosition(new Vector2(1876.5f, -12f));
+        IsFollowingPlayer = false;
+        _target = null;
+        _headSpriteRenderer.flipX = true;
+    }
+
     public void SetStartingPositionInRoom1() {
         SetPosition(new Vector2(241f, 21.25f), false);
         IsFollowingPlayer = false;
         _target = null;
         SetFloatingEnabled(false);
     }
-
     public void SetPosition(Vector2 target, bool adjustFlipXToPlayer = true) {
         if(adjustFlipXToPlayer) {
             bool isPlayerFacingLeft = PlayerMovement.obj.isFacingLeft();
@@ -175,6 +217,8 @@ public class CaveAvatar : MonoBehaviour
         for (int i = 0; i < _tailParts.Length; i++) {
             _tailParts[i].transform.position = target;
         }
+
+        _target = null;
     }
 
     public void SetFlipX(bool flipX) {

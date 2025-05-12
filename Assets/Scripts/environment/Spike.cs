@@ -16,7 +16,7 @@ public class Spike : MonoBehaviour
     public float gravity = 0;
     private Vector2 _startingPosition;
     private float _respawnTimer = 0f;
-    private float spawnTime = 3f;
+    public float spawnTime = 3f;
     private Color _fadeStartColor;
     [Range(0.1f, 10f), SerializeField] private float _fadeSpeed = 5f;
     [SerializeField] private GameObject _dustParticles;
@@ -85,6 +85,11 @@ public class Spike : MonoBehaviour
         }
     }
 
+    public void InitiateFall() {
+        _isFalling = true;
+        Fall();
+    }
+
     private IEnumerator ShakeBeforeFall(GameObject dustParticles) {
         //Shake spike
         float leftX = _originXPosition - _shakeDistance;
@@ -101,10 +106,14 @@ public class Spike : MonoBehaviour
         _spriteRenderer.transform.position = new Vector2(_originXPosition, _spriteRenderer.transform.position.y);
 
         Destroy(dustParticles, 1);
+        Fall();
+        yield return null;
+    }
+
+    private void Fall() {
         _collider.enabled = true;
         _rigidBody.gravityScale = gravity;
         SoundFXManager.obj.PlayFallingSpikeFall(transform);
-        yield return null;
     }
 
     private void OnCollisionEnter2D(Collision2D collision) {
@@ -128,6 +137,8 @@ public class Spike : MonoBehaviour
         if(isRespawnable) {
             _isRespawning = true;
             _respawnTimer = 0f;
+        } else {
+            Destroy(gameObject, 1);
         }
     }
 
