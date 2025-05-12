@@ -52,7 +52,7 @@ public class CreditsScreen : MonoBehaviour
     }
 
     private IEnumerator QuitToTitleScreenDelayed() {
-        yield return new WaitForSeconds(11f);
+        yield return new WaitForSeconds(13f);
         float musicVolume = SoundMixerManager.obj.GetMusicVolume();
         StartCoroutine(SoundMixerManager.obj.StartMusicFade(3f, 0.001f));
         while(SoundMixerManager.obj.GetMusicVolume() > 0.001f) {

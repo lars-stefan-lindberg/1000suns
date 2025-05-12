@@ -9,6 +9,7 @@ public class C35ConversationTrigger : MonoBehaviour
     [SerializeField] private BreakableFloor _breakableFloor;
     [SerializeField] private GameObject _camera;
     [SerializeField] private bool _runOnConversationCompleted = true;
+    [SerializeField] private bool _flipCaveAvatar = false;
     private BoxCollider2D _collider;
 
     void Start() {
@@ -38,6 +39,9 @@ public class C35ConversationTrigger : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
 
+        if(_flipCaveAvatar) {
+            CaveAvatar.obj.SetFlipX(true);
+        }
         _conversationManager.StartConversation();
     }
 
