@@ -14,6 +14,7 @@ public class CaveAvatar : MonoBehaviour
     [SerializeField] private Transform _playerTargetLeft;
     [SerializeField] private Transform _playerTargetRight;
     private Transform _target;
+    private Animator _animator;
     public bool IsFollowingPlayer {get; set;}
 
     [SerializeField] private float _floatDistance = 0.25f;
@@ -35,6 +36,7 @@ public class CaveAvatar : MonoBehaviour
 
     void Awake() {
         obj = this;
+        _animator = GetComponentInChildren<Animator>();
         IsFollowingPlayer = false;
     }
 
@@ -104,8 +106,7 @@ public class CaveAvatar : MonoBehaviour
 
     [ContextMenu("Attack")]
     public void Attack() {
-        //ShockWaveManager.obj.CallShockWave(_head.transform.position, 0.7f, 0, 0.25f);
-        //Player.obj.ForcePushFlash();
+        _animator.SetTrigger("attack");
         CameraShakeManager.obj.ForcePushShake();
         SoundFXManager.obj.PlayForcePushExecute(transform);
     }
