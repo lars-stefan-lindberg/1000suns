@@ -149,7 +149,7 @@ public class CaveAvatar : MonoBehaviour
         SetPosition(new Vector2(191.975f, 24.89f));
     }
 
-    public void SetStartingPosition() {
+    public void SetFollowPlayerStartingPosition() {
         Vector2 headTargetPosition = PlayerMovement.obj.isFacingLeft() ? _playerTargetRight.position : _playerTargetLeft.position;
         SetPosition(headTargetPosition);
     }
@@ -288,10 +288,6 @@ public class CaveAvatar : MonoBehaviour
 
     public Transform GetHeadTransform() {
         return _head.transform;
-    }
-
-    public bool IsFloatingUp() {
-        return _floatUp;
     }
 
     void OnDestroy() {

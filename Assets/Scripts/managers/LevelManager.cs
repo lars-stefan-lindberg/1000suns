@@ -180,7 +180,8 @@ public class LevelManager : MonoBehaviour
         } else if(!GameEventManager.obj.CaveAvatarFreed && !PlayerMovement.obj.isDevMode) {
             CaveAvatar.obj.SetStartingPositionInRoom1();
         } else {
-            CaveAvatar.obj.SetStartingPosition();
+            CaveAvatar.obj.SetFollowPlayerStartingPosition();
+            CaveAvatar.obj.FollowPlayer();
         }
     }
 }
