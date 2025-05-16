@@ -54,7 +54,7 @@ public class LevelManager : MonoBehaviour
                 if(IsLevelCompleted(scene.name)) {
                     cameraManager.ActivateAlternativeCamera();
                 } else {
-                    cameraManager.ActivateMainCamera(PlayerManager.PlayerDirection.NO_DIRECTION);
+                    cameraManager.ActivateMainCamera();
                 }
 
                 if(Player.obj != null)

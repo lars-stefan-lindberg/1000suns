@@ -96,7 +96,7 @@ public class LevelSwitcher : MonoBehaviour
         if(_activateAlternativeCamera) {
             cameraManager.ActivateAlternativeCamera();
         } else {
-            cameraManager.ActivateMainCamera(direction);
+            cameraManager.ActivateMainCamera();
         }
 
         yield return null;

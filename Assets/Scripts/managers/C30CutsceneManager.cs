@@ -66,7 +66,7 @@ public class C30CutsceneManager : MonoBehaviour
         yield return new WaitForSeconds(2f);
         CaveAvatar.obj.gameObject.SetActive(false);
 
-        _cameraManager.ActivateMainCamera(PlayerManager.PlayerDirection.NO_DIRECTION);
+        _cameraManager.ActivateMainCamera();
 
         yield return new WaitForSeconds(3f);
 

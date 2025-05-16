@@ -6,7 +6,7 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private GameObject _mainCamera;
     [SerializeField] private GameObject _alternativeCamera;
 
-    public void ActivateMainCamera(PlayerManager.PlayerDirection direction)
+    public void ActivateMainCamera()
     {
         ActivateCamera(_mainCamera);
         if(_alternativeCamera != null)

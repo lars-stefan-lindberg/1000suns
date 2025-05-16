@@ -45,7 +45,7 @@ public class TeleportToC295 : MonoBehaviour
 
         GameObject cameras = sceneGameObjects.First(gameObject => gameObject.CompareTag("Cameras"));
         CameraManager cameraManager = cameras.GetComponent<CameraManager>();
-        cameraManager.ActivateMainCamera(PlayerManager.PlayerDirection.NO_DIRECTION);
+        cameraManager.ActivateAlternativeCamera();
 
         _followCamera.Follow = Player.obj.transform;
 
@@ -61,7 +61,11 @@ public class TeleportToC295 : MonoBehaviour
 
         Destroy(_lightPortal);
 
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(3f);
+
+        cameraManager.ActivateMainCamera();
+
+        yield return new WaitForSeconds(4f);
 
         PlayerBlobMovement.obj.UnFreeze();
 
