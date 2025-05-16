@@ -195,7 +195,7 @@ public class CaveAvatar : MonoBehaviour
     }
 
     public void SetStartingPositionInRoom35() {
-        SetPosition(new Vector2(1876.5f, -12f));
+        SetPosition(new Vector2(1865.75f, -18.75f));
         IsFollowingPlayer = false;
         _target = null;
         _headSpriteRenderer.flipX = false;

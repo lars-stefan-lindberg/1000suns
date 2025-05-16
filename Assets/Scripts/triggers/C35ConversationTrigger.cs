@@ -7,7 +7,8 @@ public class C35ConversationTrigger : MonoBehaviour
     [SerializeField] private ConversationManager _conversationManager;
     [SerializeField] private ConversationManager _nextConversationManager;
     [SerializeField] private BreakableFloor _breakableFloor;
-    [SerializeField] private GameObject _camera;
+    [SerializeField] private GameObject _fixedCamera;
+    [SerializeField] private GameObject _followCamera;
     [SerializeField] private bool _runOnConversationCompleted = true;
     [SerializeField] private bool _flipCaveAvatar = false;
     private BoxCollider2D _collider;
@@ -37,10 +38,18 @@ public class C35ConversationTrigger : MonoBehaviour
             PlayerBlobMovement.obj.ToHuman();
         }
 
-        yield return new WaitForSeconds(0.5f);
+        if(_fixedCamera != null) {
+            _fixedCamera.SetActive(true);
+            CinemachineVirtualCamera cinemachineVirtualCamera = _fixedCamera.GetComponent<CinemachineVirtualCamera>();
+            cinemachineVirtualCamera.enabled = true;
+            yield return new WaitForSeconds(2f);
+        } else {
+            yield return new WaitForSeconds(0.5f);
+        }
 
         if(_flipCaveAvatar) {
             CaveAvatar.obj.SetFlipX(true);
+            yield return new WaitForSeconds(1f);
         }
         _conversationManager.StartConversation();
     }
@@ -62,9 +71,9 @@ public class C35ConversationTrigger : MonoBehaviour
         GameEventManager.obj.IsPauseAllowed = false;
         PlayerStatsManager.obj.PauseTimer();
         MusicManager.obj.PlayEndSong();
-        if(_camera != null) {
-            _camera.SetActive(true);
-            CinemachineVirtualCamera cinemachineVirtualCamera = _camera.GetComponent<CinemachineVirtualCamera>();
+        if(_followCamera != null) {
+            _followCamera.SetActive(true);
+            CinemachineVirtualCamera cinemachineVirtualCamera = _followCamera.GetComponent<CinemachineVirtualCamera>();
             cinemachineVirtualCamera.Follow = Player.obj.transform;
             cinemachineVirtualCamera.enabled = true;
         }
