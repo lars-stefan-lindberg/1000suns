@@ -160,13 +160,13 @@ public class SoundFXManager : MonoBehaviour
     }
 
     public void PlayDialogueOpen() {
-        PlaySound(dialogueOpen, Camera.main.transform, 1f);
+        PlayNonSpatiallyAwareSound(dialogueOpen, Camera.main.transform, 1f);
     }
     public void PlayDialogueClose() {
-        PlaySound(dialogueClose, Camera.main.transform, 1f);
+        PlayNonSpatiallyAwareSound(dialogueClose, Camera.main.transform, 1f);
     }
     public void PlayDialogueConfirm() {
-        PlayRandomSound(dialogueConfirm, Camera.main.transform, 1f);
+        PlayRandomNonSpatiallyAwareSound(dialogueConfirm, Camera.main.transform, 1f);
     }
 
     public void PlayJump(Transform spawnTransform) {
@@ -355,6 +355,12 @@ public class SoundFXManager : MonoBehaviour
         audioSource.volume = volume;
         PlaySound(audioSource, audioSource.clip.length);
         return audioSource;
+    }
+
+    public void PlayRandomNonSpatiallyAwareSound(AudioClip[] clips, Transform spawnTransform, float volume)
+    {
+        int random = GetRandomIndex(clips);
+        PlayNonSpatiallyAwareSound(clips[random], spawnTransform, volume);
     }
 
     public AudioSource PlayLoopedSound(AudioClip clip, Transform spawnTransform, float volume)
