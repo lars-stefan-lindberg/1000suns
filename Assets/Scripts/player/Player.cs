@@ -104,7 +104,9 @@ public class Player : MonoBehaviour
     }
 
     public void SetHasCape(bool _hasCape) {
-        if(_hasCape)
+        if(_hasCape && hasPowerUp)
+            _animator.SetLayerWeight(2, 1);
+        else if(hasCape)
             _animator.SetLayerWeight(1, 1);
         else
             _animator.SetLayerWeight(1, 0);
