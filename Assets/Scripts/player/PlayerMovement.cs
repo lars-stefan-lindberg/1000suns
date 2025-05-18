@@ -7,6 +7,13 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour, IPlayerController
 {
+    // --- Jump Kick Start fields ---
+    private bool _isJumpKickActive = false;
+    private float _jumpKickTimer = 0f;
+    public float _jumpKickDuration = 0.1f; // seconds
+    public float _jumpKickHorizontal = 4f; // tune as needed
+    private float _jumpKickDirection = 1f;
+    // --------------------------------
     public static PlayerMovement obj;
 
     public bool isDevMode = true;
@@ -86,6 +93,13 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         GatherInput();
         UpdateAnimator();
         FlipPlayer(_movementInput.x);
+        // Update jump kick timer
+        if (_isJumpKickActive)
+        {
+            _jumpKickTimer -= Time.deltaTime;
+            if (_jumpKickTimer <= 0f)
+                _isJumpKickActive = false;
+        }
     }
 
     private void FlipPlayer(float _xValue)
@@ -489,7 +503,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         {
             isGrounded = true;
             _coyoteUsable = true;
-            _bufferedJumpUsable = true;
             _endedJumpEarly = false;
             _numberOfAirJumps = 0;
             _airJumpToConsume = false;
@@ -556,10 +569,9 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public float forcePushJumpOnGroundDuration = 0.01f;
     public float forcePushJumpOnGroundTimer = 0f;
     private bool _jumpToConsume;
-    private float _timeJumpWasPressed;
+    private float _timeJumpWasPressed = -100;  //To avoid having buffered jump from the start
     private bool _endedJumpEarly;
     private bool _coyoteUsable;
-    private bool _bufferedJumpUsable;
     private bool _airJumpToConsume = false;
     private int _numberOfAirJumps = 0;
     private bool _buildingUpPowerJump = false;
@@ -572,7 +584,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private bool PowerJumpMaxCharged => _buildUpPowerJumpTime >= POWER_JUMP_MAX_CHARGED_TIME;
     private bool CanUseJump => (isGrounded || CanUseCoyote) && _jumpToConsume;
-    private bool HasBufferedJump => _bufferedJumpUsable && _time < _timeJumpWasPressed + _stats.JumpBuffer;
+    private bool HasBufferedJump => _time < _timeJumpWasPressed + _stats.JumpBuffer;
     private bool CanUseCoyote => _coyoteUsable && !isGrounded && _time < _frameLeftGrounded + _stats.CoyoteTime;
     private bool CanUseAirJump =>
         isDevMode &&
@@ -588,6 +600,11 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
         if (!_jumpToConsume && !CanUseAirJump && !HasBufferedJump) return;
 
+        if(HasBufferedJump && isGrounded) {
+            ExecuteRegularJump();
+            return;
+        }
+
         if (CanUseJump) ExecuteRegularJump();
 
         if (CanUseAirJump) ExecuteAirJump();
@@ -602,11 +619,20 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private float _jumpSqueezeX = 0.8f;
     private float _jumpSqueezeY = 1.2f;
-    private float _jumpSqueezeTime = 0.08f;
+    private float _jumpSqueezeTime = 0.12f;
+
 
     private void ExecuteRegularJump()
     {
         ExecuteJump(_stats.JumpPower);
+        
+        // Activate jump kick start
+        if(!isForcePushJumping && Mathf.Abs(_frameVelocity.x) >= _stats.MaxSpeed) {
+            _isJumpKickActive = true;
+            _jumpKickTimer = _jumpKickDuration;
+            _jumpKickDirection = isFacingLeft() ? -1f : 1f;
+        }
+        
         DustParticleMgr.obj.CreateDust();
 
         if(isForcePushJumping) {
@@ -636,7 +662,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         isOnPlatform = false;
         _endedJumpEarly = false;
         _timeJumpWasPressed = 0;
-        _bufferedJumpUsable = false;
         _coyoteUsable = false;
         _frameVelocity.y = jumpPower;
         Jumped?.Invoke();
@@ -694,6 +719,12 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
                     _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, (_movementInput.x * _stats.MaxSpeed) + (isOnPlatform && platformRigidBody != null ? platformRigidBody.velocity.x : 0), _stats.Acceleration * Time.fixedDeltaTime);
                 }
             }
+        }
+
+        // Apply jump kick boost to horizontal frame velocity if active
+        if (_isJumpKickActive)
+        {
+            _frameVelocity.x += _jumpKickHorizontal * _jumpKickDirection;
         }
     }
 

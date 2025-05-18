@@ -24,7 +24,6 @@ public class C27CutsceneManager : MonoBehaviour
         CaveAvatar.obj.SetTarget(_caveAvatarFlyOffTarget.transform);
 
         yield return new WaitForSeconds(3f);
-        CaveAvatar.obj.gameObject.SetActive(false);
 
         PlayerBlobMovement.obj.UnFreeze();
         GameEventManager.obj.IsPauseAllowed = true;

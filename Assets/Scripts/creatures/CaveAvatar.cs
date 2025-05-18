@@ -36,6 +36,10 @@ public class CaveAvatar : MonoBehaviour
 
     void Awake() {
         obj = this;
+    }
+
+    void Start()
+    {
         _animator = GetComponentInChildren<Animator>();
         IsFollowingPlayer = false;
     }
@@ -164,6 +168,13 @@ public class CaveAvatar : MonoBehaviour
         SetPosition(new Vector2(1475.125f, -14.875f));
         IsFollowingPlayer = false;
         _target = null;
+        //Also this is a good time to reset the red eyes color of the sprite, and set the red eye animation layer instead
+        _headSpriteRenderer.color = Color.white;
+        Debug.Log("Set red eye animation layer");
+        Debug.Log("Red eye animation layer index: " + _animator.GetLayerIndex("red_eyes"));
+        Debug.Log("Layer count: " + _animator.layerCount);
+        _animator.SetLayerWeight(1, 1);
+        Debug.Log(_animator.gameObject.name);
     }
 
     public void SetStartingPositionInRoom31() {

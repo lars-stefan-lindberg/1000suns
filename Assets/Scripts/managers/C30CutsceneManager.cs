@@ -64,7 +64,6 @@ public class C30CutsceneManager : MonoBehaviour
         CaveAvatar.obj.SetTarget(_caveAvatarFlyOffTarget.transform);
 
         yield return new WaitForSeconds(2f);
-        CaveAvatar.obj.gameObject.SetActive(false);
 
         _cameraManager.ActivateMainCamera();
 
