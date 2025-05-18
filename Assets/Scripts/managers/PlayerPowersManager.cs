@@ -21,7 +21,19 @@ public class PlayerPowersManager : MonoBehaviour
             CanTurnFromHumanToBlob = true;
             BlobCanJump = true;
             BlobCanExtraJump = true;
-        }
+        }     
+    }
+
+    void OnEnable()
+    {
+        if(PlayerMovement.obj.isDevMode) {
+            CanFallDash = true;
+            CanForcePushJump = true;
+            CanTurnFromBlobToHuman = true;
+            CanTurnFromHumanToBlob = true;
+            BlobCanJump = true;
+            BlobCanExtraJump = true;
+        }     
     }
 
     public void ResetGameEvents() {

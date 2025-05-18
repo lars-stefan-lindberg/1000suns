@@ -31,6 +31,7 @@ public class Player : MonoBehaviour
 
     void OnEnable()
     {
+        _animator = GetComponentInChildren<Animator>();
         SetHasCape(true);
     }
 
@@ -106,13 +107,12 @@ public class Player : MonoBehaviour
     public void SetHasCape(bool _hasCape) {
         if(_hasCape && hasPowerUp)
             _animator.SetLayerWeight(2, 1);
-        else if(hasCape)
+        else if(_hasCape)
             _animator.SetLayerWeight(1, 1);
         else
             _animator.SetLayerWeight(1, 0);
         hasCape = _hasCape;
     }
-
 
     public void SetBlackCape() {
         _animator.SetLayerWeight(1, 0);

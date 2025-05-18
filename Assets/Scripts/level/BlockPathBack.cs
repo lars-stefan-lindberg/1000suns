@@ -17,7 +17,6 @@ public class BlockPathBack : MonoBehaviour
 
     void OnTriggerExit2D(Collider2D collision)
     {
-        Debug.Log("Player left trigger");
         if(collision.CompareTag("Player")) {
             StartCoroutine(EnableCollider());
         }

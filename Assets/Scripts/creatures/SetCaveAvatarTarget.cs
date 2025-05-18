@@ -4,7 +4,6 @@ public class SetCaveAvatarTarget : MonoBehaviour
 {
     void Awake()
     {
-        Debug.Log("SetCaveAvatarTarget Awake");
         if(GameEventManager.obj.CaveAvatarFreed)    
         {
             Destroy(gameObject);

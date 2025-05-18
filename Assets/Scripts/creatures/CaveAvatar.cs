@@ -170,11 +170,7 @@ public class CaveAvatar : MonoBehaviour
         _target = null;
         //Also this is a good time to reset the red eyes color of the sprite, and set the red eye animation layer instead
         _headSpriteRenderer.color = Color.white;
-        Debug.Log("Set red eye animation layer");
-        Debug.Log("Red eye animation layer index: " + _animator.GetLayerIndex("red_eyes"));
-        Debug.Log("Layer count: " + _animator.layerCount);
         _animator.SetLayerWeight(1, 1);
-        Debug.Log(_animator.gameObject.name);
     }
 
     public void SetStartingPositionInRoom31() {

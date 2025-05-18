@@ -69,6 +69,7 @@ public class IntroController : MonoBehaviour
         PlayerMovement.obj.CancelJumping();
         Player.obj.transform.position = _playerSpawningCollider.transform.position;
         PlayerMovement.obj.DisablePlayerMovement();
+        Player.obj.SetHasCape(false);
 
         GameObject levelSwitcherGameObject = sceneGameObjects.First(gameObject => gameObject.CompareTag("LevelSwitcher"));
         LevelSwitcher levelSwitcher = levelSwitcherGameObject.GetComponent<LevelSwitcher>();
