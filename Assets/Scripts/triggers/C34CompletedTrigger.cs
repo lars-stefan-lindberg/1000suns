@@ -19,6 +19,7 @@ public class C34CompletedTrigger : MonoBehaviour
             _collider.enabled = false;
             CaveAvatar.obj.SetTarget(_targetPosition, 10);
             GameEventManager.obj.C34Completed = true;
+            MusicManager.obj.ScheduleClipOnNextBar(MusicManager.obj.caveAvatarChaseOutro, 210, false);
         }
     }
 }

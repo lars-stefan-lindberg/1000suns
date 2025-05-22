@@ -34,9 +34,17 @@ public class C31ConversationTrigger : MonoBehaviour
     }
 
     private void OnConversationCompleted() {
-        PlayerMovement.obj.UnFreeze();
+        StartCoroutine(OnConversationCompletedCoroutine());
+    }
+
+    private IEnumerator OnConversationCompletedCoroutine() {
+        MusicManager.obj.PlayCaveAvatarChase();
+        yield return new WaitForSeconds(3f);
         _c31Manager.StartAttackSequence();
+        yield return new WaitForSeconds(1f);
+        PlayerMovement.obj.UnFreeze();
         GameEventManager.obj.C31CutsceneCompleted = true;
         _conversationManager.OnConversationEnd -= OnConversationCompleted;
+        yield return null;
     }
 }
