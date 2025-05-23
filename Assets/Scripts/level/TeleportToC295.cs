@@ -33,6 +33,7 @@ public class TeleportToC295 : MonoBehaviour
 
         yield return new WaitForSeconds(0.2f);
         
+        SoundFXManager.obj.PlayCaveSpaceRoomTeleport();
         WhiteFadeManager.obj.StartFadeOut();
 
         yield return new WaitForSeconds(1f);
@@ -56,16 +57,18 @@ public class TeleportToC295 : MonoBehaviour
         PlayerBlobMovement.obj.isGrounded = true;
         PlayerBlobMovement.obj.CancelJumping();
 
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(2f);
+        MusicManager.obj.PlayCaveSpaceRoomIntro();
+        yield return new WaitForSeconds(1f);
         WhiteFadeManager.obj.StartFadeIn();
 
         Destroy(_lightPortal);
 
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(6f);
 
         cameraManager.ActivateMainCamera();
 
-        yield return new WaitForSeconds(4f);
+        yield return new WaitForSeconds(5f);
 
         PlayerBlobMovement.obj.UnFreeze();
 

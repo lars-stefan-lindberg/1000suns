@@ -15,13 +15,16 @@ public class TeleportToC29 : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.CompareTag("Player")) {
-            StartCoroutine(TeleportToC29Routine());
             GetComponent<BoxCollider2D>().enabled = false;
+            StartCoroutine(TeleportToC29Routine());
         }
     }
 
     private IEnumerator TeleportToC29Routine() {
         PlayerBlobMovement.obj.Freeze();
+        MusicManager.obj.PlayCaveSpaceRoomOutro();
+        yield return new WaitForSeconds(0.2f);
+        SoundFXManager.obj.PlayCaveSpaceRoomTeleport();
         WhiteFadeManager.obj.StartFadeOut();
 
         yield return new WaitForSeconds(1);
