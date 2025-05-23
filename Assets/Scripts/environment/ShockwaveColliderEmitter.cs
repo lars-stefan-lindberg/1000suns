@@ -49,10 +49,9 @@ public class ShockwaveColliderEmitter : MonoBehaviour
             shockwave.force = force;
     }
 
-
     void FixedUpdate()
     {
-        if (PlayerManager.obj == null ||PlayerManager.obj.GetPlayerTransform() == null)
+        if (PlayerManager.obj == null || PlayerManager.obj.GetPlayerTransform() == null)
             return;
         float playerDist = Vector3.Distance(transform.position, PlayerManager.obj.GetPlayerTransform().position);
         float dynamicInterval = GetDynamicInterval(playerDist);

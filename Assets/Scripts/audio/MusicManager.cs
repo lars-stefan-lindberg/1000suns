@@ -32,7 +32,9 @@ public class MusicManager : MonoBehaviour
     [SerializeField] private AudioClip _caveAvatarChaseLoop;
     public AudioClip caveAvatarChaseOutro;
     [SerializeField] private AudioClip _caveSpaceRoomIntro;
-    [SerializeField] private AudioClip _caveSpaceRoomOutro;
+    public AudioClip caveSpaceRoomOutro;
+    [SerializeField] private AudioClip _caveSpaceRoomLoopIntro;
+    [SerializeField] private AudioClip _caveSpaceRoomLoop;
 
     [SerializeField] private AudioClip _endSong;
 
@@ -60,8 +62,8 @@ public class MusicManager : MonoBehaviour
     public void PlayCaveSpaceRoomIntro() {
         PlayOneTime(_caveSpaceRoomIntro);
     }
-    public void PlayCaveSpaceRoomOutro() {
-        PlayOneTime(_caveSpaceRoomOutro);
+    public void PlayCaveSpaceRoomLoop() {
+        PlayIntroAndLoop(_caveSpaceRoomLoopIntro, _caveSpaceRoomLoop);
     }
     [ContextMenu("Play cave first song")]
     public void PlayCaveFirstSong() {
@@ -370,6 +372,10 @@ public class MusicManager : MonoBehaviour
             Destroy(_nextBarSource.gameObject);
             _nextBarSource = null;
         }
+    }
+
+    public AudioSource GetLoopSource() {
+        return _loopSource;
     }
 
     void OnDestroy() {

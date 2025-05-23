@@ -22,12 +22,11 @@ public class TeleportToC29 : MonoBehaviour
 
     private IEnumerator TeleportToC29Routine() {
         PlayerBlobMovement.obj.Freeze();
-        MusicManager.obj.PlayCaveSpaceRoomOutro();
-        yield return new WaitForSeconds(0.2f);
+        MusicManager.obj.ScheduleClipOnNextBar(MusicManager.obj.caveIntense1Outro, 140, false);
         SoundFXManager.obj.PlayCaveSpaceRoomTeleport();
         WhiteFadeManager.obj.StartFadeOut();
 
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(1f);
 
         LightingManager2D.Get().profile.DarknessColor = new Color(0.005f, 0.005f, 0.005f);
 
