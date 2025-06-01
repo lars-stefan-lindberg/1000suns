@@ -34,7 +34,7 @@ public class C1FreeCaveAvatarManager : MonoBehaviour
 
         Player.obj.PlayPullRoots();
 
-        yield return new WaitForSeconds(5.5f);
+        yield return new WaitForSeconds(4.8f);
 
         Player.obj.EndPullRoots();
 
