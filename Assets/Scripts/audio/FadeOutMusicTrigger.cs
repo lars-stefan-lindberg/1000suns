@@ -1,9 +1,10 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class FadeOutMusicTrigger : MonoBehaviour
 {
+    [SerializeField] float _fadeOutDuration = 3f;
+    
     void OnTriggerEnter2D(Collider2D other) {
         if(other.CompareTag("Player")) {
             StartCoroutine(FadeOutAndStopMusic());
@@ -13,9 +14,9 @@ public class FadeOutMusicTrigger : MonoBehaviour
 
     private IEnumerator FadeOutAndStopMusic() {
         float musicVolume = SoundMixerManager.obj.GetMusicVolume();
-        StartCoroutine(SoundMixerManager.obj.StartMusicFade(3f, 0.001f));
+        StartCoroutine(SoundMixerManager.obj.StartMusicFade(_fadeOutDuration, 0.001f));
         AmbienceManager.obj.PlayCapeRoomAmbience();
-        AmbienceManager.obj.FadeInAmbienceSource2And3(3f);
+        AmbienceManager.obj.FadeInAmbienceSource2And3(_fadeOutDuration);
         while(SoundMixerManager.obj.GetMusicVolume() > 0.001f) {
             yield return null;
         }
