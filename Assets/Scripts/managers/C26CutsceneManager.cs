@@ -83,6 +83,7 @@ public class C26CutsceneManager : MonoBehaviour
 
         //Set eye color
         CaveAvatar.obj.SetEyeColor(new Color(0.6226415f, 0.02643288f, 0.02643288f, 1f));
+        SoundFXManager.obj.PlayCaveAvatarEvilEyesTransition();
 
         yield return new WaitForSeconds(1f);
 
@@ -105,7 +106,9 @@ public class C26CutsceneManager : MonoBehaviour
         _particleEffect.Play();
         StartCoroutine(GraduallyIncreaseParticleSpeed(_particleEffect, -2, -5, 2.3f, 1f, 7f));
 
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(0.8f);
+        MusicManager.obj.PlayBlobTransform();
+        yield return new WaitForSeconds(1.2f);
 
         //Turn player into blob, slowly
         //Shake screen
@@ -118,7 +121,7 @@ public class C26CutsceneManager : MonoBehaviour
 
         Player.obj.StartAnimator();
 
-        //Loop through all children, get animators, and increase speed of animation
+        //Loop through all children, get animators, and decrease speed of animation
         foreach(Animator animator in animators) {
             animator.speed = 5;
         }

@@ -103,6 +103,7 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip brokenFloorReappear;
     public AudioClip brokenFloorDisappear;
     public AudioClip caveSpaceRoomTeleport;
+    public AudioClip caveAvatarEvilEyesTransition;
 
     private Dictionary<AudioClip[], int> lastPickedIndices = new();
     private Dictionary<string, float> lastPlayedTimes = new();
@@ -168,6 +169,10 @@ public class SoundFXManager : MonoBehaviour
     }
     public void PlayDialogueConfirm() {
         PlayRandomNonSpatiallyAwareSound(dialogueConfirm, Camera.main.transform, 1f);
+    }
+
+    public void PlayCaveAvatarEvilEyesTransition() {
+        PlayNonSpatiallyAwareSound(caveAvatarEvilEyesTransition, Camera.main.transform, 1f);
     }
 
     public void PlayCaveSpaceRoomTeleport() {

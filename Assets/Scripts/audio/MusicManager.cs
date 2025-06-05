@@ -37,6 +37,7 @@ public class MusicManager : MonoBehaviour
     [SerializeField] private AudioClip _caveSpaceRoomLoop;
 
     [SerializeField] private AudioClip _endSong;
+    [SerializeField] private AudioClip _blobTransform;
 
     private AudioSource _introSource;
     private AudioSource _loopSource;
@@ -96,6 +97,10 @@ public class MusicManager : MonoBehaviour
     [ContextMenu("Play power up pickup song")]
     public void PlayPowerUpPickupSong() {
         PlayOneTime(_powerUpPickupSong);
+    }
+
+    public void PlayBlobTransform() {
+        PlayOneTime(_blobTransform);
     }
 
     [ContextMenu("Play cave before first prisoner song")]
