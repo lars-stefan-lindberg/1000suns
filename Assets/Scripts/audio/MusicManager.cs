@@ -38,6 +38,7 @@ public class MusicManager : MonoBehaviour
 
     [SerializeField] private AudioClip _endSong;
     [SerializeField] private AudioClip _blobTransform;
+    [SerializeField] private AudioClip _blobRooms;
 
     private AudioSource _introSource;
     private AudioSource _loopSource;
@@ -77,6 +78,9 @@ public class MusicManager : MonoBehaviour
     [ContextMenu("Play cave loop")]
     public void PlayCaveLoop() {
         PlayLoop(_caveSongLoop);
+    }
+    public void PlayBlobRooms() {
+        PlayLoop(_blobRooms);
     }
 
     [ContextMenu("Play end song")]

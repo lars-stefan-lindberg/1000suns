@@ -151,6 +151,7 @@ public class C26CutsceneManager : MonoBehaviour
 
         yield return new WaitForSeconds(2f);
 
+        MusicManager.obj.PlayBlobRooms();
         PlayerBlobMovement.obj.UnFreeze();
         GameEventManager.obj.IsPauseAllowed = true;
         GameEventManager.obj.C26CutsceneCompleted = true;
