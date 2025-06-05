@@ -104,6 +104,7 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip brokenFloorDisappear;
     public AudioClip caveSpaceRoomTeleport;
     public AudioClip caveAvatarEvilEyesTransition;
+    public AudioClip powerUpDialogueStinger;
 
     private Dictionary<AudioClip[], int> lastPickedIndices = new();
     private Dictionary<string, float> lastPlayedTimes = new();
@@ -181,6 +182,10 @@ public class SoundFXManager : MonoBehaviour
 
     public void PlayJump(Transform spawnTransform) {
         PlayRandomSound(jump, spawnTransform, 1f);
+    }
+
+    public void PlayPowerUpDialogueStinger() {
+        PlayNonSpatiallyAwareSound(powerUpDialogueStinger, Camera.main.transform, 1f);
     }
 
     public void PlayLand(Surface surface, Transform spawnTransform) {

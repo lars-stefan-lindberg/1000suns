@@ -69,6 +69,7 @@ public class TeleportToC29 : MonoBehaviour
         Time.timeScale = 0;
         _tutorialCanvas.SetActive(true);
         TutorialDialogManager.obj.StartFadeIn();
+        SoundFXManager.obj.PlayPowerUpDialogueStinger();
         while(!TutorialDialogManager.obj.tutorialCompleted) {
             yield return null;
         }
