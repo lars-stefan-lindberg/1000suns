@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using Cinemachine;
-using FunkyCode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -96,9 +95,13 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         // Update jump kick timer
         if (_isJumpKickActive)
         {
-            _jumpKickTimer -= Time.deltaTime;
-            if (_jumpKickTimer <= 0f)
+            if(_jumpKickDirection != _movementInput.x){
                 _isJumpKickActive = false;
+            } else {
+                _jumpKickTimer -= Time.deltaTime;
+                if (_jumpKickTimer <= 0f)
+                    _isJumpKickActive = false;
+            }
         }
     }
 
