@@ -12,7 +12,7 @@ public class PlayerManager : MonoBehaviour
         NO_DIRECTION
     }
 
-    private enum PlayerType {
+    public enum PlayerType {
         HUMAN,
         BLOB
     }
@@ -81,6 +81,14 @@ public class PlayerManager : MonoBehaviour
         else if(_lastPlayerType == PlayerType.BLOB) {
             PlayerBlob.obj.gameObject.SetActive(true);
         }
+    }
+
+    public PlayerType GetActivePlayerType() {
+        if(PlayerMovement.obj != null && PlayerMovement.obj.gameObject.activeSelf)
+            return PlayerType.HUMAN;
+        else if(PlayerBlobMovement.obj != null && PlayerBlobMovement.obj.gameObject.activeSelf)
+            return PlayerType.BLOB;
+        return PlayerType.HUMAN;
     }
 
     public void SetTransitioningBetweenLevels() {

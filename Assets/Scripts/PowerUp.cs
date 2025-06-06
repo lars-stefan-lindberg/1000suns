@@ -16,8 +16,10 @@ public class PowerUp : MonoBehaviour
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
-        if(other.gameObject.CompareTag("Player")) {
-            _playerEntered = true;
+        if(other.gameObject.CompareTag("Player")) {
+            if(PlayerManager.obj.GetActivePlayerType() == PlayerManager.PlayerType.HUMAN) {
+                _playerEntered = true;
+            }
         }
     }
 
