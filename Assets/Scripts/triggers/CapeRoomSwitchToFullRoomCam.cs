@@ -33,6 +33,8 @@ public class CapeRoomSwitchToFullRoomCam : MonoBehaviour
         zoomedCamera.enabled = false;
         _zoomedCamera.SetActive(false);
 
+        MusicManager.obj.PlayPowerUpIntroSong();
+
         yield return new WaitForSeconds(5);
         PlayerMovement.obj.UnFreeze();
         GameEventManager.obj.IsPauseAllowed = true;
