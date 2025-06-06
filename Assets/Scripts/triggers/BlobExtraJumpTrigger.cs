@@ -95,16 +95,17 @@ public class BlobExtraJumpTrigger : MonoBehaviour
 
     private IEnumerator IncreaseDarkness() {
         yield return new WaitForSeconds(2);
-        float fadeSpeed = 0.05f;
-        Color defaultDarkness = new(0.015f, 0.015f, 0.015f, 1f);
-        Color managerDarkness = LightingManager2D.Get().profile.DarknessColor;
-        while (managerDarkness.r <= defaultDarkness.r - 0.02f) {
-            Color color = Color.Lerp(managerDarkness, defaultDarkness, fadeSpeed * Time.deltaTime);
-            LightingManager2D.Get().profile.DarknessColor = color;
-            managerDarkness = LightingManager2D.Get().profile.DarknessColor;
+        Color startDarkness = LightingManager2D.Get().profile.DarknessColor;
+        Color targetDarkness = new Color(0.015f, 0.015f, 0.015f, 1f);
+        float duration = 3f;
+        float elapsed = 0f;
+        while (elapsed < duration) {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            LightingManager2D.Get().profile.DarknessColor = Color.Lerp(startDarkness, targetDarkness, t);
             yield return null;
         }
-        LightingManager2D.Get().profile.DarknessColor = defaultDarkness;
+        LightingManager2D.Get().profile.DarknessColor = targetDarkness;
         yield return null;
     }
 }
