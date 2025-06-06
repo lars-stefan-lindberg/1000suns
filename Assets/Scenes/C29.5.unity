@@ -16424,7 +16424,6 @@ MonoBehaviour:
   maxPlayerDistance: 15
   minForce: 20
   maxForce: 60
-  pitchShiftConstant: 0.02
 --- !u!4 &1614932359
 Transform:
   m_ObjectHideFlags: 0
@@ -16862,7 +16861,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1878624534}
   - component: {fileID: 1878624533}
-  - component: {fileID: 1878624532}
+  - component: {fileID: 1878624535}
   m_Layer: 2
   m_Name: LoopManager
   m_TagString: Untagged
@@ -16870,19 +16869,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1878624532
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1878624531}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ed2300ecb10de4b9b8482896ac2f62c6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _target: {fileID: 1614932359}
 --- !u!61 &1878624533
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -16937,12 +16923,25 @@ Transform:
   m_GameObject: {fileID: 1878624531}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1441.375, y: -123.875, z: -0.020960212}
+  m_LocalPosition: {x: 1441.125, y: -123.875, z: -0.020960212}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1878624535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1878624531}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ad25b0bcc76a46f9a0d465b9ce6d9d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _target: {fileID: 1614932359}
 --- !u!1 &2003629204
 GameObject:
   m_ObjectHideFlags: 0

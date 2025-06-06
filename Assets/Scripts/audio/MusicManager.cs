@@ -35,6 +35,7 @@ public class MusicManager : MonoBehaviour
     public AudioClip caveSpaceRoomOutro;
     [SerializeField] private AudioClip _caveSpaceRoomLoopIntro;
     [SerializeField] private AudioClip _caveSpaceRoomLoop;
+    [SerializeField] private AudioClip _caveSpaceRoomInfiniteLoop;
 
     [SerializeField] private AudioClip _endSong;
     [SerializeField] private AudioClip _blobTransform;
@@ -66,6 +67,9 @@ public class MusicManager : MonoBehaviour
     }
     public void PlayCaveSpaceRoomLoop() {
         PlayIntroAndLoop(_caveSpaceRoomLoopIntro, _caveSpaceRoomLoop);
+    }
+    public void PlayCaveSpaceRoomInfiniteLoop() {
+        PlayLoop(_caveSpaceRoomInfiniteLoop);
     }
     [ContextMenu("Play cave first song")]
     public void PlayCaveFirstSong() {
@@ -170,6 +174,10 @@ public class MusicManager : MonoBehaviour
         _loopSource.playOnAwake = false;
         _loopSource.loop = true;
         _loopSource.volume = _currentVolume;
+
+        // Ensure a low pass filter is always present
+        if (_loopSource.GetComponent<AudioLowPassFilter>() == null)
+            _loopSource.gameObject.AddComponent<AudioLowPassFilter>();
 
         double startTime = AudioSettings.dspTime + 1;
         _loopSource.PlayScheduled(startTime);
