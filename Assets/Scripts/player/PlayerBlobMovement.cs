@@ -64,6 +64,12 @@ public class PlayerBlobMovement : MonoBehaviour
     public void OnMovement(InputAction.CallbackContext value)
     {
         _movementInput = value.ReadValue<Vector2>();
+        if (_stats.SnapInput)
+        {
+            _movementInput.x = Mathf.Abs(_movementInput.x) < _stats.HorizontalDeadZoneThreshold ? 0 : Mathf.Sign(_movementInput.x);
+            _movementInput.y = Mathf.Abs(_movementInput.y) < _stats.VerticalDeadZoneThreshold ? 0 : Mathf.Sign(_movementInput.y);
+        }
+        
         if(_movementInput.y > 0 && value.performed) {
             if(!PlayerPowersManager.obj.CanTurnFromBlobToHuman) {
                 return;
@@ -184,7 +190,6 @@ public class PlayerBlobMovement : MonoBehaviour
     private void Update()
     {
         _time += Time.deltaTime;
-        GatherInput();
         UpdateAnimator();
         FlipPlayer(_movementInput.x);
     }
@@ -554,15 +559,6 @@ public class PlayerBlobMovement : MonoBehaviour
     private void ApplyMovement() {
         if(PlayerBlob.obj.rigidBody.bodyType != RigidbodyType2D.Static) {
             PlayerBlob.obj.rigidBody.velocity = _frameVelocity;
-        }
-    } 
-
-    private void GatherInput()
-    {
-        if (_stats.SnapInput)
-        {
-            _movementInput.x = Mathf.Abs(_movementInput.x) < _stats.HorizontalDeadZoneThreshold ? 0 : Mathf.Sign(_movementInput.x);
-            _movementInput.y = Mathf.Abs(_movementInput.y) < _stats.VerticalDeadZoneThreshold ? 0 : Mathf.Sign(_movementInput.y);
         }
     }
 

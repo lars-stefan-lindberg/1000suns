@@ -89,7 +89,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     private void Update()
     {
         _time += Time.deltaTime;
-        GatherInput();
         UpdateAnimator();
         FlipPlayer(_movementInput.x);
         // Update jump kick timer
@@ -316,6 +315,11 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public void OnMovement(InputAction.CallbackContext value)
     {
         _movementInput = value.ReadValue<Vector2>();
+        if (_stats.SnapInput)
+        {
+            _movementInput.x = Mathf.Abs(_movementInput.x) < _stats.HorizontalDeadZoneThreshold ? 0 : Mathf.Sign(_movementInput.x);
+            _movementInput.y = Mathf.Abs(_movementInput.y) < _stats.VerticalDeadZoneThreshold ? 0 : Mathf.Sign(_movementInput.y);
+        }
         // if(isDevMode) {
         //     if (_movementInput.y < 0 && isGrounded && !_buildingUpPowerJump) //Pressing down
         //     {
@@ -402,15 +406,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         else if (context.canceled)
         {
             _jumpHeldInput = false;
-        }
-    }
-
-    private void GatherInput()
-    {
-        if (_stats.SnapInput)
-        {
-            _movementInput.x = Mathf.Abs(_movementInput.x) < _stats.HorizontalDeadZoneThreshold ? 0 : Mathf.Sign(_movementInput.x);
-            _movementInput.y = Mathf.Abs(_movementInput.y) < _stats.VerticalDeadZoneThreshold ? 0 : Mathf.Sign(_movementInput.y);
         }
     }
 
