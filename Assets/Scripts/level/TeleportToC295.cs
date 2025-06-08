@@ -33,6 +33,9 @@ public class TeleportToC295 : MonoBehaviour
 
         yield return new WaitForSeconds(0.2f);
         
+        if(AmbienceManager.obj.IsAmbienceSource1Playing()) {
+            AmbienceManager.obj.FadeOutAmbienceSource1(1f);
+        }
         SoundFXManager.obj.PlayCaveSpaceRoomTeleport();
         WhiteFadeManager.obj.StartFadeOut();
 
@@ -56,6 +59,9 @@ public class TeleportToC295 : MonoBehaviour
         PlayerBlobMovement.obj.SetStartingOnGround();
         PlayerBlobMovement.obj.isGrounded = true;
         PlayerBlobMovement.obj.CancelJumping();
+
+        AmbienceManager.obj.PlayCapeRoomAmbience();
+        AmbienceManager.obj.FadeInAmbienceSource2And3(2f);
 
         yield return new WaitForSeconds(2f);
         MusicManager.obj.PlayCaveSpaceRoomIntro();

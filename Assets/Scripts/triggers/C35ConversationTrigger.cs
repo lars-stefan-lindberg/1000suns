@@ -71,6 +71,7 @@ public class C35ConversationTrigger : MonoBehaviour
         GameEventManager.obj.IsPauseAllowed = false;
         PlayerStatsManager.obj.PauseTimer();
         MusicManager.obj.PlayEndSong();
+        AmbienceManager.obj.FadeOutAmbienceSource1(1f);
         if(_followCamera != null) {
             _followCamera.SetActive(true);
             CinemachineVirtualCamera cinemachineVirtualCamera = _followCamera.GetComponent<CinemachineVirtualCamera>();

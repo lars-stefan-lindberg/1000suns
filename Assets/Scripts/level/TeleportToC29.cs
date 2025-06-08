@@ -23,6 +23,9 @@ public class TeleportToC29 : MonoBehaviour
     private IEnumerator TeleportToC29Routine() {
         PlayerBlobMovement.obj.Freeze();
         MusicManager.obj.ScheduleClipOnNextBar(MusicManager.obj.caveIntense1Outro, 140, false);
+
+        AmbienceManager.obj.FadeOutAmbienceSource2And3(1f);
+
         SoundFXManager.obj.PlayCaveSpaceRoomTeleport();
         WhiteFadeManager.obj.StartFadeOut();
 
@@ -41,6 +44,9 @@ public class TeleportToC29 : MonoBehaviour
         _cameraToDeactivate.SetActive(false);
         CinemachineVirtualCamera cinemachineVirtualCamera = _cameraToDeactivate.GetComponent<CinemachineVirtualCamera>();
         cinemachineVirtualCamera.enabled = false;
+
+        AmbienceManager.obj.PlayCaveAmbience();
+        AmbienceManager.obj.FadeInAmbienceSource1(1.5f);
 
         GameObject playerSpawnPoint = sceneGameObjects.First(gameObject => gameObject.CompareTag("AlternatePlayerSpawnPoint"));
         Collider2D playerSpawningCollider = playerSpawnPoint.GetComponent<Collider2D>();

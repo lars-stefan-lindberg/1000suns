@@ -70,6 +70,11 @@ public class AmbienceManager : MonoBehaviour
             return false;
         return _ambienceSourceLayer1.isPlaying;
     }
+    public bool IsAmbienceSource2Playing() {
+        if(_ambienceSourceLayer2 == null)
+            return false;
+        return _ambienceSourceLayer2.isPlaying;
+    }
     public float GetAmbienceSource1Volume() {
         return _ambienceSourceLayer1.volume;
     }
