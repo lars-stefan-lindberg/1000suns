@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -175,6 +174,8 @@ public class LevelManager : MonoBehaviour
                 CaveAvatar.obj.SetStartingPositionInRoom32();
             else
                 CaveAvatar.obj.SetStartingPositionInRoom31();
+        } else if(GameEventManager.obj.C27CutsceneCompleted) {
+            CaveAvatar.obj.SetStartingPositionInRoom30();
         } else if(GameEventManager.obj.C26CutsceneCompleted) {
             CaveAvatar.obj.SetStartingPositionInRoom27();
         } else if(!GameEventManager.obj.CaveAvatarFreed && !PlayerMovement.obj.isDevMode) {
