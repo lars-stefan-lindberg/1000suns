@@ -408,8 +408,10 @@ public class SoundFXManager : MonoBehaviour
             yield return null;
         }
 
-        audioSource.Stop();
-        Destroy(audioSource.gameObject);
+        if(audioSource != null) {
+            audioSource.Stop();
+            Destroy(audioSource.gameObject);
+        }
 
         yield break;
     }

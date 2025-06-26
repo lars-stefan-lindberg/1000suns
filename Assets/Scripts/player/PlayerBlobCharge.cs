@@ -7,17 +7,13 @@ public static PlayerBlobCharge obj;
 
     private BoxCollider2D _collider;
 
-    public float minBuildUpPowerTime = 0.3f;
+    public float maxForce = 15;
+    public float powerBuildUpPerFixedUpdate = 1.1f;
 
-    public float maxForce = 3;
-    public float powerUpMaxForce = 4;
-    public float powerBuildUpPerFixedUpdate = 1.2f;
-
-    public float defaultPower = 1;
+    private float _defaultPower = 1;
 
     private float _buildUpPower = 0;
     private bool _buildingUpPower = false;
-    private float _buildUpPowerTime = 0;
     
     private AudioSource _forcePushStartChargingAudioSource;
     private AudioSource _forcePushChargeLoopAudioSource;
@@ -36,11 +32,10 @@ public static PlayerBlobCharge obj;
         }
         if (context.performed)
         {
-            if (defaultPower < StaminaMgr.obj.GetCurrentStamina()) {
+            if (_defaultPower < StaminaMgr.obj.GetCurrentStamina()) {
                 _forcePushStartChargingAudioSource = SoundFXManager.obj.PlayForcePushStartCharging(transform);
-                _buildUpPower = defaultPower;
+                _buildUpPower = _defaultPower;
                 _buildingUpPower = true;
-                _buildUpPowerTime = 0;
                 PlayerBlob.obj.StartChargeFlash();
             }
         }
@@ -50,7 +45,7 @@ public static PlayerBlobCharge obj;
                 return;
             }
             //Need to check that we are building power before we can push. If not the push will be executed on button release.
-            if(_buildingUpPower && _buildUpPowerTime >= minBuildUpPowerTime)
+            if(_buildingUpPower && IsFullyCharged())
             {
                 ForcePush();
             }
@@ -75,16 +70,14 @@ public static PlayerBlobCharge obj;
         }
 
         _buildingUpPower = false;
-        _buildUpPower = defaultPower;
-        _buildUpPowerTime = 0;
+        _buildUpPower = _defaultPower;
         PlayerBlob.obj.EndChargeFlash();
     }
 
     private void FixedUpdate()
     {
         if(_buildingUpPower) {
-            _buildUpPowerTime += Time.deltaTime;
-            if(_buildUpPower < maxForce && _buildUpPowerTime > minBuildUpPowerTime) {
+            if(_buildUpPower < maxForce) {
                 _buildUpPower *= powerBuildUpPerFixedUpdate;
             }
         }
