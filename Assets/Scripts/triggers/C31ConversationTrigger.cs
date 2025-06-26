@@ -28,7 +28,12 @@ public class C31ConversationTrigger : MonoBehaviour
     }
 
     private IEnumerator SetupDialogue() {
-        PlayerMovement.obj.Freeze();
+        if(Player.obj.gameObject.activeSelf) {
+            PlayerMovement.obj.Freeze();
+        } else if(PlayerBlob.obj.gameObject.activeSelf) {
+            PlayerBlobMovement.obj.Freeze();
+            PlayerBlobMovement.obj.ToHuman();
+        }
         yield return new WaitForSeconds(1f);
         _conversationManager.StartConversation();
     }
