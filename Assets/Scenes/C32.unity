@@ -6229,11 +6229,11 @@ PrefabInstance:
     - target: {fileID: 2859965056776253839, guid: f271c8cc09b534eec82268d24cd420b2, type: 3}
       propertyPath: m_TileSpriteArray.Array.data[23].m_Data
       value: 
-      objectReference: {fileID: 361339945, guid: ab047b7ba115046ce9ccfe179bf0d59f, type: 3}
+      objectReference: {fileID: 0}
     - target: {fileID: 2859965056776253839, guid: f271c8cc09b534eec82268d24cd420b2, type: 3}
       propertyPath: m_TileSpriteArray.Array.data[24].m_Data
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 361339945, guid: ab047b7ba115046ce9ccfe179bf0d59f, type: 3}
     - target: {fileID: 2859965056776253839, guid: f271c8cc09b534eec82268d24cd420b2, type: 3}
       propertyPath: m_TileSpriteArray.Array.data[25].m_Data
       value: 
@@ -6348,11 +6348,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2859965056776253839, guid: f271c8cc09b534eec82268d24cd420b2, type: 3}
       propertyPath: m_TileSpriteArray.Array.data[23].m_RefCount
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2859965056776253839, guid: f271c8cc09b534eec82268d24cd420b2, type: 3}
       propertyPath: m_TileSpriteArray.Array.data[24].m_RefCount
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2859965056776253839, guid: f271c8cc09b534eec82268d24cd420b2, type: 3}
       propertyPath: m_TileSpriteArray.Array.data[25].m_RefCount
@@ -6820,7 +6820,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2859965056776253839, guid: f271c8cc09b534eec82268d24cd420b2, type: 3}
       propertyPath: m_Tiles.Array.data[9].second.m_TileSpriteIndex
-      value: 23
+      value: 24
       objectReference: {fileID: 0}
     - target: {fileID: 2859965056776253839, guid: f271c8cc09b534eec82268d24cd420b2, type: 3}
       propertyPath: m_Tiles.Array.data[10].second.m_TileSpriteIndex
@@ -18392,6 +18392,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Block path back
       objectReference: {fileID: 0}
+    - target: {fileID: 4011377904520260407, guid: 614a5a9e4da844743b7b7f1284151358, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5272725382120209563, guid: 614a5a9e4da844743b7b7f1284151358, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1521.5
@@ -18431,6 +18435,14 @@ PrefabInstance:
     - target: {fileID: 5272725382120209563, guid: 614a5a9e4da844743b7b7f1284151358, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5795933941790778965, guid: 614a5a9e4da844743b7b7f1284151358, type: 3}
+      propertyPath: m_Size.x
+      value: 0.9713135
+      objectReference: {fileID: 0}
+    - target: {fileID: 5795933941790778965, guid: 614a5a9e4da844743b7b7f1284151358, type: 3}
+      propertyPath: m_Offset.x
+      value: -0.014343262
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

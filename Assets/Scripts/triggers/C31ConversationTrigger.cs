@@ -29,7 +29,7 @@ public class C31ConversationTrigger : MonoBehaviour
 
     private IEnumerator SetupDialogue() {
         PlayerMovement.obj.Freeze();
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1f);
         _conversationManager.StartConversation();
     }
 
