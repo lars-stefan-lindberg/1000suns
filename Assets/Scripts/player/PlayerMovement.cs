@@ -359,12 +359,14 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _frameVelocity = new Vector2(0, 0);
         gameObject.SetActive(false);
         _playerBlob.transform.position = transform.position - new Vector3(0, 0.5f, 0);
+        _playerBlob.GetComponent<PlayerBlobMovement>().spriteRenderer.flipX = isFacingLeft();
+        _playerBlob.SetActive(true);
         if(isGrounded) {
             _playerBlob.GetComponent<PlayerBlobMovement>().SetStartingOnGround();
             _playerBlob.GetComponent<PlayerBlobMovement>().isGrounded = true;
+        } else {
+            _playerBlob.GetComponent<PlayerBlobMovement>().isGrounded = false;
         }
-        _playerBlob.GetComponent<PlayerBlobMovement>().spriteRenderer.flipX = isFacingLeft();
-        _playerBlob.SetActive(true);
         if(IsFrozen()) {
             _playerBlob.GetComponent<PlayerBlobMovement>().Freeze();
         } else {

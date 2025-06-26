@@ -92,12 +92,14 @@ public class PlayerBlobMovement : MonoBehaviour
 
         gameObject.SetActive(false);
         _player.transform.position = transform.position + new Vector3(0, 0.5f, 0);;
+        _player.GetComponent<PlayerMovement>().spriteRenderer.flipX = IsFacingLeft();
+        _player.SetActive(true);
         if(isGrounded) {
             _player.GetComponent<PlayerMovement>().SetStartingOnGround();
             _player.GetComponent<PlayerMovement>().isGrounded = true;
+        } else {
+            _player.GetComponent<PlayerMovement>().isGrounded = false;
         }
-        _player.GetComponent<PlayerMovement>().spriteRenderer.flipX = IsFacingLeft();
-        _player.SetActive(true);
         if(IsFrozen()) {
             _player.GetComponent<PlayerMovement>().Freeze();
         } else {
