@@ -26,10 +26,6 @@ public class GameEventManager : MonoBehaviour
     public bool C27CutsceneCompleted { get; set; }
     public bool C30CutsceneCompleted { get; set; }
     public bool C31CutsceneCompleted { get; set; }
-    public bool C31Completed { get; set; }
-    public bool C32Completed { get; set; }
-    public bool C33Completed { get; set; }
-    public bool C34Completed { get; set; }
 
     public bool IsPauseAllowed { get; set; }
 
@@ -61,10 +57,6 @@ public class GameEventManager : MonoBehaviour
         C30CutsceneCompleted = false;
         MirrorConversationEnded = false;
         C31CutsceneCompleted = false;
-        C31Completed = false;
-        C32Completed = false;
-        C33Completed = false;
-        C34Completed = false;
     }
 
     void OnDestroy() {

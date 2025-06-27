@@ -7,7 +7,7 @@ public class C34CompletedTrigger : MonoBehaviour
 
     void Start()
     {
-        if(GameEventManager.obj.C34Completed) {
+        if(LevelManager.obj.IsLevelCompleted("C34")) {
             Destroy(gameObject);
         }
         _collider = GetComponent<BoxCollider2D>();
@@ -18,7 +18,7 @@ public class C34CompletedTrigger : MonoBehaviour
         if(collision.CompareTag("Player")) {
             _collider.enabled = false;
             CaveAvatar.obj.SetTarget(_targetPosition, 10);
-            GameEventManager.obj.C34Completed = true;
+            LevelManager.obj.SetLevelCompleted("C34");
             MusicManager.obj.ScheduleClipOnNextBar(MusicManager.obj.caveAvatarChaseOutro, 210, false);
         }
     }
