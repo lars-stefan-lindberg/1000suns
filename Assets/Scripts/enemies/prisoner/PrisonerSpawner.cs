@@ -10,6 +10,10 @@ public class PrisonerSpawner : MonoBehaviour
     private float _spawnTime;
 
     private float _spawnTimer = 0f;
+    
+    private enum SpawnPosition { Left, Middle, Right }
+    private SpawnPosition[] _spawnPositionOrder = { SpawnPosition.Left, SpawnPosition.Middle, SpawnPosition.Right, SpawnPosition.Middle };
+    private int _spawnPositionIndex = 0;
 
     void Awake() {
         _spawnTime = _spawnInterval;
@@ -22,7 +26,6 @@ public class PrisonerSpawner : MonoBehaviour
         else {
             SpawnPrisoner();
             _spawnTimer = 0f;
-            //_spawnTime = Random.Range(_startingSpawnTime - 0.2f, _startingSpawnTime + 0.2f);
             _spawnTime = _spawnInterval;
         }
     }
@@ -39,10 +42,12 @@ public class PrisonerSpawner : MonoBehaviour
 
     private float GetRandomHorizontalPosition()
     {
-        int randomValue = Random.Range(0, 3); // Will return 0, 1, or 2
-        if(randomValue == 0)
+        SpawnPosition spawnPosition = _spawnPositionOrder[_spawnPositionIndex];
+        _spawnPositionIndex = (_spawnPositionIndex + 1) % _spawnPositionOrder.Length;
+
+        if(spawnPosition == SpawnPosition.Left)
             return _leftPoint.transform.position.x;
-        else if(randomValue == 1)
+        else if(spawnPosition == SpawnPosition.Middle)
             return _middlePoint.transform.position.x;
         else
             return _rightPoint.transform.position.x;
