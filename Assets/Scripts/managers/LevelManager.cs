@@ -174,6 +174,11 @@ public class LevelManager : MonoBehaviour
                 CaveAvatar.obj.SetStartingPositionInRoom32();
             else
                 CaveAvatar.obj.SetStartingPositionInRoom31();
+        } else if(scene.name == "C30") {
+            if(GameEventManager.obj.C30CutsceneCompleted)
+                CaveAvatar.obj.SetStartingPositionInRoom31();
+            else
+                CaveAvatar.obj.SetStartingPositionInRoom30();
         } else if(GameEventManager.obj.C27CutsceneCompleted) {
             CaveAvatar.obj.SetStartingPositionInRoom30();
         } else if(GameEventManager.obj.C26CutsceneCompleted) {
