@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -19,6 +20,7 @@ public class TutorialDialogManager : MonoBehaviour
     [SerializeField] private Color _fadeAlpha;
     [SerializeField] private InputActionReference _usePowerActionReference;
     [SerializeField] private Image _gamepadConfigInstructionsUsePowerActionKeyIcon;
+    [SerializeField] private GameObject _continueIcon;
 
     private List<Image> _images = new();
     private List<TextMeshProUGUI> _texts = new();
@@ -70,6 +72,8 @@ public class TutorialDialogManager : MonoBehaviour
     }
 
     public void OnConfirm() {
+        _continueIcon.GetComponent<Animator>().enabled = false;
+        _continueIcon.GetComponent<Image>().enabled = true;
         IsFadingOut = true;
     }
 
@@ -80,6 +84,7 @@ public class TutorialDialogManager : MonoBehaviour
             yield return null;
         }
         _confirmButton.enabled = true;
+        _continueIcon.SetActive(true);
         EventSystem.current.SetSelectedGameObject(_confirmButton.gameObject);
     }
 
@@ -107,6 +112,8 @@ public class TutorialDialogManager : MonoBehaviour
                 _images.Add(image);
             }
         }
+        _images.Add(_continueIcon.GetComponent<Image>());
+
         TextMeshProUGUI[] texts = GetComponentsInChildren<TextMeshProUGUI>();
         foreach(TextMeshProUGUI text in texts) {
             if(!text.gameObject.CompareTag("TutorialDialogConfirmButton")) {

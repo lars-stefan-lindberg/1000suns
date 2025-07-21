@@ -602,6 +602,7 @@ MonoBehaviour:
   _fadeAlpha: {r: 0, g: 0, b: 0, a: 0}
   _usePowerActionReference: {fileID: -2479364251292776754, guid: c70db65bf712247f2b340e89d0608a8b, type: 3}
   _gamepadConfigInstructionsUsePowerActionKeyIcon: {fileID: 0}
+  _continueIcon: {fileID: 2025041645}
   tutorialCompleted: 0
   _keyboardConfigInstructionsUsePowerActionKeyText: {fileID: 0}
 --- !u!224 &517919673 stripped
@@ -22011,6 +22012,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -25.3125
       objectReference: {fileID: 0}
+    - target: {fileID: 5319292889083652875, guid: a1a3bd0154ca44dab977bef1b7d720e3, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5501028098709183225, guid: a1a3bd0154ca44dab977bef1b7d720e3, type: 3}
       propertyPath: m_text
       value: 'TO CHARGE AND
@@ -22080,6 +22085,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 477010957}
   m_SourcePrefab: {fileID: 100100000, guid: a1a3bd0154ca44dab977bef1b7d720e3, type: 3}
+--- !u!1 &2025041645 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5319292889083652875, guid: a1a3bd0154ca44dab977bef1b7d720e3, type: 3}
+  m_PrefabInstance: {fileID: 2025041644}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2037165552
 GameObject:
   m_ObjectHideFlags: 0

@@ -630,7 +630,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 16777215
   m_fontColor: {r: 1, g: 1, b: 1, a: 0}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -1060,7 +1060,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294932128
+    rgba: 16742048
   m_fontColor: {r: 0.627451, g: 0.4627451, b: 1, a: 0}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -1424,6 +1424,11 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &572216834 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5319292889083652875, guid: a1a3bd0154ca44dab977bef1b7d720e3, type: 3}
+  m_PrefabInstance: {fileID: 2553810504126581951}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &594668988
 GameObject:
   m_ObjectHideFlags: 0
@@ -22322,7 +22327,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4363068489900400069, guid: a1a3bd0154ca44dab977bef1b7d720e3, type: 3}
       propertyPath: m_fontColor32.rgba
-      value: 4294967295
+      value: 16777215
       objectReference: {fileID: 0}
     - target: {fileID: 4612288275058421339, guid: a1a3bd0154ca44dab977bef1b7d720e3, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -22428,7 +22433,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5501028098709183225, guid: a1a3bd0154ca44dab977bef1b7d720e3, type: 3}
       propertyPath: m_fontColor32.rgba
-      value: 4294967295
+      value: 16777215
       objectReference: {fileID: 0}
     - target: {fileID: 6166625379160818087, guid: a1a3bd0154ca44dab977bef1b7d720e3, type: 3}
       propertyPath: m_Name
@@ -22478,7 +22483,7 @@ PrefabInstance:
       insertIndex: 4
       addedObject: {fileID: 1802852588}
     - targetCorrespondingSourceObject: {fileID: 9033341824678315781, guid: a1a3bd0154ca44dab977bef1b7d720e3, type: 3}
-      insertIndex: -1
+      insertIndex: 6
       addedObject: {fileID: 2087776213}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 8360735343223861057, guid: a1a3bd0154ca44dab977bef1b7d720e3, type: 3}
@@ -22538,6 +22543,7 @@ MonoBehaviour:
   _fadeAlpha: {r: 0, g: 0, b: 0, a: 0}
   _usePowerActionReference: {fileID: -2479364251292776754, guid: c70db65bf712247f2b340e89d0608a8b, type: 3}
   _gamepadConfigInstructionsUsePowerActionKeyIcon: {fileID: 2553810504126581953}
+  _continueIcon: {fileID: 572216834}
   tutorialCompleted: 0
   _keyboardConfigInstructionsUsePowerActionKeyText: {fileID: 1802852586}
 --- !u!1660057539 &9223372036854775807
