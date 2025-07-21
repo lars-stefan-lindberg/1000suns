@@ -5,6 +5,7 @@ public class PowerUp : MonoBehaviour
     private Animator _animator;
 
     [SerializeField] private float _recoveryTime = 10;
+    [SerializeField] private bool _skipSpawn = false;
     private float _recoveryTimer = 0;
 
     private bool _isPicked = false;
@@ -13,6 +14,11 @@ public class PowerUp : MonoBehaviour
 
     void Awake() {
         _animator = GetComponent<Animator>();
+
+        if(_skipSpawn) {
+            _isSpawned = true;
+            _animator.Play("idle_not_picked");
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
