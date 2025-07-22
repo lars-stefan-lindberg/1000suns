@@ -25,6 +25,7 @@ public class BootGame : MonoBehaviour
         while(!loadTitleScreenOperation.isDone) {
             yield return null;
         }
+        SceneFadeManager.obj.SetFadedInState();
 
         SceneManager.UnloadSceneAsync(_bootGame.SceneName);
     }

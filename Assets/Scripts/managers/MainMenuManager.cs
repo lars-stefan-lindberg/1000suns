@@ -14,6 +14,8 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private SceneField _persistentGameplay;
     [SerializeField] private SceneField _introScene;
     [SerializeField] private SceneField _titleScreen;
+    [SerializeField] private GameObject _titleScreenCanvas;
+    [SerializeField] private GameObject _fadeOutCanvas;
 
     [SerializeField] private Image _fadeOutImage;
     [Range(0.1f, 10f), SerializeField] private float _fadeOutSpeed = 5f;
@@ -62,6 +64,14 @@ public class MainMenuManager : MonoBehaviour
 
     void Awake() {
         obj = this;
+
+        Canvas titleScreenCanvas = _titleScreenCanvas.GetComponent<Canvas>();
+        titleScreenCanvas.worldCamera = Camera.main;
+        titleScreenCanvas.sortingLayerName = "UI";
+
+        Canvas fadeOutCanvas = _fadeOutCanvas.GetComponent<Canvas>();
+        fadeOutCanvas.worldCamera = Camera.main;
+        fadeOutCanvas.sortingLayerName = "UI";
 
         EventSystem.current.SetSelectedGameObject(_playButton);
         _optionsButtonColor = _optionsButton.GetComponentInChildren<TextMeshProUGUI>().color;

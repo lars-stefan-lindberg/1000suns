@@ -79,6 +79,10 @@ public class IntroController : MonoBehaviour
     }
 
     void Awake() {
+        Canvas canvas = GetComponent<Canvas>();
+        canvas.worldCamera = Camera.main;
+        canvas.sortingLayerName = "UI";
+
         _typeWriter.onTextShowed.AddListener(() => {
             _isTyping = false;
         });

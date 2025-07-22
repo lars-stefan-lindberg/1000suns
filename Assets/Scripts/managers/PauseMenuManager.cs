@@ -49,6 +49,10 @@ public class PauseMenuManager : MonoBehaviour
     void Awake() {
         obj = this;
 
+        Canvas canvas = _pauseMenu.GetComponent<Canvas>();
+        canvas.worldCamera = Camera.main;
+        canvas.sortingLayerName = "UI";
+
         var rebinds = PlayerPrefs.GetString("rebinds");
         if (!string.IsNullOrEmpty(rebinds))
             actions.LoadBindingOverridesFromJson(rebinds);
