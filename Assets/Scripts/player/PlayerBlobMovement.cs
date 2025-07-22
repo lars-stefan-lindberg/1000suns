@@ -157,15 +157,9 @@ public class PlayerBlobMovement : MonoBehaviour
     }
 
     public void ExecuteChargedJump() {
-        if(isGrounded || CanUseCoyote) {
-            _jumpToConsume = true;
-            _jumpHeldInput = true;
-            _timeJumpWasPressed = _time;
-        } else {
-            _airJumpToConsume = true;
-            _jumpHeldInput = true;
-            _timeJumpWasPressed = _time;
-        }
+        _jumpHeldInput = true;
+        _timeJumpWasPressed = _time;
+        _airJumpToConsume = true;
     }
         
     public void CancelJumping() {
@@ -316,11 +310,11 @@ public class PlayerBlobMovement : MonoBehaviour
     private bool CanUseJump => (isGrounded || CanUseCoyote) && _jumpToConsume;
     private bool CanUseCoyote => _coyoteUsable && !isGrounded && _time < _frameLeftGrounded + _stats.CoyoteTime;
     private bool HasBufferedJump => _bufferedJumpUsable && _time < _timeJumpWasPressed + _stats.JumpBuffer;
-    private bool CanUseAirJump => _airJumpToConsume && !isGrounded && _time > _frameLeftGrounded + _stats.CoyoteTime;
+    private bool CanUseAirJump => _airJumpToConsume && _time > _frameLeftGrounded + _stats.CoyoteTime;
 
     private void HandleJump()
     {
-        if (!_endedJumpEarly && !isGrounded && !_jumpHeldInput && PlayerBlob.obj.rigidBody.velocity.y > 0) _endedJumpEarly = true;
+        if (!_airJumpPerformed && !_endedJumpEarly && !isGrounded && !_jumpHeldInput && PlayerBlob.obj.rigidBody.velocity.y > 0) _endedJumpEarly = true;
 
         if (!_jumpToConsume && !CanUseAirJump && !HasBufferedJump) return;
 
@@ -330,9 +324,9 @@ public class PlayerBlobMovement : MonoBehaviour
 
     private void ExecuteAirJump()
     {
-        ExecuteJump(_stats.JumpPower);
         _airJumpToConsume = false;
         _airJumpPerformed = true;
+        ExecuteJump(_stats.JumpPower);
     }
 
     private void ExecuteRegularJump()
