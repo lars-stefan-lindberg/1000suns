@@ -81,11 +81,11 @@ public class UIElement : MonoBehaviour, IMoveHandler, ISelectHandler, IDeselectH
         }
 
         if(_isBouncy) {
-            float originY = transform.position.y;
-            transform.DOMoveY(originY - moveDownLength, moveDownDuration)
+            float originY = transform.localPosition.y;
+            transform.DOLocalMoveY(originY - moveDownLength, moveDownDuration)
                 .OnStepComplete(
-                    () => transform.DOMoveY(originY + moveUpLength, moveUpDuration).SetUpdate(true)
-                        .OnComplete(() => transform.DOMoveY(originY, returnLength)).SetUpdate(true)
+                    () => transform.DOLocalMoveY(originY + moveUpLength, moveUpDuration).SetUpdate(true)
+                        .OnComplete(() => transform.DOLocalMoveY(originY, returnLength)).SetUpdate(true)
                 ).SetUpdate(true);
         }
     }

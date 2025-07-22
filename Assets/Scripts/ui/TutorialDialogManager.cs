@@ -91,8 +91,12 @@ public class TutorialDialogManager : MonoBehaviour
     void Awake() {
         obj = this;
 
+        Canvas canvas = GetComponent<Canvas>();
+        canvas.worldCamera = Camera.main;
+        canvas.sortingLayerName = "UI";
+
         //Show keyboard, or gamepad, use power icon/text
-        if(_gamepadConfigInstructionsUsePowerActionKeyIcon != null)  {
+        if(_gamepadConfigInstructionsUsePowerActionKeyIcon != null) {
             if(InputDeviceListener.obj.GetCurrentInputDevice() == InputDeviceListener.Device.Gamepad) {
                 _gamepadConfigInstructionsUsePowerActionKeyIcon.gameObject.SetActive(true);
                 _keyboardConfigInstructionsUsePowerActionKeyText.gameObject.SetActive(false);

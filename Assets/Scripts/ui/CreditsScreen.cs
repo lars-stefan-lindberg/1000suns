@@ -18,6 +18,10 @@ public class CreditsScreen : MonoBehaviour
     void Awake() {
         _animator = GetComponent<Animator>();
 
+        Canvas canvas = GetComponentInParent<Canvas>();
+        canvas.worldCamera = Camera.main;
+        canvas.sortingLayerName = "UI";
+
         TextMeshProUGUI collectiblesText = _collectibleCountLabel.GetComponent<TextMeshProUGUI>();
         collectiblesText.text = CollectibleManager.obj.GetNumberOfCollectiblesPicked() + " out of " + CollectibleManager.NUMBER_OF_PRISONER_COLLECTIBLES;
 

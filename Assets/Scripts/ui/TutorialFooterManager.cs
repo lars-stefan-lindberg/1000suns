@@ -103,6 +103,10 @@ public class TutorialFooterManager : MonoBehaviour
     void Awake() {
         obj = this;
 
+        Canvas canvas = GetComponent<Canvas>();
+        canvas.worldCamera = Camera.main;
+        canvas.sortingLayerName = "UI";
+
         if(_gamepadInstructions != null) {
             if(InputDeviceListener.obj.GetCurrentInputDevice() == InputDeviceListener.Device.Gamepad) {
                 _gamepadInstructions.SetActive(true);
