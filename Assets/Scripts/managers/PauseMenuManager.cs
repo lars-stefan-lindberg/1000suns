@@ -106,6 +106,7 @@ public class PauseMenuManager : MonoBehaviour
                 
                 // Enable the pause menu UI
                 _pauseMenu.SetActive(true);
+                _pauseMainMenu.SetActive(true);
                 
                 // Set the music slider to reflect the player's preferred volume (not the muffled volume)
                 _musicSlider.value = SoundMixerManager.obj.GetPlayerPreferredMusicVolume();
@@ -133,8 +134,11 @@ public class PauseMenuManager : MonoBehaviour
             // Set the time scale back to 1 to resume the game
             Time.timeScale = 1f;
             
-            // Disable the pause menu UI
+            // Disable the pause menu UIs
             _pauseMenu.SetActive(false);
+            _pauseMainMenu.SetActive(false);
+            _keyboardConfigMenu.SetActive(false);
+            _controllerConfigMenu.SetActive(false);
             
             // Reset music slider selection state
             _isMusicSliderSelected = false;
