@@ -1,7 +1,9 @@
 using System.Collections;
 using Cinemachine;
+using DG.Tweening;
 using FunkyCode;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class FirstRoomLoader : MonoBehaviour
 {
@@ -9,6 +11,7 @@ public class FirstRoomLoader : MonoBehaviour
     [SerializeField] private GameObject _fullRoomCamera;
     [SerializeField] private DialogueController _dialogueController;
     [SerializeField] private DialogueContent _dialogueContent;
+    [SerializeField] private Tilemap _tilemapRevealPath;
     private bool _dialogCompleted = false;
 
     void OnDestroy()
@@ -37,10 +40,12 @@ public class FirstRoomLoader : MonoBehaviour
             PlayerStatsManager.obj.ResumeTimer();
 
             if (_dialogueController != null)
-        {
-            _dialogueController.OnDialogueClosed += OnDialogueCompleted;
-            _dialogueController.OnDialogueClosing += OnDialogueClosing;
-        }
+            {
+                _dialogueController.OnDialogueClosed += OnDialogueCompleted;
+                _dialogueController.OnDialogueClosing += OnDialogueClosing;
+            }
+        } else {
+            _tilemapRevealPath.color = new Color(_tilemapRevealPath.color.r, _tilemapRevealPath.color.g, _tilemapRevealPath.color.b, 0);  //If revisit first room make tilemap invisible
         }
     }
 
@@ -94,6 +99,8 @@ public class FirstRoomLoader : MonoBehaviour
             yield return null;
         }
 
+        yield return new WaitForSeconds(0.5f);
+        DOTween.To(() => _tilemapRevealPath.color.a, x => _tilemapRevealPath.color = new Color(_tilemapRevealPath.color.r, _tilemapRevealPath.color.g, _tilemapRevealPath.color.b, x), 0, 1);
         yield return new WaitForSeconds(0.5f);
 
         PlayerMovement.obj.EnablePlayerMovement();
