@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
 
@@ -12,12 +10,17 @@ public class WhiteFadeManager : MonoBehaviour
     [Range(0.1f, 10f), SerializeField] private float _fadeInSpeed = 5f;
 
     [SerializeField] private Color _fadeOutStartColor;
+    [SerializeField] private string _canvasSortingLayer;
 
     public bool IsFadingOut { get; private set; }
     public bool IsFadingIn { get; private set; }
 
     void Awake() {
         obj = this;
+
+        Canvas fadeOutCanvas = GetComponent<Canvas>();
+        fadeOutCanvas.worldCamera = Camera.main;
+        fadeOutCanvas.sortingLayerName = _canvasSortingLayer;
 
         _fadeOutStartColor.a = 0f;
     }
