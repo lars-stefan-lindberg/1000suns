@@ -5,12 +5,18 @@ public class CameraManager : MonoBehaviour
 {
     [SerializeField] private GameObject _mainCamera;
     [SerializeField] private GameObject _alternativeCamera;
+    [SerializeField] private GameObject _customCamera;
 
     public void ActivateMainCamera()
     {
         ActivateCamera(_mainCamera);
         if(_alternativeCamera != null)
         DeactivateCamera(_alternativeCamera);
+    }
+
+    public void ActivateCustomCamera()
+    {
+        ActivateCamera(_customCamera);
     }
 
     public void ActivateAlternativeCamera() {

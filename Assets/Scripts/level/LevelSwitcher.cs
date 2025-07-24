@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cinemachine;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 public class LevelSwitcher : MonoBehaviour
@@ -11,9 +12,11 @@ public class LevelSwitcher : MonoBehaviour
     [SerializeField] private SceneField _nextScene;
     [SerializeField] private GameObject _currentRoomCamera;
     [SerializeField] private bool _activateAlternativeCamera = false;
+    [SerializeField] private bool _fireCustomCameraHandlingEvent = false;
     [SerializeField] private SceneField[] _scenesToLoad;
     [SerializeField] private SceneField[] _scenesToUnload;
     [SerializeField] private bool _enablePlayerTransition = true;
+    public UnityEvent OnCustomCameraHandling;
     private BoxCollider2D _collider;
 
     void Awake() {
@@ -90,14 +93,19 @@ public class LevelSwitcher : MonoBehaviour
         _currentRoomCamera.SetActive(false);
         _currentRoomCamera.GetComponent<CinemachineVirtualCamera>().enabled = false;
 
-        GameObject[] sceneGameObjects = SceneManager.GetSceneByName(_nextScene).GetRootGameObjects();
-        GameObject cameras = sceneGameObjects.First(gameObject => gameObject.CompareTag("Cameras"));
-        CameraManager cameraManager = cameras.GetComponent<CameraManager>();
-        if(_activateAlternativeCamera) {
-            cameraManager.ActivateAlternativeCamera();
+        if(_fireCustomCameraHandlingEvent) {
+            OnCustomCameraHandling?.Invoke();
         } else {
-            cameraManager.ActivateMainCamera();
+            GameObject[] sceneGameObjects = SceneManager.GetSceneByName(_nextScene).GetRootGameObjects();
+            GameObject cameras = sceneGameObjects.First(gameObject => gameObject.CompareTag("Cameras"));
+            CameraManager cameraManager = cameras.GetComponent<CameraManager>();
+            if(_activateAlternativeCamera) {
+                cameraManager.ActivateAlternativeCamera();
+            } else {
+                cameraManager.ActivateMainCamera();
+            }
         }
+
 
         yield return null;
     }
