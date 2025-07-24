@@ -101,6 +101,7 @@ public class FirstRoomLoader : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
         DOTween.To(() => _tilemapRevealPath.color.a, x => _tilemapRevealPath.color = new Color(_tilemapRevealPath.color.r, _tilemapRevealPath.color.g, _tilemapRevealPath.color.b, x), 0, 1);
+        SoundFXManager.obj.PlayBrokenFloorReappear(_tilemapRevealPath.transform);
         yield return new WaitForSeconds(0.5f);
 
         PlayerMovement.obj.EnablePlayerMovement();
