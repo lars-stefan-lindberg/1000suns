@@ -412,7 +412,7 @@ public class Prisoner : MonoBehaviour
 
     private void GracefulMovementStop(float currentVelocity)
     {
-        _rigidBody.velocity = new Vector2(Mathf.MoveTowards(currentVelocity, 0, recoveryMovementStopMultiplier), _rigidBody.velocity.y);
+        _rigidBody.velocity = new Vector2(Mathf.MoveTowards(currentVelocity, 0, recoveryMovementStopMultiplier * Time.deltaTime), _rigidBody.velocity.y);
     }
     private void GracefulGravityChange()
     {
