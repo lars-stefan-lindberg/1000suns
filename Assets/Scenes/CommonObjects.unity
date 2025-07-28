@@ -295,9 +295,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0
+    y: 0.049999997
     width: 1
-    height: 1
+    height: 0.9
   near clip plane: 0.1
   far clip plane: 5000
   field of view: 40
@@ -327,7 +327,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 162, y: 36.25, z: -1.15}
+  m_LocalPosition: {x: 1302, y: -14.25, z: -1.15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1136,6 +1136,13 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 0478d37b5435a47ee86e7f40d22ea4c0, type: 3}
   - {fileID: 8300000, guid: a5a59c51b4c0b4e469ec5128ff3bce73, type: 3}
   - {fileID: 8300000, guid: 6c03fce7aab194e3cbe60956a5522184, type: 3}
+  shapeshiftToBlob:
+  - {fileID: 8300000, guid: a5d4f3b4dbb9447ed9ea2bd98fbc3148, type: 3}
+  - {fileID: 8300000, guid: 24912745f71f24452b1107bfaf8d7dd8, type: 3}
+  - {fileID: 8300000, guid: b4aaf63a93077419f9c6fcadc43ef25a, type: 3}
+  shapeshiftToHuman:
+  - {fileID: 8300000, guid: 96f5208e5f93e4fe693df57a1c576b93, type: 3}
+  - {fileID: 8300000, guid: 97007d144e7f04a1ea63dbcada4a2033, type: 3}
   blockSliding: {fileID: 8300000, guid: 1a5336237b657413098d759e8eb647ca, type: 3}
   blockLand: {fileID: 8300000, guid: 9516d4b127baa4bd6a4c545b62996086, type: 3}
   blockSlideOffEdge:
@@ -1242,6 +1249,7 @@ MonoBehaviour:
   caveSpaceRoomTeleport: {fileID: 8300000, guid: d6498408a155b4359accf83d82416889, type: 3}
   caveAvatarEvilEyesTransition: {fileID: 8300000, guid: cee51003a24364ba29fab21930fe912f, type: 3}
   powerUpDialogueStinger: {fileID: 8300000, guid: a34031619c891452caf64ba5e62a54df, type: 3}
+  startTransformingToBlobFirstTime: {fileID: 8300000, guid: f368b91f971664bd9bdf4aa02868c66e, type: 3}
 --- !u!1 &1952172983
 GameObject:
   m_ObjectHideFlags: 0

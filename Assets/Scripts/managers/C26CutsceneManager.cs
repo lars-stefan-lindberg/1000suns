@@ -96,6 +96,8 @@ public class C26CutsceneManager : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
 
+        SoundFXManager.obj.PlayStartTransformingToBlobFirstTime(Camera.main.transform);
+
         //Loop through all children, get animators, and increase speed of animation
         Animator[] animators = _backgroundBlobs.GetComponentsInChildren<Animator>();
         foreach(Animator animator in animators) {

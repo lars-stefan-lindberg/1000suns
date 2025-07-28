@@ -106,6 +106,8 @@ public class PlayerBlobMovement : MonoBehaviour
             _player.GetComponent<PlayerMovement>().UnFreeze();
         }
         _player.GetComponent<Player>().PlayToPlayerAnimation();
+
+        SoundFXManager.obj.PlayPlayerShapeshiftToHuman(_player.transform);
     }
 
     public bool IsEnoughSpaceForPlayer()

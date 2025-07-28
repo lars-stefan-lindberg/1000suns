@@ -28,6 +28,8 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip teleportStart;
     public AudioClip teleportEnd;
     public AudioClip[] pickupCavePowerup;
+    public AudioClip[] shapeshiftToBlob;
+    public AudioClip[] shapeshiftToHuman;
     #endregion
 
     #region Block
@@ -105,6 +107,7 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip caveSpaceRoomTeleport;
     public AudioClip caveAvatarEvilEyesTransition;
     public AudioClip powerUpDialogueStinger;
+    public AudioClip startTransformingToBlobFirstTime;
 
     private Dictionary<AudioClip[], int> lastPickedIndices = new();
     private Dictionary<string, float> lastPlayedTimes = new();
@@ -241,6 +244,12 @@ public class SoundFXManager : MonoBehaviour
     public void PlayPlayerPickupCavePowerup(Transform spawnTransform) {
         PlayRandomSound(pickupCavePowerup, spawnTransform, 1f);
     }
+    public void PlayPlayerShapeshiftToBlob(Transform spawnTransform) {
+        PlayRandomSound(shapeshiftToBlob, spawnTransform, 1f);
+    }
+    public void PlayPlayerShapeshiftToHuman(Transform spawnTransform) {
+        PlayRandomSound(shapeshiftToHuman, spawnTransform, 1f);
+    }
 
     public AudioSource PlayBlockSliding(Transform spawnTransform, float soundDurationPercentage) {
         return PlaySound(blockSliding, spawnTransform, 1f, soundDurationPercentage);
@@ -350,6 +359,10 @@ public class SoundFXManager : MonoBehaviour
 
     public void PlayRevealSecret(Transform spawnTransform) {
         PlayNonSpatiallyAwareSound(revealSecret, spawnTransform, 1f);
+    }
+
+    public void PlayStartTransformingToBlobFirstTime(Transform spawnTransform) {
+        PlayNonSpatiallyAwareSound(startTransformingToBlobFirstTime, spawnTransform, 1f);
     }
 
     public AudioSource PlaySound(AudioClip clip, Transform spawnTransform, float volume)

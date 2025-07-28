@@ -337,6 +337,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             if(_movementInput.y < 0 && value.performed) {
                 if(isTransformingToBlob)
                     return;
+                SoundFXManager.obj.PlayPlayerShapeshiftToBlob(transform);
                 isTransformingToBlob = true;
                 PlayerPush.obj.ResetBuiltUpPower();
                 PlayerPush.obj.DisableChargeFor(0.2f);
