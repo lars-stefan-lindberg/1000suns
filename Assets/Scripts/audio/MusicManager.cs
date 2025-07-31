@@ -25,8 +25,8 @@ public class MusicManager : MonoBehaviour
     [SerializeField] private AudioClip _powerUpPickupSong;
     [SerializeField] private AudioClip _caveIntense1Intro;
     [SerializeField] private AudioClip _caveIntense1Loop;    
-    [SerializeField] private AudioClip _caveIntense2Intro;
-    [SerializeField] private AudioClip _caveIntense2Loop;
+    public AudioClip caveIntense2Intro;
+    public AudioClip caveIntense2Loop;
     public AudioClip caveIntense1Outro;
     [SerializeField] private AudioClip _caveAvatarChaseIntro;
     [SerializeField] private AudioClip _caveAvatarChaseLoop;
@@ -123,7 +123,7 @@ public class MusicManager : MonoBehaviour
 
     [ContextMenu("Play cave intense 2")]
     public void PlayCaveIntense2() {
-        PlayIntroAndLoop(_caveIntense2Intro, _caveIntense2Loop);
+        PlayIntroAndLoop(caveIntense2Intro, caveIntense2Loop);
     }
     [ContextMenu("Play cave avatar chase")]
     public void PlayCaveAvatarChase() {
@@ -184,11 +184,6 @@ public class MusicManager : MonoBehaviour
     }
 
     public void ScheduleClipOnNextBar(AudioClip clip, int beatsPerMinute, bool loop = true) {
-        if (_loopSource == null && _oneTimeSource == null) {
-            PlayLoop(clip);
-            return;
-        }
-
         // Calculate time to next bar
         double currentTime = AudioSettings.dspTime;
         double beatsPerSecond = beatsPerMinute / 60.0;
