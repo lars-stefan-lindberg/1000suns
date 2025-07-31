@@ -45,8 +45,9 @@ public class TeleportToC29 : MonoBehaviour
         CinemachineVirtualCamera cinemachineVirtualCamera = _cameraToDeactivate.GetComponent<CinemachineVirtualCamera>();
         cinemachineVirtualCamera.enabled = false;
 
-        AmbienceManager.obj.PlayCaveAmbience();
-        AmbienceManager.obj.FadeInAmbienceSource1(1.5f);
+        //Skip this for now since we will play the main cave song instead
+        //AmbienceManager.obj.PlayCaveAmbience();
+        //AmbienceManager.obj.FadeInAmbienceSource1(1.5f);
 
         GameObject playerSpawnPoint = sceneGameObjects.First(gameObject => gameObject.CompareTag("AlternatePlayerSpawnPoint"));
         Collider2D playerSpawningCollider = playerSpawnPoint.GetComponent<Collider2D>();
@@ -86,6 +87,8 @@ public class TeleportToC29 : MonoBehaviour
         PlayerMovement.obj.UnFreeze();
 
         GameEventManager.obj.IsPauseAllowed = true;
+
+        MusicManager.obj.PlayCaveSong();
         yield return null;
     }
 }

@@ -33,6 +33,7 @@ public class C30CutsceneManager : MonoBehaviour
         PlayerMovement.obj.UnFreeze();
         GameEventManager.obj.IsPauseAllowed = true;
         GameEventManager.obj.C30CutsceneCompleted = true;
+        MusicManager.obj.Resume();
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -46,6 +47,7 @@ public class C30CutsceneManager : MonoBehaviour
     }
 
     private IEnumerator Cutscene() {
+        MusicManager.obj.Pause();
         if(Player.obj.gameObject.activeSelf) {
             PlayerMovement.obj.Freeze();
         } else if(PlayerBlob.obj.gameObject.activeSelf) {

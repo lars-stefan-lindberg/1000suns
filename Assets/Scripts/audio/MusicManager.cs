@@ -47,6 +47,11 @@ public class MusicManager : MonoBehaviour
     private AudioSource _nextBarSource;
     private float _currentVolume = 1f;
 
+    // For Pause/Resume fade state
+    private enum MusicFadeState { None, PausedIntro, PausedLoop }
+    private MusicFadeState _pausedState = MusicFadeState.None;
+    private float _pausedVolume = 1f;
+
     void Awake() {
         obj = this;
     }
@@ -363,14 +368,68 @@ public class MusicManager : MonoBehaviour
                (_loopSource != null && _loopSource.isPlaying);
     }
 
+    public void Pause() {
+        Debug.Log("Pausing music...");
+        if (_introSource != null && _introSource.isPlaying) {
+            StartCoroutine(FadeOutAndPause(_introSource, MusicFadeState.PausedIntro));
+        } else if (_loopSource != null && _loopSource.isPlaying) {
+            StartCoroutine(FadeOutAndPause(_loopSource, MusicFadeState.PausedLoop));
+        }
+    }
+
+    public void Resume() {
+        Debug.Log("Resuming music...");
+        if (_pausedState == MusicFadeState.PausedIntro && _introSource != null) {
+            StartCoroutine(FadeInAndResume(_introSource));
+        } else if (_pausedState == MusicFadeState.PausedLoop && _loopSource != null) {
+            StartCoroutine(FadeInAndResume(_loopSource));
+        }
+    }
+
+    private System.Collections.IEnumerator FadeOutAndPause(AudioSource source, MusicFadeState pauseType) {
+        if (source == null) yield break;
+        _pausedState = pauseType;
+        _pausedVolume = source.volume;
+        float duration = crossfadeDuration > 0 ? crossfadeDuration : 2f;
+        float elapsed = 0f;
+        float startVol = source.volume;
+        while (elapsed < duration) {
+            float t = elapsed / duration;
+            float fade = (fadeCurve != null && fadeCurve.keys.Length > 0) ? fadeCurve.Evaluate(1 - t) : Mathf.SmoothStep(1, 0, t);
+            source.volume = startVol * fade;
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        source.volume = 0f;
+        source.Pause();
+    }
+
+    private System.Collections.IEnumerator FadeInAndResume(AudioSource source) {
+        if (source == null) yield break;
+        source.UnPause();
+        float duration = crossfadeDuration > 0 ? crossfadeDuration : 2f;
+        float elapsed = 0f;
+        float targetVol = _pausedVolume;
+        source.volume = 0f;
+        while (elapsed < duration) {
+            float t = elapsed / duration;
+            float fade = (fadeCurve != null && fadeCurve.keys.Length > 0) ? fadeCurve.Evaluate(t) : Mathf.SmoothStep(0, 1, t);
+            source.volume = targetVol * fade;
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        source.volume = targetVol;
+        _pausedState = MusicFadeState.None;
+    }
+
     void FixedUpdate() {
         // Check for audio sources that are not playing but still exist
-        if (_introSource != null && !_introSource.isPlaying) {
+        if (_introSource != null && !_introSource.isPlaying && _pausedState == MusicFadeState.None) {
             Destroy(_introSource.gameObject);
             _introSource = null;
         }
         
-        if (_loopSource != null && !_loopSource.isPlaying) {
+        if (_loopSource != null && !_loopSource.isPlaying && _pausedState == MusicFadeState.None) {
             Destroy(_loopSource.gameObject);
             _loopSource = null;
         }

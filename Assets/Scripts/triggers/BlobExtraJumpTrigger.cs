@@ -30,6 +30,7 @@ public class BlobExtraJumpTrigger : MonoBehaviour
     }
 
     private IEnumerator Cutscene() {
+        MusicManager.obj.Pause();
         _renderer.color = new Color(_renderer.color.r, _renderer.color.g, _renderer.color.b, 0.8f);
         //Freeze player
         if(PlayerMovement.obj != null && PlayerMovement.obj.gameObject.activeSelf) {
@@ -83,6 +84,8 @@ public class BlobExtraJumpTrigger : MonoBehaviour
         PlayerPowersManager.obj.BlobCanExtraJump = true;
         PlayerBlobMovement.obj.UnFreeze();
         GameEventManager.obj.IsPauseAllowed = true;
+        
+        MusicManager.obj.Resume();
 
         StartCoroutine(IncreaseDarkness());
 
