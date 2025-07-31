@@ -23,4 +23,8 @@ public class PlayerAnimationEvents : MonoBehaviour
         PlayerMovement.obj.NudgePlayer();
         CaveRootsTrap.obj.StartBreaking();
     }
+
+    public void PullRoots() {
+        SoundFXManager.obj.PlayMushroomSmallRattle(Camera.main.transform);
+    }
 }
