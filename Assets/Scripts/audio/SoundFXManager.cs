@@ -108,6 +108,8 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip caveAvatarEvilEyesTransition;
     public AudioClip powerUpDialogueStinger;
     public AudioClip startTransformingToBlobFirstTime;
+    public AudioClip caveAvatarAttack;
+    public AudioClip playerStatueShockWave;
 
     private Dictionary<AudioClip[], int> lastPickedIndices = new();
     private Dictionary<string, float> lastPlayedTimes = new();
@@ -130,6 +132,13 @@ public class SoundFXManager : MonoBehaviour
                 return false;
             }
         }
+    }
+
+    public void PlayCaveAvatarAttack(Transform spawnTransform) {
+        PlaySound(caveAvatarAttack, spawnTransform, 1f);
+    }
+    public void PlayPlayerStatueShockWave(Transform spawnTransform) {
+        PlaySound(playerStatueShockWave, spawnTransform, 1f);
     }
 
     public void PlayBrokenFloorReappear(Transform spawnTransform) {

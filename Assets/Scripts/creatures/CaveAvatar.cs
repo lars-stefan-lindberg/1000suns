@@ -112,7 +112,7 @@ public class CaveAvatar : MonoBehaviour
     public void Attack() {
         _animator.SetTrigger("attack");
         CameraShakeManager.obj.ForcePushShake();
-        SoundFXManager.obj.PlayForcePushExecute(transform);
+        SoundFXManager.obj.PlayCaveAvatarAttack(transform);
     }
 
     public void NudgeUpwards() {

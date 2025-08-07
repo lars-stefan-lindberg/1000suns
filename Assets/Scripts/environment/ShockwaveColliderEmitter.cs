@@ -38,7 +38,7 @@ public class ShockwaveColliderEmitter : MonoBehaviour
     {
         ShockWaveManager.obj.CallShockWave(transform.position, 0.8f, 0.05f, 1f);
 
-        SoundFXManager.obj.PlayForcePushExecute(transform);
+        SoundFXManager.obj.PlayPlayerStatueShockWave(transform);
 
         CameraShakeManager.obj.ForcePushShake();
 
