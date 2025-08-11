@@ -13,7 +13,7 @@ public class IntroController : MonoBehaviour
     [SerializeField] private SceneField _caveRoom1;
     [SerializeField] private SceneField _introScene;
     [SerializeField] private GameObject[] _gameObjectsToDisable;
-    private Queue<string> _paragraphs = new();
+    private Queue<DialogueContent.ParagraphEntry> _paragraphs = new();
 
     private bool _conversationEnded;
     private string p;
@@ -106,7 +106,8 @@ public class IntroController : MonoBehaviour
 
         if(!_isTyping) {
             try {
-                p = _paragraphs.Dequeue();
+                DialogueContent.ParagraphEntry paragraphEntry = _paragraphs.Dequeue();
+                p = paragraphEntry.text;
                 _typeWriter.ShowText(p);
             }catch (InvalidOperationException)
             {
@@ -120,8 +121,8 @@ public class IntroController : MonoBehaviour
     }
 
     private void InitializeConversation(DialogueContent dialogueContent) {
-        for(int i = 0; i < dialogueContent.paragraphs.Length; ++i) {
-            _paragraphs.Enqueue(dialogueContent.paragraphs[i]);
+        for(int i = 0; i < dialogueContent.paragraphEntries.Count; ++i) {
+            _paragraphs.Enqueue(dialogueContent.paragraphEntries[i]);
         }
     }
 

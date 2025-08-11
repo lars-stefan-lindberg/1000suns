@@ -61,7 +61,7 @@ public class C35OverhearConversationTrigger : MonoBehaviour
         yield return new WaitForSeconds(2f);
         
         SoundFXManager.obj.PlayDialogueOpen();
-        _dialogueController.ShowDialogue(_dialogueContent, false);
+        _dialogueController.ShowDialogue(_dialogueContent);
         
         yield return null;
     }

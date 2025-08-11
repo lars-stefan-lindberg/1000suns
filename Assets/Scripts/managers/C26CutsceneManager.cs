@@ -88,7 +88,7 @@ public class C26CutsceneManager : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         SoundFXManager.obj.PlayDialogueOpen();
-        _dialogueController.ShowDialogue(_dialogueContent1, false);
+        _dialogueController.ShowDialogue(_dialogueContent1);
 
         while(_dialogueIndex == 0) {
             yield return null;
@@ -129,7 +129,7 @@ public class C26CutsceneManager : MonoBehaviour
         }
 
         SoundFXManager.obj.PlayDialogueOpen();
-        _dialogueController.ShowDialogue(_dialogueContent2, false);
+        _dialogueController.ShowDialogue(_dialogueContent2);
 
         while(_dialogueIndex == 1) {
             yield return null;

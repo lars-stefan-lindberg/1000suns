@@ -39,7 +39,7 @@ public class DialogueTrigger : MonoBehaviour
         PlayerMovement.obj.Freeze();
         yield return new WaitForSeconds(0.5f);
         SoundFXManager.obj.PlayDialogueOpen();
-        _dialogueController.ShowDialogue(_dialogueContent, true);
+        _dialogueController.ShowDialogue(_dialogueContent);
     }
 
     private void OnDialogueClosing() {

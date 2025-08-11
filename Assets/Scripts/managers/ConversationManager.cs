@@ -8,16 +8,10 @@ public class ConversationManager : MonoBehaviour
     private struct ConversationEntry
     {
         public DialogueContent dialogueContent;
-        public DialogueActor actor;
     }
     [SerializeField] private DialogueController _dialogueController;
     [SerializeField] private List<ConversationEntry> conversationList;
     private int currentDialogueIndex = 0;
-
-    public enum DialogueActor {
-        Player,
-        CaveAvatar,
-    }
 
     void OnEnable()
     {
@@ -52,8 +46,7 @@ public class ConversationManager : MonoBehaviour
         if (currentDialogueIndex < conversationList.Count)
         {
             ConversationEntry entry = conversationList[currentDialogueIndex];
-            bool leftMode = entry.actor == DialogueActor.Player;
-            _dialogueController.ShowDialogue(entry.dialogueContent, leftMode);
+            _dialogueController.ShowDialogue(entry.dialogueContent);
         }
         else
         {

@@ -72,7 +72,7 @@ public class C30CutsceneManager : MonoBehaviour
         yield return new WaitForSeconds(3f);
 
         SoundFXManager.obj.PlayDialogueOpen();
-        _dialogueController.ShowDialogue(_dialogueContent, true);
+        _dialogueController.ShowDialogue(_dialogueContent);
 
         yield return null;
     }

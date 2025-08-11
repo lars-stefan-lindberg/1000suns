@@ -4,6 +4,7 @@ using UnityEngine.EventSystems;
 using Febucci.UI;
 using DG.Tweening;
 using System;
+using UnityEngine.UI;
 
 public class DialogueController : MonoBehaviour
 {
@@ -17,7 +18,7 @@ public class DialogueController : MonoBehaviour
     [SerializeField] private GameObject _rightPortrait;
     [SerializeField] private RectTransform _textBox;
     [SerializeField] private RectTransform _background;
-    private Queue<string> _paragraphs = new();
+    private Queue<DialogueContent.ParagraphEntry> _paragraphs = new();
 
     private bool _conversationEnded;
     private string p;
@@ -37,13 +38,16 @@ public class DialogueController : MonoBehaviour
         });
     }
 
-    public void ShowDialogue(DialogueContent dialogueContent, bool leftMode) {
+    public void ShowDialogue(DialogueContent dialogueContent) {
+        bool leftMode = dialogueContent.actor == DialogueContent.DialogueActor.Player;
         if(leftMode) {
+            _leftPortrait.GetComponent<Image>().sprite = dialogueContent.paragraphEntries[0].portrait;
             _leftPortrait.SetActive(true);
             _rightPortrait.SetActive(false);
             _textBox.offsetMin = new Vector2(0, 0);
             _textBox.offsetMax = new Vector2(0, 0);
         } else {
+            _rightPortrait.GetComponent<Image>().sprite = dialogueContent.paragraphEntries[0].portrait;
             _leftPortrait.SetActive(false);
             _rightPortrait.SetActive(true);
             _textBox.offsetMin = new Vector2(-288, 0); //left, bottom
@@ -69,7 +73,16 @@ public class DialogueController : MonoBehaviour
 
         if(!_isTyping) {
             try {
-                p = _paragraphs.Dequeue();
+                DialogueContent.ParagraphEntry paragraphEntry = _paragraphs.Dequeue();
+                p = paragraphEntry.text;
+                //Make sure the correct sprite image is shown in the dialogue
+                if(paragraphEntry.portrait != null) {
+                    if(_leftPortrait.activeSelf) {
+                        _leftPortrait.GetComponent<Image>().sprite = paragraphEntry.portrait;
+                    } else {
+                        _rightPortrait.GetComponent<Image>().sprite = paragraphEntry.portrait;
+                    }
+                }
                 if(_isFirstParagraph) {
                     _isFirstParagraph = false;
                 } else {
@@ -90,8 +103,8 @@ public class DialogueController : MonoBehaviour
     }
 
     private void InitializeConversation(DialogueContent dialogueContent) {
-        for(int i = 0; i < dialogueContent.paragraphs.Length; ++i) {
-            _paragraphs.Enqueue(dialogueContent.paragraphs[i]);
+        for(int i = 0; i < dialogueContent.paragraphEntries.Count; ++i) {
+            _paragraphs.Enqueue(dialogueContent.paragraphEntries[i]);
         }
     }
 

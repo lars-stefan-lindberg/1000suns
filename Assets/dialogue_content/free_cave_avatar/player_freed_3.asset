@@ -12,7 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d48b65a529ee4a04a2baf7d1e5f809d, type: 3}
   m_Name: player_freed_3
   m_EditorClassIdentifier: 
-  paragraphs:
-  - Look, my head's still <incr>pounding</> from the <bounce>fall</>, and this really
-    isn't helping.
-  - I don't understand any of <wave>this</>.
+  actor: 0
+  paragraphEntries:
+  - text: Look, my head's still <incr>pounding</> from the <bounce>fall</>, and this
+      really isn't helping.
+    portrait: {fileID: 21300000, guid: 101df221116754cfea977a427418f476, type: 3}
+  - text: I don't understand any of <wave>this</>.
+    portrait: {fileID: 0}

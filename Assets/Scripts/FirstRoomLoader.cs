@@ -93,7 +93,7 @@ public class FirstRoomLoader : MonoBehaviour
 
         //Show dialog
         SoundFXManager.obj.PlayDialogueOpen();
-        _dialogueController.ShowDialogue(_dialogueContent, true);
+        _dialogueController.ShowDialogue(_dialogueContent);
 
         while (!_dialogCompleted) {
             yield return null;
