@@ -36,6 +36,7 @@ public class PauseMenuManager : MonoBehaviour
     [SerializeField] private Button _firstControllerMenuButton;
     [SerializeField] private Image _gamepadConfigInstructionsConfirmActionKeyIcon;
     [SerializeField] private Image _gamepadConfigInstructionsResetButtonActionKeyIcon;
+    [SerializeField] private TextMeshProUGUI _roomNumber;
     public InputActionAsset actions;
     public InputActionReference confirmActionReference;
     public InputActionReference resetButtonActionReference;
@@ -88,6 +89,8 @@ public class PauseMenuManager : MonoBehaviour
             if(_isPaused) {
                 ResumeGame();
             } else {
+                _roomNumber.text = SceneManager.GetActiveScene().name;
+                
                 SoundFXManager.obj.PlayUIBack();
                 PlayerManager.obj.DisablePlayerMovement();
                 PlayerStatsManager.obj.PauseTimer();
