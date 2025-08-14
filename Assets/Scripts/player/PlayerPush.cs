@@ -36,6 +36,8 @@ public class PlayerPush : MonoBehaviour
 
     //Is used to disable charge while transforming to blob
     private bool _isChargeDisabled = false;
+    private bool _startedChargeAnimation = false;
+    private bool _startedFullyChargedAnimation = false;
 
     private void Awake()
     {
@@ -55,6 +57,7 @@ public class PlayerPush : MonoBehaviour
                     _buildingUpPower = true;
                     _buildUpPowerTime = 0;
                     Player.obj.StartChargeFlash();
+                    PlayerLightManager.obj.PlayerPush();
                 }
             }
             if(context.canceled) {
@@ -99,6 +102,9 @@ public class PlayerPush : MonoBehaviour
     }
 
     public void ResetBuiltUpPower() {
+        _startedChargeAnimation = false;
+        _startedFullyChargedAnimation = false;
+
         if(_forcePushStartChargingAudioSource != null && _forcePushStartChargingAudioSource.isPlaying) {
             SoundFXManager.obj.FadeOutAndStopSound(_forcePushStartChargingAudioSource, 0.05f);
             _forcePushStartChargingAudioSource = null;
@@ -108,6 +114,8 @@ public class PlayerPush : MonoBehaviour
             _startedForcePushChargeLoop = false;
             _forcePushChargeLoopAudioSource = null;
         }
+
+        PlayerLightManager.obj.RestorePlayerPush();
 
         _buildingUpPower = false;
         _buildUpPower = defaultPower;
@@ -129,13 +137,15 @@ public class PlayerPush : MonoBehaviour
     private void FixedUpdate()
     {
         //Charge animation
-        if(_buildingUpPower && _buildUpPower < maxForce)
+        if(_buildingUpPower && _buildUpPower < maxForce && !_startedChargeAnimation) {
             pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().Charge();
-        else if(_buildUpPower >= maxForce) {
+            _startedChargeAnimation = true;
+        } else if(_buildUpPower >= maxForce && !_startedFullyChargedAnimation) {
             // if(Player.obj.hasPowerUp)
             //     pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().FullyChargedPoweredUp();
             // else
             pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().FullyCharged();
+            _startedFullyChargedAnimation = true;
         }
 
         if(_buildingUpPower) {

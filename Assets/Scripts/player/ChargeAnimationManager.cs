@@ -22,10 +22,11 @@ public class ChargeAnimationMgr : MonoBehaviour
     }
 
     public void Charge() {
-        _fadeStartColor.a = 1f;
+        _fadeStartColor.a = 0f;
         _spriteRenderer.color = _fadeStartColor;
         _spriteRenderer.enabled = true;
         _animator.enabled = true;
+        StartCoroutine(SpriteFadeInCharge(0.5f, 0.5f));
         if(!_isStarted) {
             _isStarted = true;
             _animator.Play("charge_start");
@@ -33,10 +34,14 @@ public class ChargeAnimationMgr : MonoBehaviour
     }
 
     public void FullyCharged() {
+        _fadeStartColor.a = 1f;
+        _spriteRenderer.color = _fadeStartColor;
         _animator.SetBool("fullyCharged", true);
     }
 
     public void FullyChargedPoweredUp() {
+        _fadeStartColor.a = 1f;
+        _spriteRenderer.color = _fadeStartColor;
         _animator.SetBool("fullyCharged", true);
         //Save for future reference, if I want to change the fully charged powered up animation
         //_animator.SetBool("poweredUp", true);
@@ -67,6 +72,23 @@ public class ChargeAnimationMgr : MonoBehaviour
         //_animator.SetBool("poweredUp", false);
         _animator.enabled = false;
         _spriteRenderer.enabled = false;
+    }
+
+    // Coroutine to fade in the sprite renderer's alpha to a target value over a given duration
+    private IEnumerator SpriteFadeInCharge(float targetAlpha, float duration) {
+        float elapsed = 0f;
+        // Ensure starting alpha is zero (already set in Charge)
+        _fadeStartColor.a = 0f;
+        while(elapsed < duration) {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            _fadeStartColor.a = Mathf.Lerp(0f, targetAlpha, t);
+            _spriteRenderer.color = _fadeStartColor;
+            yield return null;
+        }
+        // Ensure final alpha is exactly the target
+        _fadeStartColor.a = targetAlpha;
+        _spriteRenderer.color = _fadeStartColor;
     }
 
     void Update()
