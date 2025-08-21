@@ -31,8 +31,6 @@ public class PlayerPush : MonoBehaviour
     bool CanUsePoweredForcePush => PlayerMovement.obj.isGrounded && Player.obj.hasPowerUp && _buildUpPower >= maxForce;
 
     private AudioSource _forcePushStartChargingAudioSource;
-    private AudioSource _forcePushChargeLoopAudioSource;
-    private bool _startedForcePushChargeLoop = false;
 
     //Is used to disable charge while transforming to blob
     private bool _isChargeDisabled = false;
@@ -102,6 +100,9 @@ public class PlayerPush : MonoBehaviour
     }
 
     public void ResetBuiltUpPower() {
+        pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().Cancel();
+        Player.obj.AbortFlash();
+        Player.obj.EndFullyChargedVfx();
         _startedChargeAnimation = false;
         _startedFullyChargedAnimation = false;
 
@@ -109,18 +110,12 @@ public class PlayerPush : MonoBehaviour
             SoundFXManager.obj.FadeOutAndStopSound(_forcePushStartChargingAudioSource, 0.05f);
             _forcePushStartChargingAudioSource = null;
         }
-        if(_forcePushChargeLoopAudioSource != null && _forcePushChargeLoopAudioSource.isPlaying) {
-            SoundFXManager.obj.FadeOutAndStopSound(_forcePushChargeLoopAudioSource, 0.05f);
-            _startedForcePushChargeLoop = false;
-            _forcePushChargeLoopAudioSource = null;
-        }
 
         PlayerLightManager.obj.RestorePlayerPush();
 
         _buildingUpPower = false;
         _buildUpPower = defaultPower;
         _buildUpPowerTime = 0;
-        pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().Cancel();
         Player.obj.EndChargeFlash();
     }
 
@@ -139,12 +134,14 @@ public class PlayerPush : MonoBehaviour
         //Charge animation
         if(_buildingUpPower && _buildUpPower < maxForce && !_startedChargeAnimation) {
             pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().Charge();
+            Player.obj.StartChargeFlash();
             _startedChargeAnimation = true;
         } else if(_buildUpPower >= maxForce && !_startedFullyChargedAnimation) {
             // if(Player.obj.hasPowerUp)
             //     pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().FullyChargedPoweredUp();
             // else
             pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().FullyCharged();
+            Player.obj.StartFullyChargedVfx();
             _startedFullyChargedAnimation = true;
         }
 
@@ -153,11 +150,6 @@ public class PlayerPush : MonoBehaviour
             if(_buildUpPower < maxForce && _buildUpPowerTime > minBuildUpPowerTime) {
                 _buildUpPower *= powerBuildUpPerFixedUpdate;
             }
-        }
-
-        if(IsFullyCharged() && !_startedForcePushChargeLoop) {
-            _startedForcePushChargeLoop = true;
-            _forcePushChargeLoopAudioSource = SoundFXManager.obj.PlayForcePushChargeLoop(transform);
         }
     }
 

@@ -16,8 +16,6 @@ public static PlayerBlobCharge obj;
     private bool _buildingUpPower = false;
     
     private AudioSource _forcePushStartChargingAudioSource;
-    private AudioSource _forcePushChargeLoopAudioSource;
-    private bool _startedForcePushChargeLoop = false;
 
     private void Awake()
     {
@@ -63,11 +61,6 @@ public static PlayerBlobCharge obj;
             SoundFXManager.obj.FadeOutAndStopSound(_forcePushStartChargingAudioSource, 0.05f);
             _forcePushStartChargingAudioSource = null;
         }
-        if(_forcePushChargeLoopAudioSource != null && _forcePushChargeLoopAudioSource.isPlaying) {
-            SoundFXManager.obj.FadeOutAndStopSound(_forcePushChargeLoopAudioSource, 0.05f);
-            _startedForcePushChargeLoop = false;
-            _forcePushChargeLoopAudioSource = null;
-        }
 
         _buildingUpPower = false;
         _buildUpPower = _defaultPower;
@@ -80,11 +73,6 @@ public static PlayerBlobCharge obj;
             if(_buildUpPower < maxForce) {
                 _buildUpPower *= powerBuildUpPerFixedUpdate;
             }
-        }
-
-        if(IsFullyCharged() && !_startedForcePushChargeLoop) {
-            _startedForcePushChargeLoop = true;
-            _forcePushChargeLoopAudioSource = SoundFXManager.obj.PlayForcePushChargeLoop(transform);
         }
     }
 

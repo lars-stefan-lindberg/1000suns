@@ -11,6 +11,7 @@ public class Player : MonoBehaviour
     public float spawnFreezeDuration = 1.4f;
     public Surface surface = Surface.Rock;
     public bool hasCape = false;
+    public float _forcePushFlashSpeed = 0.17f;
 
     private Animator _animator;
     private LayerMask _groundLayerMasks;
@@ -134,7 +135,7 @@ public class Player : MonoBehaviour
 
     [ContextMenu("Force push flash")]
     public void ForcePushFlash() {
-        _playerFlash.FlashFor(0.1f, 0.17f);
+        _playerFlash.FlashFor(0.1f, _forcePushFlashSpeed);
     }
 
     [ContextMenu("Flash")]
@@ -146,8 +147,20 @@ public class Player : MonoBehaviour
         _playerFlash.FlashFor(duration, 0.05f);
     }
 
+    public void AbortFlash() {
+        _playerFlash.AbortFlash();
+    }
+
+    public void StartFullyChargedVfx() {
+        _playerFlash.StartFullyChargedVfx();
+    }
+    public void EndFullyChargedVfx() {
+        _playerFlash.EndFullyChargedVfx();
+    }
+
     //Not sure about this flashing effect when charging, so leaving it out for now
     public void StartChargeFlash() {
+        _playerFlash.ChargeFlash();
         //_playerChargeFlash.StartFlashing();
     }
     public void EndChargeFlash() {
