@@ -96,6 +96,8 @@ public class PowerUpRoomCutScene : MonoBehaviour
 
         _cutsceneFinished = true;
 
+        _recoveryTriggered = true;
+
         yield return null;
     }
 
@@ -118,10 +120,6 @@ public class PowerUpRoomCutScene : MonoBehaviour
         Player.obj.SetHasPowerUp(true);
         _animator.SetBool("isPicked", true);
         _isPicked = true;
-    }
-
-    public void SetFirstPowerUpRecovered() {
-        _recoveryTriggered = true;
     }
 
     public void SetRecovered() {
