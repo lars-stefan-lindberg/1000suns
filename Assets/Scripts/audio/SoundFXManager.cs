@@ -110,6 +110,7 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip startTransformingToBlobFirstTime;
     public AudioClip caveAvatarAttack;
     public AudioClip playerStatueShockWave;
+    public AudioClip crystalRoomRumble;
 
     private Dictionary<AudioClip[], int> lastPickedIndices = new();
     private Dictionary<string, float> lastPlayedTimes = new();
@@ -198,6 +199,10 @@ public class SoundFXManager : MonoBehaviour
 
     public void PlayPowerUpDialogueStinger() {
         PlayNonSpatiallyAwareSound(powerUpDialogueStinger, Camera.main.transform, 1f);
+    }
+
+    public void PlayCrystalRoomRumble() {
+        PlayNonSpatiallyAwareSound(crystalRoomRumble, Camera.main.transform, 1f);
     }
 
     public void PlayLand(Surface surface, Transform spawnTransform) {

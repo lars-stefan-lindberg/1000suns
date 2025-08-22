@@ -50,6 +50,8 @@ public class BlobExtraJumpTrigger : MonoBehaviour
         //Set "getting power" animation on blob
         PlayerBlob.obj.SetNewPower();
 
+
+        SoundFXManager.obj.PlayCrystalRoomRumble();
         //Start camera shake
         CameraShakeManager.obj.ShakeCamera(1.94f, 1.84f, 4.9f);
         yield return new WaitForSeconds(2.5f);
