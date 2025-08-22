@@ -112,6 +112,8 @@ public class C26CutsceneManager : MonoBehaviour
         MusicManager.obj.PlayBlobTransform();
         yield return new WaitForSeconds(1.2f);
 
+        SoundFXManager.obj.PlayC26Rumble();
+
         //Turn player into blob, slowly
         //Shake screen
         CameraShakeManager.obj.ShakeCamera(1.94f, 1.84f, 6.5f);
