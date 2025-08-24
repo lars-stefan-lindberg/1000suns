@@ -7,6 +7,7 @@ public class C35OverhearConversationTrigger : MonoBehaviour
     [SerializeField] private DialogueController _dialogueController;
     [SerializeField] private DialogueContent _dialogueContent;
     [SerializeField] private ConversationManager _nextConversationManager;
+    [SerializeField] private RectTransform _rightPortrait;
     private BoxCollider2D _boxCollider2D;
 
     void Awake() {
@@ -48,6 +49,8 @@ public class C35OverhearConversationTrigger : MonoBehaviour
         _dialogueController.OnDialogueClosed -= OnDialogueCompleted;
         _dialogueController.OnDialogueClosing -= OnDialogueClosing;
         _nextConversationManager.enabled = true;
+        //Reset Soot portrait
+        _rightPortrait.localScale = new Vector3(1, 1, 1);
     }
 
     private IEnumerator HandleDialogue() {
@@ -57,7 +60,9 @@ public class C35OverhearConversationTrigger : MonoBehaviour
             PlayerBlobMovement.obj.Freeze();
             PlayerBlobMovement.obj.ToHuman();
         }
-        
+
+        //Show Soot facing right
+        _rightPortrait.localScale = new Vector3(-1, 1, 1);
         yield return new WaitForSeconds(2f);
         
         SoundFXManager.obj.PlayDialogueOpen();
