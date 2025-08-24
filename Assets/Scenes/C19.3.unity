@@ -363,7 +363,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 1017899074}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 417125478}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 45e653bab7fb20e499bda25e1b646fea, type: 3}
   m_Name: 
@@ -11502,7 +11502,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2310574557134173384, guid: ca5cf7dfab0d74a6da9795de99d8cb45, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6614296378824542132, guid: ca5cf7dfab0d74a6da9795de99d8cb45, type: 3}
       propertyPath: m_Name
@@ -11510,7 +11510,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7379251566656821698, guid: ca5cf7dfab0d74a6da9795de99d8cb45, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7633847106031352625, guid: ca5cf7dfab0d74a6da9795de99d8cb45, type: 3}
       propertyPath: m_LocalPosition.x
@@ -66158,6 +66158,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 421034802970472405, guid: 2ef820c0e02e143eb9845882513f0684, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 162.7211
+      objectReference: {fileID: 0}
+    - target: {fileID: 421034802970472405, guid: 2ef820c0e02e143eb9845882513f0684, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -18.639404
+      objectReference: {fileID: 0}
     - target: {fileID: 653020328872914826, guid: 2ef820c0e02e143eb9845882513f0684, type: 3}
       propertyPath: m_text
       value: PULSE BOOST
@@ -66176,11 +66184,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 762592073586164692, guid: 2ef820c0e02e143eb9845882513f0684, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -11.375
+      value: -23.798096
       objectReference: {fileID: 0}
     - target: {fileID: 1234302289008899971, guid: 2ef820c0e02e143eb9845882513f0684, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 53.125
+      value: 40.701904
       objectReference: {fileID: 0}
     - target: {fileID: 1240287082321619059, guid: 2ef820c0e02e143eb9845882513f0684, type: 3}
       propertyPath: m_Color.a
@@ -66188,9 +66196,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1710139492643138702, guid: 2ef820c0e02e143eb9845882513f0684, type: 3}
       propertyPath: m_text
-      value: "YOUR NEXT FULLY CHARGED <color=#E1B3EF>UMBRAL PULSE</color> IS EMPOWERED\nWITH
-        A <color=#E1B3EF>SINGLE-USE</color> BOOST. THIS POWER CAN BE \n<color=#E1B3EF>REFILLED</color>
-        BY PICKING A NEW BOOST"
+      value: 'YOUR NEXT FULLY CHARGED <color=#E1B3EF>UMBRAL PULSE</color> IS EMPOWERED
+
+        WITH
+        A <color=#E1B3EF>SINGLE-USE</color> BOOST'
       objectReference: {fileID: 0}
     - target: {fileID: 1710139492643138702, guid: 2ef820c0e02e143eb9845882513f0684, type: 3}
       propertyPath: m_margin.x

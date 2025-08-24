@@ -59231,19 +59231,12 @@ MonoBehaviour:
   _dialogueController: {fileID: 2842472975711373078}
   conversationList:
   - dialogueContent: {fileID: 11400000, guid: 4a3c7dfa6b31f4ab7a8f6a64efe0b745, type: 2}
-    actor: 1
   - dialogueContent: {fileID: 11400000, guid: 45a21b39fbbef43d8ae2ddde34ef97ea, type: 2}
-    actor: 0
   - dialogueContent: {fileID: 11400000, guid: 97fcb10e1d7c64026bcd80fb0cd957ef, type: 2}
-    actor: 1
   - dialogueContent: {fileID: 11400000, guid: 824de31eabf24438bb8a50dbd8d5642c, type: 2}
-    actor: 0
   - dialogueContent: {fileID: 11400000, guid: acfd82d7dc473422da0ad37db056a63a, type: 2}
-    actor: 1
   - dialogueContent: {fileID: 11400000, guid: 250ee4a33c59d4633a6e12ee67a6ce9a, type: 2}
-    actor: 0
   - dialogueContent: {fileID: 11400000, guid: efd6100dfa9eb496c813fee8ecf48085, type: 2}
-    actor: 1
 --- !u!1001 &667897661
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -65291,17 +65284,11 @@ MonoBehaviour:
   _dialogueController: {fileID: 2842472975711373078}
   conversationList:
   - dialogueContent: {fileID: 11400000, guid: db309858211214191a7515d350bd8087, type: 2}
-    actor: 1
   - dialogueContent: {fileID: 11400000, guid: fef972b12d141412abee66b5ad40d30b, type: 2}
-    actor: 0
   - dialogueContent: {fileID: 11400000, guid: d441bba0bbba842f8b087034c872178d, type: 2}
-    actor: 1
   - dialogueContent: {fileID: 11400000, guid: 00873fc2a67e841b5b4c5179ea88630c, type: 2}
-    actor: 0
   - dialogueContent: {fileID: 11400000, guid: a1355853d3d214611a5d83c34fcd0e51, type: 2}
-    actor: 1
   - dialogueContent: {fileID: 11400000, guid: 6d85ca9ec6841449d8f850e6565fe654, type: 2}
-    actor: 0
 --- !u!1001 &2842472975711373077
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -65390,9 +65377,33 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3132883932435557566, guid: d66cf5921bbc9462693b734cbcd8d699, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 3132883932435557566, guid: d66cf5921bbc9462693b734cbcd8d699, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 3132883932435557566, guid: d66cf5921bbc9462693b734cbcd8d699, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 5122594637004618952, guid: d66cf5921bbc9462693b734cbcd8d699, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 7349161887644069356, guid: d66cf5921bbc9462693b734cbcd8d699, type: 3}
       propertyPath: m_Name
       value: DialogueCanvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 7850533211062953754, guid: d66cf5921bbc9462693b734cbcd8d699, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8288403421923730364, guid: d66cf5921bbc9462693b734cbcd8d699, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
