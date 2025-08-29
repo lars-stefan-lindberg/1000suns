@@ -250,6 +250,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     private float _transitionDistanceX = 1;
     private float _transitionDistanceUp = 2.5f;
     private float _transitionDistanceDown = 1.5f;
+    [SerializeField] private float _levelTransitionMaxMoveTime = 1.25f; // safety timeout in seconds for move loops
     private IEnumerator TransitionToNextRoomCoroutine(PlayerManager.PlayerDirection direction) {
         float target = 0;
         if(direction == PlayerManager.PlayerDirection.LEFT || direction == PlayerManager.PlayerDirection.RIGHT) {
@@ -257,19 +258,35 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
                 target = transform.position.x + _transitionDistanceX;
             if(direction == PlayerManager.PlayerDirection.LEFT)
                 target = transform.position.x - _transitionDistanceX;
-            while(transform.position.x != target) {
+            float startTime = Time.time;
+            bool timedOut = false;
+            while(!Mathf.Approximately(transform.position.x, target)) {
                 transform.position = new Vector2(Mathf.MoveTowards(transform.position.x, target, Time.deltaTime * 5f), transform.position.y);
+                if(Time.time - startTime > _levelTransitionMaxMoveTime) { 
+                    timedOut = true; break; 
+                }
                 yield return null;
             }
+            // Snap to target on success or timeout to ensure completion
+            transform.position = new Vector2(target, transform.position.y);
+            if(timedOut) Debug.LogWarning("TransitionToNextRoom horizontal move timed out; snapping to target.");
         } else if(direction == PlayerManager.PlayerDirection.UP || direction == PlayerManager.PlayerDirection.DOWN) {
             if(direction == PlayerManager.PlayerDirection.UP)
                 target = transform.position.y + _transitionDistanceUp;
             if(direction == PlayerManager.PlayerDirection.DOWN)
                 target = transform.position.y - _transitionDistanceDown;
-            while(transform.position.y != target) {
+            float startTime = Time.time;
+            bool timedOut = false;
+            while(!Mathf.Approximately(transform.position.y, target)) {
                 transform.position = new Vector2(transform.position.x, Mathf.MoveTowards(transform.position.y, target, Time.deltaTime * 5f));
+                if(Time.time - startTime > _levelTransitionMaxMoveTime) { 
+                    timedOut = true; break; 
+                }
                 yield return null;
             }
+            // Snap to target on success or timeout to ensure completion
+            transform.position = new Vector2(transform.position.x, target);
+            if(timedOut) Debug.LogWarning("TransitionToNextRoom vertical move timed out; snapping to target.");
         }
 
         yield return new WaitForSeconds(0.5f);
