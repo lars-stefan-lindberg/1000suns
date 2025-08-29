@@ -22,7 +22,7 @@ public class FreezePlayer : MonoBehaviour
     }
 
     private IEnumerator FreezeAndPlayIntro() {
-        PlayerMovement.obj.Freeze(8f);
+        PlayerMovement.obj.Freeze(6f);
         MusicManager.obj.PlayPowerUpIntroSong();
         Destroy(gameObject);
         yield return null;
