@@ -50,6 +50,14 @@ public class IntroController : MonoBehaviour
         yield return new WaitForSeconds(2f);
         MusicManager.obj.StopPlaying();
 
+        Player.obj.gameObject.SetActive(true);
+        PlayerMovement.obj.SetStartingOnGround();
+        PlayerMovement.obj.isGrounded = true;
+        PlayerMovement.obj.CancelJumping();
+        PlayerMovement.obj.Freeze();
+        PlayerMovement.obj.spriteRenderer.flipX = false;
+        Player.obj.SetHasCape(false);
+
         AsyncOperation loadCaveOperation = SceneManager.LoadSceneAsync(_caveRoom1, LoadSceneMode.Additive);
         while(!loadCaveOperation.isDone) {
             yield return null;
@@ -60,16 +68,9 @@ public class IntroController : MonoBehaviour
         GameObject[] sceneGameObjects = caveRoom1.GetRootGameObjects();
         GameObject playerSpawnPoint = sceneGameObjects.First(gameObject => gameObject.CompareTag("PlayerSpawnPoint"));
         Collider2D _playerSpawningCollider = playerSpawnPoint.GetComponent<Collider2D>();
+        Player.obj.transform.position = _playerSpawningCollider.transform.position;
         
         CaveAvatar.obj.gameObject.SetActive(false);
-        
-        Player.obj.gameObject.SetActive(true);
-        PlayerMovement.obj.SetStartingOnGround();
-        PlayerMovement.obj.isGrounded = true;
-        PlayerMovement.obj.CancelJumping();
-        Player.obj.transform.position = _playerSpawningCollider.transform.position;
-        PlayerMovement.obj.DisablePlayerMovement();
-        Player.obj.SetHasCape(false);
 
         GameObject levelSwitcherGameObject = sceneGameObjects.First(gameObject => gameObject.CompareTag("LevelSwitcher"));
         LevelSwitcher levelSwitcher = levelSwitcherGameObject.GetComponent<LevelSwitcher>();

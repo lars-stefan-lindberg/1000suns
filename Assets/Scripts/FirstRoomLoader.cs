@@ -104,7 +104,7 @@ public class FirstRoomLoader : MonoBehaviour
         SoundFXManager.obj.PlayBrokenFloorReappear(_tilemapRevealPath.transform);
         yield return new WaitForSeconds(0.5f);
 
-        PlayerMovement.obj.EnablePlayerMovement();
+        PlayerMovement.obj.UnFreeze();
         GameEventManager.obj.IsPauseAllowed = true;
 
         yield return null;
