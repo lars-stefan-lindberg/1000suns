@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class C35OverhearConversationTrigger : MonoBehaviour
@@ -8,6 +9,7 @@ public class C35OverhearConversationTrigger : MonoBehaviour
     [SerializeField] private DialogueContent _dialogueContent;
     [SerializeField] private ConversationManager _nextConversationManager;
     [SerializeField] private RectTransform _rightPortrait;
+    [SerializeField] private TextMeshProUGUI _dialogueText;
     private BoxCollider2D _boxCollider2D;
 
     void Awake() {
@@ -51,6 +53,8 @@ public class C35OverhearConversationTrigger : MonoBehaviour
         _nextConversationManager.enabled = true;
         //Reset Soot portrait
         _rightPortrait.localScale = new Vector3(1, 1, 1);
+        //Reset text size
+        _dialogueText.fontSize += 15;
     }
 
     private IEnumerator HandleDialogue() {
@@ -63,6 +67,8 @@ public class C35OverhearConversationTrigger : MonoBehaviour
 
         //Show Soot facing right
         _rightPortrait.localScale = new Vector3(-1, 1, 1);
+        //Decrease text size to make it look like you are overhearing
+        _dialogueText.fontSize -= 15;
         yield return new WaitForSeconds(2f);
         
         SoundFXManager.obj.PlayDialogueOpen();
