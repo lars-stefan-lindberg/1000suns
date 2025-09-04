@@ -18,6 +18,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public bool isDevMode = true;
     [SerializeField] private ScriptableStats _stats;
     [SerializeField] private GameObject _playerBlob;
+    [SerializeField] private GhostTrailManager _ghostTrail;
     
     public SpriteRenderer spriteRenderer;
     public GameObject anchor;
@@ -136,7 +137,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             Player.obj.SetHasPowerUp(false);
         }
         _frameVelocity.x = isFacingLeft() ? speed : -speed;
-        GhostTrailManager.obj.ShowGhosts();
+        _ghostTrail.ShowGhosts();
     }
 
     public void TriggerForcePushAnimation() {
@@ -154,14 +155,14 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         PlayerPush.obj.ResetBuiltUpPower();
         Player.obj.SetHasPowerUp(false);
         PlayerPush.obj.ExecuteForcePushVfx();
-        GhostTrailManager.obj.ShowGhosts();
+        _ghostTrail.ShowGhosts();
     }
 
     public void ExecutePoweredForcePushWithProjectile() {
         isForcePushJumping = true;
         forcePushJumpOnGroundTimer = 0;
         _frameVelocity.x = isFacingLeft() ? initialForcePushJumpSpeed : -initialForcePushJumpSpeed;
-        GhostTrailManager.obj.ShowGhosts();
+        _ghostTrail.ShowGhosts();
     }
 
     public bool isFalling = false;

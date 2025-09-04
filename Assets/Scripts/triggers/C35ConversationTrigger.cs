@@ -6,6 +6,7 @@ public class C35ConversationTrigger : MonoBehaviour
 {
     [SerializeField] private ConversationManager _conversationManager;
     [SerializeField] private ConversationManager _nextConversationManager;
+    [SerializeField] private DreadbinderEndRoom _dreadBinder;
     [SerializeField] private BreakableFloor _breakableFloor;
     [SerializeField] private GameObject _fixedCamera;
     [SerializeField] private GameObject _followCamera;
@@ -39,17 +40,20 @@ public class C35ConversationTrigger : MonoBehaviour
         }
 
         if(_fixedCamera != null) {
+            //If fixed camera is set, this is dialogue part 1
             _fixedCamera.SetActive(true);
             CinemachineVirtualCamera cinemachineVirtualCamera = _fixedCamera.GetComponent<CinemachineVirtualCamera>();
             cinemachineVirtualCamera.enabled = true;
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(1.8f);
+            _dreadBinder.ChangeSpriteThenMoveRight();
+            yield return new WaitForSeconds(2.4f);
         } else {
             yield return new WaitForSeconds(0.5f);
         }
 
         if(_flipCaveAvatar) {
             CaveAvatar.obj.SetFlipX(true);
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(1.3f);
         }
         _conversationManager.StartConversation();
     }
