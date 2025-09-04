@@ -9,6 +9,10 @@ public class Cape : MonoBehaviour
     private Animator _animator;
 
     void Awake() {
+        if(GameEventManager.obj.CapePicked) {
+            _container.SetActive(false);
+            Destroy(gameObject, 3);
+        }
         _animator = GetComponent<Animator>();
         _animator.enabled = false;
     }
