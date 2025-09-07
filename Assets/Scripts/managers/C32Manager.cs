@@ -5,6 +5,8 @@ public class C32Manager : MonoBehaviour
 {
     [SerializeField] private Transform _spikeSpawnStartPosition;
     [SerializeField] private GameObject _spikePrefab;
+    [SerializeField] private Transform _maxHorizontalSpikeSpawn;
+    [SerializeField] private Transform _minHorizontalSpikeSpawn;
     public float _attackInterval = 2f;
     private bool _startAttackSequence = false;
     private float _timer = 1.5f;
@@ -52,8 +54,14 @@ public class C32Manager : MonoBehaviour
         CaveAvatar.obj.Attack();
 
         yield return new WaitForSeconds(0.5f);
-
+        
         float firstSpikeXPosition = PlayerManager.obj.GetPlayerTransform().position.x + _spikesOffset;
+        if(firstSpikeXPosition > _maxHorizontalSpikeSpawn.position.x) {
+            firstSpikeXPosition = _maxHorizontalSpikeSpawn.position.x;
+        } else if(firstSpikeXPosition < _minHorizontalSpikeSpawn.position.x) {
+            firstSpikeXPosition = _minHorizontalSpikeSpawn.position.x;
+        }
+
         float secondSpikeXPosition = firstSpikeXPosition + _spikeDistance;
         float thirdSpikeXPosition = secondSpikeXPosition + _spikeDistance;
         float fourthSpikeXPosition = firstSpikeXPosition - _spikeDistance;
