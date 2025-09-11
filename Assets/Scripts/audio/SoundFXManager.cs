@@ -61,6 +61,7 @@ public class SoundFXManager : MonoBehaviour
 
     public AudioClip[] breakableWallCrackling;
     public AudioClip breakableWallBreak;
+    public AudioClip breakableWallHint;
 
     #region UI
     public AudioClip uiBrowse;
@@ -291,10 +292,14 @@ public class SoundFXManager : MonoBehaviour
         PlaySound(breakableWallBreak, spawnTransform, 1f);
     }
 
-    public void PlayFallingSpikeCrackling(Transform spawnTransform) {
+    public void PlayBreakableWallHint(Transform spawnTransform) {
+        PlaySound(breakableWallHint, spawnTransform, 1f);
+    }
+
+    public void PlayFallingSpikeCrackling(Transform spawnTransform) {
         PlayRandomSound(fallingSpikeCrackling, spawnTransform, 1f);
     }
-    public void PlayFallingSpikeFall(Transform spawnTransform) {
+    public void PlayFallingSpikeFall(Transform spawnTransform) {
         if (CanPlaySound("fallingSpikeFall", 0.5f)) {
             PlayRandomSound(fallingSpikeFall, spawnTransform, 1f);
         }

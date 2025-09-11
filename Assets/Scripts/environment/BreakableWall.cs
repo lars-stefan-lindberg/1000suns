@@ -18,6 +18,9 @@ public class BreakableWall : MonoBehaviour
     public GameObject otherBreakableWall;
     public bool breakWall = false;
     public bool shakeWall = false;
+    public bool hintWall = false;
+    public float hintWallCooldownTime = 1f;
+    private float _hintWallCooldownTimer = 0;
     public float fadeMultiplier = 0.1f;
     public int numberOfShakeParticles = 10;
     private bool _fadeSprite = false;
@@ -26,12 +29,25 @@ public class BreakableWall : MonoBehaviour
     public float shakeFrameWait = 0.08f;
     private float _originXPosition;
     public bool isSecret = true;
+    public bool hasHint = false;
 
     private void Awake() {
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _originXPosition = _spriteRenderer.transform.position.x;
         _collider = GetComponent<BoxCollider2D>();
         _visibleLayerAnimator = visibleLayer.GetComponent<Animator>();
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.gameObject.CompareTag("Player")) {
+            // When the player touches the wall we only play the shake animation to hint it's breakable.
+            // Guard with a cooldown to avoid spamming.
+            if(hasHint && Time.time >= _hintWallCooldownTimer) {
+                hintWall = true;
+                _hintWallCooldownTimer = Time.time + hintWallCooldownTime;
+            }
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collider) {
@@ -48,6 +64,11 @@ public class BreakableWall : MonoBehaviour
     }
     void FixedUpdate()
     {
+        if(hintWall) {
+            hintWall = false;
+            SoundFXManager.obj.PlayBreakableWallHint(transform);
+            shakeAnimation.Emit(numberOfShakeParticles);
+        }
         if(shakeWall) {
             SoundFXManager.obj.PlayBreakableWallCrackling(transform);
             shakeAnimation.Emit(numberOfShakeParticles);
