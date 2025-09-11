@@ -18,6 +18,9 @@ public class ScriptableStats : ScriptableObject
     [Tooltip("Minimum input required before a left or right is recognized. Avoids drifting with sticky controllers"), Range(0.01f, 0.99f)]
     public float HorizontalDeadZoneThreshold = 0.1f;
 
+    [Tooltip("Minimum (stronger) input required before flipping player. Avoids overshooting snapback values to flip player"), Range(0.01f, 0.99f)]
+    public float HorizontalStrongDeadZoneThreshold = 0.6f;
+
     [Header("MOVEMENT")]
     [Tooltip("The top horizontal movement speed")]
     public float MaxSpeed = 14;

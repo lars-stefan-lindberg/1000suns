@@ -333,9 +333,9 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public void OnMovement(InputAction.CallbackContext value)
     {
         _movementInput = value.ReadValue<Vector2>();
+        _movementInput.x = GetHorizontalInput(_movementInput.x);
         if (_stats.SnapInput)
         {
-            _movementInput.x = Mathf.Abs(_movementInput.x) < _stats.HorizontalDeadZoneThreshold ? 0 : Mathf.Sign(_movementInput.x);
             _movementInput.y = Mathf.Abs(_movementInput.y) < _stats.VerticalDeadZoneThreshold ? 0 : Mathf.Sign(_movementInput.y);
         }
         // if(isDevMode) {
@@ -363,6 +363,34 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             }
         }
     } 
+
+    private float GetHorizontalInput(float originInput) {
+        if(_stats.SnapInput) {
+            // only flip when a strong push happens
+            if (spriteRenderer.flipX)
+            {
+                if(originInput > _stats.HorizontalStrongDeadZoneThreshold) {
+                    return 1;
+                } else if(originInput < -_stats.HorizontalDeadZoneThreshold) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            }
+            else if (!spriteRenderer.flipX)
+            {
+                if(originInput < -_stats.HorizontalStrongDeadZoneThreshold) {
+                    return -1;
+                } else if(originInput > _stats.HorizontalDeadZoneThreshold) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }    
+        } 
+        return originInput;
+    }
+    
 
     public void NudgePlayer() {
         Player.obj.rigidBody.AddForce(new Vector2(-1000, 0));
