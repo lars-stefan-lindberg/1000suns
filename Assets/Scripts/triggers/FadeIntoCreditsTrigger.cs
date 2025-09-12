@@ -18,7 +18,6 @@ public class FadeIntoCreditsTrigger : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
         //Show credits
         creditsUI.SetActive(true);
-        GameEventManager.obj.IsPauseAllowed = true;
         SceneFadeManager.obj.StartFadeIn();
     }
 }
