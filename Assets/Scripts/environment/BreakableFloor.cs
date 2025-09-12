@@ -14,6 +14,7 @@ public class BreakableFloor : MonoBehaviour
     private int _collisionCount = 0;
     private bool _breakFloor = false;
     private bool _shakeFloor = false;
+    private bool _hintFloor = false;
     public float fadeMultiplier = 0.1f;
     public int numberOfShakeParticles = 50;
     private bool _fadeSprite = false;
@@ -47,12 +48,19 @@ public class BreakableFloor : MonoBehaviour
                 } else {
                     _shakeFloor = true;
                 }
+            } else { //If player just runs over the floor
+                _hintFloor = true;
             }
         }
     }
 
     void FixedUpdate()
     {
+        if(_hintFloor) {
+            _hintFloor = false;
+            SoundFXManager.obj.PlayBreakableFloorHint(transform);
+            _shakeAnimation.Emit(numberOfShakeParticles);
+        }
         if(_shakeFloor) {
             _shakeFloor = false;
             StartCoroutine(ShakeWall());

@@ -45984,12 +45984,15 @@ MonoBehaviour:
   otherBreakableWall: {fileID: 0}
   breakWall: 0
   shakeWall: 0
+  hintWall: 0
+  hintWallCooldownTime: 1
   fadeMultiplier: 3.5
   numberOfShakeParticles: 30
   shakeDistance: 0.1
   shakeTime: 0.12
   shakeFrameWait: 0.08
   isSecret: 0
+  hasHint: 0
 --- !u!61 &1314548273
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -46354,7 +46357,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.48
+      scalar: 0.66
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -47538,7 +47541,7 @@ ParticleSystem:
         m_RotationOrder: 4
     separateAxes: 0
   ColorModule:
-    enabled: 0
+    enabled: 1
     gradient:
       serializedVersion: 2
       minMaxState: 1
@@ -47547,7 +47550,7 @@ ParticleSystem:
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
-        key1: {r: 1, g: 1, b: 1, a: 1}
+        key1: {r: 1, g: 1, b: 1, a: 0.85882354}
         key2: {r: 0, g: 0, b: 0, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
@@ -47563,17 +47566,17 @@ ParticleSystem:
         ctime6: 0
         ctime7: 0
         atime0: 0
-        atime1: 65535
-        atime2: 0
+        atime1: 40863
+        atime2: 54934
         atime3: 0
         atime4: 0
         atime5: 0
         atime6: 0
         atime7: 0
         m_Mode: 0
-        m_ColorSpace: -1
+        m_ColorSpace: 0
         m_NumColorKeys: 2
-        m_NumAlphaKeys: 2
+        m_NumAlphaKeys: 3
       minGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -51234,23 +51237,14 @@ MonoBehaviour:
   _dialogueController: {fileID: 528698151}
   conversationList:
   - dialogueContent: {fileID: 11400000, guid: 74a7e0bffd2a44cc69636c58e2b340cb, type: 2}
-    actor: 1
   - dialogueContent: {fileID: 11400000, guid: 36e986c65dc884b9eb7929c1495a1758, type: 2}
-    actor: 0
   - dialogueContent: {fileID: 11400000, guid: d5d985137307a4c7e963b105a4b65f64, type: 2}
-    actor: 1
   - dialogueContent: {fileID: 11400000, guid: 467e5899a86864e439c747d5a2e46a00, type: 2}
-    actor: 0
   - dialogueContent: {fileID: 11400000, guid: 74a9024658e694318b8d381898bb60c9, type: 2}
-    actor: 1
   - dialogueContent: {fileID: 11400000, guid: 978a9a56d2f1d4c5baa10d71ad0a22b1, type: 2}
-    actor: 0
   - dialogueContent: {fileID: 11400000, guid: 325a8f540ebbb46e7ac6214972680a33, type: 2}
-    actor: 1
   - dialogueContent: {fileID: 11400000, guid: 33f13b5be40954b88860308cc072fbbe, type: 2}
-    actor: 0
   - dialogueContent: {fileID: 11400000, guid: 299ce62d3422647739d664b1e8e28777, type: 2}
-    actor: 1
 --- !u!1 &2055648572
 GameObject:
   m_ObjectHideFlags: 0

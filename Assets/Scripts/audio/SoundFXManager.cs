@@ -105,6 +105,7 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip floatingPlatformWallHit;
     public AudioClip brokenFloorReappear;
     public AudioClip brokenFloorDisappear;
+    public AudioClip breakableFloorHint;
     public AudioClip caveSpaceRoomTeleport;
     public AudioClip caveAvatarEvilEyesTransition;
     public AudioClip powerUpDialogueStinger;
@@ -149,6 +150,10 @@ public class SoundFXManager : MonoBehaviour
     }
     public void PlayBrokenFloorDisappear(Transform spawnTransform) {
         PlaySound(brokenFloorDisappear, spawnTransform, 1f);
+    }
+
+    public void PlayBreakableFloorHint(Transform spawnTransform) {
+        PlaySound(breakableFloorHint, spawnTransform, 1f);
     }
 
     public void PlayCollectiblePickup(Transform spawnTransform) {
