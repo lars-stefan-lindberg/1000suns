@@ -30,7 +30,10 @@ public class BlobExtraJumpTrigger : MonoBehaviour
     }
 
     private IEnumerator Cutscene() {
-        MusicManager.obj.Pause();
+        //Fade out music
+        float musicVolume = SoundMixerManager.obj.GetMusicVolume();
+        StartCoroutine(SoundMixerManager.obj.StartMusicFade(1.5f, 0.001f));
+
         _renderer.color = new Color(_renderer.color.r, _renderer.color.g, _renderer.color.b, 0.8f);
         //Freeze player
         if(PlayerMovement.obj != null && PlayerMovement.obj.gameObject.activeSelf) {
@@ -87,7 +90,8 @@ public class BlobExtraJumpTrigger : MonoBehaviour
         PlayerBlobMovement.obj.UnFreeze();
         GameEventManager.obj.IsPauseAllowed = true;
         
-        MusicManager.obj.Resume();
+        //Fade in music
+        StartCoroutine(SoundMixerManager.obj.StartMusicFade(1.5f, musicVolume));
 
         StartCoroutine(IncreaseDarkness());
 

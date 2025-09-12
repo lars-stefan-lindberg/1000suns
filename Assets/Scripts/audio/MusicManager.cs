@@ -368,6 +368,7 @@ public class MusicManager : MonoBehaviour
                (_loopSource != null && _loopSource.isPlaying);
     }
 
+    //Don't use this. It needs to be updated with the case when resuming/pausing an audio source where there's also scheduled audio sources.
     public void Pause() {
         Debug.Log("Pausing music...");
         if (_introSource != null && _introSource.isPlaying) {
@@ -377,6 +378,7 @@ public class MusicManager : MonoBehaviour
         }
     }
 
+    //Don't use this. It needs to be updated with the case when resuming/pausing an audio source where there's also scheduled audio sources.
     public void Resume() {
         Debug.Log("Resuming music...");
         if (_pausedState == MusicFadeState.PausedIntro && _introSource != null) {
