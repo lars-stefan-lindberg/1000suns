@@ -111,7 +111,7 @@ public class PlayerBlobMovement : MonoBehaviour
         return originInput;
     }
 
-    public void ToHuman() {
+    public void ToHuman(bool playSfx = true) {
         ICinemachineCamera activeVirtualCamera = CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera;
         if(activeVirtualCamera.Follow == transform) {
             activeVirtualCamera.Follow = _player.transform;
@@ -134,7 +134,9 @@ public class PlayerBlobMovement : MonoBehaviour
         }
         _player.GetComponent<Player>().PlayToPlayerAnimation();
 
-        SoundFXManager.obj.PlayPlayerShapeshiftToHuman(_player.transform);
+        if(playSfx) {
+            SoundFXManager.obj.PlayPlayerShapeshiftToHuman(_player.transform);
+        }
     }
 
     public bool IsEnoughSpaceForPlayer()
