@@ -10,6 +10,7 @@ public class BreakableFloor : MonoBehaviour
     [SerializeField] private ParticleSystem _shakeAnimation;
 
     public bool unbreakable = false;
+    public bool hasHint = true;
     public int collisionsBeforeBreak = 3;
     private int _collisionCount = 0;
     private bool _breakFloor = false;
@@ -48,7 +49,7 @@ public class BreakableFloor : MonoBehaviour
                 } else {
                     _shakeFloor = true;
                 }
-            } else { //If player just runs over the floor
+            } else if(hasHint) { //If player just runs over the floor
                 _hintFloor = true;
             }
         }
