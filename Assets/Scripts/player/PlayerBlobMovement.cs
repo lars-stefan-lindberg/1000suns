@@ -295,7 +295,33 @@ public class PlayerBlobMovement : MonoBehaviour
             _frameLeftGrounded = _time;
         }
 
+        HandleMicroLedges();
+
         Physics2D.queriesStartInColliders = _cachedQueryStartInColliders;
+    }
+
+    private float stepHeight = 0.02f;
+    private float stepSmooth = 0.02f;
+    private float feetCastOffset = 0.05f; //Sometimes player collider hovers slightly above ground. If casting from feet we need to do it lower down than expected
+    private float microLedgeForwardCastDistance = 0.1f;
+    private void HandleMicroLedges() {
+        if(_movementInput.x > 0) {
+            bool wallHit = Physics2D.Raycast(_collider.bounds.center + new Vector3(_collider.size.x / 2, -_collider.size.y / 2 - feetCastOffset), Vector2.right, microLedgeForwardCastDistance, _groundLayerMasks);
+            if(wallHit) {
+                bool stepHeightWallHit = Physics2D.Raycast(_collider.bounds.center + new Vector3(_collider.size.x / 2, -_collider.size.y / 2 + stepHeight), Vector2.right, microLedgeForwardCastDistance, _groundLayerMasks);
+                if(!stepHeightWallHit) {
+                    PlayerBlob.obj.rigidBody.position += Vector2.up * stepSmooth;
+                }
+            }
+        } else if(_movementInput.x < 0) {
+            bool wallHit = Physics2D.Raycast(_collider.bounds.center + new Vector3(-_collider.size.x / 2, -_collider.size.y / 2 - feetCastOffset), Vector2.left, microLedgeForwardCastDistance, _groundLayerMasks);
+            if(wallHit) {
+                bool stepHeightWallHit = Physics2D.Raycast(_collider.bounds.center + new Vector3(-_collider.size.x / 2, -_collider.size.y / 2 + stepHeight), Vector2.left, microLedgeForwardCastDistance, _groundLayerMasks);
+                if(!stepHeightWallHit) {
+                    PlayerBlob.obj.rigidBody.position += Vector2.up * stepSmooth;
+                }
+            }
+        }
     }
 
     private void HandleCeilingCollisions() {
