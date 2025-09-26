@@ -182,6 +182,7 @@ public class PauseMenuManager : MonoBehaviour
         _quitButton.interactable = false;
         SoundFXManager.obj.PlayUIBack();
         LevelTracker.obj.TrackQuitFromPauseMenu(SceneManager.GetActiveScene().name); 
+        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         Quit();
     }
 
@@ -191,8 +192,6 @@ public class PauseMenuManager : MonoBehaviour
     }
 
     private IEnumerator QuitCoroutine() {
-        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
-        
         float masterVolume = SoundMixerManager.obj.GetMasterVolume();
 
         SceneFadeManager.obj.StartFadeOut();
