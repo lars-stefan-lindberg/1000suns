@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class C27SetFloorBrokenTrigger : MonoBehaviour
 {
@@ -6,6 +7,7 @@ public class C27SetFloorBrokenTrigger : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player")) {
             GameEventManager.obj.C275FloorBroken = true;  
+            SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         }
     }
 }

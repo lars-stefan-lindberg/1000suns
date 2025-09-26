@@ -1,3 +1,4 @@
+using System.Collections;
 using FunkyCode;
 using UnityEngine;
 
@@ -48,11 +49,21 @@ public class LightSprite2DFadeManager : MonoBehaviour
     }
 
     public void StartFadeOut() {
-        _lightSprite2D.color = _lightColor;
-        IsFadingOut = true;
+        if(_lightSprite2D == null) {
+            StartCoroutine(DelayedStartFadeOut());
+        } else {
+            _lightSprite2D.color = _lightColor;
+            IsFadingOut = true;
+        }
     }
     public void SetFadedInState() {
         _lightColor.a = _fadeInAlpha;
         _lightSprite2D.color = _lightColor;
+    }
+
+    private IEnumerator DelayedStartFadeOut() {
+        yield return new WaitForSeconds(0.1f);
+        _lightSprite2D.color = _lightColor;
+        IsFadingOut = true;
     }
 }

@@ -32,6 +32,18 @@ public class PlayerStatsManager : MonoBehaviour
     public string GetTimeDisplayString() {
         return _gameTimer.GetTimeDisplayString();
     }
+    public float GetElapsedTime() {
+        return _gameTimer.GetElapsedTime();
+    }
+    public void SetElapsedTime(float time) {
+        _gameTimer.SetElapsedTime(time);
+    }
+
+    [ContextMenu("Debug stats")]
+    public void DebugStats() {
+        Debug.Log("Number of deaths: " + numberOfDeaths);
+        Debug.Log("Elapsed time: " + GetElapsedTime());
+    }
 
     void OnDestroy()
     {

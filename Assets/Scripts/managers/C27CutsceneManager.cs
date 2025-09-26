@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class C27CutsceneManager : MonoBehaviour
 {
@@ -28,6 +29,7 @@ public class C27CutsceneManager : MonoBehaviour
         PlayerBlobMovement.obj.UnFreeze();
         GameEventManager.obj.IsPauseAllowed = true;
         GameEventManager.obj.C27CutsceneCompleted = true;
+        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         yield return null;
     }
 }

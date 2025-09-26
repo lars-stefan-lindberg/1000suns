@@ -1,7 +1,9 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using FunkyCode;
 
 public class LevelManager : MonoBehaviour
 {
@@ -31,6 +33,15 @@ public class LevelManager : MonoBehaviour
         SceneManager.LoadScene(activeScene.name, LoadSceneMode.Single);
     }
 
+    public void LoadSceneDelayed(string sceneName) {
+        StartCoroutine(LoadSceneDelayedCoroutine(sceneName));
+    }
+
+    private IEnumerator LoadSceneDelayedCoroutine(string sceneName) {
+        yield return new WaitForSeconds(1f);
+        SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
+    }
+
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
         isRunningAfterSceneLoaded = true;
         if(mode == LoadSceneMode.Single) {
@@ -50,20 +61,35 @@ public class LevelManager : MonoBehaviour
                 //do an early enough reset of any parallax backgrounds.
                 GameObject cameras = sceneGameObjects.First(gameObject => gameObject.CompareTag("Cameras"));
                 CameraManager cameraManager = cameras.GetComponent<CameraManager>();
+                GameObject activeCameraObject;
                 if(IsLevelCompleted(scene.name)) {
-                    cameraManager.ActivateAlternativeCamera();
+                    activeCameraObject = cameraManager.ActivateAlternativeCamera();
                 } else {
-                    cameraManager.ActivateMainCamera();
+                    activeCameraObject = cameraManager.ActivateMainCamera();
                 }
 
+                if(SaveManager.obj.RestoreBlobOnNextScene) {
+                    SaveManager.obj.ConsumeRestoreBlobFlag();
+                    PlayerMovement.obj.ToBlob();
+                    PlayerManager.obj.SetLastActivePlayerType(PlayerManager.PlayerType.BLOB);
+                }
+                
                 if(Player.obj != null)
                     Player.obj.transform.position = _playerSpawningCollider.transform.position;
                 if(PlayerBlob.obj != null)
                     PlayerBlob.obj.transform.position = _playerSpawningCollider.transform.position - new Vector3(0, 0.5f, 0);
-                AdjustSpawnFaceDirection(Camera.main.transform.position.x, playerSpawnPoint.transform.position.x);
+                AdjustSpawnFaceDirection(activeCameraObject.transform.position.x, playerSpawnPoint.transform.position.x);
 
                 if(CaveAvatar.obj != null && CaveAvatar.obj.gameObject.activeSelf) {
                     SetCaveAvatarPosition(scene);
+                }
+
+                if(SaveManager.obj != null && SaveManager.obj.RestoreFollowingCreaturesOnNextScene) {
+                    var data = SaveManager.obj.LastLoadedSaveData;
+                    if (data != null) {
+                        CollectibleManager.obj.ImportFollowingCollectibles(data.followingCollectibles);
+                    }
+                    SaveManager.obj.ConsumeRestoreFollowingCreaturesFlag();
                 }
                 //If there are collectibles following, set start positions for them
                 if(CollectibleManager.obj.GetNumberOfCreaturesFollowingPlayer() > 0) {
@@ -71,8 +97,10 @@ public class LevelManager : MonoBehaviour
                     foreach(CaveCollectibleCreature collectible in CollectibleManager.obj.GetFollowingCaveCollectibleCreatures()) {
                         if(previousCollectible == null) {
                             collectible.SetStartingPosition(CaveAvatar.obj.GetHeadTransform().position);
+                            collectible.SetTarget(CaveAvatar.obj.GetHeadTransform());
                         } else {
                             collectible.SetStartingPosition(previousCollectible.GetHeadTransform().position);
+                            collectible.SetTarget(previousCollectible.GetHeadTransform());
                         }
                         previousCollectible = collectible;
                     }
@@ -97,10 +125,16 @@ public class LevelManager : MonoBehaviour
                 PlayerMovement.obj.CancelJumping();
 
                 Reaper.obj.playerKilled = false;
-                if(Player.obj != null && Player.obj.hasCape)
-                    Player.obj.SetHasCape(true);
+                if(Player.obj != null) {
+                    if(Player.obj.hasCape) {
+                        Player.obj.SetHasCape(true);
+                    } else {
+                        Player.obj.SetHasCape(false);
+                    }
+                }
                 PlayerManager.obj.PlaySpawn();
-                SoundFXManager.obj.PlayPlayerShadowSpawn(_playerSpawningCollider.transform);
+                //Need to play a slightly delayed spawn sound due to when loading a game the sound is broken at the beginning. No idea why!
+                StartCoroutine(DelayedSpawnSfx());
                 
                 IEnumerable<GameObject> levelSwitchers = sceneGameObjects.Where(gameObject => gameObject.CompareTag("LevelSwitcher"));
                 foreach(GameObject levelSwitcherGameObject in levelSwitchers) {
@@ -108,9 +142,43 @@ public class LevelManager : MonoBehaviour
                     levelSwitcher.LoadNextRoom();
                 }
             }
+            // If we just loaded a game from a save, restore audio state (music + ambience)
+            if (SaveManager.obj != null && SaveManager.obj.RestoreAudioOnNextScene) {
+                var data = SaveManager.obj.LastLoadedSaveData;
+                if (data != null) {
+                    if (!string.IsNullOrEmpty(data.currentMusicId) && MusicManager.obj != null) {
+                        MusicManager.obj.PlayById(data.currentMusicId);
+                    }
+                    if (!string.IsNullOrEmpty(data.currentAmbienceId) && AmbienceManager.obj != null) {
+                        AmbienceManager.obj.PlayById(data.currentAmbienceId);
+                    }
+                }
+                SaveManager.obj.ConsumeRestoreAudioFlag();
+            }
+
+            // If we just loaded a game from a save, restore global lighting darkness color
+            if (SaveManager.obj != null && SaveManager.obj.RestoreLightingOnNextScene) {
+                var data = SaveManager.obj.LastLoadedSaveData;
+                if (data != null && !string.IsNullOrEmpty(data.darknessColorHex) && LightingManager2D.Get() != null && LightingManager2D.Get().profile != null) {
+                    if (ColorUtility.TryParseHtmlString(data.darknessColorHex, out var parsed)) {
+                        LightingManager2D.Get().profile.DarknessColor = parsed;
+                    }
+                }
+                SaveManager.obj.ConsumeRestoreLightingFlag();
+            }
+
+            //Load any potential collectibles
+            CollectibleManager.obj.MaybeLoadCollectible(scene.name);
+
             SceneFadeManager.obj.StartFadeIn();
+            PlayerStatsManager.obj.ResumeTimer();
         }
         isRunningAfterSceneLoaded = false;
+    }
+
+    private IEnumerator DelayedSpawnSfx() {
+        yield return new WaitForSeconds(0.01f);
+        SoundFXManager.obj.PlayPlayerShadowSpawn(_playerSpawningCollider.transform);
     }
 
     private void AdjustSpawnFaceDirection(float sceneLoadTriggerPosition, float playerSpawnPointPosition) {
@@ -149,6 +217,28 @@ public class LevelManager : MonoBehaviour
 
     public void ResetLevels() {
         levelCompletionMap.Clear();
+    }
+
+    // Export/import helpers for persistence
+    // Returns a list of level ids that are marked as completed
+    public List<string> ExportCompletedLevels()
+    {
+        // Only include entries explicitly marked true
+        return levelCompletionMap.Where(kv => kv.Value).Select(kv => kv.Key).ToList();
+    }
+
+    // Rebuilds the completion map from a list of completed level ids
+    public void ImportCompletedLevels(List<string> completedLevels)
+    {
+        levelCompletionMap.Clear();
+        if (completedLevels == null) return;
+        foreach (var id in completedLevels)
+        {
+            if (!string.IsNullOrEmpty(id))
+            {
+                levelCompletionMap[id] = true;
+            }
+        }
     }
 
     private void SetCaveAvatarPosition(Scene scene) {

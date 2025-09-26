@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class C15DialogueTrigger : MonoBehaviour
 {
@@ -17,7 +18,7 @@ public class C15DialogueTrigger : MonoBehaviour
         _conversationManager.OnConversationEnd -= OnConversationCompleted;
     }
 
-        void OnTriggerEnter2D(Collider2D other) {
+    void OnTriggerEnter2D(Collider2D other) {
         if(GameEventManager.obj.MirrorConversationEnded) {
             return;
         }
@@ -36,5 +37,6 @@ public class C15DialogueTrigger : MonoBehaviour
     private void OnConversationCompleted() {
         PlayerMovement.obj.UnFreeze();
         GameEventManager.obj.MirrorConversationEnded = true;
+        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
     }
 }

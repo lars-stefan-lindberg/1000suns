@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CapeRoomBackgroundBlobManager : MonoBehaviour
 {
@@ -98,6 +99,9 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
         PlayerMovement.obj.UnFreeze();
 
         MusicManager.obj.PlayCaveFirstSong();
+        
+        //Make sure events, powers, and music is saved if reloading the room
+        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
 
         GameEventManager.obj.IsPauseAllowed = true;
     }

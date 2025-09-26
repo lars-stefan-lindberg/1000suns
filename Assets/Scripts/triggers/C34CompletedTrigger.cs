@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class C34CompletedTrigger : MonoBehaviour
 {
@@ -20,6 +21,8 @@ public class C34CompletedTrigger : MonoBehaviour
             CaveAvatar.obj.SetTarget(_targetPosition, 10);
             LevelManager.obj.SetLevelCompleted("C34");
             MusicManager.obj.ScheduleClipOnNextBar(MusicManager.obj.caveAvatarChaseOutro, 210, false);
+            MusicManager.obj.SetCurrentMusicId(MusicManager.MusicId.None);
+            SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         }
     }
 }

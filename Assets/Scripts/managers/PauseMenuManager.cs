@@ -191,6 +191,8 @@ public class PauseMenuManager : MonoBehaviour
     }
 
     private IEnumerator QuitCoroutine() {
+        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
+        
         float masterVolume = SoundMixerManager.obj.GetMasterVolume();
 
         SceneFadeManager.obj.StartFadeOut();
@@ -202,6 +204,9 @@ public class PauseMenuManager : MonoBehaviour
             yield return null;
         }
         MusicManager.obj.StopPlaying();
+        // Apply the unmuffled effect - this will immediately restore the volume to the player's preferred level
+        StartCoroutine(SoundMixerManager.obj.StartMusicUnmuffle(0.5f));
+        
         AmbienceManager.obj.StopAmbience();
         SceneManager.LoadScene(_titleScreen.SceneName);
         Scene titleScreen = SceneManager.GetSceneByName(_titleScreen.SceneName);
@@ -212,6 +217,7 @@ public class PauseMenuManager : MonoBehaviour
             yield return null;
         }
         SoundMixerManager.obj.SetMasterVolume(masterVolume);
+
         Destroy(_persistentGameplay);
     }
 

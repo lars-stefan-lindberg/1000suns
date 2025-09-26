@@ -5,6 +5,14 @@ public class AmbienceManager : MonoBehaviour
 {
     public static AmbienceManager obj;
 
+    public enum AmbienceId {
+        None,
+        Cave,
+        CapeRoom
+    }
+
+    private AmbienceId _currentAmbienceId = AmbienceId.None;
+
     [SerializeField] private AudioSource ambienceObject;
 
     public AudioClip caveAmbience;
@@ -27,6 +35,7 @@ public class AmbienceManager : MonoBehaviour
         _ambienceSourceLayer1.volume = 0f;
         _ambienceSourceLayer1.loop = true;
         _ambienceSourceLayer1.Play();
+        _currentAmbienceId = AmbienceId.Cave;
     }
 
     [ContextMenu("Play cape room ambience")]
@@ -49,6 +58,7 @@ public class AmbienceManager : MonoBehaviour
         double startTime = AudioSettings.dspTime + 1;
         _ambienceSourceLayer2.PlayScheduled(startTime);
         _ambienceSourceLayer3.PlayScheduled(startTime);
+        _currentAmbienceId = AmbienceId.CapeRoom;
     }
 
     public void FadeOutAmbienceSource1(float duration) {
@@ -122,6 +132,31 @@ public class AmbienceManager : MonoBehaviour
         if(_ambienceSourceLayer3 != null) {
             _ambienceSourceLayer3.Stop();
             Destroy(_ambienceSourceLayer3.gameObject);
+        }
+        _currentAmbienceId = AmbienceId.None;
+    }
+
+    public string GetCurrentAmbienceId() {
+        return _currentAmbienceId == AmbienceId.None ? null : _currentAmbienceId.ToString();
+    }
+
+    public void SetCurrentAmbienceId(AmbienceId ambienceId) {
+        _currentAmbienceId = ambienceId;
+    }
+
+    public void PlayById(string id) {
+        if (string.IsNullOrEmpty(id)) return;
+        if (!System.Enum.TryParse<AmbienceId>(id, out var ambienceId)) return;
+        switch (ambienceId) {
+            case AmbienceId.Cave: 
+                PlayCaveAmbience(); 
+                FadeInAmbienceSource1(2f);
+            break;
+            case AmbienceId.CapeRoom: 
+                PlayCapeRoomAmbience(); 
+                FadeInAmbienceSource2And3(2f);
+            break;
+            default: break;
         }
     }
 

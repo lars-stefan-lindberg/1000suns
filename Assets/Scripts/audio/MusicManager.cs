@@ -4,6 +4,21 @@ public class MusicManager : MonoBehaviour
 {
     public static MusicManager obj;
 
+    public enum MusicId {
+        None,
+        CaveSong,
+        CaveFirstSong,
+        CaveSecondSong,
+        CaveLoop,
+        BlobRooms,
+        CaveIntense1,
+        CaveIntense2,
+        CaveAvatarChase,
+        CaveBeforeFirstPrisoner
+    }
+
+    private MusicId _currentMusicId = MusicId.None;
+
     [SerializeField] private AudioSource musicObject;
     [SerializeField] private float crossfadeDuration = 1.5f;
     [SerializeField] private AnimationCurve fadeCurve;
@@ -63,6 +78,7 @@ public class MusicManager : MonoBehaviour
     [ContextMenu("Play cave song")]
     public void PlayCaveSong() {
         PlayIntroAndLoop(_caveSongIntro, _caveSongLoop);
+        _currentMusicId = MusicId.CaveSong;
     }    
     public void PlayCaveSongOutro() {
         PlayOneTime(_caveSongOutro);
@@ -79,17 +95,21 @@ public class MusicManager : MonoBehaviour
     [ContextMenu("Play cave first song")]
     public void PlayCaveFirstSong() {
         PlayIntroAndLoop(_caveSongFirstIntro, _caveSongFirstLoop);
+        _currentMusicId = MusicId.CaveFirstSong;
     }
     [ContextMenu("Play cave second song")]
     public void PlayCaveSecondSong() {
         PlayIntroAndLoop(_caveSongSecondIntro, _caveSongSecondLoop);
+        _currentMusicId = MusicId.CaveSecondSong;
     }
     [ContextMenu("Play cave loop")]
     public void PlayCaveLoop() {
         PlayLoop(_caveSongLoop);
+        _currentMusicId = MusicId.CaveLoop;
     }
     public void PlayBlobRooms() {
         PlayLoop(_blobRooms);
+        _currentMusicId = MusicId.BlobRooms;
     }
 
     [ContextMenu("Play end song")]
@@ -119,20 +139,23 @@ public class MusicManager : MonoBehaviour
     [ContextMenu("Play cave before first prisoner song")]
     public void PlayCaveBeforeFirstPrisoner() {
         PlayLoop(caveBeforeFirstPrisonerLoop);
+        _currentMusicId = MusicId.CaveBeforeFirstPrisoner;
     }
 
     [ContextMenu("Play cave intense 1")]
     public void PlayCaveIntense1() {
         PlayIntroAndLoop(_caveIntense1Intro, _caveIntense1Loop);
+        _currentMusicId = MusicId.CaveIntense1;
     }
-
     [ContextMenu("Play cave intense 2")]
     public void PlayCaveIntense2() {
         PlayIntroAndLoop(caveIntense2Intro, caveIntense2Loop);
+        _currentMusicId = MusicId.CaveIntense2;
     }
     [ContextMenu("Play cave avatar chase")]
     public void PlayCaveAvatarChase() {
         PlayIntroAndLoop(_caveAvatarChaseIntro, _caveAvatarChaseLoop);
+        _currentMusicId = MusicId.CaveAvatarChase;
     }
 
     private void PlayIntroAndLoop(AudioClip introClip, AudioClip loopClip) {
@@ -354,6 +377,7 @@ public class MusicManager : MonoBehaviour
             _loopSource.Stop();
             Destroy(_loopSource.gameObject);
         }
+        _currentMusicId = MusicId.None;
     }
 
     public void StopPlayingOneTime() {
@@ -366,6 +390,31 @@ public class MusicManager : MonoBehaviour
     public bool IsPlaying() {
         return (_introSource != null && _introSource.isPlaying) || 
                (_loopSource != null && _loopSource.isPlaying);
+    }
+
+    public string GetCurrentMusicId() {
+        return _currentMusicId == MusicId.None ? null : _currentMusicId.ToString();
+    }
+
+    public void SetCurrentMusicId(MusicId musicId) {
+        _currentMusicId = musicId;
+    }
+
+    public void PlayById(string id) {
+        if (string.IsNullOrEmpty(id)) return;
+        if (!System.Enum.TryParse<MusicId>(id, out var musicId)) return;
+        switch (musicId) {
+            case MusicId.CaveSong: PlayCaveSong(); break;
+            case MusicId.CaveFirstSong: PlayCaveFirstSong(); break;
+            case MusicId.CaveSecondSong: PlayCaveSecondSong(); break;
+            case MusicId.CaveLoop: PlayCaveLoop(); break;
+            case MusicId.BlobRooms: PlayBlobRooms(); break;
+            case MusicId.CaveIntense1: PlayCaveIntense1(); break;
+            case MusicId.CaveIntense2: PlayCaveIntense2(); break;
+            case MusicId.CaveAvatarChase: PlayCaveAvatarChase(); break;
+            case MusicId.CaveBeforeFirstPrisoner: PlayCaveBeforeFirstPrisoner(); break;
+            default: break;
+        }
     }
 
     //Don't use this. It needs to be updated with the case when resuming/pausing an audio source where there's also scheduled audio sources.

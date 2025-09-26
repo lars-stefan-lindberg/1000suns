@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class C30CutsceneManager : MonoBehaviour
 {
@@ -33,6 +34,7 @@ public class C30CutsceneManager : MonoBehaviour
         PlayerMovement.obj.UnFreeze();
         GameEventManager.obj.IsPauseAllowed = true;
         GameEventManager.obj.C30CutsceneCompleted = true;
+        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
     }
 
     void OnTriggerEnter2D(Collider2D other)

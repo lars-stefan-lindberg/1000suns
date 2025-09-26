@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using FunkyCode;
 using UnityEngine;
 
 public class CaveCollectibleCreature : MonoBehaviour
@@ -35,16 +36,14 @@ public class CaveCollectibleCreature : MonoBehaviour
 
     private bool _hasTarget = false;
     private Transform _targetTransform;
+    private Vector2 _originalPosition;
 
     void Awake() {
-        if(CollectibleManager.obj != null && CollectibleManager.obj.IsCollectiblePicked(_id)) {
-            gameObject.SetActive(false);
-            Destroy(gameObject);
-        }
         _collider = GetComponent<BoxCollider2D>();
         IsPicked = false;
         IsPermanentlyCollected = false;
         _lightSprite2DFadeManager = GetComponentInChildren<LightSprite2DFadeManager>();
+        _originalPosition = transform.position;
     }
 
     void OnTriggerEnter2D(Collider2D other) {
@@ -60,11 +59,6 @@ public class CaveCollectibleCreature : MonoBehaviour
     {
         _lightSprite2DFadeManager.StartFadeOut();
         yield return null;
-    }
-
-    public void SetSaved() {
-        DontDestroyOnLoad(gameObject); 
-        transform.SetParent(CollectibleManager.obj.transform);
     }
 
     void FixedUpdate()
@@ -123,6 +117,22 @@ public class CaveCollectibleCreature : MonoBehaviour
         _tailParts[2].transform.position = Vector2.Lerp(_tailParts[2].transform.position, _tailParts[1].transform.position, _tailPartLerpSpeed);
         _tailParts[3].transform.position = Vector2.Lerp(_tailParts[3].transform.position, _tailParts[2].transform.position, _tailPartLerpSpeed);
         _tailParts[4].transform.position = Vector2.Lerp(_tailParts[4].transform.position, _tailParts[3].transform.position, _tailPartLerpSpeed);
+    }
+
+    public void Reset() {
+        _head.transform.position = _originalPosition;
+        foreach(GameObject tail in _tailParts) {
+            tail.transform.position = _head.transform.position;
+        }
+        _collider.enabled = true;
+        _lightSprite2DFadeManager.SetFadedInState();
+        _headSpriteRenderer.flipX = false;
+    }
+
+    public void RestoreFollowingState() {
+        IsPicked = true;
+        _collider.enabled = false;
+        StartCoroutine(FadeOutLight());
     }
 
     private float _targetReachedMargin = 0.5f;
@@ -210,5 +220,10 @@ public class CaveCollectibleCreature : MonoBehaviour
 
     public string GetId() {
         return _id;
+    }
+
+    public void SetTarget(Transform target) {
+        _targetTransform = target;
+        _hasTarget = true;
     }
 }

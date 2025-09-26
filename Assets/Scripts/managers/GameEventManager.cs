@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections.Generic;
+using System.Reflection;
 
 public class GameEventManager : MonoBehaviour
 {
@@ -8,6 +10,7 @@ public class GameEventManager : MonoBehaviour
     public bool CaveLevelStarted { get; set; }
     public bool C1MonologueEnded { get; set; }
     public bool CaveAvatarFreed { get; set; }
+    public bool CapeRoomZoomCompleted { get; set; }
     public bool CapePicked { get; set; }
     public bool FirstCaveCollectibleConversationEnded { get; set; }
     public bool BabyPrisonerAlerted { get; set; }
@@ -38,6 +41,7 @@ public class GameEventManager : MonoBehaviour
         CaveAvatarFreed = false;
         PrisonerIntroSeen = false;
         BabyPrisonerAlerted = false;
+        CapeRoomZoomCompleted = false;
         CapePicked = false;
         FirstPowerUpPicked = false;
         PowerUpRoomsFloorBroken = false;
@@ -61,5 +65,51 @@ public class GameEventManager : MonoBehaviour
 
     void OnDestroy() {
         obj = null;
+    }
+
+    // Returns a list of event keys (by property name) that have occurred
+    public List<string> GetCompletedEvents()
+    {
+        var completed = new List<string>();
+        var props = typeof(GameEventManager).GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
+        foreach (var prop in props)
+        {
+            // Only persist bool properties that are both readable and writable, excluding IsPauseAllowed
+            if (prop.PropertyType == typeof(bool) && prop.CanRead && prop.CanWrite && prop.Name != nameof(IsPauseAllowed))
+            {
+                var value = (bool)(prop.GetValue(this) ?? false);
+                if (value)
+                {
+                    completed.Add(prop.Name);
+                }
+            }
+        }
+        return completed;
+    }
+
+    // Applies a list of event keys (by property name) to set occurred events
+    public void ApplyCompletedEvents(List<string> events)
+    {
+        // Start from a clean slate
+        ResetGameEvents();
+
+        if (events == null || events.Count == 0)
+        {
+            return;
+        }
+
+        var toSet = new HashSet<string>(events);
+        var props = typeof(GameEventManager).GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
+        foreach (var prop in props)
+        {
+            // Only apply to bool properties that are both readable and writable, excluding IsPauseAllowed
+            if (prop.PropertyType == typeof(bool) && prop.CanWrite && prop.CanRead && prop.Name != nameof(IsPauseAllowed))
+            {
+                if (toSet.Contains(prop.Name))
+                {
+                    prop.SetValue(this, true);
+                }
+            }
+        }
     }
 }

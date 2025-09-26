@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class FadeOutMusicTrigger2 : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class FadeOutMusicTrigger2 : MonoBehaviour
 
     private IEnumerator FadeOutAndStopMusic() {
         float musicVolume = SoundMixerManager.obj.GetMusicVolume();
+        MusicManager.obj.SetCurrentMusicId(MusicManager.MusicId.None);
         StartCoroutine(SoundMixerManager.obj.StartMusicFade(_fadeOutDuration, 0.001f));
         while(SoundMixerManager.obj.GetMusicVolume() > 0.001f) {
             yield return null;

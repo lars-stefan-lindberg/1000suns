@@ -15,17 +15,15 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private SceneField _introScene;
     [SerializeField] private SceneField _titleScreen;
     [SerializeField] private GameObject _titleScreenCanvas;
-    [SerializeField] private GameObject _fadeOutCanvas;
-
-    [SerializeField] private Image _fadeOutImage;
-    [Range(0.1f, 10f), SerializeField] private float _fadeOutSpeed = 5f;
-
-    [SerializeField] private Color _fadeOutStartColor;
 
     public bool IsFadingOut { get; private set; }
 
+    [SerializeField] private GameObject _continueButton;
     [SerializeField] private GameObject _playButton;
     [SerializeField] private Button _optionsButton;
+    [SerializeField] private Button _exitButton;
+    [SerializeField] private Button _confirmNewGameButton;
+    [SerializeField] private Button _declineNewGameButton;
     [SerializeField] private Button _keyboardConfigButton;
     [SerializeField] private Button _controllerConfigButton;
     private Color _optionsButtonColor;
@@ -39,6 +37,7 @@ public class MainMenuManager : MonoBehaviour
 
     [SerializeField] private GameObject _optionsMenu;
     [SerializeField] private GameObject _keyboardConfigMenu;
+    [SerializeField] private GameObject _confirmNewGameMenu;
     [SerializeField] private AutoScrollRect _keyboardConfigAutoScroll;
     [SerializeField] private Button _firstKeyboardMenuButton;
     [SerializeField] private GameObject _controllerConfigMenu;
@@ -64,16 +63,13 @@ public class MainMenuManager : MonoBehaviour
 
     void Awake() {
         obj = this;
+    }
 
+    void Start() {
         Canvas titleScreenCanvas = _titleScreenCanvas.GetComponent<Canvas>();
         titleScreenCanvas.worldCamera = Camera.main;
         titleScreenCanvas.sortingLayerName = "UI";
 
-        Canvas fadeOutCanvas = _fadeOutCanvas.GetComponent<Canvas>();
-        fadeOutCanvas.worldCamera = Camera.main;
-        fadeOutCanvas.sortingLayerName = "UI";
-
-        EventSystem.current.SetSelectedGameObject(_playButton);
         _optionsButtonColor = _optionsButton.GetComponentInChildren<TextMeshProUGUI>().color;
         MusicManager.obj.PlayTitleSong();
         var rebinds = PlayerPrefs.GetString("rebinds");
@@ -83,6 +79,27 @@ public class MainMenuManager : MonoBehaviour
 
         InputDeviceListener.OnInputDeviceStream += HandleInputDeviceChanged;
         HandleInputDeviceChanged(InputDeviceListener.obj.GetCurrentInputDevice());
+
+        bool hasValidSave = SaveManager.obj.HasValidSave(); 
+        if (!hasValidSave) {
+            EventSystem.current.SetSelectedGameObject(_playButton);
+
+            Button playButton = _playButton.GetComponent<Button>(); 
+            Navigation playButtonNewNav = playButton.navigation;
+            playButtonNewNav.selectOnUp = _exitButton;
+            playButton.navigation = playButtonNewNav;
+
+            Navigation exitButtonNewNav = _exitButton.navigation;
+            exitButtonNewNav.selectOnDown = playButton;
+            _exitButton.navigation = exitButtonNewNav;
+
+            Button continueButton = _continueButton.GetComponent<Button>();
+            continueButton.interactable = false;
+            TextMeshProUGUI continueButtonText = continueButton.GetComponentInChildren<TextMeshProUGUI>();
+            continueButtonText.color = new Color(0.65f, 0.65f, 0.65f, 1f);
+        } else {
+            EventSystem.current.SetSelectedGameObject(_continueButton);
+        }
     }
 
     void OnDestroy() {
@@ -90,14 +107,16 @@ public class MainMenuManager : MonoBehaviour
         obj = null;
     }
 
-    void Update() {
-        if(IsFadingOut) {
-            if(_fadeOutImage.color.a < 1f) {
-                _fadeOutStartColor.a += Time.deltaTime * _fadeOutSpeed;
-                _fadeOutImage.color = _fadeOutStartColor;
-            } else {
-                IsFadingOut = false;
-            }
+    public void OnPlayButtonClicked() {
+        bool hasValidSave = SaveManager.obj.HasValidSave(); 
+        if (!hasValidSave) {
+            StartGame();
+        } else {
+            isNavigatingToMenu = true;
+            SoundFXManager.obj.PlayUIConfirm();
+
+            ShowConfirmNewGameMenu();
+            EventSystem.current.SetSelectedGameObject(_confirmNewGameButton.gameObject);
         }
     }
 
@@ -106,14 +125,20 @@ public class MainMenuManager : MonoBehaviour
         StartCoroutine(StartGameCoroutine());
     }
 
+    [ContextMenu("Continue Game")]
+    public void ContinueGame() {
+        _continueButton.GetComponent<Button>().interactable = false;
+        StartCoroutine(ContinueGameCoroutine());
+    }
+
     private IEnumerator StartGameCoroutine() {
         SoundFXManager.obj.PlayUIPlay();
 
         float masterVolume = SoundMixerManager.obj.GetMasterVolume();
 
         StartCoroutine(SoundMixerManager.obj.StartMasterFade(3f, 0.001f));
-        StartFadeOut();
-        while(IsFadingOut)
+        SceneFadeManager.obj.StartFadeOut(1f);
+        while(SceneFadeManager.obj.IsFadingOut)
             yield return null;
         while(SoundMixerManager.obj.GetMasterVolume() > 0.001f) {
             yield return null;
@@ -149,9 +174,38 @@ public class MainMenuManager : MonoBehaviour
         SceneManager.UnloadSceneAsync(_titleScreen.SceneName);
     }
 
-    private void StartFadeOut() {
-        _fadeOutImage.color = _fadeOutStartColor;
-        IsFadingOut = true;
+    private IEnumerator ContinueGameCoroutine() {
+        SoundFXManager.obj.PlayUIPlay();
+
+        float masterVolume = SoundMixerManager.obj.GetMasterVolume();
+
+        StartCoroutine(SoundMixerManager.obj.StartMasterFade(3f, 0.001f));
+        SceneFadeManager.obj.StartFadeOut(1f);
+        while(SceneFadeManager.obj.IsFadingOut)
+            yield return null;
+        while(SoundMixerManager.obj.GetMasterVolume() > 0.001f) {
+            yield return null;
+        }
+        MusicManager.obj.StopPlaying();
+        
+        AsyncOperation loadPersistentGameplayOperation = SceneManager.LoadSceneAsync(_persistentGameplay, LoadSceneMode.Additive);
+        while(!loadPersistentGameplayOperation.isDone) {
+            yield return null;
+        }
+        GameEventManager.obj.IsPauseAllowed = false;
+
+        SaveData saveData = SaveManager.obj.LoadGame();
+        if(saveData == null) {
+            Debug.LogWarning("No save data found. Starting new game.");
+            StartCoroutine(StartGameCoroutine());
+            yield break;
+        }
+
+        yield return new WaitForSeconds(1f);
+        SoundMixerManager.obj.SetMasterVolume(masterVolume);
+        LevelManager.obj.LoadSceneDelayed(saveData.levelId);
+
+        SceneManager.UnloadSceneAsync(_titleScreen.SceneName);
     }
 
     public void OnOptionsButtonClicked() {
@@ -160,6 +214,26 @@ public class MainMenuManager : MonoBehaviour
         
         ShowOptionsMenu();
         EventSystem.current.SetSelectedGameObject(_musicSliderGameObject);
+    }
+
+    public void OnConfirmNewGameButtonClicked() {
+        _confirmNewGameButton.interactable = false;
+        SaveManager.obj.DeleteSave();
+        StartCoroutine(StartGameCoroutine());
+    }
+
+    public void ShowConfirmNewGameMenu() {
+        _titleMenu.SetActive(false);
+        _confirmNewGameMenu.SetActive(true);
+    }
+
+    public void LeaveConfirmNewGameMenu() {
+        _confirmNewGameMenu.SetActive(false);
+        SoundFXManager.obj.PlayUIBack();
+        EventSystem.current.SetSelectedGameObject(null);
+
+        _titleMenu.SetActive(true);
+        EventSystem.current.SetSelectedGameObject(_playButton);
     }
 
     public void ShowOptionsMenu() {
@@ -294,6 +368,8 @@ public class MainMenuManager : MonoBehaviour
             LeaveKeyboardConfigMenu();
         } else if(_controllerConfigMenu.activeSelf) {
             LeaveControllerConfigMenu();
+        } else if(_confirmNewGameMenu.activeSelf) {
+            LeaveConfirmNewGameMenu();
         }
     }
 

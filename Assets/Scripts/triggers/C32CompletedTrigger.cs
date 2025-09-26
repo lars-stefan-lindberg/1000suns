@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class C32CompletedTrigger : MonoBehaviour
 {
@@ -21,6 +22,7 @@ public class C32CompletedTrigger : MonoBehaviour
             _collider.enabled = false;
             CaveAvatar.obj.SetTarget(_targetPosition, 10);
             LevelManager.obj.SetLevelCompleted("C32");
+            SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         }
     }
 }

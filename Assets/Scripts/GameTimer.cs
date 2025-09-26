@@ -23,6 +23,13 @@ public class GameTimer : MonoBehaviour
         return displayString;
     }
 
+    public float GetElapsedTime() {
+        return elapsedTime;
+    }
+    public void SetElapsedTime(float time) {
+        elapsedTime = time;
+    }
+
     public void Reset() {
         elapsedTime = 0f;
     }

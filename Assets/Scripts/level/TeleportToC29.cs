@@ -24,6 +24,7 @@ public class TeleportToC29 : MonoBehaviour
         PlayerBlobMovement.obj.Freeze();
         MusicManager.obj.ScheduleClipOnNextBar(MusicManager.obj.caveIntense1Outro, 140, false);
 
+        AmbienceManager.obj.SetCurrentAmbienceId(AmbienceManager.AmbienceId.None);
         AmbienceManager.obj.FadeOutAmbienceSource2And3(1f);
 
         SoundFXManager.obj.PlayCaveSpaceRoomTeleport();
@@ -89,6 +90,7 @@ public class TeleportToC29 : MonoBehaviour
         GameEventManager.obj.IsPauseAllowed = true;
 
         MusicManager.obj.PlayCaveSong();
+        SaveManager.obj.SaveGame(scene.name);
         yield return null;
     }
 }

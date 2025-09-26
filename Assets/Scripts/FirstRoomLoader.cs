@@ -3,6 +3,7 @@ using Cinemachine;
 using DG.Tweening;
 using FunkyCode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 
 public class FirstRoomLoader : MonoBehaviour
@@ -106,6 +107,7 @@ public class FirstRoomLoader : MonoBehaviour
 
         PlayerMovement.obj.UnFreeze();
         GameEventManager.obj.IsPauseAllowed = true;
+        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name, ColorUtility.ToHtmlStringRGBA(new Color(0.33f, 0.33f, 0.33f, 1f)));
 
         yield return null;
     }

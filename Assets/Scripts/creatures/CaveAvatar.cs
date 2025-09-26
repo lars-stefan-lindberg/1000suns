@@ -162,13 +162,17 @@ public class CaveAvatar : MonoBehaviour
         SetPosition(new Vector2(1390.125f, -16f));
         IsFollowingPlayer = false;
         _target = null;
+        SetRedEyes();
     }
 
     public void SetStartingPositionInRoom30() {
         SetPosition(new Vector2(1475.125f, -14.875f));
         IsFollowingPlayer = false;
         _target = null;
-        //Also this is a good time to reset the red eyes color of the sprite, and set the red eye animation layer instead
+        SetRedEyes();
+    }
+
+    private void SetRedEyes() {
         _headSpriteRenderer.color = Color.white;
         _animator.SetLayerWeight(1, 1);
     }
@@ -178,6 +182,7 @@ public class CaveAvatar : MonoBehaviour
         IsFollowingPlayer = false;
         _target = null;
         _headSpriteRenderer.flipX = true;
+        SetRedEyes();
     }
 
     public void SetStartingPositionInRoom32() {
@@ -185,6 +190,7 @@ public class CaveAvatar : MonoBehaviour
         IsFollowingPlayer = false;
         _target = null;
         _headSpriteRenderer.flipX = true;
+        SetRedEyes();
     }
 
     public void SetStartingPositionInRoom33() {
@@ -192,6 +198,7 @@ public class CaveAvatar : MonoBehaviour
         IsFollowingPlayer = false;
         _target = null;
         _headSpriteRenderer.flipX = true;
+        SetRedEyes();
     }
 
     public void SetStartingPositionInRoom34() {
@@ -199,6 +206,7 @@ public class CaveAvatar : MonoBehaviour
         IsFollowingPlayer = false;
         _target = null;
         _headSpriteRenderer.flipX = true;
+        SetRedEyes();
     }
 
     public void SetStartingPositionInRoom35() {
@@ -206,6 +214,7 @@ public class CaveAvatar : MonoBehaviour
         IsFollowingPlayer = false;
         _target = null;
         _headSpriteRenderer.flipX = false;
+        SetRedEyes();
     }
 
     public void SetStartingPositionInRoom1() {

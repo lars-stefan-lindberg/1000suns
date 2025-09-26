@@ -398,7 +398,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     public void ToBlob() {
         ICinemachineCamera activeVirtualCamera = CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera;
-        if(activeVirtualCamera.Follow == transform) {
+        if(activeVirtualCamera != null && activeVirtualCamera.Follow == transform) {
             activeVirtualCamera.Follow = _playerBlob.transform;
         }
 

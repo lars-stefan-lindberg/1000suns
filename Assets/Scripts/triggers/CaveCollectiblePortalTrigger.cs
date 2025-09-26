@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class CaveCollectiblePortalTrigger : MonoBehaviour
 {
-    private bool _isTriggered = false;
     [SerializeField] private Transform _portal;
     [SerializeField] private Animator _portalAnimator;
 

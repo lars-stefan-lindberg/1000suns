@@ -83,6 +83,10 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
+    public void SetLastActivePlayerType(PlayerType type) {
+        _lastPlayerType = type;
+    }
+
     public PlayerType GetActivePlayerType() {
         if(PlayerMovement.obj != null && PlayerMovement.obj.gameObject.activeSelf)
             return PlayerType.HUMAN;

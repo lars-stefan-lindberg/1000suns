@@ -8,7 +8,7 @@ public class C4CustomCameraHandling : MonoBehaviour
         GameObject[] sceneGameObjects = SceneManager.GetSceneByName("C4").GetRootGameObjects();
         GameObject cameras = sceneGameObjects.First(gameObject => gameObject.CompareTag("Cameras"));
         CameraManager cameraManager = cameras.GetComponent<CameraManager>();
-        if(GameEventManager.obj.CapePicked) {
+        if(GameEventManager.obj.CapePicked || GameEventManager.obj.CapeRoomZoomCompleted) {
             cameraManager.ActivateMainCamera();
         } else {
             cameraManager.ActivateCustomCamera();

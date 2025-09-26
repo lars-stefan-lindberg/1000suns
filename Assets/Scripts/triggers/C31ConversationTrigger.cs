@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class C31ConversationTrigger : MonoBehaviour
 {
@@ -49,6 +50,7 @@ public class C31ConversationTrigger : MonoBehaviour
         yield return new WaitForSeconds(1f);
         PlayerMovement.obj.UnFreeze();
         GameEventManager.obj.C31CutsceneCompleted = true;
+        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         _conversationManager.OnConversationEnd -= OnConversationCompleted;
         yield return null;
     }

@@ -1,6 +1,7 @@
 using System.Collections;
 using Cinemachine;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CapeRoomSwitchToFullRoomCam : MonoBehaviour
 {
@@ -9,7 +10,7 @@ public class CapeRoomSwitchToFullRoomCam : MonoBehaviour
     private bool _isTriggered = false;
 
     void Awake() {
-        if(GameEventManager.obj.CapePicked) {
+        if(GameEventManager.obj.CapePicked || GameEventManager.obj.CapeRoomZoomCompleted) {
             _isTriggered = true;
             Destroy(gameObject, 3);
         }
@@ -37,6 +38,8 @@ public class CapeRoomSwitchToFullRoomCam : MonoBehaviour
 
         yield return new WaitForSeconds(5);
         PlayerMovement.obj.UnFreeze();
+        GameEventManager.obj.CapeRoomZoomCompleted = true;
+        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         GameEventManager.obj.IsPauseAllowed = true;
     }
 }

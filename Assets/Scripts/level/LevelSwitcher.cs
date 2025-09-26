@@ -43,6 +43,8 @@ public class LevelSwitcher : MonoBehaviour
 
             StartCoroutine(MutePrisonersOffscreen());
             StartCoroutine(UnmutePrisonersOnScreen());
+
+            SaveManager.obj.SaveGame(_nextScene.SceneName);
         }
     }
 
@@ -118,6 +120,7 @@ public class LevelSwitcher : MonoBehaviour
         Scene nextScene = SceneManager.GetSceneByName(_nextScene.SceneName);
         if(!nextScene.isLoaded)
             SceneManager.LoadSceneAsync(_nextScene, LoadSceneMode.Additive);
+        CollectibleManager.obj.MaybeLoadCollectible(_nextScene.SceneName);
         yield return null;
     }
 
@@ -136,6 +139,7 @@ public class LevelSwitcher : MonoBehaviour
             if(!isSceneLoaded) {
                 SceneManager.LoadSceneAsync(_scenesToLoad[i], LoadSceneMode.Additive);
             }
+            CollectibleManager.obj.MaybeLoadCollectible(_scenesToLoad[i].SceneName);
         }
         yield return null;
     }

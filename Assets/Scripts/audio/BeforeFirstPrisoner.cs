@@ -13,6 +13,8 @@ public class BeforeFirstPrisoner : MonoBehaviour
     }
 
     private IEnumerator SwitchAudio() {
+        //Make sure we set next music id before fading out
+        MusicManager.obj.SetCurrentMusicId(MusicManager.MusicId.CaveBeforeFirstPrisoner);
         float musicVolume = SoundMixerManager.obj.GetMusicVolume();
         StartCoroutine(SoundMixerManager.obj.StartMusicFade(_fadeDuration, 0.001f));
         AmbienceManager.obj.PlayCaveAmbience();

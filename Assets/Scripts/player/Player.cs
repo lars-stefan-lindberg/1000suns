@@ -26,14 +26,12 @@ public class Player : MonoBehaviour
         _groundLayerMasks = LayerMask.GetMask("Ground");
         _playerFlash = GetComponentInChildren<PlayerFlash>();
         _playerChargeFlash = GetComponentInChildren<PlayerChargeFlash>();
-
-        SetHasCape(true);
     }
 
     void OnEnable()
     {
         _animator = GetComponentInChildren<Animator>();
-        SetHasCape(true);
+        SetHasCape(hasCape);
     }
 
     public void SetStatic() {

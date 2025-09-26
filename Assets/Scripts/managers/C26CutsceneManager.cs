@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class C26CutsceneManager : MonoBehaviour
 {
@@ -160,6 +161,7 @@ public class C26CutsceneManager : MonoBehaviour
         GameEventManager.obj.IsPauseAllowed = true;
         GameEventManager.obj.C26CutsceneCompleted = true;
         PlayerPowersManager.obj.CanTurnFromHumanToBlob = true;
+        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         yield return null;
     }
 

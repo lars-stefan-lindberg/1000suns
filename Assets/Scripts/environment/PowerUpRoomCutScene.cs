@@ -1,6 +1,7 @@
 using System.Collections;
 using Cinemachine;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PowerUpRoomCutScene : MonoBehaviour
 {
@@ -30,13 +31,16 @@ public class PowerUpRoomCutScene : MonoBehaviour
         if(other.CompareTag("Player")) {
             if(!_cutsceneFinished)
                 StartCoroutine(StartCutscene());
-            else
+            else {
                 _playerEntered = true;
+                _recoveryTriggered = true;
+            }
         }
     }
 
     private void OnTriggerExit2D(Collider2D other) {
-        if(other.gameObject.CompareTag("Player")) {
+        if(other.gameObject.CompareTag("Player"))
+        {
             _playerEntered = false;
         }
     }
@@ -91,6 +95,7 @@ public class PowerUpRoomCutScene : MonoBehaviour
         PlayerMovement.obj.SetNewPowerRecevied();
 
         yield return new WaitForSeconds(2f);
+        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         PlayerMovement.obj.UnFreeze();
         GameEventManager.obj.IsPauseAllowed = true;
 
