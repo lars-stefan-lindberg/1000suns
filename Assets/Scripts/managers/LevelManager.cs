@@ -142,19 +142,7 @@ public class LevelManager : MonoBehaviour
                     levelSwitcher.LoadNextRoom();
                 }
             }
-            // If we just loaded a game from a save, restore audio state (music + ambience)
-            if (SaveManager.obj != null && SaveManager.obj.RestoreAudioOnNextScene) {
-                var data = SaveManager.obj.LastLoadedSaveData;
-                if (data != null) {
-                    if (!string.IsNullOrEmpty(data.currentMusicId) && MusicManager.obj != null) {
-                        MusicManager.obj.PlayById(data.currentMusicId);
-                    }
-                    if (!string.IsNullOrEmpty(data.currentAmbienceId) && AmbienceManager.obj != null) {
-                        AmbienceManager.obj.PlayById(data.currentAmbienceId);
-                    }
-                }
-                SaveManager.obj.ConsumeRestoreAudioFlag();
-            }
+            
 
             // If we just loaded a game from a save, restore global lighting darkness color
             if (SaveManager.obj != null && SaveManager.obj.RestoreLightingOnNextScene) {
@@ -172,6 +160,20 @@ public class LevelManager : MonoBehaviour
 
             SceneFadeManager.obj.StartFadeIn();
             PlayerStatsManager.obj.ResumeTimer();
+
+            // If we just loaded a game from a save, restore audio state (music + ambience)
+            if (SaveManager.obj != null && SaveManager.obj.RestoreAudioOnNextScene) {
+                var data = SaveManager.obj.LastLoadedSaveData;
+                if (data != null) {
+                    if (!string.IsNullOrEmpty(data.currentMusicId) && MusicManager.obj != null) {
+                        MusicManager.obj.PlayById(data.currentMusicId);
+                    }
+                    if (!string.IsNullOrEmpty(data.currentAmbienceId) && AmbienceManager.obj != null) {
+                        AmbienceManager.obj.PlayById(data.currentAmbienceId);
+                    }
+                }
+                SaveManager.obj.ConsumeRestoreAudioFlag();
+            }
         }
         isRunningAfterSceneLoaded = false;
     }
