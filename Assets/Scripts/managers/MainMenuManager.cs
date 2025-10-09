@@ -157,6 +157,7 @@ public class MainMenuManager : MonoBehaviour
         CollectibleManager.obj.ResetCollectibles();
         PlayerStatsManager.obj.numberOfDeaths = 0;
         Player.obj.gameObject.SetActive(false);
+        LevelManager.obj.ResetLevels();
 
         SoundMixerManager.obj.SetMasterVolume(masterVolume);
         AsyncOperation loadIntroSceneOperation = SceneManager.LoadSceneAsync(_introScene, LoadSceneMode.Additive);
