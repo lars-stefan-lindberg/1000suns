@@ -126,7 +126,7 @@ public class LevelManager : MonoBehaviour
 
                 Reaper.obj.playerKilled = false;
                 if(Player.obj != null) {
-                    if(Player.obj.hasCape) {
+                    if(Player.obj.hasCape || PlayerMovement.obj.isDevMode) {
                         Player.obj.SetHasCape(true);
                     } else {
                         Player.obj.SetHasCape(false);
