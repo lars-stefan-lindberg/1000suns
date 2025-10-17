@@ -25,31 +25,32 @@ public static PlayerBlobCharge obj;
 
     public void OnShoot(InputAction.CallbackContext context)
     {
-        if(!PlayerPowersManager.obj.BlobCanExtraJump) {
-            return;
-        }
-        if (context.performed)
-        {
-            if (_defaultPower < StaminaMgr.obj.GetCurrentStamina()) {
-                _forcePushStartChargingAudioSource = SoundFXManager.obj.PlayForcePushStartCharging(transform);
-                _buildUpPower = _defaultPower;
-                _buildingUpPower = true;
-                PlayerBlob.obj.StartChargeFlash();
-            }
-        }
-        if(context.canceled) {
-            if(PlayerBlobMovement.obj.IsTransitioningBetweenLevels()) {
-                ResetBuiltUpPower();
-                return;
-            }
-            //Need to check that we are building power before we can push. If not the push will be executed on button release.
-            if(_buildingUpPower && IsFullyCharged())
-            {
-                ForcePush();
-            }
+        return;
+        // if(!PlayerPowersManager.obj.BlobCanExtraJump) {
+        //     return;
+        // }
+        // if (context.performed)
+        // {
+        //     if (_defaultPower < StaminaMgr.obj.GetCurrentStamina()) {
+        //         _forcePushStartChargingAudioSource = SoundFXManager.obj.PlayForcePushStartCharging(transform);
+        //         _buildUpPower = _defaultPower;
+        //         _buildingUpPower = true;
+        //         PlayerBlob.obj.StartChargeFlash();
+        //     }
+        // }
+        // if(context.canceled) {
+        //     if(PlayerBlobMovement.obj.IsTransitioningBetweenLevels()) {
+        //         ResetBuiltUpPower();
+        //         return;
+        //     }
+        //     //Need to check that we are building power before we can push. If not the push will be executed on button release.
+        //     if(_buildingUpPower && IsFullyCharged())
+        //     {
+        //         ForcePush();
+        //     }
             
-            ResetBuiltUpPower();
-        }
+        //     ResetBuiltUpPower();
+        // }
     }
 
     public bool IsFullyCharged() {
@@ -87,7 +88,7 @@ public static PlayerBlobCharge obj;
     {
         ExecuteForcePushVfx();
         SoundFXManager.obj.PlayForcePushExecute(transform);
-        PlayerBlobMovement.obj.ExecuteChargedJump();
+        //PlayerBlobMovement.obj.ExecuteChargedJump();
     }
 
     public void ExecuteForcePushVfx() {

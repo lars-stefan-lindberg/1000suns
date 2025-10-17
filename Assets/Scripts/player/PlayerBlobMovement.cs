@@ -177,21 +177,22 @@ public class PlayerBlobMovement : MonoBehaviour
         {
             if (isGrounded || CanUseCoyote)
                 _jumpToConsume = true;
+            else if(PlayerPowersManager.obj.BlobCanExtraJump && !isGrounded && !_airJumpPerformed)
+                _airJumpToConsume = true;
             _jumpHeldInput = true;
             _timeJumpWasPressed = _time;
         }
         else if (context.canceled)
         {
-            if(!_airJumpPerformed)
-                _jumpHeldInput = false;
+            _jumpHeldInput = false;
         }
     }
 
-    public void ExecuteChargedJump() {
-        _jumpHeldInput = true;
-        _timeJumpWasPressed = _time;
-        _airJumpToConsume = true;
-    }
+    // public void ExecuteChargedJump() {
+    //     _jumpHeldInput = true;
+    //     _timeJumpWasPressed = _time;
+    //     _airJumpToConsume = true;
+    // }
         
     public void CancelJumping() {
         _jumpHeldInput = false;
@@ -371,7 +372,7 @@ public class PlayerBlobMovement : MonoBehaviour
 
     private void HandleJump()
     {
-        if (!_airJumpPerformed && !_endedJumpEarly && !isGrounded && !_jumpHeldInput && PlayerBlob.obj.rigidBody.velocity.y > 0) _endedJumpEarly = true;
+        if (!_endedJumpEarly && !isGrounded && !_jumpHeldInput && PlayerBlob.obj.rigidBody.velocity.y > 0) _endedJumpEarly = true;
 
         if (!_jumpToConsume && !CanUseAirJump && !HasBufferedJump) return;
 
@@ -383,6 +384,9 @@ public class PlayerBlobMovement : MonoBehaviour
     {
         _airJumpToConsume = false;
         _airJumpPerformed = true;
+        PlayerBlobCharge.obj.ExecuteForcePushVfx();
+        SoundFXManager.obj.PlayJump(gameObject.transform);
+        StartCoroutine(JumpSqueeze(_jumpSqueezeX, _jumpSqueezeY, _jumpSqueezeTime));
         ExecuteJump(_stats.JumpPower);
     }
 
