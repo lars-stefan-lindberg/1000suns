@@ -165,6 +165,13 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _ghostTrail.ShowGhosts();
     }
 
+    public void ExecuteForcePushWithProjectile() {
+        //Only if grounded, or in the air not falling
+        if(isGrounded || (!isGrounded && !isFalling && !_isFallDashing)) {
+            _frameVelocity.x = isFacingLeft() ? initialForcePushPushBackSpeed : -initialForcePushPushBackSpeed;
+        }
+    }
+
     public bool isFalling = false;
     public bool isMoving = false;
     private bool _cameFromForcePushJump = false;
@@ -639,6 +646,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public bool jumpedWhileForcePushJumping = false;
     public float jumpedWhileForcePushJumpingModifier = 0.6f;
     public float initialForcePushJumpSpeed = 30f;
+    public float initialForcePushPushBackSpeed = 10f;
     public float forcePushJumpOnGroundDuration = 0.01f;
     public float forcePushJumpOnGroundTimer = 0f;
     private bool _jumpToConsume;

@@ -66,14 +66,10 @@ public class PlayerPush : MonoBehaviour
                 //Need to check that we are building power before we can push. If not the push will be executed on button release.
                 if(_buildingUpPower && _buildUpPowerTime >= minBuildUpPowerTime)
                 {
-                    //Should tilt the player slightly backwards in air
                     if(!PlayerMovement.obj.isGrounded && !PlayerMovement.obj.isFalling && IsFullyCharged())
                     {
                         if(Player.obj.hasPowerUp) {
                             PlayerMovement.obj.ExecuteFallDash(true, false);
-                        } else {
-                            float power = PlayerMovement.obj.isFacingLeft() ? pushTiltPower : -pushTiltPower;
-                            Player.obj.rigidBody.AddForce(new Vector2(power, 0));
                         }
                     } else if(PlayerMovement.obj.isFalling && PlayerPowersManager.obj.CanFallDash) {
                         PlayerMovement.obj.ExecuteFallDash(Player.obj.hasPowerUp && IsFullyCharged(), true);
@@ -192,8 +188,10 @@ public class PlayerPush : MonoBehaviour
             power,
             Player.obj.hasPowerUp);
         if(forcePushJump) {
-           PlayerMovement.obj.ExecutePoweredForcePushWithProjectile();
-           Player.obj.SetHasPowerUp(false);
+            PlayerMovement.obj.ExecutePoweredForcePushWithProjectile();
+            Player.obj.SetHasPowerUp(false);
+        } else {
+            PlayerMovement.obj.ExecuteForcePushWithProjectile();
         }
     }
 
