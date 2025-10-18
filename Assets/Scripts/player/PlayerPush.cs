@@ -66,13 +66,9 @@ public class PlayerPush : MonoBehaviour
                 //Need to check that we are building power before we can push. If not the push will be executed on button release.
                 if(_buildingUpPower && _buildUpPowerTime >= minBuildUpPowerTime)
                 {
-                    if(!PlayerMovement.obj.isGrounded && !PlayerMovement.obj.isFalling && IsFullyCharged())
+                    if(!PlayerMovement.obj.isGrounded && IsFullyCharged())
                     {
-                        if(Player.obj.hasPowerUp) {
-                            PlayerMovement.obj.ExecuteFallDash(true, false);
-                        }
-                    } else if(PlayerMovement.obj.isFalling && PlayerPowersManager.obj.CanFallDash) {
-                        PlayerMovement.obj.ExecuteFallDash(Player.obj.hasPowerUp && IsFullyCharged(), true);
+                        PlayerMovement.obj.ExecuteFallDash(Player.obj.hasPowerUp);
                     }
 
                     if(platform != null) {

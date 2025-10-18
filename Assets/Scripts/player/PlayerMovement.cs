@@ -123,17 +123,13 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         return spriteRenderer.flipX;
     }
 
-    private float _poweredFallDashMultiplierFalling = 1.35f;
-    private float _poweredFallDashMultiplierNotFalling = 1.2f;
-    public void ExecuteFallDash(bool isPoweredUp, bool isFalling)
+    public float _poweredFallDashMultiplierNotFalling = 1.2f;
+    public void ExecuteFallDash(bool isPoweredUp)
     {
         _isFallDashing = true;
         float speed = initialDashSpeed;
         if(isPoweredUp) {
-            if(isFalling)
-                speed *= _poweredFallDashMultiplierFalling;
-            else
-                speed *= _poweredFallDashMultiplierNotFalling;
+            speed *= _poweredFallDashMultiplierNotFalling;
             Player.obj.SetHasPowerUp(false);
         }
         _frameVelocity.x = isFacingLeft() ? speed : -speed;
@@ -161,7 +157,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public void ExecutePoweredForcePushWithProjectile() {
         isForcePushJumping = true;
         forcePushJumpOnGroundTimer = 0;
-        _frameVelocity.x = isFacingLeft() ? initialForcePushJumpSpeed : -initialForcePushJumpSpeed;
+        _frameVelocity.x = isFacingLeft() ? initialPoweredForcePushGroundedSpeed : -initialPoweredForcePushGroundedSpeed;
         _ghostTrail.ShowGhosts();
     }
 
@@ -646,6 +642,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public bool jumpedWhileForcePushJumping = false;
     public float jumpedWhileForcePushJumpingModifier = 0.6f;
     public float initialForcePushJumpSpeed = 30f;
+    public float initialPoweredForcePushGroundedSpeed = 30f;
     public float initialForcePushPushBackSpeed = 10f;
     public float forcePushJumpOnGroundDuration = 0.01f;
     public float forcePushJumpOnGroundTimer = 0f;

@@ -6,7 +6,6 @@ public class PlayerPowersManager : MonoBehaviour
 {
     public static PlayerPowersManager obj;
 
-    public bool CanFallDash {get; set;}
     public bool CanForcePushJump {get; set;}
     public bool CanTurnFromHumanToBlob { get; set; }
     public bool CanTurnFromBlobToHuman { get; set; }
@@ -17,7 +16,6 @@ public class PlayerPowersManager : MonoBehaviour
         obj = this;
         ResetGameEvents();
         if(PlayerMovement.obj.isDevMode) {
-            CanFallDash = true;
             CanForcePushJump = true;
             CanTurnFromBlobToHuman = true;
             CanTurnFromHumanToBlob = true;
@@ -29,7 +27,6 @@ public class PlayerPowersManager : MonoBehaviour
     void OnEnable()
     {
         if(PlayerMovement.obj.isDevMode) {
-            CanFallDash = true;
             CanForcePushJump = true;
             CanTurnFromBlobToHuman = true;
             CanTurnFromHumanToBlob = true;
@@ -39,7 +36,6 @@ public class PlayerPowersManager : MonoBehaviour
     }
 
     public void ResetGameEvents() {
-        CanFallDash = false;
         CanForcePushJump = false;
         CanTurnFromHumanToBlob = false;
         CanTurnFromBlobToHuman = false;
