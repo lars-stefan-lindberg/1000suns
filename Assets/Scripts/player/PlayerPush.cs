@@ -187,7 +187,7 @@ public class PlayerPush : MonoBehaviour
             PlayerMovement.obj.ExecutePoweredForcePushWithProjectile();
             Player.obj.SetHasPowerUp(false);
         } else {
-            PlayerMovement.obj.ExecuteForcePushWithProjectile();
+            PlayerMovement.obj.ExecuteForcePushWithProjectile(power >= maxForce);
         }
     }
 

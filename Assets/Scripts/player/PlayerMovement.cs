@@ -161,10 +161,15 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _ghostTrail.ShowGhosts();
     }
 
-    public void ExecuteForcePushWithProjectile() {
-        //Only if grounded, or in the air not falling
-        if(isGrounded || (!isGrounded && !isFalling && !_isFallDashing)) {
-            _frameVelocity.x = isFacingLeft() ? initialForcePushPushBackSpeed : -initialForcePushPushBackSpeed;
+    public void ExecuteForcePushWithProjectile(bool fullyCharged) {
+        if(isGrounded) {
+            if(fullyCharged) {
+                _frameVelocity.x = isFacingLeft() ? fullyPoweredForcePushPushBackSpeed : -fullyPoweredForcePushPushBackSpeed;
+            } else {
+                _frameVelocity.x = isFacingLeft() ? normalForcePushPushBackSpeed : -normalForcePushPushBackSpeed;
+            }
+        } else if(!isGrounded && !_isFallDashing) {  //In the air not shadow dashing
+            _frameVelocity.x = isFacingLeft() ? fullyPoweredForcePushPushBackSpeed : -fullyPoweredForcePushPushBackSpeed;
         }
     }
 
@@ -643,7 +648,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public float jumpedWhileForcePushJumpingModifier = 0.6f;
     public float initialForcePushJumpSpeed = 30f;
     public float initialPoweredForcePushGroundedSpeed = 30f;
-    public float initialForcePushPushBackSpeed = 10f;
+    public float fullyPoweredForcePushPushBackSpeed = 10f;
+    public float normalForcePushPushBackSpeed = 10f;
     public float forcePushJumpOnGroundDuration = 0.01f;
     public float forcePushJumpOnGroundTimer = 0f;
     private bool _jumpToConsume;
