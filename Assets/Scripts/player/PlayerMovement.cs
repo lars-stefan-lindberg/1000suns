@@ -213,6 +213,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public void Freeze(float freezeDuration) {
         DisablePlayerMovement();
         _freezePlayer = true;
+        _isFallDashing = false; //Stop any fall dash when frozen
         _movementInput = new Vector2(0,0);
         StartCoroutine(FreezeDuration(freezeDuration));
     }
@@ -224,6 +225,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public void Freeze() {
         DisablePlayerMovement();
         _freezePlayer = true;
+        _isFallDashing = false; //Stop any fall dash when frozen
         _movementInput = new Vector2(0,0);
     }
 
