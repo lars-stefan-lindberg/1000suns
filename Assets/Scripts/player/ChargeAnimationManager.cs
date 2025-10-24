@@ -42,12 +42,16 @@ public class ChargeAnimationMgr : MonoBehaviour
         _animator.SetBool("fullyCharged", true);
     }
 
+    private Coroutine _spriteFadeOutAndCancelCoroutine;
     public void Cancel() {
         _animator.enabled = false;
-        StartCoroutine(SpriteFadeOutAndCancel(0f, 0.1f));
+        _spriteFadeOutAndCancelCoroutine = StartCoroutine(SpriteFadeOutAndCancel(0f, 0.1f));
     }
 
     public void HardCancel() {
+        if(_spriteFadeOutAndCancelCoroutine != null) {
+            StopCoroutine(_spriteFadeOutAndCancelCoroutine);
+        }
         _animator.SetBool("fullyCharged", false);
         _animator.enabled = false;
         _fadeStartColor.a = 0;
