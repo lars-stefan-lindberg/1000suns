@@ -31,6 +31,11 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     //[Header("Dependecies")]
     public GameObject buildPowerJumpAnimation;
 
+    // --- Quick Turn Detection fields ---
+    // [SerializeField] private float _minSpeedForQuickTurn = 5f;   // units/sec threshold to consider the player "moving"
+    // [SerializeField] private float _quickTurnDebounce = 0.15f;   // seconds to suppress duplicate logs
+    // private float _lastQuickTurnTime = -100f;
+
     private float _time;
     private bool _jumpHeldInput; 
     private Vector2 _movementInput;
@@ -175,10 +180,15 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     public bool isFalling = false;
     public bool isMoving = false;
+    // Treat player as moving if velocity exceeds a tiny epsilon
+    //[SerializeField] private float _movingVelocityEpsilon = 0.05f;
     private bool _cameFromForcePushJump = false;
     private void UpdateAnimator()
     {
         _animator.SetBool("isGrounded", isGrounded);
+        // Keep moving during short grace to avoid triggering stop animation on quick direction changes
+        // Velocity is not enough to check though, since player can have velocity, but there's no movement input
+        //isMoving = Mathf.Abs(Player.obj.rigidBody.velocity.x) > _movingVelocityEpsilon || _movementInput.x != 0;
         isMoving = _movementInput.x != 0;
         _animator.SetBool("isMoving", isMoving);
         isFalling = _frameVelocity.y < -_stats.MinimumFallAnimationSpeed;
@@ -346,6 +356,25 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         {
             _movementInput.y = Mathf.Abs(_movementInput.y) < _stats.VerticalDeadZoneThreshold ? 0 : Mathf.Sign(_movementInput.y);
         }
+        
+        // Quick horizontal turn detection (based on input vs velocity and/or quick input sign flip)
+        // Commenting this for now. Turn around animation didn't feel right, might revisit in the future
+        // float currentSign = Mathf.Approximately(_movementInput.x, 0f) ? 0f : Mathf.Sign(_movementInput.x);
+        // float velocityX = Player.obj.rigidBody.velocity.x;
+        // float velSign = Mathf.Approximately(velocityX, 0f) ? 0f : Mathf.Sign(velocityX);
+        // bool quickTurnTriggered = false;
+        
+        // // Pressing opposite direction to current velocity while moving fast enough
+        // if (!quickTurnTriggered && currentSign != 0f && velSign != 0f && currentSign == -velSign && Mathf.Abs(velocityX) >= _minSpeedForQuickTurn)
+        // {
+        //     if (Time.time - _lastQuickTurnTime >= _quickTurnDebounce)
+        //     {
+        //         _animator.SetBool("isTurning", true);
+        //         StartCoroutine(QuickTurnCancelCoroutine());
+        //         _lastQuickTurnTime = Time.time;
+        //     }
+        // }
+        
         // if(isDevMode) {
         //     if (_movementInput.y < 0 && isGrounded && !_buildingUpPowerJump) //Pressing down
         //     {
@@ -371,6 +400,11 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             }
         }
     } 
+
+    // private IEnumerator QuickTurnCancelCoroutine() {
+    //     yield return new WaitForSeconds(0.05f);
+    //     _animator.SetBool("isTurning", false);
+    // }
 
     private float GetHorizontalInput(float originInput) {
         if(_stats.SnapInput) {
@@ -564,6 +598,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             _powerJumpExecuted = false;
             _landed = true;
             jumpedWhileForcePushJumping = false;
+            isFalling = false;
+            
 
             //To avoid "double grounded". Sometimes when player barely reaches up on edge it gets grounded, but still has upwards velocity, and lands again.
             _frameVelocity.y = 0; 
