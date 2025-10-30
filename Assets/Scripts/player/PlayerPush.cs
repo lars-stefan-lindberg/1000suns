@@ -16,8 +16,6 @@ public class PlayerPush : MonoBehaviour
     public float powerBuildUpPerFixedUpdate = 1.2f;
 
     public float defaultPower = 1;
-    public float pushTiltPower = 2000;
-    public float fallTiltPower = 10000;
 
     [Header("Dependencies")]
     public GameObject pushPowerUpAnimation;
@@ -36,6 +34,12 @@ public class PlayerPush : MonoBehaviour
     private bool _isChargeDisabled = false;
     private bool _startedChargeAnimation = false;
     private bool _startedFullyChargedAnimation = false;
+
+    public enum ChargePowerType {
+        Partial,
+        Full,
+        Powered
+    }
 
     private void Awake()
     {
@@ -66,9 +70,11 @@ public class PlayerPush : MonoBehaviour
                 //Need to check that we are building power before we can push. If not the push will be executed on button release.
                 if(_buildingUpPower && _buildUpPowerTime >= minBuildUpPowerTime)
                 {
-                    if(!PlayerMovement.obj.isGrounded && IsFullyCharged())
+                    if(PlayerMovement.obj.IsHorizontalInput())
                     {
-                        PlayerMovement.obj.ExecuteFallDash(Player.obj.hasPowerUp);
+                        Dash();
+                        ResetBuiltUpPower();
+                        return;
                     }
 
                     if(platform != null) {
@@ -148,24 +154,52 @@ public class PlayerPush : MonoBehaviour
     public float projectileDelay = 0.1f;
 
     void PoweredForcePush(float power) {
-        Push(power, true);
+        Push(power);
     }
 
     void ForcePush(float power) {
-        Push(power, false);
+        Push(power);
     }
 
-    void Push(float power, bool forcePushJump)
+    void Push(float power)
     {
         PlayerMovement.obj.TriggerForcePushAnimation();
-        ExecuteForcePushVfx();
-        StartCoroutine(DelayedProjectile(projectileDelay, power, forcePushJump));
+        ChargePowerType chargePowerType = GetChargePowerType();
+        ExecuteForcePushVfx(chargePowerType);
+        StartCoroutine(DelayedProjectile(projectileDelay, power, chargePowerType));
     }
 
-    public void ExecuteForcePushVfx() {
-        ShockWaveManager.obj.CallShockWave(_collider.bounds.center, 0.2f, 0.05f, 0.15f);
+    void Dash() {
+        ChargePowerType chargePowerType = GetChargePowerType();
+        PlayerMovement.obj.ExecuteDash(chargePowerType);
+        ExecuteDashVfx(chargePowerType);
+        SoundFXManager.obj.PlayForcePushExecute(transform);
+    }
+
+    private ChargePowerType GetChargePowerType() {
+        bool isFullyCharged = IsFullyCharged();
+        if(isFullyCharged && Player.obj.hasPowerUp) 
+            return ChargePowerType.Powered;
+        else if(isFullyCharged)
+            return ChargePowerType.Full;
+        else
+            return ChargePowerType.Partial;
+    }
+
+    public void ExecuteDashVfx(ChargePowerType chargePower) {
+        if(chargePower == ChargePowerType.Powered || chargePower == ChargePowerType.Full) {    
+            ShockWaveManager.obj.CallShockWave(_collider.bounds.center, 0.2f, 0.05f, 0.15f);
+            CameraShakeManager.obj.ForcePushShake();
+        }
         Player.obj.ForcePushFlash();
-        CameraShakeManager.obj.ForcePushShake();
+    }
+
+    public void ExecuteForcePushVfx(ChargePowerType chargePowerType) {
+        if(chargePowerType == ChargePowerType.Powered || chargePowerType == ChargePowerType.Full) {
+            ShockWaveManager.obj.CallShockWave(_collider.bounds.center, 0.2f, 0.05f, 0.15f);
+            CameraShakeManager.obj.ForcePushShake();
+        }
+        Player.obj.ForcePushFlash();
     }
 
     private IEnumerator DelayedMovePlatform(float delay, float power) {
@@ -174,7 +208,7 @@ public class PlayerPush : MonoBehaviour
     }
 
     public float playerOffsetY = 0.1f;
-    private IEnumerator DelayedProjectile(float delay, float power, bool forcePushJump) {
+    private IEnumerator DelayedProjectile(float delay, float power, ChargePowerType chargePowerType) {
         yield return new WaitForSeconds(delay);
         SoundFXManager.obj.PlayForcePushExecute(transform);
         int playerFacingDirection = PlayerMovement.obj.isFacingLeft() ? -1 : 1;
@@ -183,12 +217,8 @@ public class PlayerPush : MonoBehaviour
             playerFacingDirection,
             power,
             Player.obj.hasPowerUp);
-        if(forcePushJump) {
-            PlayerMovement.obj.ExecutePoweredForcePushWithProjectile();
-            Player.obj.SetHasPowerUp(false);
-        } else {
-            PlayerMovement.obj.ExecuteForcePushWithProjectile(power >= maxForce);
-        }
+        
+        PlayerMovement.obj.ExecuteForcePushWithProjectile(chargePowerType);
     }
 
     private void OnDestroy()

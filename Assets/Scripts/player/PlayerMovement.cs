@@ -40,7 +40,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     private bool _jumpHeldInput; 
     private Vector2 _movementInput;
 
-    public bool _isFallDashing = false;
+    public bool _isDashing = false;
     public float dashDecelerationTime = 160f;
     public float initialDashSpeed = 40f;
 
@@ -128,16 +128,21 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         return spriteRenderer.flipX;
     }
 
-    public float _poweredFallDashMultiplierNotFalling = 1.2f;
-    public void ExecuteFallDash(bool isPoweredUp)
+    public float _poweredDashMultiplier = 1.2f;
+    public float partialDashPower = 35;
+    public void ExecuteDash(PlayerPush.ChargePowerType chargePower)
     {
-        _isFallDashing = true;
-        float speed = initialDashSpeed;
-        if(isPoweredUp) {
-            speed *= _poweredFallDashMultiplierNotFalling;
+        _isDashing = true;
+        float speed = 0;
+        if(chargePower == PlayerPush.ChargePowerType.Powered) {
+            speed = initialDashSpeed * _poweredDashMultiplier;
             Player.obj.SetHasPowerUp(false);
+        } else if(chargePower == PlayerPush.ChargePowerType.Partial) {
+            speed = partialDashPower;
+        } else if(chargePower == PlayerPush.ChargePowerType.Full) {
+            speed = initialDashSpeed;
         }
-        _frameVelocity.x = isFacingLeft() ? speed : -speed;
+        _frameVelocity.x = isFacingLeft() ? -speed : speed;
         _ghostTrail.ShowGhosts();
     }
 
@@ -155,26 +160,23 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _frameVelocity.x = isFacingLeft() ? -initialForcePushJumpSpeed : initialForcePushJumpSpeed;
         PlayerPush.obj.ResetBuiltUpPower();
         Player.obj.SetHasPowerUp(false);
-        PlayerPush.obj.ExecuteForcePushVfx();
+        PlayerPush.obj.ExecuteForcePushVfx(PlayerPush.ChargePowerType.Powered);
         _ghostTrail.ShowGhosts();
     }
 
-    public void ExecutePoweredForcePushWithProjectile() {
-        isForcePushJumping = true;
-        forcePushJumpOnGroundTimer = 0;
-        _frameVelocity.x = isFacingLeft() ? initialPoweredForcePushGroundedSpeed : -initialPoweredForcePushGroundedSpeed;
-        _ghostTrail.ShowGhosts();
-    }
-
-    public void ExecuteForcePushWithProjectile(bool fullyCharged) {
-        if(isGrounded) {
-            if(fullyCharged) {
-                _frameVelocity.x = isFacingLeft() ? fullyPoweredForcePushPushBackSpeed : -fullyPoweredForcePushPushBackSpeed;
-            } else {
+    public void ExecuteForcePushWithProjectile(PlayerPush.ChargePowerType chargePowerType) {
+        if(!isGrounded) {
+            if(chargePowerType == PlayerPush.ChargePowerType.Partial) {
+                _frameVelocity.x = isFacingLeft() ? partialForcePushPushBackSpeed : -partialForcePushPushBackSpeed;
+            } else if(chargePowerType == PlayerPush.ChargePowerType.Full) {
                 _frameVelocity.x = isFacingLeft() ? normalForcePushPushBackSpeed : -normalForcePushPushBackSpeed;
+            } else if(chargePowerType == PlayerPush.ChargePowerType.Powered) {
+                _frameVelocity.x = isFacingLeft() ? fullyPoweredForcePushPushBackSpeed : -fullyPoweredForcePushPushBackSpeed;
+                Player.obj.SetHasPowerUp(false);
             }
-        } else if(!isGrounded && !_isFallDashing) {  //In the air not shadow dashing
-            _frameVelocity.x = isFacingLeft() ? fullyPoweredForcePushPushBackSpeed : -fullyPoweredForcePushPushBackSpeed;
+        } else if(isGrounded && chargePowerType == PlayerPush.ChargePowerType.Powered) {
+            _frameVelocity.x = isFacingLeft() ? normalForcePushPushBackSpeed : -normalForcePushPushBackSpeed;
+            Player.obj.SetHasPowerUp(false);
         }
     }
 
@@ -185,6 +187,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     private bool _cameFromForcePushJump = false;
     private void UpdateAnimator()
     {
+        _animator.SetBool("isDashing", _isDashing);
         _animator.SetBool("isGrounded", isGrounded);
         // Keep moving during short grace to avoid triggering stop animation on quick direction changes
         // Velocity is not enough to check though, since player can have velocity, but there's no movement input
@@ -213,7 +216,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public void Freeze(float freezeDuration) {
         DisablePlayerMovement();
         _freezePlayer = true;
-        _isFallDashing = false; //Stop any fall dash when frozen
+        _isDashing = false; //Stop any dash when frozen
         _movementInput = new Vector2(0,0);
         StartCoroutine(FreezeDuration(freezeDuration));
     }
@@ -225,7 +228,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public void Freeze() {
         DisablePlayerMovement();
         _freezePlayer = true;
-        _isFallDashing = false; //Stop any fall dash when frozen
+        _isDashing = false; //Stop any dash when frozen
         _movementInput = new Vector2(0,0);
     }
 
@@ -466,6 +469,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         isTransformingToBlob = false;
     }
 
+    public bool IsHorizontalInput() {
+        return _movementInput.x != 0;
+    }
+
     public void OnJump(InputAction.CallbackContext context)
     {
         if (context.performed)
@@ -479,10 +486,12 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             {
                 if(PlayerPowersManager.obj.CanForcePushJump && _movementInput.x != 0 && PlayerPush.obj.IsFullyCharged() && Player.obj.hasPowerUp && (isGrounded || CanUseCoyote)) {
                     _jumpToConsume = true;
+                    _isDashing = false;
                     ExecuteForcePushJump();
                 }
-                if (isGrounded || CanUseCoyote)
+                if (isGrounded || CanUseCoyote) {
                     _jumpToConsume = true;
+                }
                 else
                 {
                     if(StaminaMgr.obj.HasEnoughStamina(new StaminaMgr.AirJump()))
@@ -601,7 +610,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             _landed = true;
             jumpedWhileForcePushJumping = false;
             isFalling = false;
-            
 
             //To avoid "double grounded". Sometimes when player barely reaches up on edge it gets grounded, but still has upwards velocity, and lands again.
             _frameVelocity.y = 0; 
@@ -687,6 +695,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public float initialForcePushJumpSpeed = 30f;
     public float initialPoweredForcePushGroundedSpeed = 30f;
     public float fullyPoweredForcePushPushBackSpeed = 10f;
+    public float partialForcePushPushBackSpeed = 5f;
     public float normalForcePushPushBackSpeed = 10f;
     public float forcePushJumpOnGroundDuration = 0.01f;
     public float forcePushJumpOnGroundTimer = 0f;
@@ -749,10 +758,20 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         ExecuteJump(_stats.JumpPower);
         
         // Activate jump kick start
-        if(!isForcePushJumping && Mathf.Abs(_frameVelocity.x) >= _stats.MaxSpeed) {
+        if(!isForcePushJumping && !_isDashing && Mathf.Abs(_frameVelocity.x) >= _stats.MaxSpeed) {
             _isJumpKickActive = true;
             _jumpKickTimer = _jumpKickDuration;
             _jumpKickDirection = isFacingLeft() ? -1f : 1f;
+        }
+
+        if(_isDashing) {
+            //Reset the high speed of the dash
+            if(_frameVelocity.x > _stats.MaxSpeed) {
+                _frameVelocity.x = _stats.MaxSpeed;  
+            } else if(_frameVelocity.x < -_stats.MaxSpeed) {
+                _frameVelocity.x = -_stats.MaxSpeed;
+            }
+            _isDashing = false;
         }
         
         DustParticleMgr.obj.CreateDust();
@@ -814,20 +833,25 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
                 isForcePushJumping = false;
         }
         
-        if (_isFallDashing)
-        {
-            //Change horizontal movement while dashing
-            _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, dashDecelerationTime * Time.fixedDeltaTime);
-            if(_frameVelocity.x == 0)
-            {
-                _isFallDashing = false;
-            }
-        } else
-        {
-            if(jumpedWhileForcePushJumping) {
-                //Time to defy physics and keep horizontal velocity, except if you hit a wall
-                if(Player.obj.rigidBody.velocity.x < 0.01 && Player.obj.rigidBody.velocity.x > -0.01)
-                    jumpedWhileForcePushJumping = false;
+        
+        if(jumpedWhileForcePushJumping) {
+            //Time to defy physics and keep horizontal velocity, except if you hit a wall
+            if(Player.obj.rigidBody.velocity.x < 0.01 && Player.obj.rigidBody.velocity.x > -0.01)
+                jumpedWhileForcePushJumping = false;
+        } else {
+            if(_isDashing) {
+                if (_movementInput.x == 0)
+                {
+                    _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, dashDecelerationTime * Time.fixedDeltaTime);
+                    if(_frameVelocity.x == 0)
+                        _isDashing = false;
+                }
+                else
+                {
+                    _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, _movementInput.x * _stats.MaxSpeed, dashDecelerationTime * Time.fixedDeltaTime);
+                    if(_frameVelocity.x == _movementInput.x * _stats.MaxSpeed)
+                        _isDashing = false;
+                }
             } else {
                 if (_movementInput.x == 0)
                 {
@@ -841,7 +865,9 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
                     _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, (_movementInput.x * _stats.MaxSpeed) + (isOnPlatform && platformRigidBody != null ? platformRigidBody.velocity.x : 0), _stats.Acceleration * Time.fixedDeltaTime);
                 }
             }
+            
         }
+        
 
         // Apply jump kick boost to horizontal frame velocity if active
         if (_isJumpKickActive)
@@ -866,7 +892,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         }
         else
         {
-            if (_isFallDashing)
+            if (_isDashing)
             {
                 //Just keep horizontal movement
                 _frameVelocity.y = 0;
