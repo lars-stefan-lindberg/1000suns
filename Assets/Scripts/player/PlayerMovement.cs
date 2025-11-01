@@ -174,9 +174,13 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
                 _frameVelocity.x = isFacingLeft() ? fullyPoweredForcePushPushBackSpeed : -fullyPoweredForcePushPushBackSpeed;
                 Player.obj.SetHasPowerUp(false);
             }
-        } else if(isGrounded && chargePowerType == PlayerPush.ChargePowerType.Powered) {
-            _frameVelocity.x = isFacingLeft() ? normalForcePushPushBackSpeed : -normalForcePushPushBackSpeed;
-            Player.obj.SetHasPowerUp(false);
+        } else if(isGrounded) {
+            if(chargePowerType == PlayerPush.ChargePowerType.Powered) {
+                _frameVelocity.x = isFacingLeft() ? fullyPoweredForcePushGroundedPushBackSpeed : -fullyPoweredForcePushGroundedPushBackSpeed;
+                Player.obj.SetHasPowerUp(false);
+            } else if(chargePowerType == PlayerPush.ChargePowerType.Full) {
+                _frameVelocity.x = isFacingLeft() ? partialForcePushPushBackSpeed : -partialForcePushPushBackSpeed;
+            }
         }
     }
 
@@ -695,6 +699,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public float initialForcePushJumpSpeed = 30f;
     public float initialPoweredForcePushGroundedSpeed = 30f;
     public float fullyPoweredForcePushPushBackSpeed = 10f;
+    public float fullyPoweredForcePushGroundedPushBackSpeed = 10f;
     public float partialForcePushPushBackSpeed = 5f;
     public float normalForcePushPushBackSpeed = 10f;
     public float forcePushJumpOnGroundDuration = 0.01f;
