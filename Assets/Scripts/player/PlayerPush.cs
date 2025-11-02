@@ -70,7 +70,7 @@ public class PlayerPush : MonoBehaviour
                 //Need to check that we are building power before we can push. If not the push will be executed on button release.
                 if(_buildingUpPower && _buildUpPowerTime >= minBuildUpPowerTime)
                 {
-                    if(PlayerPowersManager.obj.CanShadowDash && PlayerMovement.obj.IsHorizontalInput())
+                    if(PlayerPowersManager.obj.CanShadowDash && !PlayerMovement.obj.isGrounded && PlayerMovement.obj.IsHorizontalInput())
                     {
                         Dash();
                         ResetBuiltUpPower();
