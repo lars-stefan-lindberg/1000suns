@@ -132,6 +132,11 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public float partialDashPower = 35;
     public void ExecuteDash(PlayerPush.ChargePowerType chargePower)
     {
+        //Reset potential force push jump
+        _cameFromForcePushJump = false;
+        isForcePushJumping = false;
+        jumpedWhileForcePushJumping = false;
+        
         _isDashing = true;
         float speed = 0;
         if(chargePower == PlayerPush.ChargePowerType.Powered) {
@@ -159,7 +164,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _cameFromForcePushJump = true;
         _frameVelocity.x = isFacingLeft() ? -initialForcePushJumpSpeed : initialForcePushJumpSpeed;
         PlayerPush.obj.ResetBuiltUpPower();
-        Player.obj.SetHasPowerUp(false);
         PlayerPush.obj.ExecuteForcePushVfx(PlayerPush.ChargePowerType.Powered);
         _ghostTrail.ShowGhosts();
     }
@@ -488,7 +492,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             }
             if (!PowerJumpMaxCharged)
             {
-                if(PlayerPowersManager.obj.CanForcePushJump && _movementInput.x != 0 && PlayerPush.obj.IsFullyCharged() && Player.obj.hasPowerUp && (isGrounded || CanUseCoyote)) {
+                if(PlayerPowersManager.obj.CanForcePushJump && _movementInput.x != 0 && PlayerPush.obj.IsFullyCharged() && (isGrounded || CanUseCoyote)) {
                     _jumpToConsume = true;
                     _isDashing = false;
                     ExecuteForcePushJump();

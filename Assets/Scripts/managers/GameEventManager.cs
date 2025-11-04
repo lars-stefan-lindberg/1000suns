@@ -23,6 +23,7 @@ public class GameEventManager : MonoBehaviour
     public bool FirstPowerUpPicked { get; set; }
     public bool PowerUpRoomCompletedWallBreak { get; set; }
     public bool AfterPowerUpRoomsCompletedWallBreak { get; set; }
+    public bool C20CutsceneCompleted { get; set; }
     public bool C215WallBroken { get; set; }
     public bool C275FloorBroken { get; set; }
     public bool C26CutsceneCompleted { get; set; }
@@ -48,6 +49,7 @@ public class GameEventManager : MonoBehaviour
         CaveLevelStarted = false;
         AfterPowerUpRoomsCompletedWallBreak = false;
         PowerUpRoomCompletedWallBreak = false;
+        C20CutsceneCompleted = false;
         IsPauseAllowed = true;
         C215WallBroken = false;
         C275FloorBroken = false;

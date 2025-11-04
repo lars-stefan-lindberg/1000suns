@@ -57,7 +57,7 @@ public class PlayerPowersManager : MonoBehaviour
             if (prop.PropertyType == typeof(bool) && prop.CanRead && prop.CanWrite)
             {
                 var value = (bool)(prop.GetValue(this) ?? false);
-                if (value)
+                if (value && prop.Name != nameof(CanForcePushJump))
                 {
                     unlocked.Add(prop.Name);
                 }

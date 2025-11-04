@@ -108,6 +108,8 @@ public class LevelManager : MonoBehaviour
 
                 if(Player.obj != null)
                     Player.obj.SetHasPowerUp(false);
+                PlayerPowersManager.obj.CanForcePushJump = false;
+                MothsManager.obj.DestroyMoths();
                 
                 PlayerManager.obj.EnableLastActivePlayerGameObject();
                 
