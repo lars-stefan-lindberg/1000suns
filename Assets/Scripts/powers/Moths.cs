@@ -76,9 +76,7 @@ public class Moths : MonoBehaviour
     [SerializeField] private float _moveSpeed = 0.1f;
 
     private IEnumerator MoveToTarget(Vector2 target) {
-        float elapsed = 0f;
-        while(elapsed < 1.5f) {
-            elapsed += Time.deltaTime;
+        while(!IsTargetReached(transform.position, target)) {
             transform.position = Vector2.Lerp(transform.position, target, _moveSpeed);
             yield return null;
         }
@@ -87,6 +85,22 @@ public class Moths : MonoBehaviour
             StopCoroutine(_fadeOutCoroutine);
         }
         _fadeOutCoroutine = StartCoroutine(SpriteFadeOutAndCancel(0f, 0.5f));
+    }
+
+    private readonly float _targetReachedMargin = 0.125f;
+    private bool IsTargetReached(Vector2 position, Vector2 target) {
+        if(
+            IsWithinInterval(position.x, target.x - _targetReachedMargin, target.x + _targetReachedMargin)
+            && IsWithinInterval(position.y, target.y - _targetReachedMargin, target.y + _targetReachedMargin)
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    private bool IsWithinInterval(float value, float lowerBound, float upperBound)
+    {
+        return value >= lowerBound && value <= upperBound;
     }
 
     void Update()
