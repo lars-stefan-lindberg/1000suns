@@ -16,7 +16,7 @@ public class SoundMixerManager : MonoBehaviour
     private const float MUFFLED_CUTOFF_FREQUENCY = 1000f;
     
     // The player's preferred music volume (what they set with the slider)
-    private float _playerPreferredMusicVolume = 1f;
+    private float _playerPreferredMusicVolume = 0.8002f;
     // Flag to track if music is currently muffled
     private bool _isMusicMuffled = false;
     // Ratio to apply to the player's volume when muffled (80% of original volume)
@@ -34,7 +34,8 @@ public class SoundMixerManager : MonoBehaviour
         SetMusicLowPassFilter(DEFAULT_CUTOFF_FREQUENCY);
         
         // Initialize the player's preferred music volume to the current music volume
-        _playerPreferredMusicVolume = GetMusicVolume();
+        _playerPreferredMusicVolume = Mathf.Log10(0.8002f) * 20f;
+        audioMixer.SetFloat(MUSIC_VOLUME_PARAM, _playerPreferredMusicVolume);
     }
 
     void OnDestroy() {
