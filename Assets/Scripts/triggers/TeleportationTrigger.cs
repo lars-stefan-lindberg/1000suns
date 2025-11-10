@@ -17,6 +17,7 @@ public class TeleportationTrigger : MonoBehaviour
     private IEnumerator TeleportPlayer() {
         PlayerMovement.obj.Freeze();
         PlayerMovement.obj.spriteRenderer.enabled = false;
+        DustParticleMgr.obj.Enabled = false;  //Prevent any dust from spawning
 
         GameObject soul = Instantiate(_soul, Player.obj.transform.position, Player.obj.transform.rotation);
         SoundFXManager.obj.PlayPlayerTeleportStart(soul.transform);
@@ -28,9 +29,10 @@ public class TeleportationTrigger : MonoBehaviour
         }
         SoundFXManager.obj.PlayPlayerTeleportEnd(Player.obj.transform);
         Destroy(prisonerSoul.gameObject);
-        //Play player spawn animation
+
         PlayerMovement.obj.spriteRenderer.enabled = true;
         PlayerMovement.obj.UnFreeze();
+        DustParticleMgr.obj.Enabled = true;
         yield return null;
     }
 }

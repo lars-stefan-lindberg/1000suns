@@ -5,6 +5,8 @@ public class DustParticleMgr : MonoBehaviour
     public static DustParticleMgr obj;
 
     public ParticleSystem dust;
+
+    public bool Enabled { get;  set; }
     
     void Awake()
     {
@@ -19,6 +21,8 @@ public class DustParticleMgr : MonoBehaviour
 
     public void CreateDust()
     {
+        if(!Enabled)
+            return;
         if(PlayerBlobMovement.obj != null &&PlayerBlobMovement.obj.gameObject.activeSelf)
             dust.transform.position = PlayerBlobMovement.obj.anchor.transform.position;
         else
