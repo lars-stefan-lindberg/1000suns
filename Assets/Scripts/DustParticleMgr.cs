@@ -11,6 +11,7 @@ public class DustParticleMgr : MonoBehaviour
     void Awake()
     {
         obj = this;
+        Enabled = true;
     }
 
     // Update is called once per frame
@@ -23,9 +24,11 @@ public class DustParticleMgr : MonoBehaviour
     {
         if(!Enabled)
             return;
-        if(PlayerBlobMovement.obj != null &&PlayerBlobMovement.obj.gameObject.activeSelf)
+        if(PlayerBlobMovement.obj != null && PlayerBlobMovement.obj.gameObject.activeSelf)
             dust.transform.position = PlayerBlobMovement.obj.anchor.transform.position;
-        else
+        else if(ShadowTwinMovement.obj != null && ShadowTwinMovement.obj.gameObject.activeSelf)
+            dust.transform.position = ShadowTwinMovement.obj.anchor.transform.position;
+        else 
             dust.transform.position = PlayerMovement.obj.anchor.transform.position;
             
         dust.Play();
