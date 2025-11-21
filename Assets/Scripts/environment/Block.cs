@@ -109,6 +109,7 @@ public class Block : MonoBehaviour
 
     public float deceleration = 1f;
     private float _blockSizeOffSet = 1.002f; //To dial in the landing sound
+    public bool IsBeingPulled = false;
 
     private void Update()
     {
@@ -118,7 +119,7 @@ public class Block : MonoBehaviour
                 _booted = true;
         }
 
-        if (_rigidBody.velocity.x != 0)
+        if (_rigidBody.velocity.x != 0 && !IsBeingPulled)
         {
             _rigidBody.velocity = new Vector2(Mathf.MoveTowards(_rigidBody.velocity.x, 0, deceleration * Time.deltaTime), _rigidBody.velocity.y);
         } 

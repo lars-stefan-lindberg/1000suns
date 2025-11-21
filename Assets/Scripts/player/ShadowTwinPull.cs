@@ -30,10 +30,13 @@ public class ShadowTwinPull : MonoBehaviour
 
     private AudioSource _forcePushStartChargingAudioSource;
 
-    //Is used to disable charge while transforming to blob
-    private bool _isChargeDisabled = false;
     private bool _startedChargeAnimation = false;
     private bool _startedFullyChargedAnimation = false;
+
+    public float pullForce = 10f;
+    private Rigidbody2D _targetRb;
+    private Block _pulledBlock;
+    private Collider2D _pulledCollider;
 
     public enum PullPowerType {
         Partial,
@@ -49,48 +52,60 @@ public class ShadowTwinPull : MonoBehaviour
 
     public void OnShoot(InputAction.CallbackContext context)
     {
-        if(Player.obj.hasCape && !_isChargeDisabled) {
+        if(ShadowTwinPlayer.obj.hasCrown) {
             if (context.performed)
             {
-                if (defaultPower < StaminaMgr.obj.GetCurrentStamina()) {
-                    pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().HardCancel();
-                    _forcePushStartChargingAudioSource = SoundFXManager.obj.PlayForcePushStartCharging(transform);
-                    _buildUpPower = defaultPower;
-                    _buildingUpPower = true;
-                    _buildUpPowerTime = 0;
-                    Player.obj.StartChargeFlash();
-                    PlayerLightManager.obj.PlayerPush();
+                Collider2D pullable = DetectPullable();
+                if(pullable != null) {
+                    SetPullable(pullable);
                 }
+                pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().HardCancel();
+                _forcePushStartChargingAudioSource = SoundFXManager.obj.PlayForcePushStartCharging(transform);
+                ShadowTwinPlayer.obj.StartChargeFlash();
+                PlayerLightManager.obj.PlayerPush();
+
+                Pull();
             }
             if(context.canceled) {
-                if(PlayerMovement.obj.IsTransitioningBetweenLevels()) {
-                    ResetBuiltUpPower();
-                    return;
-                }
-                //Need to check that we are building power before we can push. If not the push will be executed on button release.
-                if(_buildingUpPower && _buildUpPowerTime >= minBuildUpPowerTime)
-                {
-                    if(PlayerPowersManager.obj.CanShadowDash && !PlayerMovement.obj.isGrounded && PlayerMovement.obj.IsHorizontalInput())
-                    {
-                        Dash();
-                        ResetBuiltUpPower();
-                        return;
-                    }
-
-                    if(platform != null) {
-                        float power = Player.obj.hasPowerUp && IsFullyCharged() ? powerUpMaxForce : _buildUpPower;
-                        StartCoroutine(DelayedMovePlatform(projectileDelay, power));
-                    }
-
-                    if(CanUsePoweredForcePush) 
-                        PoweredForcePush(powerUpMaxForce);
-                    else
-                        ForcePush(_buildUpPower);
-                }
-                
-                ResetBuiltUpPower();
+                CancelPulling();
+                ShadowTwinMovement.obj.TriggerEndForcePullAnimation();
+                ShadowTwinMovement.obj.IsPulling = false;
             }
         }
+    }
+
+    public float pullRange = 6f;
+    public LayerMask pullableMask;
+    public LayerMask blockingMask;
+    public float raySpacing = 0.2f; // space between the rays
+
+    Collider2D DetectPullable()
+    {
+        Vector2 direction = new Vector2(ShadowTwinMovement.obj.isFacingLeft() ? -1 : 1, 0f);
+
+        Vector2 origin1 = (Vector2)transform.position + new Vector2(0,  raySpacing);
+        Vector2 origin2 = (Vector2)transform.position + new Vector2(0, -raySpacing);
+
+        // Cast both rays
+        RaycastHit2D hit1 = Physics2D.Raycast(origin1, direction, pullRange, pullableMask);
+        RaycastHit2D hit2 = Physics2D.Raycast(origin2, direction, pullRange, pullableMask);
+
+        // Blocked? If a wall lies before the object, cancel
+        if (IsBlocked(origin1, direction, hit1)) hit1 = new RaycastHit2D();
+        if (IsBlocked(origin2, direction, hit2)) hit2 = new RaycastHit2D();
+
+        return hit1.collider ? hit1.collider : hit2.collider ? hit2.collider : null;
+    }
+
+    bool IsBlocked(Vector2 origin, Vector2 direction, RaycastHit2D targetHit)
+    {
+        if (!targetHit.collider) return false;
+
+        RaycastHit2D blockCheck = Physics2D.Raycast(
+            origin, direction, targetHit.distance, blockingMask
+        );
+
+        return blockCheck.collider != null; // true = blocked
     }
 
     public bool IsFullyCharged() {
@@ -117,56 +132,70 @@ public class ShadowTwinPull : MonoBehaviour
         Player.obj.EndChargeFlash();
     }
 
-    public void DisableChargeFor(float duration) {
-        _isChargeDisabled = true;
-        StartCoroutine(EnableChargeAfterDelay(duration));
+    private void CancelPulling() {
+        _targetRb = null;
+        if(_pulledBlock != null)
+            _pulledBlock.IsBeingPulled = false;
+        _pulledBlock = null;
     }
 
-    private IEnumerator EnableChargeAfterDelay(float delay) {
-        yield return new WaitForSeconds(delay);
-        _isChargeDisabled = false;
-    }
-
-    private void FixedUpdate()
-    {
-        //Charge animation
-        if(_buildingUpPower && _buildUpPower < maxForce && !_startedChargeAnimation) {
-            pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().Charge();
-            Player.obj.StartChargeFlash();
-            _startedChargeAnimation = true;
-        } else if(_buildUpPower >= maxForce && !_startedFullyChargedAnimation) {
-            // if(Player.obj.hasPowerUp)
-            //     pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().FullyChargedPoweredUp();
-            // else
-            pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().FullyCharged();
-            Player.obj.StartFullyChargedVfx();
-            _startedFullyChargedAnimation = true;
-        }
-
-        if(_buildingUpPower) {
-            _buildUpPowerTime += Time.deltaTime;
-            if(_buildUpPower < maxForce && _buildUpPowerTime > minBuildUpPowerTime) {
-                _buildUpPower *= powerBuildUpPerFixedUpdate;
+    private void SetPullable(Collider2D pullable) {
+        if(pullable != null) {
+            GameObject blockParent = pullable.gameObject.transform.parent.gameObject;
+            if(blockParent != null && blockParent.CompareTag("Block")) {
+                _targetRb = blockParent.GetComponent<Rigidbody2D>();
+                _pulledBlock = blockParent.GetComponent<Block>();
+                _pulledBlock.IsBeingPulled = true;
+                _pulledCollider = pullable;
             }
         }
     }
 
+    private void FixedUpdate()
+    {
+        if (_targetRb != null)
+        {
+            //Is pulling. Check if what's being pulled is still in line of fire
+            Collider2D pullable = DetectPullable();
+            if(pullable != _pulledCollider) {
+                //New pullable detected. Start pulling that pullable instead
+                CancelPulling();
+                SetPullable(pullable);                
+            } else {
+                Vector2 direction = ((Vector2)transform.position - _targetRb.position).normalized;
+                _targetRb.AddForce(direction * pullForce);
+            }
+        }
+        //Charge animation
+        // if(_buildingUpPower && _buildUpPower < maxForce && !_startedChargeAnimation) {
+        //     pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().Charge();
+        //     Player.obj.StartChargeFlash();
+        //     _startedChargeAnimation = true;
+        // } else if(_buildUpPower >= maxForce && !_startedFullyChargedAnimation) {
+        //     // if(Player.obj.hasPowerUp)
+        //     //     pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().FullyChargedPoweredUp();
+        //     // else
+        //     pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().FullyCharged();
+        //     Player.obj.StartFullyChargedVfx();
+        //     _startedFullyChargedAnimation = true;
+        // }
+
+        // if(_buildingUpPower) {
+        //     _buildUpPowerTime += Time.deltaTime;
+        //     if(_buildUpPower < maxForce && _buildUpPowerTime > minBuildUpPowerTime) {
+        //         _buildUpPower *= powerBuildUpPerFixedUpdate;
+        //     }
+        // }
+    }
+
     public float projectileDelay = 0.1f;
 
-    void PoweredForcePush(float power) {
-        Push(power);
-    }
-
-    void ForcePush(float power) {
-        Push(power);
-    }
-
-    void Push(float power)
+    void Pull()
     {
-        PlayerMovement.obj.TriggerForcePushAnimation();
+        ShadowTwinMovement.obj.IsPulling = true;
+        ShadowTwinMovement.obj.TriggerForcePullAnimation();
         PullPowerType chargePowerType = GetChargePowerType();
         ExecuteForcePushVfx(chargePowerType);
-        StartCoroutine(DelayedProjectile(projectileDelay, power, chargePowerType));
     }
 
     void Dash() {
@@ -195,11 +224,7 @@ public class ShadowTwinPull : MonoBehaviour
     }
 
     public void ExecuteForcePushVfx(PullPowerType chargePowerType) {
-        if(chargePowerType == PullPowerType.Powered || chargePowerType == PullPowerType.Full) {
-            ShockWaveManager.obj.CallShockWave(_collider.bounds.center, 0.2f, 0.05f, 0.15f);
-            CameraShakeManager.obj.ForcePushShake();
-        }
-        Player.obj.ForcePushFlash();
+        ShadowTwinPlayer.obj.ForcePushFlash();
     }
 
     private IEnumerator DelayedMovePlatform(float delay, float power) {
@@ -220,6 +245,20 @@ public class ShadowTwinPull : MonoBehaviour
         
         //PlayerMovement.obj.ExecuteForcePushWithProjectile(chargePowerType);
     }
+
+    private void OnDrawGizmosSelected()
+    {
+        float facing = Mathf.Sign(transform.localScale.x);
+        Vector2 direction = new Vector2(facing, 0f);
+
+        Vector2 origin1 = (Vector2)transform.position + new Vector2(0,  raySpacing);
+        Vector2 origin2 = (Vector2)transform.position + new Vector2(0, -raySpacing);
+
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawLine(origin1, origin1 + direction * pullRange);
+        Gizmos.DrawLine(origin2, origin2 + direction * pullRange);
+    }
+
 
     private void OnDestroy()
     {

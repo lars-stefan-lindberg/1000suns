@@ -135,15 +135,17 @@ public class ShadowTwinMovement : MonoBehaviour
         _ghostTrail.ShowGhosts();
     }
 
-    public void TriggerForcePushAnimation() {
-        if(_movementInput.x != 0 && isGrounded)
-            _animator.SetTrigger("forcePushWhileRunning");
-        else
-            _animator.SetTrigger("forcePush");
+    public void TriggerForcePullAnimation() {
+        _animator.SetTrigger("forcePush");
+    }
+
+    public void TriggerEndForcePullAnimation() {
+        _animator.SetTrigger("endPull");
     }
 
     public bool isFalling = false;
     public bool isMoving = false;
+    public bool IsPulling = false;
 
     private void UpdateAnimator()
     {
@@ -639,6 +641,11 @@ public class ShadowTwinMovement : MonoBehaviour
     {
         if(_freezePlayer) {
             _frameVelocity.x = 0;
+            return;
+        }
+
+        if(IsPulling && isGrounded) {
+            _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, _stats.GroundDeceleration * Time.fixedDeltaTime);
             return;
         }
              
