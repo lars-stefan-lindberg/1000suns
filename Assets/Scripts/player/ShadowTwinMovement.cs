@@ -132,7 +132,11 @@ public class ShadowTwinMovement : MonoBehaviour
             speed = initialDashSpeed;
         }
         _frameVelocity.x = isFacingLeft() ? -speed : speed;
-        _ghostTrail.ShowGhosts();
+        //_ghostTrail.ShowGhosts();
+    }
+
+    public void EndDash() {
+        _isDashing = false;
     }
 
     public void TriggerForcePullAnimation() {
@@ -650,18 +654,7 @@ public class ShadowTwinMovement : MonoBehaviour
         }
              
         if(_isDashing) {
-            if (_movementInput.x == 0)
-            {
-                _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, dashDecelerationTime * Time.fixedDeltaTime);
-                if(_frameVelocity.x == 0)
-                    _isDashing = false;
-            }
-            else
-            {
-                _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, _movementInput.x * _stats.MaxSpeed, dashDecelerationTime * Time.fixedDeltaTime);
-                if(_frameVelocity.x == _movementInput.x * _stats.MaxSpeed)
-                    _isDashing = false;
-            }
+            _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, _movementInput.x * _stats.MaxSpeed, dashDecelerationTime * Time.fixedDeltaTime);
         } else {
             if (_movementInput.x == 0)
             {

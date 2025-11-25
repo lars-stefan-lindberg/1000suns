@@ -58,6 +58,10 @@ public class ShadowTwinPull : MonoBehaviour
                 Collider2D pullable = DetectPullable();
                 if(pullable != null) {
                     SetPullable(pullable);
+                } else {
+                    if(DetectBlockable()) {
+                        ShadowTwinMovement.obj.ExecuteDash(PullPowerType.Full);
+                    }
                 }
                 pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().HardCancel();
                 _forcePushStartChargingAudioSource = SoundFXManager.obj.PlayForcePushStartCharging(transform);
@@ -70,6 +74,7 @@ public class ShadowTwinPull : MonoBehaviour
                 CancelPulling();
                 ShadowTwinMovement.obj.TriggerEndForcePullAnimation();
                 ShadowTwinMovement.obj.IsPulling = false;
+                ShadowTwinMovement.obj.EndDash();
             }
         }
     }
@@ -79,7 +84,7 @@ public class ShadowTwinPull : MonoBehaviour
     public LayerMask blockingMask;
     public float raySpacing = 0.2f; // space between the rays
 
-    Collider2D DetectPullable()
+    private Collider2D DetectPullable()
     {
         Vector2 direction = new Vector2(ShadowTwinMovement.obj.isFacingLeft() ? -1 : 1, 0f);
 
@@ -97,7 +102,25 @@ public class ShadowTwinPull : MonoBehaviour
         return hit1.collider ? hit1.collider : hit2.collider ? hit2.collider : null;
     }
 
-    bool IsBlocked(Vector2 origin, Vector2 direction, RaycastHit2D targetHit)
+    private bool DetectBlockable()
+    {
+        Vector2 direction = new Vector2(ShadowTwinMovement.obj.isFacingLeft() ? -1 : 1, 0f);
+
+        Vector2 origin1 = (Vector2)transform.position + new Vector2(0,  raySpacing);
+        Vector2 origin2 = (Vector2)transform.position + new Vector2(0, -raySpacing);
+
+        // Cast both rays
+        RaycastHit2D hit1 = Physics2D.Raycast(origin1, direction, pullRange, blockingMask);
+        RaycastHit2D hit2 = Physics2D.Raycast(origin2, direction, pullRange, blockingMask);
+
+        if(hit1.collider != null || hit2.collider != null)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private bool IsBlocked(Vector2 origin, Vector2 direction, RaycastHit2D targetHit)
     {
         if (!targetHit.collider) return false;
 
