@@ -15,6 +15,8 @@ Shader "Custom/WaterReflection2D_pixelArt"
         _WaterY ("Waterline Y (world)", Float) = 0.0
         _PixelSize ("Pixel Size (1/RTheight)", Float) = 0.00277778
         _PixelSnap ("Pixel Snap Enabled", Range(0,1)) = 1
+        _RippleX ("Ripple Horizontal Strength", Range(0,2)) = 0.4
+        _RippleY ("Ripple Vertical Strength", Range(0,2)) = 1.0
     }
 
     SubShader
@@ -51,6 +53,8 @@ Shader "Custom/WaterReflection2D_pixelArt"
             float _WaterY;
             float _PixelSize;
             float _PixelSnap;
+            float _RippleX;
+            float _RippleY;
 
             struct appdata {
                 float4 vertex : POSITION;
@@ -84,38 +88,39 @@ Shader "Custom/WaterReflection2D_pixelArt"
 
             fixed4 frag(v2f i) : SV_Target
             {
-                // --- Normal-based distortion (two scrolling layers) ---
-                float2 nuv1 = i.uv * _NormalTiling + _NormalOffset1.xy;
-                float2 nuv2 = i.uv * _NormalTiling + _NormalOffset2.xy;
+                // --- Scroll normal map ---
+                float2 nuv1 = frac(i.uv * _NormalTiling + _NormalOffset1.xy);
+                float2 nuv2 = frac(i.uv * _NormalTiling + _NormalOffset2.xy);
 
-                // sample normals normally
-                float3 n1 = tex2D(_NormalTex, nuv1).rgb * 2 - 1;
-                float3 n2 = tex2D(_NormalTex, nuv2).rgb * 2 - 1;
+                float3 n1 = tex2D(_NormalTex, nuv1).rgb;
+                float3 n2 = tex2D(_NormalTex, nuv2).rgb;
 
-                // amplify normals
-                n1 = normalize(n1 * _NormalStrength);
-                n2 = normalize(n2 * _NormalStrength);
+                // --- Wave from blue channel ---
+                float wave1 = n1.b * 2.0 - 1.0;
+                float wave2 = n2.b * 2.0 - 1.0;
+                float wave  = (wave1 + wave2) * 0.5;
 
-                float2 distortion = (n1.xy + n2.xy) * 0.5;
-
-                // shore fade
+                // --- Distance from shore ---
                 float shoreMask = saturate(1.0 - i.uv.y);
-                distortion *= shoreMask;
 
-                // reflection UV
+                // --- Strength ---
+                float ripple = wave * _NormalStrength * shoreMask;
+
+                // --- Reflection UV ---
                 float2 reflUV = float2(i.uv.x, 1.0 - i.uv.y);
 
-                // apply distortion
-                reflUV += distortion * 0.05;
+                // --- Horizontal ripple ONLY (safe) ---
+                reflUV.x += ripple * _RippleX;
+                reflUV.y += ripple * _RippleY;
 
-                // sample RT
+                // --- Sample reflection ---
                 fixed4 reflectionCol = tex2D(_ReflectionTex, reflUV);
 
-                // combine
-                float3 col = reflectionCol.rgb;
-                float alpha = 1.0;
+                // --- Tint + Opacity ---
+                float3 col = reflectionCol.rgb * _WaterTint.rgb;
+                float alpha = _ReflectionOpacity;
 
-                return float4(col, alpha);
+                return fixed4(col, alpha);
             }
             ENDCG
         }

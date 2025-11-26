@@ -24,6 +24,15 @@ public class WaterReflectionController : MonoBehaviour
         offset1 += scrollSpeed1 * Time.deltaTime;
         offset2 += scrollSpeed2 * Time.deltaTime;
 
+        offset1 = new Vector2(
+            Mathf.Repeat(offset1.x, 1000f),
+            Mathf.Repeat(offset1.y, 1000f)
+        );
+        offset2 = new Vector2(
+            Mathf.Repeat(offset2.x, 1000f),
+            Mathf.Repeat(offset2.y, 1000f)
+        );
+
         waterMaterial.SetTexture("_NormalTex", normalMap);
         waterMaterial.SetVector("_NormalOffset1", offset1);
         waterMaterial.SetVector("_NormalOffset2", offset2);
