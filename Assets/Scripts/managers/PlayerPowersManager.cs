@@ -12,10 +12,15 @@ public class PlayerPowersManager : MonoBehaviour
     public bool CanTurnFromBlobToHuman { get; set; }
     public bool BlobCanJump { get; set; }
     public bool BlobCanExtraJump { get; set; }
-    public bool CanSwitchBetweenTwins { get; set; }
+    public bool CanSwitchBetweenTwinsMerged { get; set; }
+    public bool CanSeparate { get; set; }
 
     void Awake() {
         obj = this;
+    }
+
+    void Start()
+    {
         ResetGameEvents();
         if(PlayerMovement.obj != null && PlayerMovement.obj.isDevMode) {
             CanShadowDash = true;
@@ -24,8 +29,9 @@ public class PlayerPowersManager : MonoBehaviour
             CanTurnFromHumanToBlob = true;
             BlobCanJump = true;
             BlobCanExtraJump = true;
-            CanSwitchBetweenTwins = true;
-        }     
+            CanSwitchBetweenTwinsMerged = true;
+            CanSeparate = true;
+        }      
     }
 
     void OnEnable()
@@ -37,7 +43,8 @@ public class PlayerPowersManager : MonoBehaviour
             CanTurnFromHumanToBlob = true;
             BlobCanJump = true;
             BlobCanExtraJump = true;
-            CanSwitchBetweenTwins = true;
+            CanSwitchBetweenTwinsMerged = true;
+            CanSeparate = true;
         }     
     }
 
@@ -48,7 +55,8 @@ public class PlayerPowersManager : MonoBehaviour
         CanTurnFromBlobToHuman = false;
         BlobCanJump = false;
         BlobCanExtraJump = false;
-        CanSwitchBetweenTwins = false;
+        CanSwitchBetweenTwinsMerged = false;
+        CanSeparate = false;
     }
 
     // Returns a list of power keys (by property name) that are enabled

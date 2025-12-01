@@ -87,6 +87,16 @@ public class ShadowTwinMovement : MonoBehaviour
         _time += Time.deltaTime;
         UpdateAnimator();
         FlipPlayer(_movementInput.x);
+        if (_mergeSplitHeld)
+        {
+            _mergeSplitHoldTimer += Time.deltaTime;
+            if (_mergeSplitHoldTimer >= _mergeSplitHoldDuration)
+            {
+                _mergeSplitHeld = false;
+                _mergeSplitHoldTimer = 0f;
+                PerformMergeSplit();
+            }
+        }
         // Update jump kick timer
         if (_isJumpKickActive)
         {
@@ -387,25 +397,90 @@ public class ShadowTwinMovement : MonoBehaviour
         }
     }
 
-    public bool isTransformingToTwin = false;
+    public bool isTransforming = false;
     public void OnSwitch(InputAction.CallbackContext context)
     {
         if (context.performed)
         {
-            if(!PlayerPowersManager.obj.CanSwitchBetweenTwins)
-                return;
+            HandleSwitchCharacter();
+        }
+    }
+
+    private void HandleSwitchCharacter() {
+        if(isTransforming)
+            return;
+
+        if(PlayerPowersManager.obj.CanSwitchBetweenTwinsMerged && !PlayerManager.obj.IsSeparated) {
             //Switch to shadow twin
-            //if(isSeparated)
-            //switch control to the other twin
-            //else
-            if(isTransformingToTwin)
-                return;
             SoundFXManager.obj.PlayPlayerShapeshiftToBlob(transform);
-            isTransformingToTwin = true;
+            isTransforming = true;
             IsPulling = false;
             ShadowTwinPull.obj.CancelPulling();
             //Player.obj.PlaySwitchToTwinAnimation();
-            ToTwin();
+            if(PlayerManager.obj.IsEliInBlobForm()) {
+                ToBlob();
+            } else {
+                ToTwin();
+            }
+        } else if(PlayerPowersManager.obj.CanSeparate) {
+            if(PlayerManager.obj.IsEliInBlobForm()) {
+                PlayerSwitcher.obj.SwitchToBlob();
+            } else {
+                PlayerSwitcher.obj.SwitchToEli();
+            }
+        }
+    }
+
+    [SerializeField] private float _mergeSplitHoldDuration = 0.5f;
+    private bool _mergeSplitHeld = false;
+    private float _mergeSplitHoldTimer = 0f;
+
+    public void OnMergeSplit(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            _mergeSplitHeld = true;
+            _mergeSplitHoldTimer = 0f;
+        }
+        else if (context.canceled)
+        {
+            //If the merge button is not held we should just switch character instead.
+            //If the merge button was held, the execution is done from Update method
+            bool mergeButtonNotHeld = _mergeSplitHeld && _mergeSplitHoldTimer < _mergeSplitHoldDuration;
+            _mergeSplitHeld = false;
+            _mergeSplitHoldTimer = 0f;
+
+            if (mergeButtonNotHeld)
+            {
+                HandleSwitchCharacter();
+            }
+        }
+    }
+
+    private void PerformMergeSplit()
+    {
+        if(PlayerPowersManager.obj.CanSeparate) {
+            if(PlayerManager.obj.IsSeparated) {
+                //Merge
+                if(PlayerManager.obj.IsEliInBlobForm()) {
+                    _playerBlob.SetActive(false);                        
+                } else {
+                    _playerTwin.SetActive(false);
+                }
+                PlayerManager.obj.IsSeparated = false;
+            } else {
+                //Split
+                if(PlayerManager.obj.IsEliInBlobForm()) {
+                    _playerBlob.transform.position = transform.position - new Vector3(0, 0.5f, 0);
+                    _playerBlob.SetActive(true);
+                    PlayerSwitcher.obj.SwitchToBlob();
+                } else {
+                    _playerTwin.SetActive(true);
+                    _playerTwin.transform.position = transform.position;
+                    PlayerSwitcher.obj.SwitchToEli();
+                }
+                PlayerManager.obj.IsSeparated = true;
+            }
         }
     }
 
@@ -421,6 +496,7 @@ public class ShadowTwinMovement : MonoBehaviour
         _playerTwin.transform.position = transform.position;
         _playerTwin.GetComponent<PlayerMovement>().spriteRenderer.flipX = isFacingLeft();
         _playerTwin.SetActive(true);
+        PlayerSwitcher.obj.SwitchToEli();
         if(isGrounded) {
             _playerTwin.GetComponent<PlayerMovement>().SetStartingOnGround();
             _playerTwin.GetComponent<PlayerMovement>().isGrounded = true;
@@ -432,7 +508,34 @@ public class ShadowTwinMovement : MonoBehaviour
         } else {
             _playerTwin.GetComponent<PlayerMovement>().UnFreeze();
         }
-        isTransformingToTwin = false;
+        isTransforming = false;
+    }
+
+    public void ToBlob() {
+        ICinemachineCamera activeVirtualCamera = CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera;
+        if(activeVirtualCamera != null && activeVirtualCamera.Follow == transform) {
+            activeVirtualCamera.Follow = _playerBlob.transform;
+        }
+
+        ShadowTwinPlayer.obj.rigidBody.velocity = new Vector2(0, 0);
+        _frameVelocity = new Vector2(0, 0);
+        gameObject.SetActive(false);
+        _playerBlob.transform.position = transform.position - new Vector3(0, 0.5f, 0);
+        _playerBlob.GetComponent<PlayerBlobMovement>().spriteRenderer.flipX = isFacingLeft();
+        _playerBlob.SetActive(true);
+        PlayerSwitcher.obj.SwitchToBlob();
+        if(isGrounded) {
+            _playerBlob.GetComponent<PlayerBlobMovement>().SetStartingOnGround();
+            _playerBlob.GetComponent<PlayerBlobMovement>().isGrounded = true;
+        } else {
+            _playerBlob.GetComponent<PlayerBlobMovement>().isGrounded = false;
+        }
+        if(IsFrozen()) {
+            _playerBlob.GetComponent<PlayerBlobMovement>().Freeze();
+        } else {
+            _playerBlob.GetComponent<PlayerBlobMovement>().UnFreeze();
+        }
+        isTransforming = false;
     }
 
     public void CancelJumping() {

@@ -18,7 +18,7 @@
                     "name": "Jump",
                     "type": "Button",
                     "id": "1230deb7-f079-41e6-b12a-bea3d5921af8",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -45,6 +45,15 @@
                     "name": "Switch",
                     "type": "Button",
                     "id": "8c64b4a5-58e8-4364-84dc-d1b10effd39c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "MergeSplit",
+                    "type": "Button",
+                    "id": "b4de9755-2601-470b-8e86-d6242a8f447f",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -236,6 +245,39 @@
                     "processors": "",
                     "groups": ";Keyboard",
                     "action": "Switch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "adbbbdea-a9b4-4861-9753-d4cadd298ba9",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MergeSplit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ba068008-4196-4b61-9e2f-ba2519d62fdf",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "MergeSplit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2130018c-634b-4d73-b57d-f8c16b0ec35a",
+                    "path": "<Keyboard>/b",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard",
+                    "action": "MergeSplit",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

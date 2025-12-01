@@ -10,6 +10,7 @@ public class PlayerBlobMovement : MonoBehaviour
     public static PlayerBlobMovement obj;
 
     [SerializeField] private GameObject _player;
+    [SerializeField] private GameObject _playerTwin;
     public GameObject anchor;
     public SpriteRenderer spriteRenderer;
     [SerializeField] private ScriptableStats _stats;
@@ -84,6 +85,104 @@ public class PlayerBlobMovement : MonoBehaviour
         }
     }
 
+    public bool isTransformingToTwin = false;
+    public void OnSwitch(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            HandleSwitchCharacter();
+        }
+    }
+
+    private void HandleSwitchCharacter() {
+        if(isTransformingToTwin)
+            return;
+
+        if(PlayerPowersManager.obj.CanSwitchBetweenTwinsMerged && !PlayerManager.obj.IsSeparated)
+        {    
+            //Switch to shadow twin
+            SoundFXManager.obj.PlayPlayerShapeshiftToBlob(transform);
+            isTransformingToTwin = true;
+            PlayerPush.obj.ResetBuiltUpPower();
+            //Player.obj.PlaySwitchToTwinAnimation();
+            ToTwin();
+        }
+        else if(PlayerPowersManager.obj.CanSeparate) {
+            PlayerSwitcher.obj.SwitchToDee();
+        }
+    }
+
+    [SerializeField] private float _mergeSplitHoldDuration = 0.5f;
+    private bool _mergeSplitHeld = false;
+    private float _mergeSplitHoldTimer = 0f;
+
+    public void OnMergeSplit(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            _mergeSplitHeld = true;
+            _mergeSplitHoldTimer = 0f;
+        }
+        else if (context.canceled)
+        {
+            //If the merge button is not held we should just switch character instead.
+            //If the merge button was held, the execution is done from Update method
+            bool mergeButtonNotHeld = _mergeSplitHeld && _mergeSplitHoldTimer < _mergeSplitHoldDuration;
+            _mergeSplitHeld = false;
+            _mergeSplitHoldTimer = 0f;
+
+            if (mergeButtonNotHeld)
+            {
+                HandleSwitchCharacter();
+            }
+        }
+    }
+
+    private void PerformMergeSplit()
+    {
+        if(PlayerPowersManager.obj.CanSeparate) {
+            if(PlayerManager.obj.IsSeparated) {
+                //Merge
+                //Check if both players are grounded and close enough to merge
+                _playerTwin.SetActive(false);
+                PlayerManager.obj.IsSeparated = false;
+            } else {
+                //Split
+                _playerTwin.transform.position = transform.position + new Vector3(0, 0.5f, 0);
+                _playerTwin.SetActive(true);
+                PlayerSwitcher.obj.SwitchToDee();
+                PlayerManager.obj.IsSeparated = true;
+            }
+        }
+    }
+
+    public void ToTwin() {
+        ICinemachineCamera activeVirtualCamera = CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera;
+        if(activeVirtualCamera != null && activeVirtualCamera.Follow == transform) {
+            activeVirtualCamera.Follow = _playerTwin.transform;
+        }
+
+        PlayerBlob.obj.rigidBody.velocity = new Vector2(0, 0);
+        _frameVelocity = new Vector2(0, 0);
+        gameObject.SetActive(false);
+        _playerTwin.transform.position = transform.position + new Vector3(0, 0.5f, 0);
+        _playerTwin.GetComponent<ShadowTwinMovement>().spriteRenderer.flipX = IsFacingLeft();
+        _playerTwin.SetActive(true);
+        PlayerSwitcher.obj.SwitchToDee();
+        if(isGrounded) {
+            _playerTwin.GetComponent<ShadowTwinMovement>().SetStartingOnGround();
+            _playerTwin.GetComponent<ShadowTwinMovement>().isGrounded = true;
+        } else {
+            _playerTwin.GetComponent<ShadowTwinMovement>().isGrounded = false;
+        }
+        if(IsFrozen()) {
+            _playerTwin.GetComponent<ShadowTwinMovement>().Freeze();
+        } else {
+            _playerTwin.GetComponent<ShadowTwinMovement>().UnFreeze();
+        }
+        isTransformingToTwin = false;
+    }
+
     private float GetHorizontalInput(float originInput) {
         if(_stats.SnapInput) {
             // only flip when a strong push happens
@@ -118,9 +217,11 @@ public class PlayerBlobMovement : MonoBehaviour
         }
 
         gameObject.SetActive(false);
-        _player.transform.position = transform.position + new Vector3(0, 0.5f, 0);;
+        _player.transform.position = transform.position + new Vector3(0, 0.5f, 0);
         _player.GetComponent<PlayerMovement>().spriteRenderer.flipX = IsFacingLeft();
         _player.SetActive(true);
+        PlayerManager.obj.elisLastForm = PlayerManager.PlayerType.HUMAN;
+        PlayerSwitcher.obj.SwitchToEli();
         if(isGrounded) {
             _player.GetComponent<PlayerMovement>().SetStartingOnGround();
             _player.GetComponent<PlayerMovement>().isGrounded = true;
@@ -220,6 +321,16 @@ public class PlayerBlobMovement : MonoBehaviour
         _time += Time.deltaTime;
         UpdateAnimator();
         FlipPlayer(_movementInput.x);
+        if (_mergeSplitHeld)
+        {
+            _mergeSplitHoldTimer += Time.deltaTime;
+            if (_mergeSplitHoldTimer >= _mergeSplitHoldDuration)
+            {
+                _mergeSplitHeld = false;
+                _mergeSplitHoldTimer = 0f;
+                PerformMergeSplit();
+            }
+        }
     }
 
     public void FlipPlayer(float _xValue)

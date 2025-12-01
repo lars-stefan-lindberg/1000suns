@@ -18,8 +18,15 @@ public class PlayerManager : MonoBehaviour
         SHADOW_TWIN
     }
 
-    private PlayerType _lastPlayerType = PlayerType.HUMAN;
+    public bool IsSeparated {get; set;}
 
+    private PlayerType _lastPlayerType = PlayerType.HUMAN;
+    public PlayerType elisLastForm = PlayerType.HUMAN;
+
+    public bool IsEliInBlobForm() {
+        return elisLastForm == PlayerType.BLOB;
+    }
+    
     public void DisablePlayerMovement() {
         if(PlayerMovement.obj != null && PlayerMovement.obj.gameObject.activeSelf)
             PlayerMovement.obj.DisablePlayerMovement();
@@ -200,6 +207,7 @@ public class PlayerManager : MonoBehaviour
     void Awake()
     {
         obj = this;
+        IsSeparated = false;
     }
 
     void OnDestroy()

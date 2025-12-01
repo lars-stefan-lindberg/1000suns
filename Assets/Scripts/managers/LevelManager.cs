@@ -72,6 +72,7 @@ public class LevelManager : MonoBehaviour
                     SaveManager.obj.ConsumeRestoreBlobFlag();
                     PlayerMovement.obj.ToBlob();
                     PlayerManager.obj.SetLastActivePlayerType(PlayerManager.PlayerType.BLOB);
+                    PlayerSwitcher.obj.SwitchToBlob();
                 }
                 
                 if(Player.obj != null)
@@ -135,7 +136,7 @@ public class LevelManager : MonoBehaviour
                 if(ShadowTwinMovement.obj != null) {
                     ShadowTwinMovement.obj.SetStartingOnGround();
                     ShadowTwinMovement.obj.isGrounded = true;
-                    ShadowTwinMovement.obj.isTransformingToTwin = false;
+                    ShadowTwinMovement.obj.isTransforming = false;
                     ShadowTwinMovement.obj.CancelJumping();
                 }
 

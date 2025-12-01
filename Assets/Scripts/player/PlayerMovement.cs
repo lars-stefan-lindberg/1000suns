@@ -98,6 +98,16 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _time += Time.deltaTime;
         UpdateAnimator();
         FlipPlayer(_movementInput.x);
+        if (_mergeSplitHeld)
+        {
+            _mergeSplitHoldTimer += Time.deltaTime;
+            if (_mergeSplitHoldTimer >= _mergeSplitHoldDuration)
+            {
+                _mergeSplitHeld = false;
+                _mergeSplitHoldTimer = 0f;
+                PerformMergeSplit();
+            }
+        }
         // Update jump kick timer
         if (_isJumpKickActive)
         {
@@ -464,6 +474,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _playerBlob.transform.position = transform.position - new Vector3(0, 0.5f, 0);
         _playerBlob.GetComponent<PlayerBlobMovement>().spriteRenderer.flipX = isFacingLeft();
         _playerBlob.SetActive(true);
+        PlayerManager.obj.elisLastForm = PlayerManager.PlayerType.BLOB;
+        PlayerSwitcher.obj.SwitchToBlob();
         if(isGrounded) {
             _playerBlob.GetComponent<PlayerBlobMovement>().SetStartingOnGround();
             _playerBlob.GetComponent<PlayerBlobMovement>().isGrounded = true;
@@ -490,6 +502,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _playerTwin.transform.position = transform.position;
         _playerTwin.GetComponent<ShadowTwinMovement>().spriteRenderer.flipX = isFacingLeft();
         _playerTwin.SetActive(true);
+        PlayerSwitcher.obj.SwitchToDee();
         if(isGrounded) {
             _playerTwin.GetComponent<ShadowTwinMovement>().SetStartingOnGround();
             _playerTwin.GetComponent<ShadowTwinMovement>().isGrounded = true;
@@ -551,19 +564,67 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     {
         if (context.performed)
         {
-            if(!PlayerPowersManager.obj.CanSwitchBetweenTwins)
-                return;
-            //Switch to shadow twin
-            //if(isSeparated)
-            //switch control to the other twin
-            //else
-            if(isTransformingToTwin)
-                return;
+            HandleSwitchCharacter();
+        }
+    }
+
+    [SerializeField] private float _mergeSplitHoldDuration = 0.5f;
+    private bool _mergeSplitHeld = false;
+    private float _mergeSplitHoldTimer = 0f;
+
+    public void OnMergeSplit(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            _mergeSplitHeld = true;
+            _mergeSplitHoldTimer = 0f;
+        }
+        else if (context.canceled)
+        {
+            //If the merge button is not held we should just switch character instead.
+            //If the merge button was held, the execution is done from Update method
+            bool mergeButtonNotHeld = _mergeSplitHeld && _mergeSplitHoldTimer < _mergeSplitHoldDuration;
+            _mergeSplitHeld = false;
+            _mergeSplitHoldTimer = 0f;
+
+            if (mergeButtonNotHeld)
+            {
+                HandleSwitchCharacter();
+            }
+        }
+    }
+
+    private void HandleSwitchCharacter()
+    {
+        if(isTransformingToTwin)
+            return;
+
+        if(PlayerPowersManager.obj.CanSwitchBetweenTwinsMerged && !PlayerManager.obj.IsSeparated)
+        {    
+            //Switch "form" to shadow twin
             SoundFXManager.obj.PlayPlayerShapeshiftToBlob(transform);
             isTransformingToTwin = true;
             PlayerPush.obj.ResetBuiltUpPower();
             //Player.obj.PlaySwitchToTwinAnimation();
             ToTwin();
+        }
+        else if(PlayerPowersManager.obj.CanSeparate) {
+            PlayerSwitcher.obj.SwitchToDee();
+        }
+    }
+
+    private void PerformMergeSplit()
+    {
+        if(PlayerPowersManager.obj.CanSeparate) {
+            if(PlayerManager.obj.IsSeparated) {
+                _playerTwin.SetActive(false);
+                PlayerManager.obj.IsSeparated = false;
+            } else {
+                _playerTwin.transform.position = transform.position;
+                _playerTwin.SetActive(true);
+                PlayerSwitcher.obj.SwitchToDee();
+                PlayerManager.obj.IsSeparated = true;
+            }
         }
     }
 
