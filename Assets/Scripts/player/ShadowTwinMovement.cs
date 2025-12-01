@@ -16,6 +16,7 @@ public class ShadowTwinMovement : MonoBehaviour
 
     public bool isDevMode = true;
     [SerializeField] private ScriptableStats _stats;
+    [SerializeField] private GameObject _playerTwin;
     [SerializeField] private GameObject _playerBlob;
     [SerializeField] private GhostTrailManager _ghostTrail;
     
@@ -384,6 +385,54 @@ public class ShadowTwinMovement : MonoBehaviour
         {
             _jumpHeldInput = false;
         }
+    }
+
+    public bool isTransformingToTwin = false;
+    public void OnSwitch(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            if(!PlayerPowersManager.obj.CanSwitchBetweenTwins)
+                return;
+            //Switch to shadow twin
+            //if(isSeparated)
+            //switch control to the other twin
+            //else
+            if(isTransformingToTwin)
+                return;
+            SoundFXManager.obj.PlayPlayerShapeshiftToBlob(transform);
+            isTransformingToTwin = true;
+            IsPulling = false;
+            ShadowTwinPull.obj.CancelPulling();
+            //Player.obj.PlaySwitchToTwinAnimation();
+            ToTwin();
+        }
+    }
+
+    public void ToTwin() {
+        ICinemachineCamera activeVirtualCamera = CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera;
+        if(activeVirtualCamera != null && activeVirtualCamera.Follow == transform) {
+            activeVirtualCamera.Follow = _playerTwin.transform;
+        }
+
+        ShadowTwinPlayer.obj.rigidBody.velocity = new Vector2(0, 0);
+        _frameVelocity = new Vector2(0, 0);
+        gameObject.SetActive(false);
+        _playerTwin.transform.position = transform.position;
+        _playerTwin.GetComponent<PlayerMovement>().spriteRenderer.flipX = isFacingLeft();
+        _playerTwin.SetActive(true);
+        if(isGrounded) {
+            _playerTwin.GetComponent<PlayerMovement>().SetStartingOnGround();
+            _playerTwin.GetComponent<PlayerMovement>().isGrounded = true;
+        } else {
+            _playerTwin.GetComponent<PlayerMovement>().isGrounded = false;
+        }
+        if(IsFrozen()) {
+            _playerTwin.GetComponent<PlayerMovement>().Freeze();
+        } else {
+            _playerTwin.GetComponent<PlayerMovement>().UnFreeze();
+        }
+        isTransformingToTwin = false;
     }
 
     public void CancelJumping() {

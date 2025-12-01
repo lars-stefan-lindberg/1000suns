@@ -12,6 +12,7 @@ public class PlayerPowersManager : MonoBehaviour
     public bool CanTurnFromBlobToHuman { get; set; }
     public bool BlobCanJump { get; set; }
     public bool BlobCanExtraJump { get; set; }
+    public bool CanSwitchBetweenTwins { get; set; }
 
     void Awake() {
         obj = this;
@@ -23,6 +24,7 @@ public class PlayerPowersManager : MonoBehaviour
             CanTurnFromHumanToBlob = true;
             BlobCanJump = true;
             BlobCanExtraJump = true;
+            CanSwitchBetweenTwins = true;
         }     
     }
 
@@ -35,6 +37,7 @@ public class PlayerPowersManager : MonoBehaviour
             CanTurnFromHumanToBlob = true;
             BlobCanJump = true;
             BlobCanExtraJump = true;
+            CanSwitchBetweenTwins = true;
         }     
     }
 
@@ -45,6 +48,7 @@ public class PlayerPowersManager : MonoBehaviour
         CanTurnFromBlobToHuman = false;
         BlobCanJump = false;
         BlobCanExtraJump = false;
+        CanSwitchBetweenTwins = false;
     }
 
     // Returns a list of power keys (by property name) that are enabled

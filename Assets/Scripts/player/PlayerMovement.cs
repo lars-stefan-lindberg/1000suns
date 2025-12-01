@@ -18,6 +18,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public bool isDevMode = true;
     [SerializeField] private ScriptableStats _stats;
     [SerializeField] private GameObject _playerBlob;
+    [SerializeField] private GameObject _playerTwin;
     [SerializeField] private GhostTrailManager _ghostTrail;
     
     public SpriteRenderer spriteRenderer;
@@ -477,6 +478,32 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         isTransformingToBlob = false;
     }
 
+    public void ToTwin() {
+        ICinemachineCamera activeVirtualCamera = CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera;
+        if(activeVirtualCamera != null && activeVirtualCamera.Follow == transform) {
+            activeVirtualCamera.Follow = _playerTwin.transform;
+        }
+
+        Player.obj.rigidBody.velocity = new Vector2(0, 0);
+        _frameVelocity = new Vector2(0, 0);
+        gameObject.SetActive(false);
+        _playerTwin.transform.position = transform.position;
+        _playerTwin.GetComponent<ShadowTwinMovement>().spriteRenderer.flipX = isFacingLeft();
+        _playerTwin.SetActive(true);
+        if(isGrounded) {
+            _playerTwin.GetComponent<ShadowTwinMovement>().SetStartingOnGround();
+            _playerTwin.GetComponent<ShadowTwinMovement>().isGrounded = true;
+        } else {
+            _playerTwin.GetComponent<ShadowTwinMovement>().isGrounded = false;
+        }
+        if(IsFrozen()) {
+            _playerTwin.GetComponent<ShadowTwinMovement>().Freeze();
+        } else {
+            _playerTwin.GetComponent<ShadowTwinMovement>().UnFreeze();
+        }
+        isTransformingToTwin = false;
+    }
+
     public bool IsHorizontalInput() {
         return _movementInput.x != 0;
     }
@@ -516,6 +543,27 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         else if (context.canceled)
         {
             _jumpHeldInput = false;
+        }
+    }
+
+    public bool isTransformingToTwin = false;
+    public void OnSwitch(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            if(!PlayerPowersManager.obj.CanSwitchBetweenTwins)
+                return;
+            //Switch to shadow twin
+            //if(isSeparated)
+            //switch control to the other twin
+            //else
+            if(isTransformingToTwin)
+                return;
+            SoundFXManager.obj.PlayPlayerShapeshiftToBlob(transform);
+            isTransformingToTwin = true;
+            PlayerPush.obj.ResetBuiltUpPower();
+            //Player.obj.PlaySwitchToTwinAnimation();
+            ToTwin();
         }
     }
 

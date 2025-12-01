@@ -76,6 +76,9 @@ public class LevelManager : MonoBehaviour
                 
                 if(Player.obj != null)
                     Player.obj.transform.position = _playerSpawningCollider.transform.position;
+                if(ShadowTwinPlayer.obj != null) {
+                    ShadowTwinPlayer.obj.transform.position = _playerSpawningCollider.transform.position;
+                }
                 if(PlayerBlob.obj != null)
                     PlayerBlob.obj.transform.position = _playerSpawningCollider.transform.position - new Vector3(0, 0.5f, 0);
                 AdjustSpawnFaceDirection(activeCameraObject.transform.position.x, playerSpawnPoint.transform.position.x);
@@ -119,12 +122,22 @@ public class LevelManager : MonoBehaviour
                     PlayerBlobMovement.obj.CancelJumping();
                 }
 
-                PlayerMovement.obj.SetStartingOnGround();
-                PlayerMovement.obj.isGrounded = true;
-                PlayerMovement.obj.isForcePushJumping = false;
-                PlayerMovement.obj.jumpedWhileForcePushJumping = false;
-                PlayerMovement.obj.isTransformingToBlob = false;
-                PlayerMovement.obj.CancelJumping();
+                if(PlayerMovement.obj != null) {
+                    PlayerMovement.obj.SetStartingOnGround();
+                    PlayerMovement.obj.isGrounded = true;
+                    PlayerMovement.obj.isForcePushJumping = false;
+                    PlayerMovement.obj.jumpedWhileForcePushJumping = false;
+                    PlayerMovement.obj.isTransformingToBlob = false;
+                    PlayerMovement.obj.isTransformingToTwin = false;
+                    PlayerMovement.obj.CancelJumping();
+                }
+
+                if(ShadowTwinMovement.obj != null) {
+                    ShadowTwinMovement.obj.SetStartingOnGround();
+                    ShadowTwinMovement.obj.isGrounded = true;
+                    ShadowTwinMovement.obj.isTransformingToTwin = false;
+                    ShadowTwinMovement.obj.CancelJumping();
+                }
 
                 Reaper.obj.playerKilled = false;
                 if(Player.obj != null) {

@@ -155,7 +155,7 @@ public class ShadowTwinPull : MonoBehaviour
         Player.obj.EndChargeFlash();
     }
 
-    private void CancelPulling() {
+    public void CancelPulling() {
         _targetRb = null;
         if(_pulledBlock != null)
             _pulledBlock.IsBeingPulled = false;
