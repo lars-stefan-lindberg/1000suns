@@ -17,6 +17,7 @@ public class ShadowTwinPlayer : MonoBehaviour
     private LayerMask _groundLayerMasks;
     private PlayerFlash _playerFlash;
     private PlayerChargeFlash _playerChargeFlash;
+    private PlayerLightManager _playerLightManager;
 
     void Awake()
     {
@@ -26,6 +27,7 @@ public class ShadowTwinPlayer : MonoBehaviour
         _groundLayerMasks = LayerMask.GetMask("Ground");
         _playerFlash = GetComponentInChildren<PlayerFlash>();
         _playerChargeFlash = GetComponentInChildren<PlayerChargeFlash>();
+        _playerLightManager = GetComponentInChildren<PlayerLightManager>();
     }
 
     void OnEnable()
@@ -155,7 +157,13 @@ public class ShadowTwinPlayer : MonoBehaviour
         transform.position = new Vector2(191.975f, 24.89f);
     }
 
+    public void PlayerPullLight() {
+        _playerLightManager.IncreaseLightSize();
+    }
 
+    public void RestorePlayerPullLight() {
+        _playerLightManager.RestoreLightSize();
+    }
 
     void OnDestroy()
     {

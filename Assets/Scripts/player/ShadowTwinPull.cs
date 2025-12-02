@@ -66,7 +66,7 @@ public class ShadowTwinPull : MonoBehaviour
                 pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().HardCancel();
                 _forcePushStartChargingAudioSource = SoundFXManager.obj.PlayForcePushStartCharging(transform);
                 ShadowTwinPlayer.obj.StartChargeFlash();
-                PlayerLightManager.obj.PlayerPush();
+                ShadowTwinPlayer.obj.PlayerPullLight();
 
                 Pull();
             }
@@ -75,6 +75,7 @@ public class ShadowTwinPull : MonoBehaviour
                 ShadowTwinMovement.obj.TriggerEndForcePullAnimation();
                 ShadowTwinMovement.obj.IsPulling = false;
                 ShadowTwinMovement.obj.EndDash();
+                ShadowTwinPlayer.obj.RestorePlayerPullLight();
             }
         }
     }
@@ -147,7 +148,7 @@ public class ShadowTwinPull : MonoBehaviour
             _forcePushStartChargingAudioSource = null;
         }
 
-        PlayerLightManager.obj.RestorePlayerPush();
+        ShadowTwinPlayer.obj.RestorePlayerPullLight();
 
         _buildingUpPower = false;
         _buildUpPower = defaultPower;

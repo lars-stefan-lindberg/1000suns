@@ -59,7 +59,7 @@ public class PlayerPush : MonoBehaviour
                     _buildingUpPower = true;
                     _buildUpPowerTime = 0;
                     Player.obj.StartChargeFlash();
-                    PlayerLightManager.obj.PlayerPush();
+                    Player.obj.PlayerPushLight();
                 }
             }
             if(context.canceled) {
@@ -109,7 +109,7 @@ public class PlayerPush : MonoBehaviour
             _forcePushStartChargingAudioSource = null;
         }
 
-        PlayerLightManager.obj.RestorePlayerPush();
+        Player.obj.RestorePlayerPushLight();
 
         _buildingUpPower = false;
         _buildUpPower = defaultPower;

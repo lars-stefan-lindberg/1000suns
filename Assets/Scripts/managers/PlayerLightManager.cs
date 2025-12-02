@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PlayerLightManager : MonoBehaviour
 {
-    public static PlayerLightManager obj;
     [SerializeField] private GameObject _light;
     [SerializeField] private float _transitionSpeed = 0.7f;
     private float _defaultLightSize;
@@ -12,41 +11,27 @@ public class PlayerLightManager : MonoBehaviour
     private Coroutine _pushCoroutine;
 
     void Awake() {
-        obj = this;
         _light2D = _light.GetComponent<Light2D>();
         _defaultLightSize = _light2D.size;
-    }
-
-    void OnDestroy()
-    {
-        obj = null;
-    }
-
-    void Update()
-    {
-        Transform activeTransform = PlayerManager.obj.GetPlayerTransform();
-        if (activeTransform == null) return;
-
-        _light.transform.position = activeTransform.position;
     }
 
     public void FadeOut() {
         StartCoroutine(FadeOutLight());
     }
 
-    public void PlayerPush() {
+    public void IncreaseLightSize() {
         if (_pushCoroutine != null) {
             StopCoroutine(_pushCoroutine);
         }
-        _pushCoroutine = StartCoroutine(IncreaseLightSize());
+        _pushCoroutine = StartCoroutine(IncreaseLightSizeCoroutine());
     }
 
-    public void RestorePlayerPush() {
+    public void RestoreLightSize() {
         if (_pushCoroutine != null) {
             StopCoroutine(_pushCoroutine);
             _pushCoroutine = null;
         }
-        StartCoroutine(RestoreLightSize());
+        StartCoroutine(RestoreLightSizeCoroutine());
     }
 
     private IEnumerator FadeOutLight() {
@@ -64,7 +49,7 @@ public class PlayerLightManager : MonoBehaviour
         yield return null;
     }
 
-    private IEnumerator IncreaseLightSize() {
+    private IEnumerator IncreaseLightSizeCoroutine() {
         float targetSize = _defaultLightSize * 2f;
         while (_light2D.size < targetSize) {
             _light2D.size = Mathf.Lerp(_light2D.size, targetSize, Time.deltaTime * _transitionSpeed);
@@ -77,7 +62,7 @@ public class PlayerLightManager : MonoBehaviour
         }
     }
 
-    private IEnumerator RestoreLightSize() {
+    private IEnumerator RestoreLightSizeCoroutine() {
         float duration = 0.2f;
         float elapsed = 0f;
         float startSize = _light2D.size;
