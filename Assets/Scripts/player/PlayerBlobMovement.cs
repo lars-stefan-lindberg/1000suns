@@ -504,7 +504,7 @@ public class PlayerBlobMovement : MonoBehaviour
     private void ExecuteRegularJump()
     {
         ExecuteJump(_stats.JumpPower);
-        DustParticleMgr.obj.CreateDust();
+        DustParticleMgr.obj.CreateDust(PlayerManager.PlayerType.BLOB);
         SoundFXManager.obj.PlayJump(gameObject.transform);
         StartCoroutine(JumpSqueeze(_jumpSqueezeX, _jumpSqueezeY, _jumpSqueezeTime));
         _jumpToConsume = false;
@@ -744,7 +744,7 @@ public class PlayerBlobMovement : MonoBehaviour
         //_animator.SetBool("isFalling", isFalling);
         if (_landed)
         {
-            DustParticleMgr.obj.CreateDust();
+            DustParticleMgr.obj.CreateDust(PlayerManager.PlayerType.BLOB);
             SoundFXManager.obj.PlayLand(PlayerBlob.obj.surface, gameObject.transform);
             StartCoroutine(JumpSqueeze(_landedSqueezeX, _landedSqueezeY, _landedSqueezeTime));
             _landed = false;

@@ -175,7 +175,7 @@ public class ShadowTwinMovement : MonoBehaviour
         _animator.SetBool("isFalling", isFalling);
         if (_landed)
         {
-            DustParticleMgr.obj.CreateDust();
+            DustParticleMgr.obj.CreateDust(PlayerManager.PlayerType.SHADOW_TWIN);
             SoundFXManager.obj.PlayLand(ShadowTwinPlayer.obj.surface, gameObject.transform);
             StartCoroutine(JumpSqueeze(_landedSqueezeX, _landedSqueezeY, _landedSqueezeTime));
             _landed = false;
@@ -760,7 +760,7 @@ public class ShadowTwinMovement : MonoBehaviour
             _isDashing = false;
         }
         
-        DustParticleMgr.obj.CreateDust();
+        DustParticleMgr.obj.CreateDust(PlayerManager.PlayerType.SHADOW_TWIN);
 
         SoundFXManager.obj.PlayJump(gameObject.transform);
 

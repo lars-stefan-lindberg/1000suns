@@ -20,13 +20,13 @@ public class DustParticleMgr : MonoBehaviour
         obj = null;
     }
 
-    public void CreateDust()
+    public void CreateDust(PlayerManager.PlayerType playerType)
     {
         if(!Enabled)
             return;
-        if(PlayerBlobMovement.obj != null && PlayerBlobMovement.obj.gameObject.activeSelf)
+        if(playerType == PlayerManager.PlayerType.BLOB)
             dust.transform.position = PlayerBlobMovement.obj.anchor.transform.position;
-        else if(ShadowTwinMovement.obj != null && ShadowTwinMovement.obj.gameObject.activeSelf)
+        else if(playerType == PlayerManager.PlayerType.SHADOW_TWIN)
             dust.transform.position = ShadowTwinMovement.obj.anchor.transform.position;
         else 
             dust.transform.position = PlayerMovement.obj.anchor.transform.position;

@@ -217,7 +217,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _animator.SetBool("isFalling", isFalling);
         if (_landed)
         {
-            DustParticleMgr.obj.CreateDust();
+            DustParticleMgr.obj.CreateDust(PlayerManager.PlayerType.HUMAN);
             SoundFXManager.obj.PlayLand(Player.obj.surface, gameObject.transform);
             if(_cameFromForcePushJump) {
                 SoundFXManager.obj.PlayForcePushLand(gameObject.transform);
@@ -892,7 +892,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             _isDashing = false;
         }
         
-        DustParticleMgr.obj.CreateDust();
+        DustParticleMgr.obj.CreateDust(PlayerManager.PlayerType.HUMAN);
 
         if(isForcePushJumping) {
             jumpedWhileForcePushJumping = true;
