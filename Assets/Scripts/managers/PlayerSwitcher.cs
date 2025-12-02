@@ -18,7 +18,6 @@ public class PlayerSwitcher : MonoBehaviour
     void Awake()
     {
         obj = this;
-        InputSystem.onActionChange += OnAnyInputPerformed;
     }
 
     void OnEnable()
@@ -66,25 +65,40 @@ public class PlayerSwitcher : MonoBehaviour
 
     void OnDestroy()
     {
-        InputSystem.onActionChange -= OnAnyInputPerformed;
         obj = null;
+    }
+
+    private PlayerInput SetActiveCharacterEnabled() {
+        if(deeInput.enabled) {
+            blobInput.enabled = false;
+            eliInput.enabled = false;
+            return deeInput;
+        } else if(blobInput.enabled) {
+            eliInput.enabled = false;
+            deeInput.enabled = false;
+            return blobInput;
+        } else {
+            blobInput.enabled = false;
+            deeInput.enabled = false;
+            return eliInput;
+        }
     }
 
     private void OnGamepadCountChanged(int count)
     {
         if (count <= 0)
         {
+            //The assumption of count <= 0 right now is that there are no gamepads connected, but a keyboard
             _isCoopActive = false;
             _waitingForSecondPlayerJoin = false;
-            _pendingJoinGamepad = null;
+            _pendingJoinGamepad = null; 
 
-            deeInput.enabled = false;
-            blobInput.enabled = false;
-            eliInput.enabled = true;
+            var activeInput = SetActiveCharacterEnabled();
 
+            //TODO: Should check if keyboard is available before setting it
             if (!string.IsNullOrEmpty(keyboardControlSchemeName))
             {
-                eliInput.SwitchCurrentControlScheme(
+                activeInput.SwitchCurrentControlScheme(
                     keyboardControlSchemeName,
                     Keyboard.current, Mouse.current
                 );
@@ -95,6 +109,9 @@ public class PlayerSwitcher : MonoBehaviour
 
         if (count == 1)
         {
+            //If gamepad count is 1, we assume that keyboard and gamepad connected. For now we we will set
+            //gamepad control to active character.
+            //TODO: Somehow support local co-op with keyboard and gamepad connected (while still also supporting single-player with keyboard and gamepad connected)
             if (string.IsNullOrEmpty(keyboardControlSchemeName) || string.IsNullOrEmpty(gamepadControlSchemeName))
             {
                 return;
@@ -104,13 +121,11 @@ public class PlayerSwitcher : MonoBehaviour
             _isCoopActive = false;
             _waitingForSecondPlayerJoin = true;
 
-            blobInput.enabled = false;
-            deeInput.enabled = false;
-            eliInput.enabled = true;
+            var activeInput = SetActiveCharacterEnabled();
 
-            eliInput.SwitchCurrentControlScheme(
-                keyboardControlSchemeName,
-                Keyboard.current, Mouse.current
+            activeInput.SwitchCurrentControlScheme(
+                gamepadControlSchemeName,
+                Gamepad.all[0]
             );
 
             _pendingJoinGamepad = Gamepad.all.Count > 0 ? Gamepad.all[0] : null;
@@ -132,6 +147,7 @@ public class PlayerSwitcher : MonoBehaviour
         _waitingForSecondPlayerJoin = false;
         _pendingJoinGamepad = null;
 
+        //TODO: Need to handle if Eli is in blob form
         blobInput.enabled = false;
         eliInput.enabled = true;
         deeInput.enabled = true;
@@ -144,57 +160,59 @@ public class PlayerSwitcher : MonoBehaviour
     {
         if (_isCoopActive)
         {
+            //TODO: Should switch to "active" character
             SwitchToEli();
         }
     }
 
-    private void OnAnyInputPerformed(object obj, InputActionChange change)
-    {
-        if (!_waitingForSecondPlayerJoin)
-        {
-            return;
-        }
+    //TODO: This needs to handle single-player as well when keyboard and one gamepad is connected
+    // private void OnAnyInputPerformed(object obj, InputActionChange change)
+    // {
+    //     if (!_waitingForSecondPlayerJoin)
+    //     {
+    //         return;
+    //     }
 
-        if (change != InputActionChange.ActionPerformed)
-        {
-            return;
-        }
+    //     if (change != InputActionChange.ActionPerformed)
+    //     {
+    //         return;
+    //     }
 
-        var action = obj as InputAction;
-        if (action == null || action.activeControl == null)
-        {
-            return;
-        }
+    //     var action = obj as InputAction;
+    //     if (action == null || action.activeControl == null)
+    //     {
+    //         return;
+    //     }
 
-        var device = action.activeControl.device as Gamepad;
-        if (device == null || _pendingJoinGamepad == null)
-        {
-            return;
-        }
+    //     var device = action.activeControl.device as Gamepad;
+    //     if (device == null || _pendingJoinGamepad == null)
+    //     {
+    //         return;
+    //     }
 
-        if (device != _pendingJoinGamepad)
-        {
-            return;
-        }
+    //     if (device != _pendingJoinGamepad)
+    //     {
+    //         return;
+    //     }
 
-        // This is the first gamepad pressing a button: enable Dee and enter co-op
-        _waitingForSecondPlayerJoin = false;
-        _isCoopActive = true;
+    //     // This is the first gamepad pressing a button: enable Dee and enter co-op
+    //     _waitingForSecondPlayerJoin = false;
+    //     _isCoopActive = true;
 
-        blobInput.enabled = false;
-        eliInput.enabled = true;
-        deeInput.enabled = true;
+    //     blobInput.enabled = false;
+    //     eliInput.enabled = true;
+    //     deeInput.enabled = true;
 
-        eliInput.SwitchCurrentControlScheme(
-            keyboardControlSchemeName,
-            Keyboard.current, Mouse.current
-        );
+    //     eliInput.SwitchCurrentControlScheme(
+    //         keyboardControlSchemeName,
+    //         Keyboard.current, Mouse.current
+    //     );
 
-        deeInput.SwitchCurrentControlScheme(
-            gamepadControlSchemeName,
-            _pendingJoinGamepad
-        );
+    //     deeInput.SwitchCurrentControlScheme(
+    //         gamepadControlSchemeName,
+    //         _pendingJoinGamepad
+    //     );
 
-        _pendingJoinGamepad = null;
-    }
+    //     _pendingJoinGamepad = null;
+    // }
 }
