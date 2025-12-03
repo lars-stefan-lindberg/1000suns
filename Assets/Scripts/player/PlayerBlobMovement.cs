@@ -127,9 +127,6 @@ public class PlayerBlobMovement : MonoBehaviour
         }
         else if (context.canceled)
         {
-            //If the merge button is not held we should just switch character instead.
-            //If the merge button was held, the execution is done from Update method
-            bool mergeButtonNotHeld = _mergeSplitHeld && _mergeSplitHoldTimer < _mergeSplitHoldDuration;
             _mergeSplitHeld = false;
             _mergeSplitHoldTimer = 0f;
 
@@ -140,11 +137,6 @@ public class PlayerBlobMovement : MonoBehaviour
                     _mergeSplitAudioSource = null;
                 }
                 PlayerBlob.obj.AbortFlash();
-            }
-
-            if (mergeButtonNotHeld)
-            {
-                HandleSwitchCharacter();
             }
         }
     }

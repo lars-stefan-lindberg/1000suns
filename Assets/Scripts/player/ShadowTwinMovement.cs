@@ -451,9 +451,6 @@ public class ShadowTwinMovement : MonoBehaviour
         }
         else if (context.canceled)
         {
-            //If the merge button is not held we should just switch character instead.
-            //If the merge button was held, the execution is done from Update method
-            bool mergeButtonNotHeld = _mergeSplitHeld && _mergeSplitHoldTimer < _mergeSplitHoldDuration;
             _mergeSplitHeld = false;
             _mergeSplitHoldTimer = 0f;
 
@@ -463,12 +460,7 @@ public class ShadowTwinMovement : MonoBehaviour
                     SoundFXManager.obj.FadeOutAndStopSound(_mergeSplitAudioSource, 0.05f);
                     _mergeSplitAudioSource = null;
                 }
-                Player.obj.AbortFlash();
-            }
-
-            if (mergeButtonNotHeld)
-            {
-                HandleSwitchCharacter();
+                ShadowTwinPlayer.obj.AbortFlash();
             }
         }
     }

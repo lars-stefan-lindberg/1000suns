@@ -615,9 +615,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         }
         else if (context.canceled)
         {
-            //If the merge button is not held we should just switch character instead.
-            //If the merge button was held, the execution is done from Update method
-            bool mergeButtonNotHeld = _mergeSplitHeld && _mergeSplitHoldTimer < _mergeSplitHoldDuration;
             _mergeSplitHeld = false;
             _mergeSplitHoldTimer = 0f;
 
@@ -628,11 +625,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
                     _mergeSplitAudioSource = null;
                 }
                 Player.obj.AbortFlash();
-            }
-
-            if (mergeButtonNotHeld)
-            {
-                HandleSwitchCharacter();
             }
         }
     }
