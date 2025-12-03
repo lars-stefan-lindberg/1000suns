@@ -62,10 +62,13 @@ public class PlayerBlob : MonoBehaviour
     }
 
     public void StartChargeFlash() {
-        _playerChargeFlash.StartFlashing();
+        _playerFlash.ChargeFlash();
     }
     public void EndChargeFlash() {
-       _playerChargeFlash.EndFlashing();
+       //_playerChargeFlash.EndFlashing();
+    }
+    public void AbortFlash() {
+        _playerFlash.AbortFlash();
     }
 
     void OnDestroy()

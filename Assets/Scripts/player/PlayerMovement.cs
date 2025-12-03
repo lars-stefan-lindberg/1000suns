@@ -20,6 +20,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     [SerializeField] private GameObject _playerBlob;
     [SerializeField] private GameObject _playerTwin;
     [SerializeField] private GhostTrailManager _ghostTrail;
+    [SerializeField] private GameObject _soulVfx;
     
     public SpriteRenderer spriteRenderer;
     public GameObject anchor;
@@ -518,7 +519,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         isTransformingToTwin = false;
     }
 
-    public void Split() {
+    public void Split(Vector3 splitTarget) {
         ICinemachineCamera activeVirtualCamera = CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera;
         if(activeVirtualCamera != null && activeVirtualCamera.Follow == transform) {
             activeVirtualCamera.Follow = _playerTwin.transform;
@@ -526,11 +527,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
         Player.obj.rigidBody.velocity = new Vector2(0, 0);
         _frameVelocity = new Vector2(0, 0);
-        if(isFacingLeft()) {
-            _playerTwin.transform.position = transform.position + new Vector3(-1, 0, 0);
-        } else {
-            _playerTwin.transform.position = transform.position + new Vector3(1, 0, 0);
-        }
+        _playerTwin.transform.position = splitTarget;
         
         _playerTwin.GetComponent<ShadowTwinMovement>().spriteRenderer.flipX = isFacingLeft();
         if(isGrounded) {
@@ -605,6 +602,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     [SerializeField] private float _mergeSplitHoldDuration = 0.5f;
     private bool _mergeSplitHeld = false;
     private float _mergeSplitHoldTimer = 0f;
+    private AudioSource _mergeSplitAudioSource;
 
     public void OnMergeSplit(InputAction.CallbackContext context)
     {
@@ -612,6 +610,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         {
             _mergeSplitHeld = true;
             _mergeSplitHoldTimer = 0f;
+            _mergeSplitAudioSource = SoundFXManager.obj.PlayForcePushStartCharging(transform);
+            Player.obj.StartChargeFlash();
         }
         else if (context.canceled)
         {
@@ -620,6 +620,15 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             bool mergeButtonNotHeld = _mergeSplitHeld && _mergeSplitHoldTimer < _mergeSplitHoldDuration;
             _mergeSplitHeld = false;
             _mergeSplitHoldTimer = 0f;
+
+            //Only abort flash and sfx if eli is active. If not, the split happened and we want to finish the vfx and sfx
+            if(PlayerSwitcher.obj.IsEliActive()) {
+                if(_mergeSplitAudioSource != null && _mergeSplitAudioSource.isPlaying) {
+                    SoundFXManager.obj.FadeOutAndStopSound(_mergeSplitAudioSource, 0.05f);
+                    _mergeSplitAudioSource = null;
+                }
+                Player.obj.AbortFlash();
+            }
 
             if (mergeButtonNotHeld)
             {
@@ -654,9 +663,27 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
                 _playerTwin.SetActive(false);
                 PlayerManager.obj.IsSeparated = false;
             } else {
-                Split();
+                Vector3 splitTarget;
+                if(isFacingLeft()) {
+                    splitTarget = transform.position + new Vector3(-1, 0, 0);
+                } else {
+                    splitTarget = transform.position + new Vector3(1, 0, 0);
+                }
+                StartCoroutine(SplitVfx(splitTarget));
             }
         }
+    }
+
+    private IEnumerator SplitVfx(Vector3 target) {
+        GameObject soul = Instantiate(_soulVfx, transform.position, transform.rotation);
+        PrisonerSoul prisonerSoul = soul.GetComponent<PrisonerSoul>();
+        prisonerSoul.Target = target;
+        while (!prisonerSoul.IsTargetReached) {
+            yield return null;
+        }
+        Split(target);
+        Destroy(soul);
+        yield return null;
     }
 
     public void CancelJumping() {

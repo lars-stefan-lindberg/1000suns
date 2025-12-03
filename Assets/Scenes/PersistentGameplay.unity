@@ -483,7 +483,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0908dfccf0ea8495f859ffb3b91a3c9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _flashIntensity: 0.5
+  _flashIntensity: 0.25
   _defaultFlashSpeed: 0.27
   _chargeFlashIncreaseSpeed: 0.6
   _chargeFlashDecreaseSpeed: 0.1
@@ -8547,6 +8547,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7225188016169276505, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
+      propertyPath: _soulVfx
+      value: 
+      objectReference: {fileID: 9180255512246155427, guid: bf108f54cbe3644a899f40503b273f0e, type: 3}
     - target: {fileID: 7225188016169276505, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
       propertyPath: isDevMode
       value: 1
@@ -19708,6 +19712,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _player: {fileID: 5764671154351780262}
   _playerTwin: {fileID: 3845438661513609776}
+  _soulVfx: {fileID: 9180255512246155427, guid: bf108f54cbe3644a899f40503b273f0e, type: 3}
   anchor: {fileID: 2007612153}
   spriteRenderer: {fileID: 72575920}
   _stats: {fileID: 11400000, guid: af3eda9aae2ae413b8d6177a5263a0c9, type: 2}
@@ -22891,6 +22896,7 @@ MonoBehaviour:
   _playerTwin: {fileID: 5764671154351780262}
   _playerBlob: {fileID: 2059269596}
   _ghostTrail: {fileID: 2084112924}
+  _soulVfx: {fileID: 9180255512246155427, guid: bf108f54cbe3644a899f40503b273f0e, type: 3}
   spriteRenderer: {fileID: 8611899175694005967}
   anchor: {fileID: 3848099105409424856}
   _isDashing: 0

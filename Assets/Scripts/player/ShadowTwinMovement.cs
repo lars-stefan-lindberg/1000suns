@@ -19,6 +19,7 @@ public class ShadowTwinMovement : MonoBehaviour
     [SerializeField] private GameObject _playerTwin;
     [SerializeField] private GameObject _playerBlob;
     [SerializeField] private GhostTrailManager _ghostTrail;
+    [SerializeField] private GameObject _soulVfx;
     
     public SpriteRenderer spriteRenderer;
     public GameObject anchor;
@@ -437,6 +438,7 @@ public class ShadowTwinMovement : MonoBehaviour
     [SerializeField] private float _mergeSplitHoldDuration = 0.5f;
     private bool _mergeSplitHeld = false;
     private float _mergeSplitHoldTimer = 0f;
+    private AudioSource _mergeSplitAudioSource;
 
     public void OnMergeSplit(InputAction.CallbackContext context)
     {
@@ -444,6 +446,8 @@ public class ShadowTwinMovement : MonoBehaviour
         {
             _mergeSplitHeld = true;
             _mergeSplitHoldTimer = 0f;
+            _mergeSplitAudioSource = SoundFXManager.obj.PlayForcePushStartCharging(transform);
+            ShadowTwinPlayer.obj.StartChargeFlash();
         }
         else if (context.canceled)
         {
@@ -452,6 +456,15 @@ public class ShadowTwinMovement : MonoBehaviour
             bool mergeButtonNotHeld = _mergeSplitHeld && _mergeSplitHoldTimer < _mergeSplitHoldDuration;
             _mergeSplitHeld = false;
             _mergeSplitHoldTimer = 0f;
+
+            //Only abort flash and sfx if eli is active. If not, the split happened and we want to finish the vfx and sfx
+            if(PlayerSwitcher.obj.IsDeeActive()) {
+                if(_mergeSplitAudioSource != null && _mergeSplitAudioSource.isPlaying) {
+                    SoundFXManager.obj.FadeOutAndStopSound(_mergeSplitAudioSource, 0.05f);
+                    _mergeSplitAudioSource = null;
+                }
+                Player.obj.AbortFlash();
+            }
 
             if (mergeButtonNotHeld)
             {
@@ -472,13 +485,39 @@ public class ShadowTwinMovement : MonoBehaviour
                 }
                 PlayerManager.obj.IsSeparated = false;
             } else {
-                if(PlayerManager.obj.IsEliInBlobForm()) {
-                    SplitToBlob();
+                bool isEliInBlobForm = PlayerManager.obj.IsEliInBlobForm();
+                Vector3 splitTarget;
+                if(isEliInBlobForm) {
+                    if(isFacingLeft()) {
+                        splitTarget = transform.position + new Vector3(-1, -0.5f, 0);
+                    } else {
+                        splitTarget = transform.position + new Vector3(1, -0.5f, 0);
+                    }
                 } else {
-                    SplitToTwin();
+                    if(isFacingLeft()) {
+                        splitTarget = transform.position + new Vector3(-1, 0, 0);
+                    } else {
+                        splitTarget = transform.position + new Vector3(1, 0, 0);
+                    }
                 }
+                StartCoroutine(SplitVfx(splitTarget, PlayerManager.obj.IsEliInBlobForm()));
             }
         }
+    }
+
+    private IEnumerator SplitVfx(Vector3 target, bool isEliInBlobForm) {
+        GameObject soul = Instantiate(_soulVfx, transform.position, transform.rotation);
+        PrisonerSoul prisonerSoul = soul.GetComponent<PrisonerSoul>();
+        prisonerSoul.Target = target;
+        while (!prisonerSoul.IsTargetReached) {
+            yield return null;
+        }
+        if(isEliInBlobForm)
+            SplitToBlob(target);
+        else    
+            SplitToTwin(target);
+        Destroy(soul);
+        yield return null;
     }
 
     public void ToTwin() {
@@ -509,7 +548,7 @@ public class ShadowTwinMovement : MonoBehaviour
         isTransforming = false;
     }
 
-    public void SplitToTwin() {
+    public void SplitToTwin(Vector3 splitTarget) {
         ICinemachineCamera activeVirtualCamera = CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera;
         if(activeVirtualCamera != null && activeVirtualCamera.Follow == transform) {
             activeVirtualCamera.Follow = _playerTwin.transform;
@@ -517,11 +556,8 @@ public class ShadowTwinMovement : MonoBehaviour
 
         ShadowTwinPlayer.obj.rigidBody.velocity = new Vector2(0, 0);
         _frameVelocity = new Vector2(0, 0);
-        if(isFacingLeft()) {
-            _playerTwin.transform.position = transform.position + new Vector3(-1, 0, 0);
-        } else {
-            _playerTwin.transform.position = transform.position + new Vector3(1, 0, 0);
-        }
+        
+        _playerTwin.transform.position = splitTarget;
         _playerTwin.GetComponent<PlayerMovement>().spriteRenderer.flipX = isFacingLeft();
         if(isGrounded) {
             _playerTwin.GetComponent<PlayerMovement>().SetStartingOnGround();
@@ -568,7 +604,7 @@ public class ShadowTwinMovement : MonoBehaviour
         isTransforming = false;
     }
 
-    public void SplitToBlob() {
+    public void SplitToBlob(Vector3 splitTarget) {
         ICinemachineCamera activeVirtualCamera = CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera;
         if(activeVirtualCamera != null && activeVirtualCamera.Follow == transform) {
             activeVirtualCamera.Follow = _playerBlob.transform;
@@ -577,11 +613,7 @@ public class ShadowTwinMovement : MonoBehaviour
         ShadowTwinPlayer.obj.rigidBody.velocity = new Vector2(0, 0);
         _frameVelocity = new Vector2(0, 0);
 
-        if(isFacingLeft()) {
-            _playerBlob.transform.position = transform.position + new Vector3(-1, -0.5f, 0);
-        } else {
-            _playerBlob.transform.position = transform.position + new Vector3(1, -0.5f, 0);
-        }
+        _playerBlob.transform.position = splitTarget;
 
         _playerBlob.GetComponent<PlayerBlobMovement>().spriteRenderer.flipX = isFacingLeft();
         if(isGrounded) {

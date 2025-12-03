@@ -456,7 +456,7 @@ public class Prisoner : MonoBehaviour
             SpawnPrisoners();
         if(isSpawningSoul) {
             GameObject prisonerSoul = Instantiate(this.prisonerSoul, transform.position, transform.rotation);
-            prisonerSoul.GetComponent<PrisonerSoul>().Target = prisonerSoulTarget;
+            prisonerSoul.GetComponent<PrisonerSoul>().Target = prisonerSoulTarget.position;
             StartCoroutine(DelayedKill());
         } else {
             StartCoroutine(DelayedKill());

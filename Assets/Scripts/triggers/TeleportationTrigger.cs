@@ -22,7 +22,7 @@ public class TeleportationTrigger : MonoBehaviour
         GameObject soul = Instantiate(_soul, Player.obj.transform.position, Player.obj.transform.rotation);
         SoundFXManager.obj.PlayPlayerTeleportStart(soul.transform);
         PrisonerSoul prisonerSoul = soul.GetComponent<PrisonerSoul>();
-        prisonerSoul.Target = _spawnPoint.transform;
+        prisonerSoul.Target = _spawnPoint.transform.position;
         while (!prisonerSoul.IsTargetReached) {
             Player.obj.transform.position = prisonerSoul.transform.position;
             yield return null;

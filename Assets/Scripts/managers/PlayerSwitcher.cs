@@ -84,6 +84,18 @@ public class PlayerSwitcher : MonoBehaviour
         }
     }
 
+    public bool IsEliActive() {
+        return eliInput.enabled;
+    }
+
+    public bool IsBlobActive() {
+        return blobInput.enabled;
+    }
+
+    public bool IsDeeActive() {
+        return deeInput.enabled;
+    }
+
     private void OnGamepadCountChanged(int count)
     {
         if (count <= 0)
