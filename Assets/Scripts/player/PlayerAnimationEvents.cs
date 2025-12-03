@@ -14,6 +14,10 @@ public class PlayerAnimationEvents : MonoBehaviour
         PlayerMovement.obj.ToBlob();
     }
 
+    public void ToShadowTwin() {
+        PlayerMovement.obj.ToTwin();
+    }
+
     public void JumpSqueeze() {
         PlayerMovement.obj.JumpSqueeze();
     }

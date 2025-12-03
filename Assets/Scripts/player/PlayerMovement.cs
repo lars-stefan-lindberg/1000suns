@@ -514,6 +514,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         } else {
             _playerTwin.GetComponent<ShadowTwinMovement>().UnFreeze();
         }
+        ShadowTwinPull.obj.EnablePull();
         isTransformingToTwin = false;
     }
 
@@ -605,8 +606,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             SoundFXManager.obj.PlayPlayerShapeshiftToBlob(transform);
             isTransformingToTwin = true;
             PlayerPush.obj.ResetBuiltUpPower();
-            //Player.obj.PlaySwitchToTwinAnimation();
-            ToTwin();
+            PlayerPush.obj.DisableCharge();
+            Player.obj.PlayToShadowTwinAnimation();
         }
         else if(PlayerPowersManager.obj.CanSeparate) {
             PlayerSwitcher.obj.SwitchToDee();

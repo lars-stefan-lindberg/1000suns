@@ -13,4 +13,12 @@ public class ShadowTwinPlayerAnimationEvents : MonoBehaviour
     public void JumpSqueeze() {
         ShadowTwinMovement.obj.JumpSqueeze();
     }
+
+    public void ToTwin() {
+        ShadowTwinMovement.obj.ToTwin();
+    }
+
+    public void ToTwinBlob() {
+        ShadowTwinMovement.obj.ToBlob();
+    }
 }

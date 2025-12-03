@@ -30,6 +30,7 @@ public class ShadowTwinPull : MonoBehaviour
 
     private AudioSource _forcePushStartChargingAudioSource;
 
+    private bool _isPullDisabled = false;
     private bool _startedChargeAnimation = false;
     private bool _startedFullyChargedAnimation = false;
 
@@ -52,7 +53,7 @@ public class ShadowTwinPull : MonoBehaviour
 
     public void OnShoot(InputAction.CallbackContext context)
     {
-        if(ShadowTwinPlayer.obj.hasCrown) {
+        if(ShadowTwinPlayer.obj.hasCrown && !_isPullDisabled) {
             if (context.performed)
             {
                 Collider2D pullable = DetectPullable();
@@ -130,6 +131,24 @@ public class ShadowTwinPull : MonoBehaviour
         );
 
         return blockCheck.collider != null; // true = blocked
+    }
+
+    public void DisablePull() {
+        _isPullDisabled = true;
+    }
+
+    public void EnablePull() {
+        _isPullDisabled = false;
+    }
+
+    public void DisablePullFor(float duration) {
+        _isPullDisabled = true;
+        StartCoroutine(EnablePullAfterDelay(duration));
+    }
+
+    private IEnumerator EnablePullAfterDelay(float delay) {
+        yield return new WaitForSeconds(delay);
+        _isPullDisabled = false;
     }
 
     public bool IsFullyCharged() {

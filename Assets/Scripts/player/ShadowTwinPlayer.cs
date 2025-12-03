@@ -65,6 +65,18 @@ public class ShadowTwinPlayer : MonoBehaviour
         _animator.SetTrigger("shadowDeath");
     }
 
+    public void PlayToTwinAnimation() {
+        _animator.SetTrigger("toTwin");
+    }
+
+    public void PlayToTwinBlobAnimation() {
+        _animator.SetTrigger("toTwinBlob");
+    }    
+    
+    public void PlayToPlayerAnimation() {
+        _animator.SetTrigger("toPlayer");
+    }
+
     [ContextMenu("PlayGetUpAnimation")]
     public void PlayGetUpAnimation() {
         _animator.SetTrigger("getUp");
@@ -131,6 +143,10 @@ public class ShadowTwinPlayer : MonoBehaviour
     }
     public void FlashFor(float duration) {
         _playerFlash.FlashFor(duration, 0.05f);
+    }
+
+    public void FlashFor(float duration, float flashSpeed) {
+        _playerFlash.FlashFor(duration, flashSpeed);
     }
 
     public void AbortFlash() {

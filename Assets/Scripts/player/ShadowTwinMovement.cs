@@ -416,11 +416,14 @@ public class ShadowTwinMovement : MonoBehaviour
             isTransforming = true;
             IsPulling = false;
             ShadowTwinPull.obj.CancelPulling();
-            //Player.obj.PlaySwitchToTwinAnimation();
+            ShadowTwinPull.obj.DisablePull();
+            
             if(PlayerManager.obj.IsEliInBlobForm()) {
-                ToBlob();
+                //The execution for actually transforming to twin blob is done from the animation events 
+                ShadowTwinPlayer.obj.PlayToTwinBlobAnimation();
             } else {
-                ToTwin();
+                //The execution for actually transforming to twin is done from the animation events 
+                ShadowTwinPlayer.obj.PlayToTwinAnimation();
             }
         } else if(PlayerPowersManager.obj.CanSeparate) {
             if(PlayerManager.obj.IsEliInBlobForm()) {
@@ -508,6 +511,7 @@ public class ShadowTwinMovement : MonoBehaviour
         } else {
             _playerTwin.GetComponent<PlayerMovement>().UnFreeze();
         }
+        PlayerPush.obj.EnableCharge();
         isTransforming = false;
     }
 

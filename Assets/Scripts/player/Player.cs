@@ -76,6 +76,10 @@ public class Player : MonoBehaviour
         _animator.SetTrigger("toBlob");
     }
 
+    public void PlayToShadowTwinAnimation() {
+        _animator.SetTrigger("toShadowTwin");
+    }
+
     [ContextMenu("PlayToPlayerAnimation")] 
     public void PlayToPlayerAnimation() {
         _animator.SetTrigger("toPlayer");

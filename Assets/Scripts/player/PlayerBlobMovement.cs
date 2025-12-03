@@ -78,7 +78,6 @@ public class PlayerBlobMovement : MonoBehaviour
             if(!IsEnoughSpaceForPlayer()) {
                 return;
             }
-            PlayerBlobCharge.obj.ResetBuiltUpPower();
             PlayerBlob.obj.rigidBody.velocity = new Vector2(0,0);
             _frameVelocity = new Vector2(0,0);
             ToHuman();
@@ -103,7 +102,6 @@ public class PlayerBlobMovement : MonoBehaviour
             //Switch to shadow twin
             SoundFXManager.obj.PlayPlayerShapeshiftToBlob(transform);
             isTransformingToTwin = true;
-            PlayerPush.obj.ResetBuiltUpPower();
             //Player.obj.PlaySwitchToTwinAnimation();
             ToTwin();
         }
@@ -180,6 +178,8 @@ public class PlayerBlobMovement : MonoBehaviour
         } else {
             _playerTwin.GetComponent<ShadowTwinMovement>().UnFreeze();
         }
+        _playerTwin.GetComponent<ShadowTwinPlayer>().PlayToPlayerAnimation();
+        ShadowTwinPull.obj.EnablePull();
         isTransformingToTwin = false;
     }
 

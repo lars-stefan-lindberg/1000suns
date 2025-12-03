@@ -117,6 +117,14 @@ public class PlayerPush : MonoBehaviour
         Player.obj.EndChargeFlash();
     }
 
+    public void DisableCharge() {
+        _isChargeDisabled = true;
+    }
+
+    public void EnableCharge() {
+        _isChargeDisabled = false;
+    }
+
     public void DisableChargeFor(float duration) {
         _isChargeDisabled = true;
         StartCoroutine(EnableChargeAfterDelay(duration));
