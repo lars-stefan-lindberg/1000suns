@@ -444,6 +444,11 @@ public class ShadowTwinMovement : MonoBehaviour
     {
         if (context.started)
         {
+            //Check if twin is close enough to merge
+            if(PlayerManager.obj.IsSeparated && !CloseEnoughToMerge(PlayerManager.obj.IsEliInBlobForm())) {
+                HandleSwitchCharacter();
+                return;
+            }
             _mergeSplitHeld = true;
             _mergeSplitHoldTimer = 0f;
             _mergeSplitAudioSource = SoundFXManager.obj.PlayForcePushStartCharging(transform);
@@ -465,17 +470,19 @@ public class ShadowTwinMovement : MonoBehaviour
         }
     }
 
+    private bool CloseEnoughToMerge(bool isEliInBlobForm) {
+        if(isEliInBlobForm) {
+            return isGrounded && _playerBlob.GetComponent<PlayerBlobMovement>().isGrounded && Vector3.Distance(_playerBlob.transform.position, transform.position) <= 2f;
+        } else {
+            return isGrounded && _playerTwin.GetComponent<PlayerMovement>().isGrounded && Vector3.Distance(_playerTwin.transform.position, transform.position) <= 1.5f;
+        }
+    }
+
     private void PerformMergeSplit()
     {
         if(PlayerPowersManager.obj.CanSeparate) {
             if(PlayerManager.obj.IsSeparated) {
-                //Merge
-                if(PlayerManager.obj.IsEliInBlobForm()) {
-                    _playerBlob.SetActive(false);                        
-                } else {
-                    _playerTwin.SetActive(false);
-                }
-                PlayerManager.obj.IsSeparated = false;
+                StartCoroutine(MergeVfx(PlayerManager.obj.IsEliInBlobForm()));
             } else {
                 bool isEliInBlobForm = PlayerManager.obj.IsEliInBlobForm();
                 Vector3 splitTarget;
@@ -495,6 +502,26 @@ public class ShadowTwinMovement : MonoBehaviour
                 StartCoroutine(SplitVfx(splitTarget, PlayerManager.obj.IsEliInBlobForm()));
             }
         }
+    }
+
+    private IEnumerator MergeVfx(bool isEliInBlobForm) {
+        GameObject soul;
+        if(isEliInBlobForm) {
+            _playerBlob.SetActive(false);
+            soul = Instantiate(_soulVfx, _playerBlob.transform.position, _playerBlob.transform.rotation);
+        } else {
+            _playerTwin.SetActive(false);
+            soul = Instantiate(_soulVfx, _playerTwin.transform.position, _playerTwin.transform.rotation);
+        }
+        
+        PrisonerSoul prisonerSoul = soul.GetComponent<PrisonerSoul>();
+        prisonerSoul.Target = transform.position;
+        while (!prisonerSoul.IsTargetReached) {
+            yield return null;
+        }
+        PlayerManager.obj.IsSeparated = false;
+        Destroy(soul);
+        yield return null;
     }
 
     private IEnumerator SplitVfx(Vector3 target, bool isEliInBlobForm) {

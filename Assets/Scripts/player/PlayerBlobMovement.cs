@@ -120,6 +120,10 @@ public class PlayerBlobMovement : MonoBehaviour
     {
         if (context.started)
         {
+            if(PlayerManager.obj.IsSeparated && !CloseEnoughToMerge()) {
+                HandleSwitchCharacter();
+                return;
+            }
             _mergeSplitHeld = true;
             _mergeSplitHoldTimer = 0f;
             _mergeSplitAudioSource = SoundFXManager.obj.PlayForcePushStartCharging(transform);
@@ -141,14 +145,15 @@ public class PlayerBlobMovement : MonoBehaviour
         }
     }
 
+    private bool CloseEnoughToMerge() {
+        return isGrounded && _playerTwin.GetComponent<ShadowTwinMovement>().isGrounded && Vector3.Distance(_playerTwin.transform.position, transform.position) <= 1.5f;
+    }
+
     private void PerformMergeSplit()
     {
         if(PlayerPowersManager.obj.CanSeparate) {
             if(PlayerManager.obj.IsSeparated) {
-                //Merge
-                //Check if both players are grounded and close enough to merge
-                _playerTwin.SetActive(false);
-                PlayerManager.obj.IsSeparated = false;
+                StartCoroutine(MergeVfx());
             } else {
                 Vector3 splitTarget;
                 if(IsFacingLeft()) {
@@ -159,6 +164,19 @@ public class PlayerBlobMovement : MonoBehaviour
                 StartCoroutine(SplitToTwinVfx(splitTarget));
             }
         }
+    }
+
+    private IEnumerator MergeVfx() {
+        _playerTwin.SetActive(false);
+        GameObject soul = Instantiate(_soulVfx, _playerTwin.transform.position, _playerTwin.transform.rotation);
+        PrisonerSoul prisonerSoul = soul.GetComponent<PrisonerSoul>();
+        prisonerSoul.Target = transform.position;
+        while (!prisonerSoul.IsTargetReached) {
+            yield return null;
+        }
+        PlayerManager.obj.IsSeparated = false;
+        Destroy(soul);
+        yield return null;
     }
 
     private IEnumerator SplitToTwinVfx(Vector3 target) {

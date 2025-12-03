@@ -608,6 +608,11 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     {
         if (context.started)
         {
+            //Check if twin is close enough to merge
+            if(PlayerManager.obj.IsSeparated && !CloseEnoughToMerge()) {
+                HandleSwitchCharacter();
+                return;
+            }
             _mergeSplitHeld = true;
             _mergeSplitHoldTimer = 0f;
             _mergeSplitAudioSource = SoundFXManager.obj.PlayForcePushStartCharging(transform);
@@ -627,6 +632,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
                 Player.obj.AbortFlash();
             }
         }
+    }
+
+    private bool CloseEnoughToMerge() {
+        return isGrounded && _playerTwin.GetComponent<ShadowTwinMovement>().isGrounded && Vector3.Distance(_playerTwin.transform.position, transform.position) <= 1.5f;
     }
 
     private void HandleSwitchCharacter()
@@ -652,8 +661,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     {
         if(PlayerPowersManager.obj.CanSeparate) {
             if(PlayerManager.obj.IsSeparated) {
-                _playerTwin.SetActive(false);
-                PlayerManager.obj.IsSeparated = false;
+                StartCoroutine(MergeVfx());
             } else {
                 Vector3 splitTarget;
                 if(isFacingLeft()) {
@@ -664,6 +672,19 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
                 StartCoroutine(SplitVfx(splitTarget));
             }
         }
+    }
+
+    private IEnumerator MergeVfx() {
+        _playerTwin.SetActive(false);
+        GameObject soul = Instantiate(_soulVfx, _playerTwin.transform.position, _playerTwin.transform.rotation);
+        PrisonerSoul prisonerSoul = soul.GetComponent<PrisonerSoul>();
+        prisonerSoul.Target = transform.position;
+        while (!prisonerSoul.IsTargetReached) {
+            yield return null;
+        }
+        PlayerManager.obj.IsSeparated = false;
+        Destroy(soul);
+        yield return null;
     }
 
     private IEnumerator SplitVfx(Vector3 target) {
