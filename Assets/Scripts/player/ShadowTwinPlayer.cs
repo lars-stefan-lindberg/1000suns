@@ -36,11 +36,14 @@ public class ShadowTwinPlayer : MonoBehaviour
         SetHasCrown(hasCrown);
     }
 
+    public void ResetAnimator() {
+        _animator.Play("main_character_with_cape_idle", 0, 0);
+    }
+
     public void SetStatic() {
         rigidBody.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezePositionY;
         rigidBody.velocity = Vector2.zero;
         rigidBody.bodyType = RigidbodyType2D.Static;
-
     }
 
     void OnCollisionEnter2D(Collision2D other) {

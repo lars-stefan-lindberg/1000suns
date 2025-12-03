@@ -472,17 +472,11 @@ public class ShadowTwinMovement : MonoBehaviour
                 }
                 PlayerManager.obj.IsSeparated = false;
             } else {
-                //Split
                 if(PlayerManager.obj.IsEliInBlobForm()) {
-                    _playerBlob.transform.position = transform.position - new Vector3(0, 0.5f, 0);
-                    _playerBlob.SetActive(true);
-                    PlayerSwitcher.obj.SwitchToBlob();
+                    SplitToBlob();
                 } else {
-                    _playerTwin.SetActive(true);
-                    _playerTwin.transform.position = transform.position;
-                    PlayerSwitcher.obj.SwitchToEli();
+                    SplitToTwin();
                 }
-                PlayerManager.obj.IsSeparated = true;
             }
         }
     }
@@ -515,6 +509,38 @@ public class ShadowTwinMovement : MonoBehaviour
         isTransforming = false;
     }
 
+    public void SplitToTwin() {
+        ICinemachineCamera activeVirtualCamera = CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera;
+        if(activeVirtualCamera != null && activeVirtualCamera.Follow == transform) {
+            activeVirtualCamera.Follow = _playerTwin.transform;
+        }
+
+        ShadowTwinPlayer.obj.rigidBody.velocity = new Vector2(0, 0);
+        _frameVelocity = new Vector2(0, 0);
+        if(isFacingLeft()) {
+            _playerTwin.transform.position = transform.position + new Vector3(-1, 0, 0);
+        } else {
+            _playerTwin.transform.position = transform.position + new Vector3(1, 0, 0);
+        }
+        _playerTwin.GetComponent<PlayerMovement>().spriteRenderer.flipX = isFacingLeft();
+        if(isGrounded) {
+            _playerTwin.GetComponent<PlayerMovement>().SetStartingOnGround();
+            _playerTwin.GetComponent<PlayerMovement>().isGrounded = true;
+        } else {
+            _playerTwin.GetComponent<PlayerMovement>().isGrounded = false;
+        }
+        _playerTwin.SetActive(true);
+
+        //Need to reset animator. For some reason it starts playing jump animation
+        Player.obj.ResetAnimator();
+
+        PlayerSwitcher.obj.SwitchToEli();
+        
+        PlayerPush.obj.EnableCharge();
+
+        PlayerManager.obj.IsSeparated = true;
+    }
+
     public void ToBlob() {
         ICinemachineCamera activeVirtualCamera = CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera;
         if(activeVirtualCamera != null && activeVirtualCamera.Follow == transform) {
@@ -540,6 +566,34 @@ public class ShadowTwinMovement : MonoBehaviour
             _playerBlob.GetComponent<PlayerBlobMovement>().UnFreeze();
         }
         isTransforming = false;
+    }
+
+    public void SplitToBlob() {
+        ICinemachineCamera activeVirtualCamera = CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera;
+        if(activeVirtualCamera != null && activeVirtualCamera.Follow == transform) {
+            activeVirtualCamera.Follow = _playerBlob.transform;
+        }
+
+        ShadowTwinPlayer.obj.rigidBody.velocity = new Vector2(0, 0);
+        _frameVelocity = new Vector2(0, 0);
+
+        if(isFacingLeft()) {
+            _playerBlob.transform.position = transform.position + new Vector3(-1, -0.5f, 0);
+        } else {
+            _playerBlob.transform.position = transform.position + new Vector3(1, -0.5f, 0);
+        }
+
+        _playerBlob.GetComponent<PlayerBlobMovement>().spriteRenderer.flipX = isFacingLeft();
+        if(isGrounded) {
+            _playerBlob.GetComponent<PlayerBlobMovement>().SetStartingOnGround();
+            _playerBlob.GetComponent<PlayerBlobMovement>().isGrounded = true;
+        } else {
+            _playerBlob.GetComponent<PlayerBlobMovement>().isGrounded = false;
+        }
+        _playerBlob.SetActive(true);
+        PlayerSwitcher.obj.SwitchToBlob();
+
+        PlayerManager.obj.IsSeparated = true;
     }
 
     public void CancelJumping() {

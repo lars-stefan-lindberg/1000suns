@@ -36,6 +36,10 @@ public class Player : MonoBehaviour
         SetHasCape(hasCape);
     }
 
+    public void ResetAnimator() {
+        _animator.Play("main_character_with_cape_idle", 0, 0);
+    }
+
     public void SetStatic() {
         rigidBody.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezePositionY;
         rigidBody.velocity = Vector2.zero;

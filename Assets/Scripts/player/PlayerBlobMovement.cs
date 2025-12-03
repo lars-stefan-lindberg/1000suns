@@ -145,11 +145,7 @@ public class PlayerBlobMovement : MonoBehaviour
                 _playerTwin.SetActive(false);
                 PlayerManager.obj.IsSeparated = false;
             } else {
-                //Split
-                _playerTwin.transform.position = transform.position + new Vector3(0, 0.5f, 0);
-                _playerTwin.SetActive(true);
-                PlayerSwitcher.obj.SwitchToDee();
-                PlayerManager.obj.IsSeparated = true;
+                SplitToTwin();
             }
         }
     }
@@ -181,6 +177,40 @@ public class PlayerBlobMovement : MonoBehaviour
         _playerTwin.GetComponent<ShadowTwinPlayer>().PlayToPlayerAnimation();
         ShadowTwinPull.obj.EnablePull();
         isTransformingToTwin = false;
+    }
+
+    public void SplitToTwin() {
+        ICinemachineCamera activeVirtualCamera = CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera;
+        if(activeVirtualCamera != null && activeVirtualCamera.Follow == transform) {
+            activeVirtualCamera.Follow = _playerTwin.transform;
+        }
+
+        PlayerBlob.obj.rigidBody.velocity = new Vector2(0, 0);
+        _frameVelocity = new Vector2(0, 0);
+
+        if(IsFacingLeft()) {
+            _playerTwin.transform.position = transform.position + new Vector3(-1, 0.5f, 0);
+        } else {
+            _playerTwin.transform.position = transform.position + new Vector3(1, 0.5f, 0);
+        }
+
+        _playerTwin.GetComponent<ShadowTwinMovement>().spriteRenderer.flipX = IsFacingLeft();
+        if(isGrounded) {
+            _playerTwin.GetComponent<ShadowTwinMovement>().SetStartingOnGround();
+            _playerTwin.GetComponent<ShadowTwinMovement>().isGrounded = true;
+        } else {
+            _playerTwin.GetComponent<ShadowTwinMovement>().isGrounded = false;
+        }
+        _playerTwin.SetActive(true);
+
+        //Need to reset animator. For some reason it starts playing jump animation
+        ShadowTwinPlayer.obj.ResetAnimator();
+
+        PlayerSwitcher.obj.SwitchToDee();
+        
+        ShadowTwinPull.obj.EnablePull();
+
+        PlayerManager.obj.IsSeparated = true;
     }
 
     private float GetHorizontalInput(float originInput) {
