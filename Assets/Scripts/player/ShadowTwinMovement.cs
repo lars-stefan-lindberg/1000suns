@@ -427,12 +427,33 @@ public class ShadowTwinMovement : MonoBehaviour
                 ShadowTwinPlayer.obj.PlayToTwinAnimation();
             }
         } else if(PlayerPowersManager.obj.CanSeparate) {
-            if(PlayerManager.obj.IsEliInBlobForm()) {
-                PlayerSwitcher.obj.SwitchToBlob();
-            } else {
-                PlayerSwitcher.obj.SwitchToEli();
-            }
+            StartCoroutine(SwitchTo(PlayerManager.obj.IsEliInBlobForm()));
         }
+    }
+
+    private IEnumerator SwitchTo(bool isEliInBlobForm) {
+        //Disable all controls
+        PlayerSwitcher.obj.DisableAll();
+        GameObject soul = Instantiate(_soulVfx, transform.position, transform.rotation);
+        PrisonerSoul prisonerSoul = soul.GetComponent<PrisonerSoul>();
+        prisonerSoul.speed = 20f;
+        if(isEliInBlobForm) {
+            prisonerSoul.Target = _playerBlob.transform.position;
+        } else {
+            prisonerSoul.Target = _playerTwin.transform.position;
+        }
+        while (!prisonerSoul.IsTargetReached) {
+            yield return null;
+        }
+        if(isEliInBlobForm) {
+            PlayerBlob.obj.FlashOnce();
+            PlayerSwitcher.obj.SwitchToBlob();
+        } else {
+            Player.obj.FlashOnce();
+            PlayerSwitcher.obj.SwitchToEli();
+        }
+        Destroy(soul);
+        yield return null;
     }
 
     [SerializeField] private float _mergeSplitHoldDuration = 0.5f;

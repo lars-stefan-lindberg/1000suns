@@ -107,8 +107,24 @@ public class PlayerBlobMovement : MonoBehaviour
             ToTwin();
         }
         else if(PlayerPowersManager.obj.CanSeparate) {
-            PlayerSwitcher.obj.SwitchToDee();
+            StartCoroutine(SwitchToDee());
         }
+    }
+
+    private IEnumerator SwitchToDee() {
+        //Disable all controls
+        PlayerSwitcher.obj.DisableAll();
+        GameObject soul = Instantiate(_soulVfx, transform.position, transform.rotation);
+        PrisonerSoul prisonerSoul = soul.GetComponent<PrisonerSoul>();
+        prisonerSoul.speed = 20f;
+        prisonerSoul.Target = _playerTwin.transform.position;
+        while (!prisonerSoul.IsTargetReached) {
+            yield return null;
+        }
+        ShadowTwinPlayer.obj.FlashOnce();
+        PlayerSwitcher.obj.SwitchToDee();
+        Destroy(soul);
+        yield return null;
     }
 
     [SerializeField] private float _mergeSplitHoldDuration = 0.5f;

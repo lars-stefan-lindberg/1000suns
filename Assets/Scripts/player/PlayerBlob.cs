@@ -61,6 +61,10 @@ public class PlayerBlob : MonoBehaviour
         _playerFlash.FlashFor(duration, 0.05f);
     }
 
+    public void FlashOnce() {
+        _playerFlash.FlashOnce();
+    }
+
     public void StartChargeFlash() {
         _playerFlash.ChargeFlash();
     }

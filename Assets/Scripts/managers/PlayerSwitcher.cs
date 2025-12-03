@@ -63,6 +63,12 @@ public class PlayerSwitcher : MonoBehaviour
         blobInput.enabled = true;
     }
 
+    public void DisableAll() {
+        eliInput.enabled = false;
+        deeInput.enabled = false;
+        blobInput.enabled = false;
+    }
+
     void OnDestroy()
     {
         obj = null;
