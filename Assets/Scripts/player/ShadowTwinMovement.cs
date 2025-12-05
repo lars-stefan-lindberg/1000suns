@@ -731,12 +731,18 @@ public class ShadowTwinMovement : MonoBehaviour
             }
         }
  
-        bool platformHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, _platformLayerMasks);
+        RaycastHit2D platformHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, _platformLayerMasks);
         bool ceilingHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
 
         if(platformHit) {
             groundHit = true;
             isOnPlatform = true;
+            if(platformRigidBody == null) {
+                platformRigidBody = platformHit.collider.gameObject.GetComponentInParent<Rigidbody2D>();
+            }
+        } else {
+            isOnPlatform = false;
+            platformRigidBody = null;
         }
 
         // Hit a Ceiling

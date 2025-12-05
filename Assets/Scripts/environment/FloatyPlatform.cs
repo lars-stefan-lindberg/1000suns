@@ -11,7 +11,8 @@ public class FloatyPlatform : MonoBehaviour
 
     public float idleMoveSpeed;
     //private float _idleVerticalTargetPosition;
-    public bool isPlayerOnPlatform = false;
+    public bool isPlayer1OnPlatform = false;
+    public bool isPlayer2OnPlatform = false;
     public float startingVerticalPosition;
     public float idleVerticalDistance = 0.25f;
 
@@ -58,15 +59,27 @@ public class FloatyPlatform : MonoBehaviour
         if(collider.transform.CompareTag("FloatingPlatform"))
         {
             FloatyPlatform floatyPlatform = collider.GetComponentInParent<FloatyPlatform>();
-            if(floatyPlatform.isPlayerOnPlatform && floatyPlatform.IsFalling()) {
+            if(floatyPlatform.isPlayer1OnPlatform && floatyPlatform.IsFalling()) {
                 collider.enabled = false;
                 floatyPlatform._collider.enabled = false;
-                RegisterPlayerOnPlatform();
+                RegisterPlayer1OnPlatform();
+            }
+            if(floatyPlatform.isPlayer2OnPlatform && floatyPlatform.IsFalling()) {
+                collider.enabled = false;
+                floatyPlatform._collider.enabled = false;
+                RegisterPlayer2OnPlatform();
             }
         }
         if(collider.transform.CompareTag("Player"))
         {
-            _isPlayerCollisionTriggered = true;
+            PlayerIdentity player = collider.GetComponent<PlayerIdentity>();
+            if (player != null)
+            {
+                if (player.id == 1)
+                    _isPlayer1CollisionTriggered = true;
+                else if (player.id == 2)
+                    _isPlayer2CollisionTriggered = true;
+            }
         }
         if(collider.transform.CompareTag("Enemy")) {
             Prisoner prisoner = collider.gameObject.GetComponent<Prisoner>();
@@ -81,10 +94,20 @@ public class FloatyPlatform : MonoBehaviour
     {
         if (collider.transform.CompareTag("Player"))
         {
-            isPlayerOnPlatform = false;
-            _isPlayerCollisionTriggered = false;
-            PlayerMovement.obj.platformRigidBody = null;
-            PlayerPush.obj.platform = null;
+            PlayerIdentity player = collider.GetComponent<PlayerIdentity>();
+            if (player != null)
+            {
+                if (player.id == 1)
+                {
+                    isPlayer1OnPlatform = false;
+                    _isPlayer1CollisionTriggered = false;
+                }
+                else if (player.id == 2)
+                {
+                    isPlayer2OnPlatform = false;
+                    _isPlayer2CollisionTriggered = false;
+                }
+            }
         }
     }
 
@@ -92,10 +115,14 @@ public class FloatyPlatform : MonoBehaviour
         return fallTimer >= timeBeforeFall;
     }
 
-    private void RegisterPlayerOnPlatform() {
-        isPlayerOnPlatform = true;
-        PlayerMovement.obj.platformRigidBody = _rigidBody;
-        PlayerPush.obj.platform = this;
+    private void RegisterPlayer1OnPlatform() {
+        isPlayer1OnPlatform = true;
+        if(isFallingPlatform)
+            _startFallCountDown = true;
+    }
+
+    private void RegisterPlayer2OnPlatform() {
+        isPlayer2OnPlatform = true;
         if(isFallingPlatform)
             _startFallCountDown = true;
     }
@@ -104,13 +131,19 @@ public class FloatyPlatform : MonoBehaviour
     public bool somethingToTheLeft = false;
     private bool _startFlashing = true;
 
-    private bool _isPlayerCollisionTriggered = false;
+    private bool _isPlayer1CollisionTriggered = false;
+    private bool _isPlayer2CollisionTriggered = false;
     private void Update()
     {
-        if(_isPlayerCollisionTriggered) {
-            if(PlayerMovement.obj.isGrounded && IsPlayerAbovePlatform()) {
-                _isPlayerCollisionTriggered = false;
-                RegisterPlayerOnPlatform();
+        if(_isPlayer1CollisionTriggered) {
+            if(PlayerMovement.obj.isGrounded && IsPlayer1AbovePlatform()) {
+                _isPlayer1CollisionTriggered = false;
+                RegisterPlayer1OnPlatform();
+            }
+        } else if(_isPlayer2CollisionTriggered) {
+            if(ShadowTwinMovement.obj.isGrounded && IsPlayer2AbovePlatform()) {
+                _isPlayer2CollisionTriggered = false;
+                RegisterPlayer2OnPlatform();
             }
         }
         if(_startFallCountDown) {
@@ -167,9 +200,14 @@ public class FloatyPlatform : MonoBehaviour
         //     MoveIdlePlatform();
     }
 
-    private bool IsPlayerAbovePlatform()
+    private bool IsPlayer1AbovePlatform()
     {
         return Player.obj.transform.position.y > transform.position.y;
+    }
+
+    private bool IsPlayer2AbovePlatform()
+    {
+        return ShadowTwinPlayer.obj.transform.position.y > transform.position.y;
     }
 
     // private void MoveIdlePlatform()
@@ -211,7 +249,8 @@ public class FloatyPlatform : MonoBehaviour
         _rigidBody.bodyType = RigidbodyType2D.Kinematic;
         _fadeStartColor.a = 0;
         _spriteRenderer.color = _fadeStartColor;
-        isPlayerOnPlatform = false;
+        isPlayer1OnPlatform = false;
+        isPlayer2OnPlatform = false;
         _fallingPlatformFlash.StopFlashing();
         _startFlashing = true;
     }
