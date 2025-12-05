@@ -8600,6 +8600,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1819809117}
     - target: {fileID: 7225188016169276505, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
+      propertyPath: _groundLayerMasks.m_Bits
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7225188016169276505, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
       propertyPath: initialForcePushJumpSpeed
       value: 30
       objectReference: {fileID: 0}
@@ -22919,8 +22923,10 @@ MonoBehaviour:
   _isDashing: 0
   dashDecelerationTime: 160
   initialDashSpeed: 42
-  isOnPlatform: 0
-  platformRigidBody: {fileID: 0}
+  isOnMovable: 0
+  movableRigidBody: {fileID: 0}
+  isOnBlock: 0
+  blockRigidBody: {fileID: 0}
   jumpThroughPlatform: {fileID: 0}
   _poweredDashMultiplier: 1.2
   partialDashPower: 30
@@ -22934,7 +22940,7 @@ MonoBehaviour:
   startingOnGround: 1
   _groundLayerMasks:
     serializedVersion: 2
-    m_Bits: 136
+    m_Bits: 8
 --- !u!114 &8240633124138664371
 MonoBehaviour:
   m_ObjectHideFlags: 0

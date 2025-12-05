@@ -46,8 +46,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public float dashDecelerationTime = 160f;
     public float initialDashSpeed = 40f;
 
-    public bool isOnPlatform = false;
-    public Rigidbody2D platformRigidBody;
+    public bool isOnMoveable = false;
+    public Rigidbody2D moveableRigidBody;
     public JumpThroughPlatform jumpThroughPlatform;
 
     #region Interface
@@ -62,7 +62,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _animator = GetComponentInChildren<Animator>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         _powerJumpForce = _stats.JumpPower * 2f;
-        _platformLayerMasks = LayerMask.GetMask("JumpThroughs");
+        _moveableLayerMasks = LayerMask.GetMask("JumpThroughs", "Block");
         _ceilingLayerMasks = LayerMask.GetMask("Ground");
         _playerInput = GetComponent<PlayerInput>();
     }
@@ -759,7 +759,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     private float _landedSqueezeTime = 0.08f;
     private bool _landed = false;
     [SerializeField] private LayerMask _groundLayerMasks;
-    private LayerMask _platformLayerMasks;
+    private LayerMask _moveableLayerMasks;
     private LayerMask _ceilingLayerMasks;
 
     private bool _startingOnGroundFalseCoroutineStarted;
@@ -788,19 +788,20 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             }
         }
 
-        RaycastHit2D platformHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, _platformLayerMasks);
+        RaycastHit2D moveableHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, _moveableLayerMasks);
         bool ceilingHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
 
-        if(platformHit) {
+        if(moveableHit) {
             groundHit = true;
-            isOnPlatform = true;
-            if(platformRigidBody == null) {
-                platformRigidBody = platformHit.collider.gameObject.GetComponentInParent<Rigidbody2D>();
-                PlayerPush.obj.platform = platformHit.collider.gameObject.GetComponentInParent<FloatyPlatform>();
+            isOnMoveable = true;
+            if(moveableRigidBody == null) {
+                moveableRigidBody = moveableHit.collider.gameObject.GetComponentInParent<Rigidbody2D>();
+                if(moveableHit.collider.gameObject.CompareTag("FloatingPlatform"))
+                    PlayerPush.obj.platform = moveableHit.collider.gameObject.GetComponentInParent<FloatyPlatform>();
             }
         } else {
-            isOnPlatform = false;
-            platformRigidBody = null;
+            isOnMoveable = false;
+            moveableRigidBody = null;
             PlayerPush.obj.platform = null;
         }
 
@@ -832,7 +833,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         else if (isGrounded && !groundHit)
         {
             isGrounded = false;
-            isOnPlatform = false;
+            isOnMoveable = false;
             _frameLeftGrounded = _time;
             GroundedChanged?.Invoke(false, 0);
         }
@@ -1013,7 +1014,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private void ExecuteJump(float jumpPower)
     {
-        isOnPlatform = false;
+        isOnMoveable = false;
         _endedJumpEarly = false;
         _timeJumpWasPressed = 0;
         _coyoteUsable = false;
@@ -1069,13 +1070,13 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
                 if (_movementInput.x == 0)
                 {
                     var deceleration = isGrounded ? _stats.GroundDeceleration : _stats.AirDeceleration;
-                    _frameVelocity.x = isOnPlatform && platformRigidBody != null ?
-                        platformRigidBody.velocity.x :
+                    _frameVelocity.x = isOnMoveable && moveableRigidBody != null ?
+                        moveableRigidBody.velocity.x :
                         Mathf.MoveTowards(_frameVelocity.x, 0, deceleration * Time.fixedDeltaTime);
                 }
                 else
                 {
-                    _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, (_movementInput.x * _stats.MaxSpeed) + (isOnPlatform && platformRigidBody != null ? platformRigidBody.velocity.x : 0), _stats.Acceleration * Time.fixedDeltaTime);
+                    _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, (_movementInput.x * _stats.MaxSpeed) + (isOnMoveable && moveableRigidBody != null ? moveableRigidBody.velocity.x : 0), _stats.Acceleration * Time.fixedDeltaTime);
                 }
             }
             
@@ -1095,8 +1096,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private void HandleGravity()
     {
-        if(isOnPlatform && platformRigidBody != null) {
-            _frameVelocity.y = platformRigidBody.velocity.y;
+        if(isOnMoveable && moveableRigidBody != null) {
+            _frameVelocity.y = moveableRigidBody.velocity.y;
             return;
         }
         if (isGrounded && _frameVelocity.y <= 0f)

@@ -178,7 +178,7 @@ public class ShadowTwinPull : MonoBehaviour
     public void CancelPulling() {
         _targetRb = null;
         if(_pulledBlock != null)
-            _pulledBlock.IsBeingPulled = false;
+            _pulledBlock.SetIsBeingPulled(false);
         _pulledBlock = null;
     }
 
@@ -188,7 +188,7 @@ public class ShadowTwinPull : MonoBehaviour
             if(blockParent != null && blockParent.CompareTag("Block")) {
                 _targetRb = blockParent.GetComponent<Rigidbody2D>();
                 _pulledBlock = blockParent.GetComponent<Block>();
-                _pulledBlock.IsBeingPulled = true;
+                _pulledBlock.SetIsBeingPulled(true);
                 _pulledCollider = pullable;
             }
         }

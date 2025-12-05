@@ -16,7 +16,7 @@ public class JumpThroughPlatform : MonoBehaviour
         if(collision.transform.CompareTag("Player"))
         {
             PlayerMovement.obj.jumpThroughPlatform = this;
-            PlayerMovement.obj.platformRigidBody = _rigidBody;
+            PlayerMovement.obj.moveableRigidBody = _rigidBody;
         }
     }
 
@@ -25,7 +25,7 @@ public class JumpThroughPlatform : MonoBehaviour
         if (collision.transform.CompareTag("Player"))
         {
             PlayerMovement.obj.jumpThroughPlatform = null;
-            PlayerMovement.obj.platformRigidBody = null;
+            PlayerMovement.obj.moveableRigidBody = null;
         }
     }
 
