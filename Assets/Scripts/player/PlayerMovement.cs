@@ -350,15 +350,19 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     }
 
     public void DisablePlayerMovement() {
-        _playerInput.currentActionMap.FindAction("Movement").Disable();
-        _playerInput.currentActionMap.FindAction("Jump").Disable();
-        _playerInput.currentActionMap.FindAction("Shoot").Disable();
+        if(_playerInput != null && _playerInput.currentActionMap != null) {
+            _playerInput.currentActionMap.FindAction("Movement").Disable();
+            _playerInput.currentActionMap.FindAction("Jump").Disable();
+            _playerInput.currentActionMap.FindAction("Shoot").Disable();
+        }
     }
 
     public void EnablePlayerMovement() {
-        _playerInput.currentActionMap.FindAction("Movement").Enable();
-        _playerInput.currentActionMap.FindAction("Jump").Enable();
-        _playerInput.currentActionMap.FindAction("Shoot").Enable();
+        if(_playerInput != null && _playerInput.currentActionMap != null) {
+            _playerInput.currentActionMap.FindAction("Movement").Enable();
+            _playerInput.currentActionMap.FindAction("Jump").Enable();
+            _playerInput.currentActionMap.FindAction("Shoot").Enable();
+        }
     }
 
     private IEnumerator FreezeDuration(float freezeDuration) {

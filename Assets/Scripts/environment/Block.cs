@@ -37,7 +37,8 @@ public class Block : MonoBehaviour
     }
 
     public float basePushPower = 7f;
-    private bool isPlayerBeneath = false;
+    private bool _isPlayerBeneath = false;
+    private PlayerManager.PlayerType _playerType;
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.transform.CompareTag("Player"))
@@ -46,12 +47,15 @@ public class Block : MonoBehaviour
                 _rigidBody.bodyType = RigidbodyType2D.Static;
 
             if(HitUnderneath(collision) && _rigidBody.velocity.y < -0.05f) {
-                if(PlayerManager.obj.IsPlayerGrounded()) {
+                PlayerManager.PlayerType playerType = PlayerManager.obj.GetPlayerTypeFromCollider(collision);
+                if(PlayerManager.obj.IsPlayerGrounded(playerType)) {
                     _rigidBody.bodyType = RigidbodyType2D.Static;
-                    Reaper.obj.KillPlayerGeneric();
+                    Reaper.obj.KillPlayerGeneric(playerType);
                 }
-                else
-                    isPlayerBeneath = true;
+                else {
+                    _isPlayerBeneath = true;
+                    _playerType = playerType;
+                }
             }
         }
         else if (collision.transform.CompareTag("Projectile"))
@@ -101,7 +105,7 @@ public class Block : MonoBehaviour
         if (collision.transform.CompareTag("Player") || collision.transform.CompareTag("Enemy"))
         {
             _rigidBody.bodyType = RigidbodyType2D.Dynamic;
-            isPlayerBeneath = false;
+            _isPlayerBeneath = false;
         }
         if(collision.transform.CompareTag("Enemy"))
             _prisonerInContact = null;
@@ -180,9 +184,9 @@ public class Block : MonoBehaviour
     }
 
     private void FixedUpdate() {
-        if(isPlayerBeneath) {
-            if(PlayerManager.obj.IsPlayerGrounded())
-                Reaper.obj.KillPlayerGeneric();
+        if(_isPlayerBeneath) {
+            if(PlayerManager.obj.IsPlayerGrounded(_playerType))
+                Reaper.obj.KillPlayerGeneric(_playerType);
         }
     }
 

@@ -11,6 +11,7 @@ public class PlayerBlob : MonoBehaviour
     private float _spawnFreezeDuration = 0.9f;
     private PlayerChargeFlash _playerChargeFlash;
     private PlayerFlash _playerFlash;
+    private PlayerLightManager _playerLightManager;
 
     void Awake()
     {
@@ -20,6 +21,7 @@ public class PlayerBlob : MonoBehaviour
         _animator = GetComponentInChildren<Animator>();
         _playerFlash = GetComponentInChildren<PlayerFlash>();
         _playerChargeFlash = GetComponentInChildren<PlayerChargeFlash>();
+        _playerLightManager = GetComponentInChildren<PlayerLightManager>();
     }
 
     void OnCollisionEnter2D(Collision2D other) {
@@ -73,6 +75,14 @@ public class PlayerBlob : MonoBehaviour
     }
     public void AbortFlash() {
         _playerFlash.AbortFlash();
+    }
+
+    public void FadeOutPlayerLight() {
+        _playerLightManager.FadeOut();
+    }
+
+    public void FadeInPlayerLight() {
+        _playerLightManager.FadeIn();
     }
 
     void OnDestroy()

@@ -20,6 +20,7 @@ public class MainMenuManager : MonoBehaviour
 
     [SerializeField] private GameObject _continueButton;
     [SerializeField] private GameObject _playButton;
+    [SerializeField] private GameObject _playCoopButton;
     [SerializeField] private Button _optionsButton;
     [SerializeField] private Button _exitButton;
     [SerializeField] private Button _confirmNewGameButton;
@@ -120,9 +121,18 @@ public class MainMenuManager : MonoBehaviour
         }
     }
 
+    public void OnPlayCoopButtonClicked() {
+        StartCoopGame();
+    }
+
     public void StartGame() {
         _playButton.GetComponent<Button>().interactable = false;
         StartCoroutine(StartGameCoroutine());
+    }
+
+    public void StartCoopGame() {
+        _playCoopButton.GetComponent<Button>().interactable = false;
+        StartCoroutine(StartCoopGameCoroutine());
     }
 
     [ContextMenu("Continue Game")]
@@ -171,6 +181,62 @@ public class MainMenuManager : MonoBehaviour
         GameObject cameras = sceneGameObjects.First(gameObject => gameObject.CompareTag("Cameras"));
         CameraManager cameraManager = cameras.GetComponent<CameraManager>();
         cameraManager.ActivateMainCamera();
+        
+        SceneManager.UnloadSceneAsync(_titleScreen.SceneName);
+    }
+
+    private IEnumerator StartCoopGameCoroutine() {
+        SoundFXManager.obj.PlayUIPlay();
+
+        float masterVolume = SoundMixerManager.obj.GetMasterVolume();
+
+        StartCoroutine(SoundMixerManager.obj.StartMasterFade(3f, 0.001f));
+        SceneFadeManager.obj.StartFadeOut(1f);
+        while(SceneFadeManager.obj.IsFadingOut)
+            yield return null;
+        while(SoundMixerManager.obj.GetMasterVolume() > 0.001f) {
+            yield return null;
+        }
+        MusicManager.obj.StopPlaying();
+
+        AsyncOperation loadPersistentGameplayOperation = SceneManager.LoadSceneAsync(_persistentGameplay, LoadSceneMode.Additive);
+        while(!loadPersistentGameplayOperation.isDone) {
+            yield return null;
+        }
+        GameEventManager.obj.IsPauseAllowed = false;
+
+        //Reset player properties
+        Player.obj.SetHasCape(true);
+        Player.obj.gameObject.SetActive(false);
+        ShadowTwinPlayer.obj.SetHasCrown(true);
+        ShadowTwinPlayer.obj.gameObject.SetActive(false);
+        PlayerPowersManager.obj.ResetGameEvents();
+        PlayerPowersManager.obj.CanSeparate = true;
+        PlayerPowersManager.obj.CanSwitchBetweenTwinsMerged = true;
+        CollectibleManager.obj.ResetCollectibles();
+        PlayerStatsManager.obj.numberOfDeaths = 0;
+        LevelManager.obj.ResetLevels();
+        PlayerManager.obj.IsSeparated = true;
+
+        SoundMixerManager.obj.SetMasterVolume(masterVolume);
+
+        AsyncOperation loadC1_1Operation = SceneManager.LoadSceneAsync("C1-1", LoadSceneMode.Additive);
+        while(!loadC1_1Operation.isDone) {
+            yield return null;
+        }
+        Scene c1_1Scene = SceneManager.GetSceneByName("C1-1");
+        SceneManager.SetActiveScene(c1_1Scene);
+
+        GameObject[] sceneGameObjects = c1_1Scene.GetRootGameObjects();
+        GameObject cameras = sceneGameObjects.First(gameObject => gameObject.CompareTag("Cameras"));
+        CameraManager cameraManager = cameras.GetComponent<CameraManager>();
+        cameraManager.ActivateMainCamera();
+
+        PlayerSwitcher.obj.SwitchToEli();
+
+        GameObject levelSwitcherGameObject = sceneGameObjects.First(gameObject => gameObject.CompareTag("LevelSwitcher"));
+        LevelSwitcher levelSwitcher = levelSwitcherGameObject.GetComponent<LevelSwitcher>();
+        levelSwitcher.LoadNextRoom();
         
         SceneManager.UnloadSceneAsync(_titleScreen.SceneName);
     }

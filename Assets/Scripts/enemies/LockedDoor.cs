@@ -15,7 +15,7 @@ public class LockedDoor : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D other) {
         if(other.gameObject.CompareTag("Player")) {
-            Reaper.obj.KillPlayerShadow();
+            Reaper.obj.KillPlayerShadow(PlayerManager.obj.GetPlayerTypeFromCollision(other));
         }
     }
 

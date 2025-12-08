@@ -9,7 +9,7 @@ public class KillTrigger : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other) {
         if(other.gameObject.CompareTag("Player")) {
-            Reaper.obj.KillPlayerGeneric();
+            Reaper.obj.KillPlayerGeneric(PlayerManager.obj.GetPlayerTypeFromCollider(other));
         }
         if(other.gameObject.CompareTag("Enemy") && !_onlyKillPlayer) {
             Reaper.obj.KillPrisoner(other.gameObject.GetComponent<Prisoner>());

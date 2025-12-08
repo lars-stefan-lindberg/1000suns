@@ -128,7 +128,7 @@ public class Spike : MonoBehaviour
         _rigidBody.gravityScale = 0;
         _collider.enabled = false;
         if(collision.transform.CompareTag("Player")) {
-            Reaper.obj.KillPlayerGeneric();
+            Reaper.obj.KillPlayerGeneric(PlayerManager.obj.GetPlayerTypeFromCollision(collision));
         } else if(collision.transform.CompareTag("Enemy")) {
             Prisoner prisoner = collision.gameObject.GetComponent<Prisoner>();
             Reaper.obj.KillPrisoner(prisoner);

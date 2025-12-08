@@ -9,14 +9,20 @@ public class PlayerLightManager : MonoBehaviour
     private float _defaultLightSize;
     private Light2D _light2D;
     private Coroutine _pushCoroutine;
+    private Color _originalLightColor;
 
     void Awake() {
         _light2D = _light.GetComponent<Light2D>();
         _defaultLightSize = _light2D.size;
+        _originalLightColor = _light2D.color;
     }
 
     public void FadeOut() {
         StartCoroutine(FadeOutLight());
+    }
+
+    public void FadeIn() {
+        StartCoroutine(FadeInLight());
     }
 
     public void IncreaseLightSize() {
@@ -35,17 +41,36 @@ public class PlayerLightManager : MonoBehaviour
     }
 
     private IEnumerator FadeOutLight() {
-        float timeElapsed = 0;
+        float timeElapsed = 0f;
+        float duration = 1f;
         Light2D light = _light2D; // Using FunkyCode.Light2D
         Color startColor = light.color;
-        while (timeElapsed < 2f) {
-            float t = timeElapsed / 2f;
+        Color endColor = Color.clear;
+        while (timeElapsed < duration) {
+            float t = Mathf.Clamp01(timeElapsed / duration);
             t = t * t * (3f - 2f * t);
-            light.color = Color.Lerp(startColor, Color.clear, t);
+            light.color = Color.Lerp(startColor, endColor, t);
             timeElapsed += Time.deltaTime;
             yield return null;
         }
-        light.color = Color.clear;
+        light.color = endColor;
+        yield return null;
+    }
+    
+    private IEnumerator FadeInLight() {
+        float timeElapsed = 0f;
+        float duration = 1f;
+        Light2D light = _light2D; // Using FunkyCode.Light2D
+        Color startColor = Color.clear;
+        Color endColor = _originalLightColor;
+        while (timeElapsed < duration) {
+            float t = Mathf.Clamp01(timeElapsed / duration);
+            t = t * t * (3f - 2f * t);
+            light.color = Color.Lerp(startColor, endColor, t);
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+        light.color = endColor;
         yield return null;
     }
 

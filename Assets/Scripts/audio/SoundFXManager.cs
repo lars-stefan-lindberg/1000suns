@@ -245,13 +245,16 @@ public class SoundFXManager : MonoBehaviour
         return PlayLoopedSound(forcePushChargeLoop, spawnTransform, 1f);
     }
     public void PlayPlayerGenericDeath(Transform spawnTransform) {
-        PlaySound(genericDeath, spawnTransform, 1f);
+        if(CanPlaySound("playerGenericDeath", 0.5f))
+            PlaySound(genericDeath, spawnTransform, 1f);
     }
     public void PlayPlayerShadowDeath(Transform spawnTransform) {
-        PlaySound(shadowDeath, spawnTransform, 1f);
+        if(CanPlaySound("playerShadowDeath", 0.5f))
+            PlaySound(shadowDeath, spawnTransform, 1f);
     }
     public void PlayPlayerShadowSpawn(Transform spawnTransform) {
-        PlaySound(shadowSpawn, spawnTransform, 1f);
+        if(CanPlaySound("playerShadowSpawn", 0.5f))
+            PlaySound(shadowSpawn, spawnTransform, 1f);
     }
     public void PlayPlayerLongFall() {
         PlaySound(longFall, Camera.main.transform, 1f);
@@ -369,13 +372,13 @@ public class SoundFXManager : MonoBehaviour
     }
 
     public void PlayPrisonerSoulAbsorb1(Transform spawnTransform) {
-            PlaySound(prisonerSoulAbsorb1, spawnTransform, 1f);
+        PlaySound(prisonerSoulAbsorb1, spawnTransform, 1f);
     }    
     public void PlayPrisonerSoulAbsorb2(Transform spawnTransform) {
-            PlaySound(prisonerSoulAbsorb2, spawnTransform, 1f);
+        PlaySound(prisonerSoulAbsorb2, spawnTransform, 1f);
     }    
     public void PlayPrisonerSoulAbsorb3(Transform spawnTransform) {
-            PlaySound(prisonerSoulAbsorb3, spawnTransform, 1f);
+        PlaySound(prisonerSoulAbsorb3, spawnTransform, 1f);
     }
 
     public void PlayCapeIntroduction(Transform spawnTransform) {

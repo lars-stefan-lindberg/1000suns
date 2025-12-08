@@ -137,13 +137,16 @@ public class Prisoner : MonoBehaviour
             }
         }
         if (collision.transform.CompareTag("Player")) {
-            //Make sure that the prisoner can't be force pushed after player is killed
-            isStatic = true;
-            isImmuneToForcePush = true;
-            _rigidBody.velocity = new Vector2(0,0);
-
-            Reaper.obj.KillPlayerShadow();
+            StartCoroutine(SetStaticForABriefMoment());
+            Reaper.obj.KillPlayerShadow(PlayerManager.obj.GetPlayerTypeFromCollision(collision));
         }
+    }
+
+    private IEnumerator SetStaticForABriefMoment() {
+        isStatic = true;
+        _rigidBody.velocity = new Vector2(0,0);
+        yield return new WaitForSeconds(1f);
+        isStatic = false;
     }
 
     private void applyGotHitState(float hitPower, bool hitFromTheLeft)

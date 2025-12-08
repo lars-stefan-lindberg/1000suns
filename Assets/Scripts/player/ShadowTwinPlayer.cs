@@ -176,12 +176,24 @@ public class ShadowTwinPlayer : MonoBehaviour
         transform.position = new Vector2(191.975f, 24.89f);
     }
 
+    public void SetCaveStartingCoordinatesCoop() {
+        transform.position = new Vector2(166.375f, -92.875f);
+    }
+
     public void PlayerPullLight() {
         _playerLightManager.IncreaseLightSize();
     }
 
     public void RestorePlayerPullLight() {
         _playerLightManager.RestoreLightSize();
+    }
+
+    public void FadeOutPlayerLight() {
+        _playerLightManager.FadeOut();
+    }
+
+    public void FadeInPlayerLight() {
+        _playerLightManager.FadeIn();
     }
 
     void OnDestroy()

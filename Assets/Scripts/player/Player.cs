@@ -183,6 +183,10 @@ public class Player : MonoBehaviour
         transform.position = new Vector2(191.975f, 24.89f);
     }
 
+    public void SetCaveStartingCoordinatesCoop() {
+        transform.position = new Vector2(157.375f, -93.875f);
+    }
+
     public void PlayerPushLight() {
         _playerLightManager.IncreaseLightSize();
     }
@@ -193,6 +197,10 @@ public class Player : MonoBehaviour
 
     public void FadeOutPlayerLight() {
         _playerLightManager.FadeOut();
+    }
+
+    public void FadeInPlayerLight() {
+        _playerLightManager.FadeIn();
     }
 
     void OnDestroy()
