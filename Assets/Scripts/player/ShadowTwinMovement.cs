@@ -130,7 +130,6 @@ public class ShadowTwinMovement : MonoBehaviour
     }
 
     public float _poweredDashMultiplier = 1.2f;
-    public float partialDashPower = 35;
     public void ExecuteDash(ShadowTwinPull.PullPowerType chargePower)
     {
         _isDashing = true;
@@ -138,8 +137,6 @@ public class ShadowTwinMovement : MonoBehaviour
         if(chargePower == ShadowTwinPull.PullPowerType.Powered) {
             speed = initialDashSpeed * _poweredDashMultiplier;
             ShadowTwinPlayer.obj.SetHasPowerUp(false);
-        } else if(chargePower == ShadowTwinPull.PullPowerType.Partial) {
-            speed = partialDashPower;
         } else if(chargePower == ShadowTwinPull.PullPowerType.Full) {
             speed = initialDashSpeed;
         }

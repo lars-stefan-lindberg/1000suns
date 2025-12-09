@@ -2,6 +2,13 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+/*
+Design pattern:
+- When pulling, shoot out rays to detect "pullable"
+- If a pullable is hit, save the pullable rigidbody and apply force to it
+- Set "isPulled" state on pullable so that the pullable game object can pick up in their script
+- Constantly detect if the pullable is still in line of fire. If not, cancel pulling
+*/
 public class ShadowTwinPull : MonoBehaviour
 {
     public static ShadowTwinPull obj;
@@ -26,8 +33,6 @@ public class ShadowTwinPull : MonoBehaviour
     
     public FloatyPlatform platform;
 
-    bool CanUsePoweredForcePush => PlayerMovement.obj.isGrounded && Player.obj.hasPowerUp && _buildUpPower >= maxForce;
-
     private AudioSource _forcePushStartChargingAudioSource;
 
     private bool _isPullDisabled = false;
@@ -35,12 +40,14 @@ public class ShadowTwinPull : MonoBehaviour
     private bool _startedFullyChargedAnimation = false;
 
     public float pullForce = 10f;
+    public float maxPullSpeed = 7f;
+    public float stopDistanceFromPlayer = 1f;
     private Rigidbody2D _targetRb;
-    private Block _pulledBlock;
+    private Pullable _pulledPullable;
     private Collider2D _pulledCollider;
+    private bool _isPulling = false;
 
     public enum PullPowerType {
-        Partial,
         Full,
         Powered
     }
@@ -55,20 +62,7 @@ public class ShadowTwinPull : MonoBehaviour
     {
         if(ShadowTwinPlayer.obj.hasCrown && !_isPullDisabled) {
             if (context.performed)
-            {
-                Collider2D pullable = DetectPullable();
-                if(pullable != null) {
-                    SetPullable(pullable);
-                } else {
-                    if(DetectBlockable()) {
-                        ShadowTwinMovement.obj.ExecuteDash(PullPowerType.Full);
-                    }
-                }
-                pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().HardCancel();
-                _forcePushStartChargingAudioSource = SoundFXManager.obj.PlayForcePushStartCharging(transform);
-                ShadowTwinPlayer.obj.StartChargeFlash();
-                ShadowTwinPlayer.obj.PlayerPullLight();
-
+            {                
                 Pull();
             }
             if(context.canceled) {
@@ -96,6 +90,14 @@ public class ShadowTwinPull : MonoBehaviour
         // Cast both rays
         RaycastHit2D hit1 = Physics2D.Raycast(origin1, direction, pullRange, pullableMask);
         RaycastHit2D hit2 = Physics2D.Raycast(origin2, direction, pullRange, pullableMask);
+
+        //Check if the hit is very close to the player. If so stop pulling
+        if(hit1.collider != null && hit1.distance < 1f) {
+            return null;
+        }
+        if(hit2.collider != null && hit2.distance < 1f) {
+            return null;
+        }
 
         // Blocked? If a wall lies before the object, cancel
         if (IsBlocked(origin1, direction, hit1)) hit1 = new RaycastHit2D();
@@ -151,10 +153,6 @@ public class ShadowTwinPull : MonoBehaviour
         _isPullDisabled = false;
     }
 
-    public bool IsFullyCharged() {
-        return _buildUpPower >= maxForce;
-    }
-
     public void ResetBuiltUpPower() {
         pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().Cancel();
         Player.obj.AbortFlash();
@@ -176,65 +174,92 @@ public class ShadowTwinPull : MonoBehaviour
     }
 
     public void CancelPulling() {
-        _targetRb = null;
-        if(_pulledBlock != null)
-            _pulledBlock.SetIsBeingPulled(false);
-        _pulledBlock = null;
+        _isPulling = false;
+        ResetPullableObject();
     }
 
-    private void SetPullable(Collider2D pullable) {
-        if(pullable != null) {
-            GameObject blockParent = pullable.gameObject.transform.parent.gameObject;
-            if(blockParent != null && blockParent.CompareTag("Block")) {
-                _targetRb = blockParent.GetComponent<Rigidbody2D>();
-                _pulledBlock = blockParent.GetComponent<Block>();
-                _pulledBlock.SetIsBeingPulled(true);
-                _pulledCollider = pullable;
-            }
+    private void ResetPullableObject() {
+        _targetRb = null;
+        if(_pulledPullable != null)
+            _pulledPullable.IsPulled = false;
+        _pulledPullable = null;
+        _pulledCollider = null;
+    }
+
+    private void SetPullable(Collider2D pullableCollider) {
+        if(pullableCollider != null) {
+            _pulledPullable = pullableCollider.GetComponent<Pullable>();
+            _targetRb = _pulledPullable.GetRigidbody();
+            _pulledPullable.IsPulled = true;
+            _pulledCollider = pullableCollider;
         }
     }
 
     private void FixedUpdate()
     {
-        if (_targetRb != null)
+        if (_isPulling)
         {
-            //Is pulling. Check if what's being pulled is still in line of fire
+            // Continuosly detect new/existing pullable
             Collider2D pullable = DetectPullable();
-            if(pullable != _pulledCollider) {
-                //New pullable detected. Start pulling that pullable instead
-                CancelPulling();
-                SetPullable(pullable);                
-            } else {
-                Vector2 direction = ((Vector2)transform.position - _targetRb.position).normalized;
-                _targetRb.AddForce(direction * pullForce);
+            if(pullable == null) {
+                ResetPullableObject();
+            } else if (pullable != _pulledCollider)
+            {
+                // New pullable detected. Start pulling that pullable instead
+                ResetPullableObject();
+                SetPullable(pullable);
+            }
+            if(_targetRb != null) {
+                Vector2 toPlayer = (Vector2)transform.position - _targetRb.position;
+                float distance = toPlayer.magnitude;
+
+                // If close enough, bring the object to a halt in front of the player
+                if (distance <= stopDistanceFromPlayer && distance > 0.01f)
+                {
+                    Vector2 direction = toPlayer / distance;
+                    float currentSpeedTowardsPlayer = Vector2.Dot(_targetRb.velocity, direction);
+
+                    if (currentSpeedTowardsPlayer > 0f)
+                    {
+                        // Remove the velocity component toward the player so it comes to rest here
+                        _targetRb.velocity -= direction * currentSpeedTowardsPlayer;
+                    }
+
+                    return;
+                }
+                if (distance > stopDistanceFromPlayer)
+                {
+                    Vector2 direction = toPlayer / distance;
+
+                    float currentSpeedTowardsPlayer = Vector2.Dot(_targetRb.velocity, direction);
+                    float clampedCurrentSpeed = Mathf.Max(0f, currentSpeedTowardsPlayer);
+                    float speedRatio = maxPullSpeed > 0f ? Mathf.Clamp01(clampedCurrentSpeed / maxPullSpeed) : 0f;
+
+                    float desiredAcceleration = _pulledPullable.GetPullForce() * (1f - speedRatio);
+
+                    if (desiredAcceleration > 0f)
+                    {
+                        float forceMagnitude = desiredAcceleration * _targetRb.mass;
+                        _targetRb.AddForce(direction * forceMagnitude);
+                    }
+                }
             }
         }
-        //Charge animation
-        // if(_buildingUpPower && _buildUpPower < maxForce && !_startedChargeAnimation) {
-        //     pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().Charge();
-        //     Player.obj.StartChargeFlash();
-        //     _startedChargeAnimation = true;
-        // } else if(_buildUpPower >= maxForce && !_startedFullyChargedAnimation) {
-        //     // if(Player.obj.hasPowerUp)
-        //     //     pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().FullyChargedPoweredUp();
-        //     // else
-        //     pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().FullyCharged();
-        //     Player.obj.StartFullyChargedVfx();
-        //     _startedFullyChargedAnimation = true;
-        // }
-
-        // if(_buildingUpPower) {
-        //     _buildUpPowerTime += Time.deltaTime;
-        //     if(_buildUpPower < maxForce && _buildUpPowerTime > minBuildUpPowerTime) {
-        //         _buildUpPower *= powerBuildUpPerFixedUpdate;
-        //     }
-        // }
     }
 
     public float projectileDelay = 0.1f;
 
     void Pull()
     {
+        _isPulling = true;
+        Collider2D pullable = DetectPullable();
+        if(pullable != null) {
+            SetPullable(pullable);
+        }
+        pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().HardCancel();
+        _forcePushStartChargingAudioSource = SoundFXManager.obj.PlayForcePushStartCharging(transform);
+        ShadowTwinPlayer.obj.StartChargeFlash();
+        ShadowTwinPlayer.obj.PlayerPullLight();
         ShadowTwinMovement.obj.IsPulling = true;
         ShadowTwinMovement.obj.TriggerForcePullAnimation();
         PullPowerType chargePowerType = GetChargePowerType();
@@ -249,13 +274,10 @@ public class ShadowTwinPull : MonoBehaviour
     }
 
     private PullPowerType GetChargePowerType() {
-        bool isFullyCharged = IsFullyCharged();
-        if(isFullyCharged && Player.obj.hasPowerUp) 
+        if(ShadowTwinPlayer.obj.hasPowerUp) 
             return PullPowerType.Powered;
-        else if(isFullyCharged)
-            return PullPowerType.Full;
         else
-            return PullPowerType.Partial;
+            return PullPowerType.Full;
     }
 
     public void ExecuteDashVfx(PullPowerType chargePower) {

@@ -7,6 +7,7 @@ public class Block : MonoBehaviour
     private Rigidbody2D _rigidBody;
     private BoxCollider2D _collider;
     private BoxCollider2D _childCollider;
+    private Pullable _pullable;
 
     public LayerMask groundLayer;
     [SerializeField] private float _wallCheckCastDistance = 1.05f;
@@ -30,6 +31,7 @@ public class Block : MonoBehaviour
         _rigidBody = GetComponent<Rigidbody2D>();
         _collider = GetComponent<BoxCollider2D>();
         _childCollider = GetComponentInChildren<BoxCollider2D>();
+        _pullable = GetComponentInChildren<Pullable>();
     }
 
     public void SetGravity(float gravityScale) {
@@ -43,7 +45,7 @@ public class Block : MonoBehaviour
     {
         if (collision.transform.CompareTag("Player"))
         {
-            if(_isGrounded)
+            if(_isGrounded && !_pullable.IsPulled)
                 _rigidBody.bodyType = RigidbodyType2D.Static;
 
             if(HitUnderneath(collision) && _rigidBody.velocity.y < -0.05f) {
@@ -114,14 +116,6 @@ public class Block : MonoBehaviour
     public float deceleration = 1f;
     private float _blockSizeOffSet = 1.002f; //To dial in the landing sound
 
-    private bool _isBeingPulled = false;
-    public void SetIsBeingPulled(bool isBeingPulled) {
-        _isBeingPulled = isBeingPulled;
-        if(_isBeingPulled)
-            _rigidBody.bodyType = RigidbodyType2D.Dynamic;
-    }
-
-
     private void Update()
     {
         if(!_booted) {
@@ -130,7 +124,10 @@ public class Block : MonoBehaviour
                 _booted = true;
         }
 
-        if (_rigidBody.velocity.x != 0 && !_isBeingPulled)
+        if(_pullable.IsPulled)
+            _rigidBody.bodyType = RigidbodyType2D.Dynamic;
+
+        if (_rigidBody.velocity.x != 0 && !_pullable.IsPulled)
         {
             _rigidBody.velocity = new Vector2(Mathf.MoveTowards(_rigidBody.velocity.x, 0, deceleration * Time.deltaTime), _rigidBody.velocity.y);
         } 

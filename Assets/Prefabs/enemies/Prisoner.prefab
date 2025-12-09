@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: -3361849556270991201}
   - component: {fileID: 2591660405728026287}
   - component: {fileID: 2809307486220679348}
+  - component: {fileID: 2998392795242845131}
   m_Layer: 9
   m_Name: Prisoner
   m_TagString: Enemy
@@ -312,3 +313,17 @@ MonoBehaviour:
   _fadeInAlpha: 1
   _startAlpha: 0
   _lightColor: {r: 0.72156864, g: 0.72156864, b: 0.72156864, a: 0}
+--- !u!114 &2998392795242845131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5873467829969753878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8474e85f645694566bc60157c22c639b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rigidBody: {fileID: 5657598952868433655}
+  _pullForce: 50

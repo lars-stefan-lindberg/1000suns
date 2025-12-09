@@ -11,6 +11,7 @@ public class Prisoner : MonoBehaviour
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
     private LightSprite2DFadeManager _lightSprite2DFadeManager;
+    private Pullable _pullable;
     public LayerMask groundLayer; //Used to check if grounded
     public LayerMask collisionLayer; //Raycast for collisions like other prisoners, walls, blocks
 
@@ -44,6 +45,7 @@ public class Prisoner : MonoBehaviour
     public Vector2 horizontalMoveSpeedDuringHit;
     public bool isRecovering = false;
     public float recoveryMovementStopMultiplier = 0.4f;
+    private bool _isBeingPulled = false;
 
     public float damagePower; //When hit by projectile stores and uses the power fo the hit
     public float forceMultiplier = 7f;  //How "hard" a projectile will hit the enemy
@@ -79,6 +81,7 @@ public class Prisoner : MonoBehaviour
         _animator = GetComponentInChildren<Animator>();
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         _lightSprite2DFadeManager = GetComponentInChildren<LightSprite2DFadeManager>();
+        _pullable = GetComponent<Pullable>();
         if(isImmuneToForcePush)
             _spriteRenderer.color = new Color(0.6f, 0, 0, 1);
         if(isSpawningFast)
@@ -190,13 +193,24 @@ public class Prisoner : MonoBehaviour
         else
             _animator.speed = 1;
 
-
         //If stuck, give a second or two to recover
         if(isStuck && _isStuckCooldownTimer < _isStuckCooldownTime) {
             _isStuckCooldownTimer += Time.deltaTime;
             return;
         } else {
             _isStuckCooldownTimer = 0;
+        }
+
+        if(_pullable.IsPulled && !_isBeingPulled) {
+            _isBeingPulled = true;
+            _rigidBody.gravityScale = 0;
+            _rigidBody.velocity = new Vector2(0, 0);
+            _animator.SetTrigger("hit");
+        } else if(!_pullable.IsPulled && _isBeingPulled) {
+            _isBeingPulled = false;
+            isRecovering = true;
+            recoveryTimeCount = recoveryDuration;
+            _rigidBody.gravityScale = _defaultGravity;
         }
 
         //To check if we should stop a block when cornered to a wall
@@ -230,7 +244,7 @@ public class Prisoner : MonoBehaviour
             _isFalling = false;
             isRecovering = true;
             recoveryTimeCount = recoveryDuration;
-        } else if(isGrounded && !groundHit && !hasBeenHit && !isRecovering && !_isSpawning) {
+        } else if(isGrounded && !groundHit && !hasBeenHit && !_isBeingPulled && !isRecovering && !_isSpawning) {
             _isFalling = true;
             _animator.SetTrigger("fall");
         }
@@ -250,7 +264,7 @@ public class Prisoner : MonoBehaviour
 
             //Check for prisoner in front and behind
             
-            if((isWallAhead && isWallBehind) || (!isGroundFloorAhead && !isGroundFloorBehind) && !hasBeenHit) {
+            if((isWallAhead && isWallBehind) || (!isGroundFloorAhead && !isGroundFloorBehind) && !hasBeenHit && !_isBeingPulled) {
                 isStuck = true;
             } else {
                 isStuck = false;
@@ -258,7 +272,7 @@ public class Prisoner : MonoBehaviour
         } else
             isStuck = false;
 
-        if (isGrounded && !isTurning && !hasBeenHit && !isStuck)
+        if (isGrounded && !isTurning && !hasBeenHit && !isStuck && !_isBeingPulled)
         {
             //Check ahead if no ground ahead
             Vector2 groundLineAheadCastPosition = _collider.transform.position - _collider.transform.right * enemyWidth * groundAheadCheck;
@@ -281,9 +295,13 @@ public class Prisoner : MonoBehaviour
                 isTurning = true;
                 turnAroundTimer = 0;
             }
-            
         }
 
+        if(_isBeingPulled) {
+            isTurning = false;
+            isStuck = false;
+            turnAroundTimer = timeToTurnAround;
+        }
         if (hasBeenHit)
         {
             isTurning = false;
@@ -314,12 +332,12 @@ public class Prisoner : MonoBehaviour
             }
         }
 
-        if (!hasBeenHit && !isRecovering && isGrounded && !isStatic && !isTurning && !isStuck)
+        if (!_isBeingPulled && !hasBeenHit && !isRecovering && isGrounded && !isStatic && !isTurning && !isStuck)
         {
             GracefulSpeedChange();
         }
 
-        if(!isStatic && !hasBeenHit && !isRecovering && isGrounded && !isStuck) {
+        if(!isStatic && !_isBeingPulled && !hasBeenHit && !isRecovering && isGrounded && !isStuck) {
             //Debug.DrawRay(transform.position, (IsFacingRight() ? Vector3.right : Vector3.left) * playerCastDistance, Color.red);
             RaycastHit2D hit = Physics2D.Raycast(transform.position, IsFacingRight() ? Vector3.right : Vector3.left, playerCastDistance);
 
@@ -335,7 +353,7 @@ public class Prisoner : MonoBehaviour
         }
 
         //Check if landed on edge. Try to recover by moving to one side -> either fall, or reach stable ground
-        if(!isGrounded && _rigidBody.velocity == Vector2.zero) {
+        if(!isGrounded && !_isBeingPulled && _rigidBody.velocity == Vector2.zero) {
             _edgeRecoveryCoolDownTimer += Time.deltaTime;
             if(_edgeRecoveryCoolDownTimer >= _edgeRecoveryCoolDownTime) {
                 _edgeRecoveryCoolDownTimer = 0;
@@ -367,7 +385,7 @@ public class Prisoner : MonoBehaviour
 
         //Update animator
         _animator.SetBool("isGrounded", isGrounded);
-        _animator.SetBool("isHit", hasBeenHit);
+        _animator.SetBool("isHit", hasBeenHit || _isBeingPulled);
         _animator.SetBool("isRecovering", isRecovering);
         _animator.SetBool("isMoving", Mathf.Abs(_rigidBody.velocity.x) > 0.01);
         _animator.SetBool("isSpawning", _isSpawning);
@@ -402,7 +420,7 @@ public class Prisoner : MonoBehaviour
             FlipHorizontal();
         }
         
-        if (!hasBeenHit && !isRecovering && isGrounded && !isStuck)
+        if (!_isBeingPulled && !hasBeenHit && !isRecovering && isGrounded && !isStuck)
         {
             if (!isTurning && !isStatic)
             {
