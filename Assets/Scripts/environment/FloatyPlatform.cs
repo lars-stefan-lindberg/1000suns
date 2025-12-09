@@ -22,6 +22,7 @@ public class FloatyPlatform : MonoBehaviour
     private LayerMask _blockingCastLayerMask;
     public bool movePlatform = false;
     public bool isFallingPlatform = false;
+    public bool isFallingOnMovePlatform = false;
     public float timeBeforeFall = 1f;
     public float timeFallingBeforeDestroy = 7f;
     public float fallTimer = 0f;
@@ -33,6 +34,7 @@ public class FloatyPlatform : MonoBehaviour
     private FallingPlatformFlash _fallingPlatformFlash;
 
     private bool _respawning = false;
+    private bool _isFallingOnMovePlatformFallStarted = false;
     public float spawnTime = 1f;
     public float spawnTimer = 0f;
     private Vector2 _startingPosition;
@@ -119,12 +121,16 @@ public class FloatyPlatform : MonoBehaviour
         isPlayer1OnPlatform = true;
         if(isFallingPlatform)
             _startFallCountDown = true;
+        else if(isFallingOnMovePlatform)
+            _fallingPlatformFlash.StartFlashingConstantSpeed();
     }
 
     private void RegisterPlayer2OnPlatform() {
         isPlayer2OnPlatform = true;
         if(isFallingPlatform)
             _startFallCountDown = true;
+        else if(isFallingOnMovePlatform)
+            _fallingPlatformFlash.StartFlashingConstantSpeed();
     }
 
     public bool somethingToTheRight = false;
@@ -146,6 +152,9 @@ public class FloatyPlatform : MonoBehaviour
                 RegisterPlayer2OnPlatform();
             }
         }
+        if(_isFallingOnMovePlatformFallStarted) {
+            fallTimer += Time.deltaTime;
+        }
         if(_startFallCountDown) {
             fallTimer += Time.deltaTime;
             if(_startFlashing) {
@@ -160,6 +169,10 @@ public class FloatyPlatform : MonoBehaviour
             _fallingPlatformFlash.StopFlashing();
             _rigidBody.bodyType = RigidbodyType2D.Dynamic;
             _rigidBody.gravityScale = 1;
+            return;
+        }
+        if(_isFallingOnMovePlatformFallStarted) {
+            //Skip the rest of the logic if the platform is falling
             return;
         }
         somethingToTheRight = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.right, blockingCastDistance, _blockingCastLayerMask);
@@ -177,6 +190,12 @@ public class FloatyPlatform : MonoBehaviour
         if (movePlatform)
         {
             _rigidBody.velocity = new Vector2(Mathf.MoveTowards(_rigidBody.velocity.x, 0, deceleration * Time.deltaTime), _rigidBody.velocity.y);
+            if(isFallingOnMovePlatform && !_isFallingOnMovePlatformFallStarted && !_respawning) {
+                _fallingPlatformFlash.StopFlashing();
+                _rigidBody.bodyType = RigidbodyType2D.Dynamic;
+                _rigidBody.gravityScale = 1;
+                _isFallingOnMovePlatformFallStarted = true;
+            }
         } else
         {
             _rigidBody.velocity = new Vector2(0, 0);
@@ -253,6 +272,7 @@ public class FloatyPlatform : MonoBehaviour
         isPlayer2OnPlatform = false;
         _fallingPlatformFlash.StopFlashing();
         _startFlashing = true;
+        _isFallingOnMovePlatformFallStarted = false;
     }
 
     private IEnumerator FadeInSprite() {

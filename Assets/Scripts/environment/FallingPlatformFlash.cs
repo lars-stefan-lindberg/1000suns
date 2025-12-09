@@ -20,6 +20,7 @@ public class FallingPlatformFlash : MonoBehaviour
     private float _currentFlashAmount = 0f;
     private float _mediumFlashTime;
     private float _fastFlashTime;
+    private bool _isConstantFlashSpeed = false;
 
     private void Awake() {
         _spriteRenderer = GetComponent<SpriteRenderer>();
@@ -36,8 +37,16 @@ public class FallingPlatformFlash : MonoBehaviour
         _totalElapsedTime = 0f;
     }
 
+    public void StartFlashingConstantSpeed() {
+        _startFlashing = true;
+        _isConstantFlashSpeed = true;
+        _elapsedTime = 0f;
+        _totalElapsedTime = 0f;
+    }
+
     public void StopFlashing() {
         _startFlashing = false;
+        _isConstantFlashSpeed = false;
     }
 
     private bool blended = false;
@@ -55,7 +64,7 @@ public class FallingPlatformFlash : MonoBehaviour
             _elapsedTime += Time.deltaTime;
             _totalElapsedTime += Time.deltaTime;
 
-            float flashTime = CalculateFlashTime();
+            float flashTime = _isConstantFlashSpeed ? _defaultFlashSpeed : CalculateFlashTime();
             if(blended)
                 _currentFlashAmount = Mathf.Lerp(_flashIntensity, 0f, _elapsedTime / flashTime);
             else
