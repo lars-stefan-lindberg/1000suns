@@ -229,9 +229,11 @@ public class ShadowTwinPull : MonoBehaviour
                 }
                 if (distance > stopDistanceFromPlayer)
                 {
-                    Vector2 direction = toPlayer / distance;
+                    // Only use horizontal component for direction to ensure purely horizontal pulling
+                    Vector2 direction = new Vector2(Mathf.Sign(toPlayer.x), 0f).normalized;
 
-                    float currentSpeedTowardsPlayer = Vector2.Dot(_targetRb.velocity, direction);
+                    // Only consider horizontal velocity when calculating speed towards player
+                    float currentSpeedTowardsPlayer = _targetRb.velocity.x * direction.x;
                     float clampedCurrentSpeed = Mathf.Max(0f, currentSpeedTowardsPlayer);
                     float speedRatio = maxPullSpeed > 0f ? Mathf.Clamp01(clampedCurrentSpeed / maxPullSpeed) : 0f;
 

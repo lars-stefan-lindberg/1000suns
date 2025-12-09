@@ -8602,7 +8602,7 @@ PrefabInstance:
       objectReference: {fileID: 1819809117}
     - target: {fileID: 7225188016169276505, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
       propertyPath: _groundLayerMasks.m_Bits
-      value: 8
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 7225188016169276505, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
       propertyPath: initialForcePushJumpSpeed
@@ -8759,6 +8759,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5764671153394771574, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7225188015179596691}
+    - targetCorrespondingSourceObject: {fileID: 5764671153394771574, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7225188015179596696}
   m_SourcePrefab: {fileID: 100100000, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
 --- !u!1001 &1276994097
 PrefabInstance:
@@ -19540,6 +19543,7 @@ GameObject:
   - component: {fileID: 2059269603}
   - component: {fileID: 2059269604}
   - component: {fileID: 2059269605}
+  - component: {fileID: 2059269606}
   m_Layer: 0
   m_Name: PlayerBlob
   m_TagString: Player
@@ -19882,6 +19886,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   id: 1
+--- !u!114 &2059269606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2059269596}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8474e85f645694566bc60157c22c639b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rigidBody: {fileID: 2059269601}
+  _pullForce: 500
 --- !u!1 &2065910294
 GameObject:
   m_ObjectHideFlags: 0
@@ -22745,6 +22763,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   id: 1
+--- !u!50 &7225188015179596695 stripped
+Rigidbody2D:
+  m_CorrespondingSourceObject: {fileID: 6644931415762059624, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
+  m_PrefabInstance: {fileID: 1260214224}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7225188015179596696
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5764671154351780262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8474e85f645694566bc60157c22c639b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rigidBody: {fileID: 7225188015179596695}
+  _pullForce: 400
 --- !u!1 &7267978776793493270
 GameObject:
   m_ObjectHideFlags: 0
@@ -22943,6 +22980,7 @@ MonoBehaviour:
   isOnMovable: 0
   movableRigidBody: {fileID: 0}
   jumpThroughPlatform: {fileID: 0}
+  baseProjectilePushPower: 7
   _poweredDashMultiplier: 1.2
   isFalling: 0
   isMoving: 0
@@ -22954,7 +22992,7 @@ MonoBehaviour:
   startingOnGround: 1
   _groundLayerMasks:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 9
 --- !u!114 &8240633124138664371
 MonoBehaviour:
   m_ObjectHideFlags: 0

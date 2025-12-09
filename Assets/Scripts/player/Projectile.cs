@@ -48,8 +48,13 @@ public class Projectile : MonoBehaviour
             collision.transform.CompareTag("Roots") || 
             collision.transform.CompareTag("FallingPlatform") ||
             collision.transform.CompareTag("BreakableWall")) {
+            StopAndDestroy();
+        }
+        if(collision.transform.CompareTag("Player")) {
+            if(PlayerManager.obj.GetPlayerTypeFromCollider(collision) != PlayerManager.PlayerType.HUMAN) {
                 StopAndDestroy();
             }
+        }
     }
 
     private void StopAndDestroy() {
