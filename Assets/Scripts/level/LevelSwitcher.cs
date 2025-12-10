@@ -16,6 +16,7 @@ public class LevelSwitcher : MonoBehaviour
     [SerializeField] private SceneField[] _scenesToLoad;
     [SerializeField] private SceneField[] _scenesToUnload;
     [SerializeField] private bool _enablePlayerTransition = true;
+    [SerializeField] private Collider2D _secondPlayerTeleportationTarget;
     public UnityEvent OnCustomCameraHandling;
     private BoxCollider2D _collider;
 
@@ -38,8 +39,9 @@ public class LevelSwitcher : MonoBehaviour
             LevelTracker.obj.StopTimeTracking(_currentScene.SceneName);
             SceneManager.SetActiveScene(SceneManager.GetSceneByName(_nextScene));
 
+            PlayerManager.PlayerType playerType = PlayerManager.obj.GetPlayerTypeFromCollider(other);
             PlayerManager.PlayerDirection playerDirection = GetPlayerDirection(other);
-            StartCoroutine(ActivateNextRoomCameraAndTransitionPlayer(playerDirection));
+            StartCoroutine(ActivateNextRoomCameraAndTransitionPlayer(playerDirection, playerType));
 
             StartCoroutine(MutePrisonersOffscreen());
             StartCoroutine(UnmutePrisonersOnScreen());
@@ -73,7 +75,7 @@ public class LevelSwitcher : MonoBehaviour
         return PlayerManager.PlayerDirection.RIGHT;
     }
 
-    public IEnumerator ActivateNextRoomCameraAndTransitionPlayer(PlayerManager.PlayerDirection direction) {
+    public IEnumerator ActivateNextRoomCameraAndTransitionPlayer(PlayerManager.PlayerDirection direction, PlayerManager.PlayerType playerType) {
         if(_enablePlayerTransition) {
             if(_scenesToLoad.Length > 0) {
                 bool scenesLoaded = false;
@@ -89,7 +91,10 @@ public class LevelSwitcher : MonoBehaviour
                 }
             }
 
-            PlayerManager.obj.TransitionToNextRoom(direction);
+            PlayerManager.obj.TransitionToNextRoom(direction, playerType);
+            //If separated, teleport second player to target
+            if(PlayerManager.obj.IsSeparated)
+                PlayerManager.obj.TeleportSecondPlayerToTarget(playerType, _secondPlayerTeleportationTarget);
         }
 
         _currentRoomCamera.SetActive(false);
@@ -107,6 +112,7 @@ public class LevelSwitcher : MonoBehaviour
                 cameraManager.ActivateMainCamera();
             }
         }
+        //TODO: if players are separated, and _enablePlayerTransition is false, still need to teleport second player into the room
 
 
         yield return null;

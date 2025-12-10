@@ -260,8 +260,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     private bool _isTransitioningBetweenLevels = false;
     public void SetTransitioningBetweenLevels() {
         //Special case since we want to handle "shoot" action separately. You should still be able to charge, but not release in between levels
-        _playerInput.currentActionMap.FindAction("Movement").Disable();
-        _playerInput.currentActionMap.FindAction("Jump").Disable();
+        if(_playerInput != null && _playerInput.currentActionMap != null) {
+            _playerInput.currentActionMap.FindAction("Movement").Disable();
+            _playerInput.currentActionMap.FindAction("Jump").Disable();
+        }
         _freezePlayer = true;
         _movementInput = new Vector2(0,0);
         
@@ -271,6 +273,30 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _stopCollisions = true;
         Player.obj.rigidBody.gravityScale = 0;
         _animator.speed = 0;
+    }
+
+    public void TeleportToNextRoom(Collider2D target) {
+        StartCoroutine(TeleportToNextRoomCoroutine(target));
+    }
+
+    private IEnumerator TeleportToNextRoomCoroutine(Collider2D target) {
+        spriteRenderer.enabled = false;
+        
+        GameObject soul = Instantiate(_soulVfx, transform.position, transform.rotation);
+        PrisonerSoul playerSoul = soul.GetComponent<PrisonerSoul>();
+        playerSoul.Target = target.transform.position;
+        while(!playerSoul.IsTargetReached) {
+            yield return null;
+        }
+        Destroy(playerSoul.gameObject);
+        transform.position = target.transform.position;
+        SetStartingOnGround();
+        isGrounded = true;
+        spriteRenderer.enabled = true;
+
+        EnablePlayerAfterLevelTransition();
+
+        yield return null;
     }
 
     public void EnablePlayerAfterLevelTransition() {
@@ -666,7 +692,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         PlayerSwitcher.obj.DisableAll();
         GameObject soul = Instantiate(_soulVfx, transform.position, transform.rotation);
         PrisonerSoul prisonerSoul = soul.GetComponent<PrisonerSoul>();
-        prisonerSoul.speed = 20f;
         prisonerSoul.Target = _playerTwin.transform.position;
         while (!prisonerSoul.IsTargetReached) {
             yield return null;

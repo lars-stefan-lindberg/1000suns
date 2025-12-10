@@ -8490,11 +8490,11 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 24b552ce126d941b2953c56dfff27fe3, type: 2}
     - target: {fileID: 1657636802850301417, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 228.875
+      value: 171.25
       objectReference: {fileID: 0}
     - target: {fileID: 1657636802850301417, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -89.875
+      value: -88.875
       objectReference: {fileID: 0}
     - target: {fileID: 1657636802850301417, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
       propertyPath: m_LocalPosition.z
@@ -19900,6 +19900,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _rigidBody: {fileID: 2059269601}
   _pullForce: 500
+  _isHeavy: 0
 --- !u!1 &2065910294
 GameObject:
   m_ObjectHideFlags: 0
@@ -22782,6 +22783,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _rigidBody: {fileID: 7225188015179596695}
   _pullForce: 400
+  _isHeavy: 0
 --- !u!1 &7267978776793493270
 GameObject:
   m_ObjectHideFlags: 0
@@ -22892,7 +22894,7 @@ Transform:
   m_GameObject: {fileID: 3845438661513609776}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 250.375, y: -89.875, z: 0}
+  m_LocalPosition: {x: 168.625, y: -88.875, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -22942,6 +22944,7 @@ MonoBehaviour:
   pullForce: 4000
   maxPullSpeed: 7
   stopDistanceFromPlayer: 1.5
+  HoldPull: 0
   pullRange: 9
   pullableMask:
     serializedVersion: 2

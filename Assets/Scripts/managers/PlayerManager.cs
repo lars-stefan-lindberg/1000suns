@@ -244,19 +244,43 @@ public class PlayerManager : MonoBehaviour
     public void SetTransitioningBetweenLevels() {
         if(PlayerMovement.obj != null && PlayerMovement.obj.gameObject.activeSelf)
             PlayerMovement.obj.SetTransitioningBetweenLevels();
-        else if(PlayerBlobMovement.obj != null && PlayerBlobMovement.obj.gameObject.activeSelf)
+        if(PlayerBlobMovement.obj != null && PlayerBlobMovement.obj.gameObject.activeSelf)
             PlayerBlobMovement.obj.SetTransitioningBetweenLevels();
-        else if(ShadowTwinMovement.obj != null && ShadowTwinMovement.obj.gameObject.activeSelf)
+        if(ShadowTwinMovement.obj != null && ShadowTwinMovement.obj.gameObject.activeSelf)
             ShadowTwinMovement.obj.SetTransitioningBetweenLevels();
     }
 
-    public void TransitionToNextRoom(PlayerManager.PlayerDirection direction) {
+    public void TransitionToNextRoom(PlayerDirection direction) {
         if(PlayerMovement.obj != null && PlayerMovement.obj.gameObject.activeSelf)
             PlayerMovement.obj.TransitionToNextRoom(direction);
         else if(PlayerBlobMovement.obj != null && PlayerBlobMovement.obj.gameObject.activeSelf)
             PlayerBlobMovement.obj.TransitionToNextRoom(direction);
         else if(ShadowTwinMovement.obj != null && ShadowTwinMovement.obj.gameObject.activeSelf)
             ShadowTwinMovement.obj.TransitionToNextRoom(direction);
+    }
+
+    public void TransitionToNextRoom(PlayerDirection direction, PlayerType playerType) {
+        if(playerType == PlayerType.HUMAN) {
+            if(PlayerMovement.obj != null && PlayerMovement.obj.gameObject.activeSelf)
+                PlayerMovement.obj.TransitionToNextRoom(direction);
+            else if(PlayerBlobMovement.obj != null && PlayerBlobMovement.obj.gameObject.activeSelf)
+                PlayerBlobMovement.obj.TransitionToNextRoom(direction);
+        } else if(playerType == PlayerType.SHADOW_TWIN) {
+            ShadowTwinMovement.obj.TransitionToNextRoom(direction);
+        }
+    }
+
+    public void TeleportSecondPlayerToTarget(PlayerType playerType, Collider2D target) {
+        if(playerType == PlayerType.SHADOW_TWIN) {
+            if(PlayerMovement.obj != null && PlayerMovement.obj.gameObject.activeSelf) {
+                PlayerMovement.obj.TeleportToNextRoom(target);
+            }
+            else if(PlayerBlobMovement.obj != null && PlayerBlobMovement.obj.gameObject.activeSelf) {
+                PlayerBlobMovement.obj.TeleportToNextRoom(target);
+            }
+        } else if(playerType == PlayerType.HUMAN) {
+            ShadowTwinMovement.obj.TeleportToNextRoom(target);
+        }
     }
 
     public float GetPlayerVerticalVelocity() {
