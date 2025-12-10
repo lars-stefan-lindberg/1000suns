@@ -8,6 +8,7 @@ public class FloatyPlatform : MonoBehaviour
     [SerializeField] private BoxCollider2D _childCollider;
     private Rigidbody2D _rigidBody;
     private SpriteRenderer _spriteRenderer;
+    private Pullable _pullable;
 
     public float idleMoveSpeed;
     //private float _idleVerticalTargetPosition;
@@ -53,6 +54,7 @@ public class FloatyPlatform : MonoBehaviour
         _fallingPlatformFlash = GetComponent<FallingPlatformFlash>();
         _startingPosition = transform.position;
         _fadeStartColor = new Color(_spriteRenderer.color.r, _spriteRenderer.color.g, _spriteRenderer.color.b, 0);
+        _pullable = GetComponentInChildren<Pullable>();
     }
 
     public float _playerOffset = 0.1f;
@@ -187,20 +189,45 @@ public class FloatyPlatform : MonoBehaviour
             SoundFXManager.obj.PlayFloatingPlatformWallHit(transform);
         }
 
+        bool isBeingPulled = _pullable != null && _pullable.IsPulled;
+
         if (movePlatform)
         {
-            _rigidBody.velocity = new Vector2(Mathf.MoveTowards(_rigidBody.velocity.x, 0, deceleration * Time.deltaTime), _rigidBody.velocity.y);
-            if(isFallingOnMovePlatform && !_isFallingOnMovePlatformFallStarted && !_respawning) {
-                _fallingPlatformFlash.StopFlashing();
-                _rigidBody.bodyType = RigidbodyType2D.Dynamic;
-                _rigidBody.gravityScale = 1;
-                _isFallingOnMovePlatformFallStarted = true;
+            // If the platform is being pulled, let the external pull logic control velocity.
+            if (!isBeingPulled)
+            {
+                _rigidBody.velocity = new Vector2(
+                    Mathf.MoveTowards(_rigidBody.velocity.x, 0, deceleration * Time.deltaTime),
+                    _rigidBody.velocity.y);
+
+                if(isFallingOnMovePlatform && !_isFallingOnMovePlatformFallStarted && !_respawning) {
+                    _fallingPlatformFlash.StopFlashing();
+                    _rigidBody.bodyType = RigidbodyType2D.Dynamic;
+                    _rigidBody.gravityScale = 1;
+                    _isFallingOnMovePlatformFallStarted = true;
+                }
             }
-        } else
-        {
-            _rigidBody.velocity = new Vector2(0, 0);
         }
-        if(_rigidBody.velocity.x == 0)
+        else
+        {
+            if (!isBeingPulled)
+            {
+                // Gracefully return to rest when no external pull is active.
+                if (Mathf.Abs(_rigidBody.velocity.x) > 0f)
+                {
+                    _rigidBody.velocity = new Vector2(
+                        Mathf.MoveTowards(_rigidBody.velocity.x, 0, deceleration * Time.deltaTime),
+                        _rigidBody.velocity.y);
+                }
+                else
+                {
+                    _rigidBody.velocity = new Vector2(0, 0);
+                }
+            }
+            // If being pulled, do nothing here – ShadowTwinPull controls the velocity.
+        }
+
+        if(!isBeingPulled && Mathf.Approximately(_rigidBody.velocity.x, 0f))
         {
             movePlatform = false;
         }

@@ -8490,11 +8490,11 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 24b552ce126d941b2953c56dfff27fe3, type: 2}
     - target: {fileID: 1657636802850301417, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 157.375
+      value: 192
       objectReference: {fileID: 0}
     - target: {fileID: 1657636802850301417, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -93.875
+      value: -90.875
       objectReference: {fileID: 0}
     - target: {fileID: 1657636802850301417, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
       propertyPath: m_LocalPosition.z
@@ -22892,7 +22892,7 @@ Transform:
   m_GameObject: {fileID: 3845438661513609776}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 160.875, y: -88.875, z: 0}
+  m_LocalPosition: {x: 210.625, y: -89.875, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -22941,15 +22941,15 @@ MonoBehaviour:
   platform: {fileID: 0}
   pullForce: 4000
   maxPullSpeed: 7
-  stopDistanceFromPlayer: 2
-  pullRange: 6
+  stopDistanceFromPlayer: 1.5
+  pullRange: 9
   pullableMask:
     serializedVersion: 2
-    m_Bits: 641
+    m_Bits: 705
   blockingMask:
     serializedVersion: 2
     m_Bits: 8
-  raySpacing: 0.2
+  raySpacing: 0.5
   projectileDelay: 0.05
   playerOffsetY: 0.1
 --- !u!114 &8240633124138664370
@@ -22966,7 +22966,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _jumpKickDuration: 0.05
   _jumpKickHorizontal: 3
-  isDevMode: 1
+  isDevMode: 0
   _stats: {fileID: 11400000, guid: d7da02c7da0894367b7d10cb7bb8bdce, type: 2}
   _playerTwin: {fileID: 5764671154351780262}
   _playerBlob: {fileID: 2059269596}
@@ -22977,8 +22977,8 @@ MonoBehaviour:
   _isDashing: 0
   dashDecelerationTime: 160
   initialDashSpeed: 42
-  isOnMovable: 0
-  movableRigidBody: {fileID: 0}
+  isOnMoveable: 0
+  moveableRigidBody: {fileID: 0}
   jumpThroughPlatform: {fileID: 0}
   baseProjectilePushPower: 7
   _poweredDashMultiplier: 1.2

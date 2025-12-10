@@ -800,8 +800,9 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             isOnMoveable = true;
             if(moveableRigidBody == null) {
                 moveableRigidBody = moveableHit.collider.gameObject.GetComponentInParent<Rigidbody2D>();
-                if(moveableHit.collider.gameObject.CompareTag("FloatingPlatform"))
+                if(moveableHit.collider.gameObject.CompareTag("FloatingPlatform")) {
                     PlayerPush.obj.platform = moveableHit.collider.gameObject.GetComponentInParent<FloatyPlatform>();
+                }
             }
         } else {
             isOnMoveable = false;

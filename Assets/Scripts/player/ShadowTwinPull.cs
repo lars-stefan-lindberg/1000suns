@@ -86,10 +86,12 @@ public class ShadowTwinPull : MonoBehaviour
 
         Vector2 origin1 = (Vector2)transform.position + new Vector2(0,  raySpacing);
         Vector2 origin2 = (Vector2)transform.position + new Vector2(0, -raySpacing);
+        Vector2 origin3 = (Vector2)transform.position + new Vector2(0, 0);
 
         // Cast both rays
         RaycastHit2D hit1 = Physics2D.Raycast(origin1, direction, pullRange, pullableMask);
         RaycastHit2D hit2 = Physics2D.Raycast(origin2, direction, pullRange, pullableMask);
+        RaycastHit2D hit3 = Physics2D.Raycast(origin3, direction, pullRange, pullableMask);
 
         //Check if the hit is very close to the player. If so stop pulling
         if(hit1.collider != null && hit1.distance < 1f) {
@@ -98,12 +100,36 @@ public class ShadowTwinPull : MonoBehaviour
         if(hit2.collider != null && hit2.distance < 1f) {
             return null;
         }
+        if(hit3.collider != null && hit3.distance < 1f) {
+            return null;
+        }
 
         // Blocked? If a wall lies before the object, cancel
         if (IsBlocked(origin1, direction, hit1)) hit1 = new RaycastHit2D();
         if (IsBlocked(origin2, direction, hit2)) hit2 = new RaycastHit2D();
+        if (IsBlocked(origin3, direction, hit3)) hit3 = new RaycastHit2D();
+        
+        // If multiple rays hit, return the collider of the hit with the shortest distance
+        RaycastHit2D closestHit = new RaycastHit2D();
+        float closestDistance = float.MaxValue;
 
-        return hit1.collider ? hit1.collider : hit2.collider ? hit2.collider : null;
+        if (hit1.collider != null && hit1.distance < closestDistance)
+        {
+            closestHit = hit1;
+            closestDistance = hit1.distance;
+        }
+        if (hit2.collider != null && hit2.distance < closestDistance)
+        {
+            closestHit = hit2;
+            closestDistance = hit2.distance;
+        }
+        if (hit3.collider != null && hit3.distance < closestDistance)
+        {
+            closestHit = hit3;
+            closestDistance = hit3.distance;
+        }
+
+        return closestHit.collider;
     }
 
     private bool DetectBlockable()
@@ -210,7 +236,9 @@ public class ShadowTwinPull : MonoBehaviour
                 SetPullable(pullable);
             }
             if(_targetRb != null) {
-                Vector2 toPlayer = (Vector2)transform.position - _targetRb.position;
+                Vector2 playerPosition = transform.position;
+                Vector2 closestPoint = _pulledCollider != null ? _pulledCollider.ClosestPoint(playerPosition) : _targetRb.position;
+                Vector2 toPlayer = playerPosition - closestPoint;
                 float distance = toPlayer.magnitude;
 
                 // If close enough, bring the object to a halt in front of the player
@@ -219,10 +247,18 @@ public class ShadowTwinPull : MonoBehaviour
                     Vector2 direction = toPlayer / distance;
                     float currentSpeedTowardsPlayer = Vector2.Dot(_targetRb.velocity, direction);
 
-                    if (currentSpeedTowardsPlayer > 0f)
+                    if (_targetRb.bodyType == RigidbodyType2D.Dynamic)
                     {
-                        // Remove the velocity component toward the player so it comes to rest here
-                        _targetRb.velocity -= direction * currentSpeedTowardsPlayer;
+                        if (currentSpeedTowardsPlayer > 0f)
+                        {
+                            // Remove the velocity component toward the player so it comes to rest here
+                            _targetRb.velocity -= direction * currentSpeedTowardsPlayer;
+                        }
+                    }
+                    else if (_targetRb.bodyType == RigidbodyType2D.Kinematic)
+                    {
+                        // For kinematic bodies, explicitly place them at the stop distance and clear velocity
+                        _targetRb.velocity = Vector2.zero;
                     }
 
                     return;
@@ -241,8 +277,19 @@ public class ShadowTwinPull : MonoBehaviour
 
                     if (desiredAcceleration > 0f)
                     {
-                        float forceMagnitude = desiredAcceleration * _targetRb.mass;
-                        _targetRb.AddForce(direction * forceMagnitude);
+                        if (_targetRb.bodyType == RigidbodyType2D.Dynamic)
+                        {
+                            float forceMagnitude = desiredAcceleration * _targetRb.mass;
+                            _targetRb.AddForce(direction * forceMagnitude);
+                        }
+                        else if (_targetRb.bodyType == RigidbodyType2D.Kinematic)
+                        {
+                            // For kinematic bodies, simulate acceleration by updating velocity and moving position manually
+                            float newSpeed = clampedCurrentSpeed + desiredAcceleration * Time.fixedDeltaTime;
+                            newSpeed = maxPullSpeed > 0f ? Mathf.Min(newSpeed, maxPullSpeed) : newSpeed;
+                            Vector2 newVelocity = direction * newSpeed;
+                            _targetRb.velocity = newVelocity;
+                        }
                     }
                 }
             }
@@ -315,15 +362,16 @@ public class ShadowTwinPull : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        float facing = Mathf.Sign(transform.localScale.x);
-        Vector2 direction = new Vector2(facing, 0f);
+        Vector2 direction = new Vector2(-1, 0f);
 
         Vector2 origin1 = (Vector2)transform.position + new Vector2(0,  raySpacing);
-        Vector2 origin2 = (Vector2)transform.position + new Vector2(0, -raySpacing);
+        Vector2 origin2 = (Vector2)transform.position + new Vector2(0, 0);
+        Vector2 origin3 = (Vector2)transform.position + new Vector2(0, -raySpacing);
 
         Gizmos.color = Color.cyan;
         Gizmos.DrawLine(origin1, origin1 + direction * pullRange);
         Gizmos.DrawLine(origin2, origin2 + direction * pullRange);
+        Gizmos.DrawLine(origin3, origin3 + direction * pullRange);
     }
 
 

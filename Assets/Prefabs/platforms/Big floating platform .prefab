@@ -24,7 +24,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3478948174412080235}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 157.125, y: -87.375, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -46,7 +46,7 @@ GameObject:
   - component: {fileID: 870007180385882862}
   - component: {fileID: 5366078148318779783}
   - component: {fileID: 3501658277021868217}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Platform
   m_TagString: FloatingPlatform
   m_Icon: {fileID: 0}
@@ -171,8 +171,9 @@ MonoBehaviour:
   deceleration: 8
   movePlatform: 0
   isFallingPlatform: 0
+  isFallingOnMovePlatform: 0
   timeBeforeFall: 1
-  timeFallingBeforeDestroy: 7
+  timeFallingBeforeDestroy: 3
   fallTimer: 0
   spawnTime: 1
   spawnTimer: 0
@@ -251,6 +252,7 @@ GameObject:
   - component: {fileID: 2017331125516202006}
   - component: {fileID: 7197637353448560045}
   - component: {fileID: 2742536206020877617}
+  - component: {fileID: 5561556833414334182}
   m_Layer: 6
   m_Name: SolidCollider
   m_TagString: FloatingPlatform
@@ -316,7 +318,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 3, y: 0.6280308}
+  m_Size: {x: 3.014038, y: 0.6280308}
   m_EdgeRadius: 0
 --- !u!251 &2742536206020877617
 PlatformEffector2D:
@@ -337,3 +339,17 @@ PlatformEffector2D:
   m_UseSideFriction: 0
   m_UseSideBounce: 0
   m_SideArc: 1
+--- !u!114 &5561556833414334182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8493650089926468636}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8474e85f645694566bc60157c22c639b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rigidBody: {fileID: 5533103379401372817}
+  _pullForce: 350
