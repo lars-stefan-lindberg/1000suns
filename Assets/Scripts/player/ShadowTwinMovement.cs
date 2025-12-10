@@ -452,6 +452,10 @@ public class ShadowTwinMovement : MonoBehaviour
     }
 
     private IEnumerator SwitchTo(bool isEliInBlobForm) {
+        //Before disabling all controls we need to make sure that any ongoing pull will not be cancelled
+        if(IsPulling) {
+            ShadowTwinPull.obj.HoldPull = true;
+        }
         //Disable all controls
         PlayerSwitcher.obj.DisableAll();
         GameObject soul = Instantiate(_soulVfx, transform.position, transform.rotation);

@@ -4,6 +4,7 @@ public class Pullable : MonoBehaviour
 {
     [SerializeField] private Rigidbody2D _rigidBody;
     [SerializeField] private float _pullForce = 1f;
+    [SerializeField] private bool _isHeavy = false;
     public bool IsPulled {get; set;}
 
     private void Awake() {
@@ -16,5 +17,9 @@ public class Pullable : MonoBehaviour
 
     public float GetPullForce() {
         return _pullForce;
+    }
+
+    public bool IsHeavy() {
+        return _isHeavy;
     }
 }

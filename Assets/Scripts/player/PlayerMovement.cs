@@ -672,6 +672,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             yield return null;
         }
         ShadowTwinPlayer.obj.FlashOnce();
+        if(ShadowTwinPull.obj.HoldPull) {
+            ShadowTwinPull.obj.HoldPull = false;  //Reset any current pulling
+            ShadowTwinPull.obj.OnShootButtonCanceled();
+        }
         PlayerSwitcher.obj.SwitchToDee();
         Destroy(soul);
         yield return null;

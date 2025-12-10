@@ -42,6 +42,7 @@ public class ShadowTwinPull : MonoBehaviour
     public float pullForce = 10f;
     public float maxPullSpeed = 7f;
     public float stopDistanceFromPlayer = 1f;
+    public bool HoldPull = false;  //Used in single-player co-op scenarios where we need to hold pull while switching character
     private Rigidbody2D _targetRb;
     private Pullable _pulledPullable;
     private Collider2D _pulledCollider;
@@ -66,11 +67,7 @@ public class ShadowTwinPull : MonoBehaviour
                 Pull();
             }
             if(context.canceled) {
-                CancelPulling();
-                ShadowTwinMovement.obj.TriggerEndForcePullAnimation();
-                ShadowTwinMovement.obj.IsPulling = false;
-                ShadowTwinMovement.obj.EndDash();
-                ShadowTwinPlayer.obj.RestorePlayerPullLight();
+                OnShootButtonCanceled();
             }
         }
     }
@@ -79,6 +76,16 @@ public class ShadowTwinPull : MonoBehaviour
     public LayerMask pullableMask;
     public LayerMask blockingMask;
     public float raySpacing = 0.2f; // space between the rays
+
+    public void OnShootButtonCanceled() {
+        if(HoldPull)
+            return;
+        CancelPulling();
+        ShadowTwinMovement.obj.TriggerEndForcePullAnimation();
+        ShadowTwinMovement.obj.IsPulling = false;
+        ShadowTwinMovement.obj.EndDash();
+        ShadowTwinPlayer.obj.RestorePlayerPullLight();
+    }
 
     private Collider2D DetectPullable()
     {
@@ -235,7 +242,7 @@ public class ShadowTwinPull : MonoBehaviour
                 ResetPullableObject();
                 SetPullable(pullable);
             }
-            if(_targetRb != null) {
+            if(_targetRb != null && !_pulledPullable.IsHeavy()) {
                 Vector2 playerPosition = transform.position;
                 Vector2 closestPoint = _pulledCollider != null ? _pulledCollider.ClosestPoint(playerPosition) : _targetRb.position;
                 Vector2 toPlayer = playerPosition - closestPoint;
