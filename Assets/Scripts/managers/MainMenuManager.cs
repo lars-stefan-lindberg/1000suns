@@ -121,7 +121,7 @@ public class MainMenuManager : MonoBehaviour
         }
     }
 
-    private float _coopGameStartCounddownTime = 0.5f;
+    private float _coopGameStartCounddownTime = 1f;
     private float _coopGameStartCounddownTimer = 0f;
     private bool _isGameStarted = false;
     void Update()
@@ -132,7 +132,7 @@ public class MainMenuManager : MonoBehaviour
                 _coopGameStartCounddownTimer += Time.deltaTime;
                 if(_coopGameStartCounddownTimer >= _coopGameStartCounddownTime)
                 {
-                    StartCoopGame();
+                    StartCoopGame(false);
                     _isGameStarted = true;
                 }
             } else {
@@ -205,7 +205,7 @@ public class MainMenuManager : MonoBehaviour
     }
 
     public void OnPlayCoopButtonClicked() {
-        StartCoopGame();
+        StartCoopGame(false);
     }
 
     public void StartGame() {
@@ -213,9 +213,9 @@ public class MainMenuManager : MonoBehaviour
         StartCoroutine(StartGameCoroutine());
     }
 
-    public void StartCoopGame() {
+    public void StartCoopGame(bool isSinglePlayer) {
         _playCoopButton.GetComponent<Button>().interactable = false;
-        StartCoroutine(StartCoopGameCoroutine());
+        StartCoroutine(StartCoopGameCoroutine(isSinglePlayer));
     }
 
     [ContextMenu("Continue Game")]
@@ -268,7 +268,7 @@ public class MainMenuManager : MonoBehaviour
         SceneManager.UnloadSceneAsync(_titleScreen.SceneName);
     }
 
-    private IEnumerator StartCoopGameCoroutine() {
+    private IEnumerator StartCoopGameCoroutine(bool isSinglePlayer) {
         SoundFXManager.obj.PlayUIPlay();
 
         float masterVolume = SoundMixerManager.obj.GetMasterVolume();
@@ -300,7 +300,16 @@ public class MainMenuManager : MonoBehaviour
         PlayerStatsManager.obj.numberOfDeaths = 0;
         LevelManager.obj.ResetLevels();
         PlayerManager.obj.IsSeparated = true;
-        if(LobbyManager.obj.GetPlayerSlots().Count > 1) {
+        LobbyManager.obj.IsJoiningPlayers = false;
+        LobbyManager.obj.IsSelectingCharacters = false;
+        if(isSinglePlayer) {
+            LobbyManager.obj.ClearPlayerSlots();
+            _characterSelectionWidgets.ForEach((widget) => {
+                Destroy(widget.gameObject);
+            });
+            _characterSelectionWidgets.Clear();
+            PlayerManager.obj.IsCoopActive = false;
+        } else {
             PlayerManager.obj.IsCoopActive = true;
         }
 
@@ -371,7 +380,7 @@ public class MainMenuManager : MonoBehaviour
         isNavigatingToMenu = true;
         SoundFXManager.obj.PlayUIConfirm();
         
-        StartCoopGame();
+        StartCoopGame(true);
         EventSystem.current.SetSelectedGameObject(null);
     }
 
@@ -469,6 +478,7 @@ public class MainMenuManager : MonoBehaviour
         _playerDeviceSetup.SetActive(true);
         _hasPlayer2Joined = false;
         LobbyManager.obj.IsJoiningPlayers = true;
+        LobbyManager.obj.ClearPlayerSlots();
         _playerDeviceSetupConfirmButton.GetComponent<Button>().interactable = false;
         _playerDeviceSetupConfirmButton.GetComponentInChildren<TextMeshProUGUI>().color = Color.gray;
 
@@ -662,6 +672,7 @@ public class MainMenuManager : MonoBehaviour
     }
 
     private void LeaveToPlayerDeviceSetup() {
+        LobbyManager.obj.IsSelectingCharacters = false;
         _characterSelection.SetActive(false);
         _characterSelectionWidgets.ForEach((widget) => {
             Destroy(widget.gameObject);
@@ -716,6 +727,9 @@ public class MainMenuManager : MonoBehaviour
     }
 
     public void UpdateCancelConfirmUI(InputDeviceListener.Device device) {
+        if(_characterSelection.activeSelf) {
+            return;
+        }
         if(device == InputDeviceListener.Device.Gamepad) {
             _confirmCancelButtonsPanel.SetActive(true);
             _gamepadGeneralConfirmIcon.gameObject.SetActive(true);

@@ -46,9 +46,9 @@ public class CharacterSelectionWidget : MonoBehaviour
             {
                 if (_widgetPosition == WidgetPosition.Left)
                 {
-                    _widgetPosition = WidgetPosition.Middle;
+                    _widgetPosition = WidgetPosition.Right;
                     SetNonReady();
-                    MoveToX(0);
+                    MoveToX(_widgetPositionRight);
                 }
                 else if (_widgetPosition == WidgetPosition.Middle)
                 {
@@ -61,9 +61,9 @@ public class CharacterSelectionWidget : MonoBehaviour
             {
                 if (_widgetPosition == WidgetPosition.Right)
                 {
-                    _widgetPosition = WidgetPosition.Middle;
+                    _widgetPosition = WidgetPosition.Left;
                     SetNonReady();
-                    MoveToX(0);
+                    MoveToX(_widgetPositionLeft);
                 }
                 else if (_widgetPosition == WidgetPosition.Middle)
                 {
@@ -72,9 +72,6 @@ public class CharacterSelectionWidget : MonoBehaviour
                     MoveToX(_widgetPositionLeft);
                 }
             }
-            SoundFXManager.obj.PlayUIBrowse();
-
-            UpdateUI();
         }
     }
 
@@ -108,6 +105,8 @@ public class CharacterSelectionWidget : MonoBehaviour
     {
         _rectTransform.anchoredPosition = 
             new Vector2(x, _rectTransform.anchoredPosition.y);
+        UpdateUI();
+        SoundFXManager.obj.PlayUIBrowse();
     }
 
     private float GetHorizontalInput(float originInput) {
@@ -133,6 +132,8 @@ public class CharacterSelectionWidget : MonoBehaviour
                     HideAllIcons();
                     _confirmedReadyIcon.SetActive(true);
                     SoundFXManager.obj.PlayUIConfirm();
+                } else {
+                    SoundFXManager.obj.PlayUIBack();
                 }
             }
         }
@@ -147,7 +148,6 @@ public class CharacterSelectionWidget : MonoBehaviour
                 //if both players are not ready, go back to player device setup
                 bool noCharactersSelected = LobbyManager.obj.GetPlayerSlots().TrueForAll(slot => slot.character == PlayerSlot.CharacterType.None);
                 if(noCharactersSelected) {
-                    LobbyManager.obj.IsSelectingCharacters = false;
                     MainMenuManager.obj.OnNavigateBack();
                     SoundFXManager.obj.PlayUIBack();
                 }

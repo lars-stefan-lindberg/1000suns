@@ -169,9 +169,6 @@ public class InputDeviceListener : MonoBehaviour
 
     private void OnAnyInputPerformed(object obj, InputActionChange change)
     {
-        if(LobbyManager.obj.IsJoiningPlayers || LobbyManager.obj.IsSelectingCharacters) {
-            return;
-        }
         if (change == InputActionChange.ActionPerformed)
         {
             InputAction receivedInputAction = (InputAction) obj;

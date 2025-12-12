@@ -52,6 +52,7 @@ public class FirstCoopRoomLoader : MonoBehaviour
     }
 
     private IEnumerator FadeInAndPlaySounds() {
+        yield return new WaitForSeconds(2f);
         SceneFadeManager.obj.SetFadedOutState();
         SceneFadeManager.obj.SetFadeInSpeed(0.2f);
         SceneFadeManager.obj.StartFadeIn();
