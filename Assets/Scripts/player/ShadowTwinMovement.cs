@@ -268,6 +268,11 @@ public class ShadowTwinMovement : MonoBehaviour
         yield return null;
     }
 
+    public void SetPlayerInputDevice(PlayerSlot slot) {
+        _playerInput.enabled = true;
+        _playerInput.SwitchCurrentControlScheme(slot.device is Keyboard ? "Keyboard" : "Gamepad", slot.device);
+    }
+
     public void EnablePlayerAfterLevelTransition() {
         UnFreeze();
         ShadowTwinPlayer.obj.rigidBody.gravityScale = 1;
@@ -447,6 +452,9 @@ public class ShadowTwinMovement : MonoBehaviour
     public bool isTransforming = false;
     public void OnSwitch(InputAction.CallbackContext context)
     {
+        if(PlayerManager.obj.IsCoopActive) {
+            return;
+        }
         if (context.performed)
         {
             HandleSwitchCharacter();
@@ -512,6 +520,9 @@ public class ShadowTwinMovement : MonoBehaviour
 
     public void OnMergeSplit(InputAction.CallbackContext context)
     {
+        if(PlayerManager.obj.IsCoopActive) {
+            return;
+        }
         if (context.started)
         {
             //Check if twin is close enough to merge

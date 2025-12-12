@@ -104,6 +104,8 @@ public class PlayerSwitcher : MonoBehaviour
 
     private void OnGamepadCountChanged(int count)
     {
+        //TODO: Disable for now. Handle device connect/disconnect
+        return;
         if (count <= 0)
         {
             //The assumption of count <= 0 right now is that there are no gamepads connected, but a keyboard
@@ -156,6 +158,8 @@ public class PlayerSwitcher : MonoBehaviour
 
     private void OnSecondGamepadConnected(Gamepad firstGamepad, Gamepad secondGamepad)
     {
+        //TODO: Disable for now. Handle device connect/disconnect
+        return;
         if (string.IsNullOrEmpty(gamepadControlSchemeName))
         {
             return;
@@ -176,6 +180,8 @@ public class PlayerSwitcher : MonoBehaviour
 
     private void OnSecondGamepadDisconnected()
     {
+        //TODO: Disable for now. Handle device connect/disconnect
+        return;
         if (_isCoopActive)
         {
             //TODO: Should switch to "active" character

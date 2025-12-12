@@ -88,6 +88,9 @@ public class PlayerBlobMovement : MonoBehaviour
     public bool isTransformingToTwin = false;
     public void OnSwitch(InputAction.CallbackContext context)
     {
+        if(PlayerManager.obj.IsCoopActive) {
+            return;
+        }
         if (context.performed)
         {
             HandleSwitchCharacter();
@@ -133,6 +136,9 @@ public class PlayerBlobMovement : MonoBehaviour
 
     public void OnMergeSplit(InputAction.CallbackContext context)
     {
+        if(PlayerManager.obj.IsCoopActive) {
+            return;
+        }
         if (context.started)
         {
             if(PlayerManager.obj.IsSeparated && !CloseEnoughToMerge()) {

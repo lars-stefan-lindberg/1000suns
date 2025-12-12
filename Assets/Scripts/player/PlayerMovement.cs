@@ -402,6 +402,11 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _movementInput = movementInput;
     }
 
+    public void SetPlayerInputDevice(PlayerSlot slot) {
+        _playerInput.enabled = true;
+        _playerInput.SwitchCurrentControlScheme(slot.device is Keyboard ? "Keyboard" : "Gamepad", slot.device);
+    }
+
     public bool isTransformingToBlob = false;
     public void OnMovement(InputAction.CallbackContext value)
     {
@@ -623,6 +628,9 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public bool isTransformingToTwin = false;
     public void OnSwitch(InputAction.CallbackContext context)
     {
+        if(PlayerManager.obj.IsCoopActive) {
+            return;
+        }
         if (context.performed)
         {
             HandleSwitchCharacter();
@@ -636,6 +644,9 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     public void OnMergeSplit(InputAction.CallbackContext context)
     {
+        if(PlayerManager.obj.IsCoopActive) {
+            return;
+        }
         if (context.started)
         {
             //Check if twin is close enough to merge

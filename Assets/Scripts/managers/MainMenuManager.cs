@@ -6,6 +6,7 @@ using System.Linq;
 using System.Collections;
 using TMPro;
 using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
 public class MainMenuManager : MonoBehaviour
 {
@@ -20,6 +21,8 @@ public class MainMenuManager : MonoBehaviour
 
     [SerializeField] private GameObject _continueButton;
     [SerializeField] private GameObject _playButton;
+    [SerializeField] private GameObject _singlePlayerButton;
+    [SerializeField] private GameObject _coopButton;
     [SerializeField] private GameObject _playCoopButton;
     [SerializeField] private Button _optionsButton;
     [SerializeField] private Button _exitButton;
@@ -36,6 +39,8 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private Slider _soundFXSlider;
     [SerializeField] private Slider _ambienceSlider;
 
+    [SerializeField] private GameObject _playerDeviceSetup;
+    [SerializeField] private GameObject _characterSelection;
     [SerializeField] private GameObject _optionsMenu;
     [SerializeField] private GameObject _keyboardConfigMenu;
     [SerializeField] private GameObject _confirmNewGameMenu;
@@ -62,6 +67,17 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _keyboardGeneralCancelText;
     [SerializeField] private TextMeshProUGUI _keyboardGeneralConfirmText;
 
+    [SerializeField] private TextMeshProUGUI _player1DeviceLabel;
+    [SerializeField] private TextMeshProUGUI _player2DeviceLabel;
+    [SerializeField] private GameObject _player2JoinXboxIcon;
+    [SerializeField] private GameObject _player2JoinPSIcon;
+    [SerializeField] private GameObject _player2JoinKeyboardText;
+    [SerializeField] private GameObject _playerDeviceSetupConfirmButton;
+    [SerializeField] private GameObject _characterSelectionWidgetPrefab;
+    [SerializeField] private GameObject _confirmCancelButtonsPanel;
+    private bool _hasPlayer2Joined;
+    private InputDevice _player1InputDevice;
+
     void Awake() {
         obj = this;
     }
@@ -79,6 +95,7 @@ public class MainMenuManager : MonoBehaviour
         confirmActionKeyboardDisplayString = confirmActionReference.action.GetBindingDisplayString(InputBinding.MaskByGroup("Keyboard"));
 
         InputDeviceListener.OnInputDeviceStream += HandleInputDeviceChanged;
+        InputDeviceListener.OnGamepadConnected += HandleGamepadConnected;
         HandleInputDeviceChanged(InputDeviceListener.obj.GetCurrentInputDevice());
 
         bool hasValidSave = SaveManager.obj.HasValidSave(); 
@@ -99,26 +116,92 @@ public class MainMenuManager : MonoBehaviour
             TextMeshProUGUI continueButtonText = continueButton.GetComponentInChildren<TextMeshProUGUI>();
             continueButtonText.color = new Color(0.65f, 0.65f, 0.65f, 1f);
         } else {
-            EventSystem.current.SetSelectedGameObject(_continueButton);
+            //EventSystem.current.SetSelectedGameObject(_continueButton);
+            EventSystem.current.SetSelectedGameObject(_playButton);
+        }
+    }
+
+    private float _coopGameStartCounddownTime = 0.5f;
+    private float _coopGameStartCounddownTimer = 0f;
+    private bool _isGameStarted = false;
+    void Update()
+    {
+        if(_characterSelection.activeSelf && !_isGameStarted) {
+            if(_characterSelectionWidgets.All(widget => widget.IsReady))
+            {
+                _coopGameStartCounddownTimer += Time.deltaTime;
+                if(_coopGameStartCounddownTimer >= _coopGameStartCounddownTime)
+                {
+                    StartCoopGame();
+                    _isGameStarted = true;
+                }
+            } else {
+                _coopGameStartCounddownTimer = 0f;
+            }
+        }
+        if (!_playerDeviceSetup.activeSelf)
+        {
+            return;
+        }
+
+        if (_hasPlayer2Joined)
+        {
+            return;
+        }
+
+        var availableDevices = InputDeviceListener.obj.GetAvailableDevicesExcluding(_player1InputDevice);
+
+        foreach (var info in availableDevices)
+        {
+            if (info.DeviceType == InputDeviceListener.JoinDeviceType.Keyboard)
+            {
+                if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
+                {
+                    _hasPlayer2Joined = true;
+                    SetupPlayer2InputDevice(info);
+                    return;
+                }
+            }
+            else
+            {
+                var gamepad = info.Device as Gamepad;
+
+                if (gamepad != null && gamepad.buttonSouth.wasPressedThisFrame)
+                {
+                    _hasPlayer2Joined = true;
+                    SetupPlayer2InputDevice(info);
+                    return;
+                }
+            }
         }
     }
 
     void OnDestroy() {
         InputDeviceListener.OnInputDeviceStream -= HandleInputDeviceChanged;
+        InputDeviceListener.OnGamepadConnected -= HandleGamepadConnected;
         obj = null;
     }
 
     public void OnPlayButtonClicked() {
-        bool hasValidSave = SaveManager.obj.HasValidSave(); 
-        if (!hasValidSave) {
-            StartGame();
-        } else {
-            isNavigatingToMenu = true;
-            SoundFXManager.obj.PlayUIConfirm();
+        // bool hasValidSave = SaveManager.obj.HasValidSave(); 
+        // if (!hasValidSave) {
+        //     StartGame();
+        // } else {
+        //     isNavigatingToMenu = true;
+        //     SoundFXManager.obj.PlayUIConfirm();
 
-            ShowConfirmNewGameMenu();
-            EventSystem.current.SetSelectedGameObject(_confirmNewGameButton.gameObject);
-        }
+        //     ShowConfirmNewGameMenu();
+        //     EventSystem.current.SetSelectedGameObject(_confirmNewGameButton.gameObject);
+        // }
+        _playButton.SetActive(false);
+        _optionsButton.gameObject.SetActive(false);
+        _exitButton.gameObject.SetActive(false);
+
+        _singlePlayerButton.SetActive(true);
+        _coopButton.SetActive(true);
+
+        SoundFXManager.obj.PlayUIConfirm();
+        EventSystem.current.SetSelectedGameObject(_singlePlayerButton);
     }
 
     public void OnPlayCoopButtonClicked() {
@@ -217,6 +300,9 @@ public class MainMenuManager : MonoBehaviour
         PlayerStatsManager.obj.numberOfDeaths = 0;
         LevelManager.obj.ResetLevels();
         PlayerManager.obj.IsSeparated = true;
+        if(LobbyManager.obj.GetPlayerSlots().Count > 1) {
+            PlayerManager.obj.IsCoopActive = true;
+        }
 
         SoundMixerManager.obj.SetMasterVolume(masterVolume);
 
@@ -231,8 +317,6 @@ public class MainMenuManager : MonoBehaviour
         GameObject cameras = sceneGameObjects.First(gameObject => gameObject.CompareTag("Cameras"));
         CameraManager cameraManager = cameras.GetComponent<CameraManager>();
         cameraManager.ActivateMainCamera();
-
-        PlayerSwitcher.obj.SwitchToEli();
 
         GameObject levelSwitcherGameObject = sceneGameObjects.First(gameObject => gameObject.CompareTag("LevelSwitcher"));
         LevelSwitcher levelSwitcher = levelSwitcherGameObject.GetComponent<LevelSwitcher>();
@@ -283,10 +367,75 @@ public class MainMenuManager : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(_musicSliderGameObject);
     }
 
+    public void OnSinglePlayerButtonClicked() {
+        isNavigatingToMenu = true;
+        SoundFXManager.obj.PlayUIConfirm();
+        
+        StartCoopGame();
+        EventSystem.current.SetSelectedGameObject(null);
+    }
+
+    public void OnCoopButtonClicked() {
+        isNavigatingToMenu = true;
+        SoundFXManager.obj.PlayUIConfirm();
+        
+        ShowPlayerDeviceSetupMenu();
+        EventSystem.current.SetSelectedGameObject(null);
+    }
+
+    public void OnPlayerDeviceSetupConfirmButtonClicked() {
+        isNavigatingToMenu = true;
+        SoundFXManager.obj.PlayUIConfirm();
+
+        ShowCharacterSelectionMenu();
+        EventSystem.current.SetSelectedGameObject(null);
+    }
+
     public void OnConfirmNewGameButtonClicked() {
         _confirmNewGameButton.interactable = false;
         SaveManager.obj.DeleteSave();
         StartCoroutine(StartGameCoroutine());
+    }
+
+    private List<CharacterSelectionWidget> _characterSelectionWidgets = new List<CharacterSelectionWidget>();
+    public void ShowCharacterSelectionMenu() {
+        _playerDeviceSetup.SetActive(false);
+        UpdateCancelConfirmUI(InputDeviceListener.Device.None);
+        _characterSelection.SetActive(true);
+        LobbyManager.obj.IsJoiningPlayers = false;
+        LobbyManager.obj.IsSelectingCharacters = true;
+
+        //Instantiate character selection widget
+        PlayerSlot playerSlot = LobbyManager.obj.GetPlayerSlots()[0];
+        PlayerInput player1Input = PlayerInput.Instantiate(
+            _characterSelectionWidgetPrefab,
+            controlScheme: null,
+            pairWithDevice: playerSlot.device
+        );
+        _characterSelectionWidgets.Add(player1Input.gameObject.GetComponent<CharacterSelectionWidget>());
+        player1Input.transform.SetParent(_characterSelection.transform, worldPositionStays: false);
+
+        CharacterSelectionWidget _widget1 = player1Input.gameObject.GetComponent<CharacterSelectionWidget>();
+        _widget1.playerIndex = playerSlot.slotIndex;
+        _widget1.SetPlayerSlot(playerSlot);
+        RectTransform rectTransform1 = _widget1.GetRectTransform();
+        rectTransform1.anchoredPosition = new Vector2(rectTransform1.anchoredPosition.x, 165);
+
+        //Instantiate character selection widget
+        PlayerSlot playerSlot2 = LobbyManager.obj.GetPlayerSlots()[1];
+        PlayerInput player2Input = PlayerInput.Instantiate(
+            _characterSelectionWidgetPrefab,
+            controlScheme: null,
+            pairWithDevice: playerSlot2.device
+        );
+        _characterSelectionWidgets.Add(player2Input.gameObject.GetComponent<CharacterSelectionWidget>());
+        player2Input.transform.SetParent(_characterSelection.transform, worldPositionStays: false);
+
+        CharacterSelectionWidget _widget2 = player2Input.gameObject.GetComponent<CharacterSelectionWidget>();
+        _widget2.playerIndex = playerSlot2.slotIndex;
+        _widget2.SetPlayerSlot(playerSlot2);
+        RectTransform rectTransform2 = _widget2.GetRectTransform();
+        rectTransform2.anchoredPosition = new Vector2(rectTransform2.anchoredPosition.x, -139);
     }
 
     public void ShowConfirmNewGameMenu() {
@@ -312,6 +461,72 @@ public class MainMenuManager : MonoBehaviour
         _keyboardConfigMenu.SetActive(false);
         HideControllerConfigMenu();
         _optionsMenu.SetActive(true);
+    }
+
+    public void ShowPlayerDeviceSetupMenu() {
+        _titleMenu.SetActive(false);
+
+        _playerDeviceSetup.SetActive(true);
+        _hasPlayer2Joined = false;
+        LobbyManager.obj.IsJoiningPlayers = true;
+        _playerDeviceSetupConfirmButton.GetComponent<Button>().interactable = false;
+        _playerDeviceSetupConfirmButton.GetComponentInChildren<TextMeshProUGUI>().color = Color.gray;
+
+        if (InputDeviceListener.obj.GetCurrentInputDevice() == InputDeviceListener.Device.Gamepad)
+        {
+            _player1InputDevice = Gamepad.current;
+            _player1DeviceLabel.text = "Gamepad";
+            LobbyManager.obj.AddPlayerSlot(new PlayerSlot { slotIndex = 0, device = Gamepad.current });
+        }
+        else
+        {
+            _player1InputDevice = Keyboard.current;
+            _player1DeviceLabel.text = "Keyboard";
+            LobbyManager.obj.AddPlayerSlot(new PlayerSlot { slotIndex = 0, device = Keyboard.current });
+        }
+        UpdatePlayerDeviceSetupPlayer2UI();
+    }
+
+    private void UpdatePlayerDeviceSetupPlayer2UI()
+    {
+        int numberOfAvailableDevices = InputDeviceListener.obj.GetAvailableDeviceCount();
+        if(numberOfAvailableDevices == 1) {
+            _player2DeviceLabel.text = "Connect device";
+            _player2JoinXboxIcon.SetActive(false);
+            _player2JoinPSIcon.SetActive(false);
+            _player2JoinKeyboardText.SetActive(false);
+        } else {
+            _player2DeviceLabel.text = "Join";
+            _player2JoinXboxIcon.SetActive(false);
+            _player2JoinPSIcon.SetActive(false);
+            _player2JoinKeyboardText.SetActive(false);
+            var avialableDevices = InputDeviceListener.obj.GetAvailableNonActiveDevices();
+
+            foreach (var info in avialableDevices)
+            {
+                switch (info.DeviceType)
+                {
+                    case InputDeviceListener.JoinDeviceType.Keyboard:
+                        _player2JoinKeyboardText.SetActive(true);
+                        break;
+                    case InputDeviceListener.JoinDeviceType.XboxGamepad:
+                        _player2JoinXboxIcon.SetActive(true);
+                        break;
+                    case InputDeviceListener.JoinDeviceType.PlayStationGamepad:
+                        _player2JoinPSIcon.SetActive(true);
+                        break;
+                    case InputDeviceListener.JoinDeviceType.OtherGamepad:
+                        _player2JoinXboxIcon.SetActive(true);
+                        break;
+                }
+            }
+        }
+    }
+
+    private void HandleGamepadConnected() {
+        if(_playerDeviceSetup.activeSelf) {
+            UpdatePlayerDeviceSetupPlayer2UI();
+        }
     }
 
     public void ShowKeyboardConfigMenu() {
@@ -437,7 +652,63 @@ public class MainMenuManager : MonoBehaviour
             LeaveControllerConfigMenu();
         } else if(_confirmNewGameMenu.activeSelf) {
             LeaveConfirmNewGameMenu();
+        } else if(_titleMenu.activeSelf && _singlePlayerButton.activeSelf) {
+            LeaveToMainMenu();
+        } else if(_playerDeviceSetup.activeSelf) {
+            LeaveToPlayModeMenu();
+        } else if(_characterSelection.activeSelf) {
+            LeaveToPlayerDeviceSetup();
         }
+    }
+
+    private void LeaveToPlayerDeviceSetup() {
+        _characterSelection.SetActive(false);
+        _characterSelectionWidgets.ForEach((widget) => {
+            Destroy(widget.gameObject);
+        });
+        _characterSelectionWidgets.Clear();
+        LobbyManager.obj.IsJoiningPlayers = true;
+        _playerDeviceSetup.SetActive(true);
+        UpdateCancelConfirmUI(InputDeviceListener.obj.GetCurrentInputDevice());
+        EventSystem.current.SetSelectedGameObject(_playerDeviceSetupConfirmButton);
+    }
+
+    public void LeaveToMainMenu() {
+        SoundFXManager.obj.PlayUIBack();
+        _singlePlayerButton.SetActive(false);
+        _coopButton.SetActive(false);
+        _playButton.SetActive(true);
+        _optionsButton.gameObject.SetActive(true);
+        _exitButton.gameObject.SetActive(true);
+        EventSystem.current.SetSelectedGameObject(_playButton);
+    }
+
+    public void LeaveToPlayModeMenu() {
+        LobbyManager.obj.ClearPlayerSlots();
+        LobbyManager.obj.IsJoiningPlayers = false;
+        SoundFXManager.obj.PlayUIBack();
+        _playerDeviceSetup.SetActive(false);
+        _titleMenu.SetActive(true);
+        _singlePlayerButton.SetActive(true);
+        _coopButton.SetActive(true);
+        _playButton.SetActive(false);
+        _optionsButton.gameObject.SetActive(false);
+        _exitButton.gameObject.SetActive(false);
+        EventSystem.current.SetSelectedGameObject(_coopButton);
+    }
+
+    private void SetupPlayer2InputDevice(InputDeviceListener.AvailableInputDeviceInfo deviceInfo)
+    {
+        SoundFXManager.obj.PlayUIConfirm();
+        LobbyManager.obj.AddPlayerSlot(new PlayerSlot { slotIndex = 1, device = deviceInfo.Device });
+        //If device is keyboard show text "Keyboard", else show "Gamepad"
+        _player2DeviceLabel.text = deviceInfo.Device is Keyboard ? "Keyboard" : "Gamepad";
+        _player2JoinXboxIcon.SetActive(false);
+        _player2JoinPSIcon.SetActive(false);
+        _player2JoinKeyboardText.SetActive(false);
+        _playerDeviceSetupConfirmButton.GetComponent<Button>().interactable = true;
+        _playerDeviceSetupConfirmButton.GetComponentInChildren<TextMeshProUGUI>().color = _optionsButtonColor;
+        EventSystem.current.SetSelectedGameObject(_playerDeviceSetupConfirmButton);
     }
 
     public void HandleInputDeviceChanged(InputDeviceListener.Device device) {
@@ -446,6 +717,7 @@ public class MainMenuManager : MonoBehaviour
 
     public void UpdateCancelConfirmUI(InputDeviceListener.Device device) {
         if(device == InputDeviceListener.Device.Gamepad) {
+            _confirmCancelButtonsPanel.SetActive(true);
             _gamepadGeneralConfirmIcon.gameObject.SetActive(true);
             _gamepadGeneralCancelIcon.gameObject.SetActive(true);
             _keyboardGeneralCancelText.gameObject.SetActive(false);
@@ -454,7 +726,10 @@ public class MainMenuManager : MonoBehaviour
             _gamepadGeneralConfirmIcon.sprite = confirmButtonSprite;
             Sprite cancelButtonSprite = GamepadIconManager.obj.GetIcon(cancelActionReference.action);
             _gamepadGeneralCancelIcon.sprite = cancelButtonSprite;
+        } else if(device == InputDeviceListener.Device.None) {
+            _confirmCancelButtonsPanel.SetActive(false);
         } else {
+            _confirmCancelButtonsPanel.SetActive(true);
             _gamepadGeneralConfirmIcon.gameObject.SetActive(false);
             _gamepadGeneralCancelIcon.gameObject.SetActive(false);
             _keyboardGeneralCancelText.gameObject.SetActive(true);

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using FunkyCode;
 using UnityEngine;
 
@@ -24,6 +25,17 @@ public class FirstCoopRoomLoader : MonoBehaviour
         ShadowTwinMovement.obj.CancelJumping();
         ShadowTwinMovement.obj.Freeze();
         ShadowTwinMovement.obj.spriteRenderer.flipX = true;
+
+        if(PlayerManager.obj.IsCoopActive) {
+            //Hook up devices from LobbyManager to each character, enable input
+            var playerSlots = LobbyManager.obj.GetPlayerSlots();
+            PlayerSlot eliSlot = playerSlots.Where(slot => slot.character == PlayerSlot.CharacterType.Eli).First();
+            PlayerMovement.obj.SetPlayerInputDevice(eliSlot);
+            PlayerSlot deeSlot = playerSlots.Where(slot => slot.character == PlayerSlot.CharacterType.Dee).First();
+            ShadowTwinMovement.obj.SetPlayerInputDevice(deeSlot);
+        } else {
+            PlayerSwitcher.obj.SwitchToEli();
+        }
 
         StartCoroutine(FadeInAndPlaySounds());
         StartCoroutine(AmbienceFadeIn());

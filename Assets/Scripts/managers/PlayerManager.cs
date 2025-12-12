@@ -19,6 +19,7 @@ public class PlayerManager : MonoBehaviour
     }
 
     public bool IsSeparated = false;
+    public bool IsCoopActive = false;
 
     private PlayerType _lastPlayerType = PlayerType.HUMAN;
     public PlayerType elisLastForm = PlayerType.HUMAN;
