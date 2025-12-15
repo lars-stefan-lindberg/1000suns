@@ -130,6 +130,10 @@ public class ShadowTwinMovement : MonoBehaviour
         }
     }
 
+    private Vector2 GetTopMiddleColliderPosition() {
+        return _collider.bounds.center + new Vector3(0, _collider.bounds.extents.y, 0);
+    }
+
     private void FlipPlayer(float _xValue)
     {
         if (_xValue < 0)
@@ -160,7 +164,6 @@ public class ShadowTwinMovement : MonoBehaviour
             speed = initialDashSpeed;
         }
         _frameVelocity.x = isFacingLeft() ? -speed : speed;
-        //_ghostTrail.ShowGhosts();
     }
 
     public void EndDash() {
@@ -178,6 +181,7 @@ public class ShadowTwinMovement : MonoBehaviour
     public bool isFalling = false;
     public bool isMoving = false;
     public bool IsPulling = false;
+    public Vector2 anchorPosition;
 
     private void UpdateAnimator()
     {
@@ -437,8 +441,9 @@ public class ShadowTwinMovement : MonoBehaviour
             }
             else
             {
-                if(StaminaMgr.obj.HasEnoughStamina(new StaminaMgr.AirJump()))
+                if(IsPulling && !isGrounded && Vector2.Distance(anchorPosition, GetTopMiddleColliderPosition()) < 0.5f) {
                     _airJumpToConsume = true;
+                }
             }
             _jumpHeldInput = true;
             _timeJumpWasPressed = _time;
@@ -817,7 +822,6 @@ public class ShadowTwinMovement : MonoBehaviour
             isGrounded = true;
             _coyoteUsable = true;
             _endedJumpEarly = false;
-            _numberOfAirJumps = 0;
             _airJumpToConsume = false;
             _landed = true;
             isFalling = false;
@@ -902,17 +906,13 @@ public class ShadowTwinMovement : MonoBehaviour
     private bool _endedJumpEarly;
     private bool _coyoteUsable;
     private bool _airJumpToConsume = false;
-    private int _numberOfAirJumps = 0;
-    private const int MAX_NUMBER_OF_AIR_JUMPS = 1;
 
     private bool CanUseJump => (isGrounded || CanUseCoyote) && _jumpToConsume;
     private bool HasBufferedJump => _time < _timeJumpWasPressed + _stats.JumpBuffer;
     private bool CanUseCoyote => _coyoteUsable && !isGrounded && _time < _frameLeftGrounded + _stats.CoyoteTime;
     private bool CanUseAirJump =>
-        isDevMode &&
         !isGrounded &&
         _time > _frameLeftGrounded + _stats.CoyoteTime &&
-        _numberOfAirJumps < MAX_NUMBER_OF_AIR_JUMPS &&
         _airJumpToConsume;
 
     private void HandleJump()
@@ -940,7 +940,7 @@ public class ShadowTwinMovement : MonoBehaviour
         ExecuteJump(_stats.JumpPower);
         
         // Activate jump kick start
-        if(!_isDashing && Mathf.Abs(_frameVelocity.x) >= _stats.MaxSpeed) {
+        if(!IsPulling && Mathf.Abs(_frameVelocity.x) >= _stats.MaxSpeed) {
             _isJumpKickActive = true;
             _jumpKickTimer = _jumpKickDuration;
             _jumpKickDirection = isFacingLeft() ? -1f : 1f;
@@ -970,9 +970,10 @@ public class ShadowTwinMovement : MonoBehaviour
 
     private void ExecuteAirJump()
     {
+        ShadowTwinPull.obj.CancelPulling();
         ExecuteJump(_stats.JumpPower);
+        SoundFXManager.obj.PlayJump(gameObject.transform);
         _airJumpToConsume = false;
-        _numberOfAirJumps++;
         StaminaMgr.obj.ExecutePower(new StaminaMgr.AirJump());
     }
 
@@ -989,10 +990,86 @@ public class ShadowTwinMovement : MonoBehaviour
 
     #region Horizontal
 
+    [Header("Anchor Pull Tuning")]
+    [SerializeField] private float _anchorSlowMotionDuration = 0.15f;
+    [SerializeField] private float _anchorSlowMotionSpeedFactor = 0.35f;
+    [SerializeField] private float _anchorAcceleration = 100f;
+    [SerializeField] private float _anchorSnapDistance = 0.05f;
+    [SerializeField] private float initialAnchorPullSpeed = 30f;
+
+    private float _anchorPullStartTime;
+    private float _currentAnchorSpeed;
+    private bool _anchorReachedThisPull;
+
+    public void StartAnchorPull()
+    {
+        IsPulling = true;
+        _anchorPullStartTime = Time.time;
+        _currentAnchorSpeed = 0f;
+        _anchorReachedThisPull = false;
+    }
+
+    public void OnAnchorReached()
+    {
+        CameraShakeManager.obj.ForcePushShake();
+        SoundFXManager.obj.PlayForcePushExecute(transform);
+        ShockWaveManager.obj.CallShockWave(anchorPosition, 0.2f, 0.05f, 0.15f);
+    }
+
+    private void HandleAnchorPullVelocity()
+    {
+        Vector2 topPos = GetTopMiddleColliderPosition();
+        float distance = Vector2.Distance(anchorPosition, topPos);
+
+        // Snap to the anchor when close enough and fully stop movement
+        if (distance <= _anchorSnapDistance)
+        {
+            Vector2 offset = topPos - anchorPosition;
+            ShadowTwinPlayer.obj.rigidBody.position -= offset;
+            _frameVelocity = Vector2.zero;
+
+            if (!_anchorReachedThisPull)
+            {
+                _anchorReachedThisPull = true;
+                OnAnchorReached();
+            }
+
+            return;
+        }
+
+        float elapsed = Time.time - _anchorPullStartTime;
+        float targetSpeed = initialAnchorPullSpeed;
+
+        if (elapsed < _anchorSlowMotionDuration)
+        {
+            targetSpeed *= _anchorSlowMotionSpeedFactor;
+        }
+
+        _currentAnchorSpeed = Mathf.MoveTowards(
+            _currentAnchorSpeed,
+            targetSpeed,
+            _anchorAcceleration * Time.fixedDeltaTime
+        );
+
+        if (_currentAnchorSpeed <= 0f)
+        {
+            _frameVelocity = Vector2.zero;
+            return;
+        }
+
+        Vector2 direction = (anchorPosition - topPos).normalized;
+        _frameVelocity = direction * _currentAnchorSpeed;
+    }
+
     private void HandleDirection()
     {
         if(_freezePlayer) {
             _frameVelocity.x = 0;
+            return;
+        }
+
+        if(IsPulling && anchorPosition != Vector2.zero) {
+            HandleAnchorPullVelocity();
             return;
         }
 
@@ -1044,6 +1121,12 @@ public class ShadowTwinMovement : MonoBehaviour
             {
                 //Just keep horizontal movement
                 _frameVelocity.y = 0;
+            }
+            else if (IsPulling && anchorPosition != Vector2.zero)
+            {
+                // Vertical component is handled as part of the unified anchor pull velocity
+                HandleAnchorPullVelocity();
+                return;
             }
             else
             {

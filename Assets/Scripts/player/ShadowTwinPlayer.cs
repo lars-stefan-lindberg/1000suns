@@ -12,6 +12,7 @@ public class ShadowTwinPlayer : MonoBehaviour
     public Surface surface = Surface.Rock;
     public bool hasCrown = false;
     public float _forcePushFlashSpeed = 0.17f;
+    private float _defaultGravity;
 
     private Animator _animator;
     private LayerMask _groundLayerMasks;
@@ -28,6 +29,7 @@ public class ShadowTwinPlayer : MonoBehaviour
         _playerFlash = GetComponentInChildren<PlayerFlash>();
         _playerChargeFlash = GetComponentInChildren<PlayerChargeFlash>();
         _playerLightManager = GetComponentInChildren<PlayerLightManager>();
+        _defaultGravity = rigidBody.gravityScale;
     }
 
     void OnEnable()
@@ -44,6 +46,14 @@ public class ShadowTwinPlayer : MonoBehaviour
         rigidBody.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezePositionY;
         rigidBody.velocity = Vector2.zero;
         rigidBody.bodyType = RigidbodyType2D.Static;
+    }
+
+    public void ResetGravity() {
+        rigidBody.gravityScale = _defaultGravity;
+    }
+
+    public void DisableGravity() {
+        rigidBody.gravityScale = 0;
     }
 
     void OnCollisionEnter2D(Collision2D other) {
