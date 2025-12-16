@@ -24,7 +24,7 @@ public class PlayerPowersManager : MonoBehaviour
         ResetGameEvents();
         if(PlayerMovement.obj != null && PlayerMovement.obj.isDevMode) {
             CanShadowDash = true;
-            CanForcePushJump = true;
+            //CanForcePushJump = true;
             CanTurnFromBlobToHuman = true;
             CanTurnFromHumanToBlob = true;
             BlobCanJump = true;
@@ -38,7 +38,7 @@ public class PlayerPowersManager : MonoBehaviour
     {
         if(PlayerMovement.obj != null && PlayerMovement.obj.isDevMode) {
             CanShadowDash = true;
-            CanForcePushJump = true;
+            //CanForcePushJump = true;
             CanTurnFromBlobToHuman = true;
             CanTurnFromHumanToBlob = true;
             BlobCanJump = true;
