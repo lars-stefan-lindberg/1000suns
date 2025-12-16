@@ -23385,7 +23385,6 @@ MonoBehaviour:
   _isDashing: 0
   dashDecelerationTime: 160
   initialDashSpeed: 42
-  initialAnchorPullSpeed: 30
   isOnMoveable: 0
   moveableRigidBody: {fileID: 0}
   jumpThroughPlatform: {fileID: 0}
@@ -23403,11 +23402,11 @@ MonoBehaviour:
   _groundLayerMasks:
     serializedVersion: 2
     m_Bits: 9
-  AnchorPointMargin: 0.125
   _anchorSlowMotionDuration: 0.15
   _anchorSlowMotionSpeedFactor: 0.29
   _anchorAcceleration: 125.2
   _anchorSnapDistance: 0.35
+  initialAnchorPullSpeed: 30
 --- !u!114 &8240633124138664371
 MonoBehaviour:
   m_ObjectHideFlags: 0

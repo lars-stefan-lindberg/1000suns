@@ -222,8 +222,7 @@ public class ShadowTwinPull : MonoBehaviour
     public void CancelPulling() {
         _isPullingObject = false;
 
-        ShadowTwinMovement.obj.IsPulling = false;
-        ShadowTwinMovement.obj.anchorPosition = Vector2.zero;
+        ShadowTwinMovement.obj.EndAnchorPull();
         ShadowTwinPlayer.obj.ResetGravity();
         ResetPullableObject();
     }
@@ -335,7 +334,7 @@ public class ShadowTwinPull : MonoBehaviour
         if(_anchorPointDetector.isAnchorPointDetected) {
             closestFacingAnchorPoint = _anchorPointDetector.GetClosestFacingAnchorPoint(transform, ShadowTwinMovement.obj.isFacingLeft());
         }
-        if(closestFacingAnchorPoint != null) {
+        if(closestFacingAnchorPoint != null && !ShadowTwinMovement.obj.isGrounded) {
             Vector3 anchorPosition = closestFacingAnchorPoint.bounds.center;
             anchorPosition.y -= closestFacingAnchorPoint.bounds.extents.y;
             

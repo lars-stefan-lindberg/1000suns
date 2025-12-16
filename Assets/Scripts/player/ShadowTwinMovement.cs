@@ -474,7 +474,6 @@ public class ShadowTwinMovement : MonoBehaviour
             //Switch to shadow twin
             SoundFXManager.obj.PlayPlayerShapeshiftToBlob(transform);
             isTransforming = true;
-            IsPulling = false;
             ShadowTwinPull.obj.CancelPulling();
             ShadowTwinPull.obj.DisablePull();
             
@@ -971,10 +970,15 @@ public class ShadowTwinMovement : MonoBehaviour
     private void ExecuteAirJump()
     {
         ShadowTwinPull.obj.CancelPulling();
+        SetIsAnchorReached(false);
         ExecuteJump(_stats.JumpPower);
         SoundFXManager.obj.PlayJump(gameObject.transform);
         _airJumpToConsume = false;
         StaminaMgr.obj.ExecutePower(new StaminaMgr.AirJump());
+    }
+
+    public void SetIsAnchorReached(bool isAnchorReached) {
+        _animator.SetBool("reachedAnchorPoint", isAnchorReached);
     }
 
     private void ExecuteJump(float jumpPower)
@@ -1004,9 +1008,18 @@ public class ShadowTwinMovement : MonoBehaviour
     public void StartAnchorPull()
     {
         IsPulling = true;
+        _animator.SetBool("isPulling", true);
         _anchorPullStartTime = Time.time;
         _currentAnchorSpeed = 0f;
         _anchorReachedThisPull = false;
+        _animator.SetTrigger("anchorPull");
+    }
+
+    public void EndAnchorPull() {
+        IsPulling = false;
+        anchorPosition = Vector2.zero;
+        SetIsAnchorReached(false);
+        _animator.SetBool("isPulling", false);
     }
 
     public void OnAnchorReached()
@@ -1014,6 +1027,7 @@ public class ShadowTwinMovement : MonoBehaviour
         CameraShakeManager.obj.ForcePushShake();
         SoundFXManager.obj.PlayForcePushExecute(transform);
         ShockWaveManager.obj.CallShockWave(anchorPosition, 0.2f, 0.05f, 0.15f);
+        SetIsAnchorReached(true);
     }
 
     private void HandleAnchorPullVelocity()
