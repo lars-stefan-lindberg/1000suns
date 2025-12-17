@@ -7,6 +7,8 @@ public class OpenExitTrigger : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
+        if(!_levelExitDoor.activeSelf) return;
+        
         if(collision.CompareTag("Player"))
         {
             _playerCount++;
