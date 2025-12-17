@@ -141,6 +141,8 @@ public class FloatyPlatform : MonoBehaviour
 
     private bool _isPlayer1CollisionTriggered = false;
     private bool _isPlayer2CollisionTriggered = false;
+    private bool _isBeingPulled = false;
+
     private void Update()
     {
         if(_isPlayer1CollisionTriggered) {
@@ -154,47 +156,59 @@ public class FloatyPlatform : MonoBehaviour
                 RegisterPlayer2OnPlatform();
             }
         }
-        if(_isFallingOnMovePlatformFallStarted) {
-            fallTimer += Time.deltaTime;
+
+        bool isPullablePulled = _pullable != null && _pullable.IsPulled;
+        bool wasJustPulled = isPullablePulled && !_isBeingPulled;
+        bool wasJustReleased = !isPullablePulled && _isBeingPulled;
+        if(wasJustPulled) {
+            _isBeingPulled = true;
+            movePlatform = true;
+        } else if(wasJustReleased) {
+            _isBeingPulled = false;
         }
-        if(_startFallCountDown) {
-            fallTimer += Time.deltaTime;
-            if(_startFlashing) {
-                _startFlashing = false;
-                _fallingPlatformFlash.StartFlashing(timeBeforeFall);
+
+        if(!_isBeingPulled) {
+            if(_isFallingOnMovePlatformFallStarted) {
+                fallTimer += Time.deltaTime;
+            }
+            if(_startFallCountDown) {
+                fallTimer += Time.deltaTime;
+                if(_startFlashing) {
+                    _startFlashing = false;
+                    _fallingPlatformFlash.StartFlashing(timeBeforeFall);
+                }
+            }
+            if(fallTimer >= timeFallingBeforeDestroy) {
+                StartRespawning();
+            }
+            if(isFallingPlatform && fallTimer >= timeBeforeFall) {
+                _fallingPlatformFlash.StopFlashing();
+                _rigidBody.bodyType = RigidbodyType2D.Dynamic;
+                _rigidBody.gravityScale = 1;
+                return;
+            }
+            if(_isFallingOnMovePlatformFallStarted) {
+                //Skip the rest of the logic if the platform is falling
+                return;
+            }
+            
+            somethingToTheRight = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.right, blockingCastDistance, _blockingCastLayerMask);
+            somethingToTheLeft = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.left, blockingCastDistance, _blockingCastLayerMask);
+
+            if (somethingToTheRight && _rigidBody.velocity.x > 0) {
+                movePlatform = false;
+                SoundFXManager.obj.PlayFloatingPlatformWallHit(transform);
+            }
+            if (somethingToTheLeft && _rigidBody.velocity.x < 0) {
+                movePlatform = false;
+                SoundFXManager.obj.PlayFloatingPlatformWallHit(transform);
             }
         }
-        if(fallTimer >= timeFallingBeforeDestroy) {
-            StartRespawning();
-        }
-        if(isFallingPlatform && fallTimer >= timeBeforeFall) {
-            _fallingPlatformFlash.StopFlashing();
-            _rigidBody.bodyType = RigidbodyType2D.Dynamic;
-            _rigidBody.gravityScale = 1;
-            return;
-        }
-        if(_isFallingOnMovePlatformFallStarted) {
-            //Skip the rest of the logic if the platform is falling
-            return;
-        }
-        somethingToTheRight = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.right, blockingCastDistance, _blockingCastLayerMask);
-        somethingToTheLeft = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.left, blockingCastDistance, _blockingCastLayerMask);
-
-        if (somethingToTheRight && _rigidBody.velocity.x > 0) {
-            movePlatform = false;
-            SoundFXManager.obj.PlayFloatingPlatformWallHit(transform);
-        }
-        if (somethingToTheLeft && _rigidBody.velocity.x < 0) {
-            movePlatform = false;
-            SoundFXManager.obj.PlayFloatingPlatformWallHit(transform);
-        }
-
-        bool isBeingPulled = _pullable != null && _pullable.IsPulled;
 
         if (movePlatform)
         {
             // If the platform is being pulled, let the external pull logic control velocity.
-            if (!isBeingPulled)
+            if (!_isBeingPulled)
             {
                 _rigidBody.velocity = new Vector2(
                     Mathf.MoveTowards(_rigidBody.velocity.x, 0, deceleration * Time.deltaTime),
@@ -210,24 +224,10 @@ public class FloatyPlatform : MonoBehaviour
         }
         else
         {
-            if (!isBeingPulled)
-            {
-                // Gracefully return to rest when no external pull is active.
-                if (Mathf.Abs(_rigidBody.velocity.x) > 0f)
-                {
-                    _rigidBody.velocity = new Vector2(
-                        Mathf.MoveTowards(_rigidBody.velocity.x, 0, deceleration * Time.deltaTime),
-                        _rigidBody.velocity.y);
-                }
-                else
-                {
-                    _rigidBody.velocity = new Vector2(0, 0);
-                }
-            }
-            // If being pulled, do nothing here – ShadowTwinPull controls the velocity.
+            _rigidBody.velocity = new Vector2(0, 0);
         }
 
-        if(!isBeingPulled && Mathf.Approximately(_rigidBody.velocity.x, 0f))
+        if(!_isBeingPulled && Mathf.Approximately(_rigidBody.velocity.x, 0f))
         {
             movePlatform = false;
         }
