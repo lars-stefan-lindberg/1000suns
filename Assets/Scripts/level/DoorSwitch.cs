@@ -5,11 +5,13 @@ public class DoorSwitch : MonoBehaviour
     [SerializeField] private GameObject _door;
     [SerializeField] private bool _isPermanent = false;
     private bool _isTriggered = false;
+    private int _objectEnteredCount = 0;
     
     void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.CompareTag("Player") || collision.CompareTag("Enemy") || collision.CompareTag("Block"))
         {
+            _objectEnteredCount++;
             _isTriggered = true;
             OpenDoor();
         }
@@ -20,8 +22,12 @@ public class DoorSwitch : MonoBehaviour
         if(_isPermanent) return;
         if(collision.CompareTag("Player") || collision.CompareTag("Enemy") || collision.CompareTag("Block"))
         {
-            _isTriggered = false;
-            CloseDoor();
+            _objectEnteredCount--;
+            if (_objectEnteredCount == 0)
+            {
+                _isTriggered = false;
+                CloseDoor();
+            }
         }
     }
 
