@@ -112,7 +112,7 @@ public class ShadowTwinMovement : MonoBehaviour
     }
 
     public float baseProjectilePushPower = 7f;
-    void OnTriggerEnter2D(Collider2D collision) {
+    private void OnTriggerEnter2D(Collider2D collision) {
         if(collision.transform.CompareTag("Projectile")) {  
             Projectile projectile = collision.gameObject.GetComponent<Projectile>();
             bool hitFromTheLeft = PlayerManager.obj.GetPlayerTransform().position.x < ShadowTwinPlayer.obj.rigidBody.position.x;

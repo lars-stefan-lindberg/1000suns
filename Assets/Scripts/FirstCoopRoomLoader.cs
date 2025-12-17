@@ -15,6 +15,7 @@ public class FirstCoopRoomLoader : MonoBehaviour
         PlayerMovement.obj.Freeze();
         PlayerMovement.obj.spriteRenderer.flipX = false;
 
+        CaveAvatar.obj.gameObject.SetActive(true);
         CaveAvatar.obj.SetFollowPlayerStartingPosition();
         CaveAvatar.obj.FollowPlayer();
 
