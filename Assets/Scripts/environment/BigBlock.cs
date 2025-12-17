@@ -38,6 +38,7 @@ public class BigBlock : MonoBehaviour
         {
             if(_pullable.IsPulled)
             {
+                _rigidBody.bodyType = RigidbodyType2D.Dynamic;
                 Projectile projectile = collision.gameObject.GetComponent<Projectile>();
                 bool hitFromTheLeft = PlayerManager.obj.GetPlayerTransform().position.x < _rigidBody.position.x;
 
@@ -79,6 +80,7 @@ public class BigBlock : MonoBehaviour
             PlayMovableHint();
         } else if (!_pullable.IsPulled && _isBeingPulled) {
             _isBeingPulled = false;
+            _rigidBody.bodyType = RigidbodyType2D.Static;
         }
 
         if (_rigidBody.velocity.x != 0)
@@ -110,5 +112,9 @@ public class BigBlock : MonoBehaviour
 
         if(!_isMovingHorizontally && _slideSoundAudioSource != null && _slideSoundAudioSource.isPlaying)
             _slideSoundAudioSource.mute = true;
+
+        if(!_isMovingHorizontally) {
+            _rigidBody.bodyType = RigidbodyType2D.Static;
+        }
     }
 }
