@@ -83,13 +83,7 @@ public class Block : MonoBehaviour
                 return;
 
             float clipLength = projectile.power / PlayerPush.obj.maxForce;
-            if(_slideSoundAudioSource == null || !_slideSoundAudioSource.isPlaying) {
-                _slideSoundAudioSource = SoundFXManager.obj.PlayBlockSliding(transform, clipLength);
-            } else {
-                _slideSoundAudioSource.Stop();
-                _slideSoundAudioSource = null;
-                _slideSoundAudioSource = SoundFXManager.obj.PlayBlockSliding(transform, clipLength);
-            }
+            PlaySlideSound(clipLength);
         } else if(collision.transform.CompareTag("Enemy")) {
             _prisonerInContact = collision.GetComponent<Prisoner>();
             if(HitUnderneath(collision)) {
@@ -99,6 +93,16 @@ public class Block : MonoBehaviour
                     Reaper.obj.KillPrisoner(prisoner);
                 }
             }
+        }
+    }
+
+    private void PlaySlideSound(float clipLength) {
+        if(_slideSoundAudioSource == null || !_slideSoundAudioSource.isPlaying) {
+                _slideSoundAudioSource = SoundFXManager.obj.PlayBlockSliding(transform, clipLength);
+        } else {
+            _slideSoundAudioSource.Stop();
+            _slideSoundAudioSource = null;
+            _slideSoundAudioSource = SoundFXManager.obj.PlayBlockSliding(transform, clipLength);
         }
     }
 
@@ -115,6 +119,7 @@ public class Block : MonoBehaviour
 
     public float deceleration = 1f;
     private float _blockSizeOffSet = 1.002f; //To dial in the landing sound
+    private bool _isBeingPulled = false;
 
     private void Update()
     {
@@ -122,6 +127,13 @@ public class Block : MonoBehaviour
             _bootTimer += Time.deltaTime;
             if(_bootTimer >= _bootTime)
                 _booted = true;
+        }
+
+        if(!_isBeingPulled && _pullable.IsPulled) {
+            _isBeingPulled = true;
+            PlaySlideSound(1f);
+        } else if(_isBeingPulled && !_pullable.IsPulled) {
+            _isBeingPulled = false;
         }
 
         if(_pullable.IsPulled)
