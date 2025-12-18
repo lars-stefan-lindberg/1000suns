@@ -28,12 +28,7 @@ public class FirstCoopRoomLoader : MonoBehaviour
         ShadowTwinMovement.obj.spriteRenderer.flipX = true;
 
         if(PlayerManager.obj.IsCoopActive) {
-            //Hook up devices from LobbyManager to each character, enable input
-            var playerSlots = LobbyManager.obj.GetPlayerSlots();
-            PlayerSlot eliSlot = playerSlots.Where(slot => slot.character == PlayerSlot.CharacterType.Eli).First();
-            PlayerMovement.obj.SetPlayerInputDevice(eliSlot);
-            PlayerSlot deeSlot = playerSlots.Where(slot => slot.character == PlayerSlot.CharacterType.Dee).First();
-            ShadowTwinMovement.obj.SetPlayerInputDevice(deeSlot);
+            LobbyManager.obj.SetPlayerInputs();
         } else {
             PlayerSwitcher.obj.SwitchToEli();
         }

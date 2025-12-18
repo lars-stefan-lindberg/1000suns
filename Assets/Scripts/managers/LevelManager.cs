@@ -66,21 +66,21 @@ public class LevelManager : MonoBehaviour
                 
                 Collider2D playerSpawnPointCollider;
                 if(PlayerManager.obj.IsSeparated) {
-                    GameObject player1SpawnPoint = GetPlayerSpawnPoint(PlayerManager.PlayerType.HUMAN, sceneGameObjects);
-                    Collider2D player1SpawningCollider = player1SpawnPoint.GetComponent<Collider2D>();
-                    playerSpawnPointCollider = player1SpawningCollider;
+                    GameObject eliSpawnPoint = GetPlayerSpawnPoint(PlayerManager.PlayerType.HUMAN, sceneGameObjects);
+                    Collider2D eliSpawningCollider = eliSpawnPoint.GetComponent<Collider2D>();
+                    playerSpawnPointCollider = eliSpawningCollider;
                     if(Player.obj != null)
-                        Player.obj.transform.position = player1SpawningCollider.transform.position;
+                        Player.obj.transform.position = eliSpawningCollider.transform.position;
                     else if(PlayerBlob.obj != null) {
-                        PlayerBlob.obj.transform.position = player1SpawningCollider.transform.position - new Vector3(0, 0.5f, 0);;
+                        PlayerBlob.obj.transform.position = eliSpawningCollider.transform.position - new Vector3(0, 0.5f, 0);;
                     }
-                    GameObject player2SpawnPoint = GetPlayerSpawnPoint(PlayerManager.PlayerType.SHADOW_TWIN, sceneGameObjects);
-                    Collider2D player2SpawningCollider = player2SpawnPoint.GetComponent<Collider2D>();
+                    GameObject shadowTwinSpawnPoint = GetPlayerSpawnPoint(PlayerManager.PlayerType.SHADOW_TWIN, sceneGameObjects);
+                    Collider2D shadowTwinSpawningCollider = shadowTwinSpawnPoint.GetComponent<Collider2D>();
                     if(ShadowTwinPlayer.obj != null)
-                        ShadowTwinPlayer.obj.transform.position = player2SpawningCollider.transform.position;
+                        ShadowTwinPlayer.obj.transform.position = shadowTwinSpawningCollider.transform.position;
 
-                    AdjustSpawnFaceDirectionIsSeparated(activeCameraObject.transform.position.x, player1SpawningCollider.transform.position.x, PlayerManager.PlayerType.HUMAN);
-                    AdjustSpawnFaceDirectionIsSeparated(activeCameraObject.transform.position.x, player2SpawningCollider.transform.position.x, PlayerManager.PlayerType.SHADOW_TWIN);
+                    AdjustSpawnFaceDirectionIsSeparated(activeCameraObject.transform.position.x, eliSpawningCollider.transform.position.x, PlayerManager.PlayerType.HUMAN);
+                    AdjustSpawnFaceDirectionIsSeparated(activeCameraObject.transform.position.x, shadowTwinSpawningCollider.transform.position.x, PlayerManager.PlayerType.SHADOW_TWIN);
                 } else {
                     GameObject playerSpawnPoint;
                     if(IsLevelCompleted(scene.name)) {
@@ -134,6 +134,9 @@ public class LevelManager : MonoBehaviour
                 if(PlayerManager.obj.IsSeparated) {
                     PlayerManager.obj.EnableAllPlayers();
                     SetPlayersStartingState();
+                    if(PlayerManager.obj.IsCoopActive) {
+                        LobbyManager.obj.SetPlayerInputs();
+                    }
                 } else {
                     PlayerManager.obj.EnableLastActivePlayerGameObject();
                     SetPlayersStartingState();
