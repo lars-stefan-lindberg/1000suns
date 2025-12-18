@@ -35,6 +35,12 @@ public class LevelManager : MonoBehaviour
         StartCoroutine(LoadSceneDelayedCoroutine(sceneName));
     }
 
+    public SceneMetadata GetActiveSceneMetadata() {
+        Scene activeScene = SceneManager.GetActiveScene();
+        GameObject metadataObject = activeScene.GetRootGameObjects().FirstOrDefault(gameObject => gameObject.CompareTag("SceneMetadata"));
+        return metadataObject?.GetComponent<SceneMetadata>();
+    }
+
     private IEnumerator LoadSceneDelayedCoroutine(string sceneName) {
         yield return new WaitForSeconds(1f);
         SceneManager.LoadScene(sceneName, LoadSceneMode.Single);

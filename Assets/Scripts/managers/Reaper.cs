@@ -15,10 +15,20 @@ public class Reaper : MonoBehaviour
     public void KillPlayerGeneric(PlayerManager.PlayerType playerType) {
         if(PlayerManager.obj.IsSeparated) {
             PlayerStatsManager.obj.numberOfDeaths += 1;
-            PlayerManager.obj.KillPlayerGeneric(playerType, genericDeathAnimationTime);
-            Transform playerTransform = PlayerManager.obj.GetPlayerTransform(playerType);
-            SoundFXManager.obj.PlayPlayerGenericDeath(playerTransform);
-            StartCoroutine(SpawnAfterDeathAnimation(playerType, genericDeathAnimationTime));
+            
+            SceneMetadata metadata = LevelManager.obj.GetActiveSceneMetadata();
+            bool shouldReload = metadata != null && metadata.ShouldReloadOnDeath();
+            if(shouldReload) {
+                PlayerManager.obj.KillPlayerGeneric(PlayerManager.PlayerType.HUMAN, genericDeathAnimationTime);
+                PlayerManager.obj.KillPlayerGeneric(PlayerManager.PlayerType.SHADOW_TWIN, genericDeathAnimationTime);
+                SoundFXManager.obj.PlayPlayerGenericDeath(PlayerManager.obj.GetPlayerTransform(playerType));
+                StartCoroutine(AfterDeathAnimationIsSeparated(genericDeathAnimationTime));
+            } else {
+                PlayerManager.obj.KillPlayerGeneric(playerType, genericDeathAnimationTime);
+                Transform playerTransform = PlayerManager.obj.GetPlayerTransform(playerType);
+                SoundFXManager.obj.PlayPlayerGenericDeath(playerTransform);
+                StartCoroutine(SpawnAfterDeathAnimation(playerType, genericDeathAnimationTime));
+            }
         }
         else if(!playerKilled){
             playerKilled = true;
@@ -49,10 +59,20 @@ public class Reaper : MonoBehaviour
     public void KillPlayerShadow(PlayerManager.PlayerType playerType) {
         if(PlayerManager.obj.IsSeparated) {
             PlayerStatsManager.obj.numberOfDeaths += 1;
-            PlayerManager.obj.KillPlayerShadow(playerType, genericDeathAnimationTime);
-            Transform playerTransform = PlayerManager.obj.GetPlayerTransform(playerType);
-            SoundFXManager.obj.PlayPlayerShadowDeath(playerTransform);
-            StartCoroutine(SpawnAfterDeathAnimation(playerType, shadowDeathAnimationTime));
+            
+            SceneMetadata metadata = LevelManager.obj.GetActiveSceneMetadata();
+            bool shouldReload = metadata != null && metadata.ShouldReloadOnDeath();
+            if(shouldReload) {
+                PlayerManager.obj.KillPlayerShadow(PlayerManager.PlayerType.HUMAN, genericDeathAnimationTime);
+                PlayerManager.obj.KillPlayerShadow(PlayerManager.PlayerType.SHADOW_TWIN, genericDeathAnimationTime);
+                SoundFXManager.obj.PlayPlayerShadowDeath(PlayerManager.obj.GetPlayerTransform(playerType));
+                StartCoroutine(AfterDeathAnimationIsSeparated(genericDeathAnimationTime));
+            } else {
+                PlayerManager.obj.KillPlayerShadow(playerType, genericDeathAnimationTime);
+                Transform playerTransform = PlayerManager.obj.GetPlayerTransform(playerType);
+                SoundFXManager.obj.PlayPlayerShadowDeath(playerTransform);
+                StartCoroutine(SpawnAfterDeathAnimation(playerType, genericDeathAnimationTime));
+            }
         }
         else if(!playerKilled){
             playerKilled = true;
