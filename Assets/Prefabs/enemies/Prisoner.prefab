@@ -205,6 +205,9 @@ MonoBehaviour:
   collisionLayer:
     serializedVersion: 2
     m_Bits: 648
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 1
   defaultSpeed: 3
   movementDirection: 0
   gravityAcceleration: 0.5
@@ -327,3 +330,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _rigidBody: {fileID: 5657598952868433655}
   _pullForce: 50
+  _isHeavy: 0

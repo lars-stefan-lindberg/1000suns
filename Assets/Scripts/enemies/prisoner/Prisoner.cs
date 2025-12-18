@@ -14,6 +14,7 @@ public class Prisoner : MonoBehaviour
     private Pullable _pullable;
     public LayerMask groundLayer; //Used to check if grounded
     public LayerMask collisionLayer; //Raycast for collisions like other prisoners, walls, blocks
+    public LayerMask playerLayer;
 
     public float defaultSpeed = 3;
     private static float _defaultGravity = 1;
@@ -339,7 +340,7 @@ public class Prisoner : MonoBehaviour
 
         if(!isStatic && !_isBeingPulled && !hasBeenHit && !isRecovering && isGrounded && !isStuck) {
             //Debug.DrawRay(transform.position, (IsFacingRight() ? Vector3.right : Vector3.left) * playerCastDistance, Color.red);
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, IsFacingRight() ? Vector3.right : Vector3.left, playerCastDistance);
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, IsFacingRight() ? Vector3.right : Vector3.left, playerCastDistance, playerLayer);
 
             if(hit.transform != null) {
                 if(hit.transform.CompareTag("Player")) {
