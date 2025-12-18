@@ -113,6 +113,7 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip caveAvatarAttack;
     public AudioClip playerStatueShockWave;
     public AudioClip crystalRoomRumble;
+    public AudioClip earthquake;
     public AudioClip c26Rumble;
 
     private Dictionary<AudioClip[], int> lastPickedIndices = new();
@@ -210,6 +211,9 @@ public class SoundFXManager : MonoBehaviour
 
     public void PlayCrystalRoomRumble() {
         PlayNonSpatiallyAwareSound(crystalRoomRumble, Camera.main.transform, 1f);
+    }
+    public void PlayEarthquake() {
+        PlayNonSpatiallyAwareSound(earthquake, Camera.main.transform, 1f);
     }
     public void PlayC26Rumble() {
         PlayNonSpatiallyAwareSound(c26Rumble, Camera.main.transform, 1f);
