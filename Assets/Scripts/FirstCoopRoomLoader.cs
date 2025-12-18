@@ -12,7 +12,6 @@ public class FirstCoopRoomLoader : MonoBehaviour
         PlayerMovement.obj.SetStartingOnGround();
         PlayerMovement.obj.isGrounded = true;
         PlayerMovement.obj.CancelJumping();
-        PlayerMovement.obj.Freeze();
         PlayerMovement.obj.spriteRenderer.flipX = false;
 
         CaveAvatar.obj.gameObject.SetActive(true);
@@ -24,7 +23,6 @@ public class FirstCoopRoomLoader : MonoBehaviour
         ShadowTwinMovement.obj.SetStartingOnGround();
         ShadowTwinMovement.obj.isGrounded = true;
         ShadowTwinMovement.obj.CancelJumping();
-        ShadowTwinMovement.obj.Freeze();
         ShadowTwinMovement.obj.spriteRenderer.flipX = true;
 
         if(PlayerManager.obj.IsCoopActive) {
@@ -32,6 +30,8 @@ public class FirstCoopRoomLoader : MonoBehaviour
         } else {
             PlayerSwitcher.obj.SwitchToEli();
         }
+        PlayerMovement.obj.Freeze();
+        ShadowTwinMovement.obj.Freeze();
 
         StartCoroutine(FadeInAndPlaySounds());
         StartCoroutine(AmbienceFadeIn());
