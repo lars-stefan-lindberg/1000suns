@@ -30,7 +30,7 @@ public class AnchorPointDetector : MonoBehaviour
         foreach (CircleCollider2D anchorPoint in _anchorPoints) {
             //First check if the anchorPoint is in front of the object
             Vector2 directionToAnchor = anchorPoint.transform.position - obj.position;
-            bool isAnchorInFront = Vector2.Dot(directionToAnchor, isFacingLeft ? Vector2.left : Vector2.right) > 0;
+            bool isAnchorInFront = Vector2.Dot(directionToAnchor, isFacingLeft ? Vector2.left : Vector2.right) >= 0;
             if (!isAnchorInFront) continue;
             
             float distance = Vector3.Distance(obj.position, anchorPoint.transform.position);

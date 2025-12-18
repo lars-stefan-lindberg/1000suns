@@ -52,7 +52,6 @@ public class ShadowTwinPull : MonoBehaviour
     public float pullRange = 6f;
     public LayerMask pullableMask;
     public LayerMask blockingMask;
-    public LayerMask anchorMask;
     public float raySpacing = 0.2f; // space between the rays
 
     public enum PullPowerType {
@@ -62,7 +61,6 @@ public class ShadowTwinPull : MonoBehaviour
 
     public enum PullType {
         None,
-        Anchor,
         Pullable
     }
 
@@ -122,18 +120,11 @@ public class ShadowTwinPull : MonoBehaviour
         RaycastHit2D pullableHit2 = Physics2D.Raycast(origin2, direction, pullRange, pullableMask);
         RaycastHit2D pullableHit3 = Physics2D.Raycast(origin3, direction, pullRange, pullableMask);
 
-        // Cast rays for anchor objects
-        RaycastHit2D anchorHit1 = Physics2D.Raycast(origin1, direction, pullRange, anchorMask);
-        RaycastHit2D anchorHit2 = Physics2D.Raycast(origin2, direction, pullRange, anchorMask);
-        RaycastHit2D anchorHit3 = Physics2D.Raycast(origin3, direction, pullRange, anchorMask);
 
         // Check if any hit is too close to the player
         if ((pullableHit1.collider != null && pullableHit1.distance < 1f) ||
             (pullableHit2.collider != null && pullableHit2.distance < 1f) ||
-            (pullableHit3.collider != null && pullableHit3.distance < 1f) ||
-            (anchorHit1.collider != null && anchorHit1.distance < 1f) ||
-            (anchorHit2.collider != null && anchorHit2.distance < 1f) ||
-            (anchorHit3.collider != null && anchorHit3.distance < 1f))
+            (pullableHit3.collider != null && pullableHit3.distance < 1f))
         {
             return PullDetectionResult.None;
         }
@@ -142,11 +133,6 @@ public class ShadowTwinPull : MonoBehaviour
         if (IsBlocked(origin1, direction, pullableHit1)) pullableHit1 = new RaycastHit2D();
         if (IsBlocked(origin2, direction, pullableHit2)) pullableHit2 = new RaycastHit2D();
         if (IsBlocked(origin3, direction, pullableHit3)) pullableHit3 = new RaycastHit2D();
-
-        // Check blocking for anchor hits
-        if (IsBlocked(origin1, direction, anchorHit1)) anchorHit1 = new RaycastHit2D();
-        if (IsBlocked(origin2, direction, anchorHit2)) anchorHit2 = new RaycastHit2D();
-        if (IsBlocked(origin3, direction, anchorHit3)) anchorHit3 = new RaycastHit2D();
 
         // Find closest pullable hit
         PullDetectionResult closestPullable = PullDetectionResult.None;
@@ -157,17 +143,7 @@ public class ShadowTwinPull : MonoBehaviour
         if (pullableHit3.collider != null && pullableHit3.distance < closestPullable.distance)
             closestPullable = new PullDetectionResult { collider = pullableHit3.collider, pullType = PullType.Pullable, distance = pullableHit3.distance };
 
-        // Find closest anchor hit
-        PullDetectionResult closestAnchor = PullDetectionResult.None;
-        if (anchorHit1.collider != null && anchorHit1.distance < closestAnchor.distance)
-            closestAnchor = new PullDetectionResult { collider = anchorHit1.collider, pullType = PullType.Anchor, distance = anchorHit1.distance };
-        if (anchorHit2.collider != null && anchorHit2.distance < closestAnchor.distance)
-            closestAnchor = new PullDetectionResult { collider = anchorHit2.collider, pullType = PullType.Anchor, distance = anchorHit2.distance };
-        if (anchorHit3.collider != null && anchorHit3.distance < closestAnchor.distance)
-            closestAnchor = new PullDetectionResult { collider = anchorHit3.collider, pullType = PullType.Anchor, distance = anchorHit3.distance };
-
-        // Return the closest hit between pullable and anchor
-        return closestPullable.distance < closestAnchor.distance ? closestPullable : closestAnchor;
+        return closestPullable;
     }
 
     private bool IsBlocked(Vector2 origin, Vector2 direction, RaycastHit2D targetHit)
@@ -253,16 +229,11 @@ public class ShadowTwinPull : MonoBehaviour
             if(pullable.collider == null) {
                 ResetPullableObject();
             } else {
-                if(pullable.pullType == PullType.Anchor) {
-                    //Initiate pull of player towards anchor
-
-                } else {
-                    if (pullable.collider != _pulledCollider)
-                    {
-                        // New pullable detected. Start pulling that pullable instead
-                        ResetPullableObject();
-                        SetPullable(pullable.collider);
-                    }
+                if (pullable.collider != _pulledCollider)
+                {
+                    // New pullable detected. Start pulling that pullable instead
+                    ResetPullableObject();
+                    SetPullable(pullable.collider);
                 }
             } 
         }
@@ -378,13 +349,7 @@ public class ShadowTwinPull : MonoBehaviour
             _isPullingObject = true;
             PullDetectionResult pullable = DetectPullable();
             if(pullable.collider != null) {
-                if(pullable.pullType == PullType.Anchor) {
-                    //TODO: refine position you will be pulled to
-                    //ShadowTwinMovement.obj.anchorPosition = pullable.collider.transform;
-                    //ShadowTwinPlayer.obj.DisableGravity();
-                } else {
-                    SetPullable(pullable.collider);
-                }
+                SetPullable(pullable.collider);
             }
             pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().HardCancel();
             _forcePushStartChargingAudioSource = SoundFXManager.obj.PlayForcePushStartCharging(transform);
