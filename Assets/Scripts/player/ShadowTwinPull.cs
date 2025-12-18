@@ -263,66 +263,97 @@ public class ShadowTwinPull : MonoBehaviour
                         ResetPullableObject();
                         SetPullable(pullable.collider);
                     }
-                    if(_targetRb != null && !_pulledPullable.IsHeavy()) {
-                        Vector2 playerPosition = transform.position;
-                        Vector2 closestPoint = _pulledCollider != null ? _pulledCollider.ClosestPoint(playerPosition) : _targetRb.position;
-                        Vector2 toPlayer = playerPosition - closestPoint;
-                        float distance = toPlayer.magnitude;
-
-                        // If close enough, bring the object to a halt in front of the player
-                        if (distance <= stopDistanceFromPlayer && distance > 0.01f)
-                        {
-                            Vector2 direction = toPlayer / distance;
-                            float currentSpeedTowardsPlayer = Vector2.Dot(_targetRb.velocity, direction);
-
-                            if (_targetRb.bodyType == RigidbodyType2D.Dynamic)
-                            {
-                                if (currentSpeedTowardsPlayer > 0f)
-                                {
-                                    // Remove the velocity component toward the player so it comes to rest here
-                                    _targetRb.velocity -= direction * currentSpeedTowardsPlayer;
-                                }
-                            }
-                            else if (_targetRb.bodyType == RigidbodyType2D.Kinematic)
-                            {
-                                // For kinematic bodies, explicitly place them at the stop distance and clear velocity
-                                _targetRb.velocity = Vector2.zero;
-                            }
-
-                            return;
-                        }
-                        if (distance > stopDistanceFromPlayer)
-                        {
-                            // Only use horizontal component for direction to ensure purely horizontal pulling
-                            Vector2 direction = new Vector2(Mathf.Sign(toPlayer.x), 0f).normalized;
-
-                            // Only consider horizontal velocity when calculating speed towards player
-                            float currentSpeedTowardsPlayer = _targetRb.velocity.x * direction.x;
-                            float clampedCurrentSpeed = Mathf.Max(0f, currentSpeedTowardsPlayer);
-                            float speedRatio = maxPullSpeed > 0f ? Mathf.Clamp01(clampedCurrentSpeed / maxPullSpeed) : 0f;
-
-                            float desiredAcceleration = _pulledPullable.GetPullForce() * (1f - speedRatio);
-
-                            if (desiredAcceleration > 0f)
-                            {
-                                if (_targetRb.bodyType == RigidbodyType2D.Dynamic)
-                                {
-                                    float forceMagnitude = desiredAcceleration * _targetRb.mass;
-                                    _targetRb.AddForce(direction * forceMagnitude);
-                                }
-                                else if (_targetRb.bodyType == RigidbodyType2D.Kinematic)
-                                {
-                                    // For kinematic bodies, simulate acceleration by updating velocity and moving position manually
-                                    float newSpeed = clampedCurrentSpeed + desiredAcceleration * Time.fixedDeltaTime;
-                                    newSpeed = maxPullSpeed > 0f ? Mathf.Min(newSpeed, maxPullSpeed) : newSpeed;
-                                    Vector2 newVelocity = direction * newSpeed;
-                                    _targetRb.velocity = newVelocity;
-                                }
-                            }
-                        }
-                    }
                 }
             } 
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        if (!_isPullingObject)
+            return;
+
+        if (_targetRb == null || _pulledPullable == null || _pulledPullable.IsHeavy())
+            return;
+
+        Vector2 playerPosition = transform.position;
+        Vector2 closestPoint = _pulledCollider != null ? _pulledCollider.ClosestPoint(playerPosition) : _targetRb.position;
+        Vector2 toPlayer = playerPosition - closestPoint;
+        float distance = toPlayer.magnitude;
+
+        // If close enough, bring the object to a halt in front of the player
+        if (distance <= stopDistanceFromPlayer && distance > 0.01f)
+        {
+            Vector2 directionToPlayer = toPlayer / distance;
+            float currentSpeedTowardsPlayer = Vector2.Dot(_targetRb.velocity, directionToPlayer);
+
+            if (_targetRb.bodyType == RigidbodyType2D.Dynamic)
+            {
+                if (currentSpeedTowardsPlayer > 0f)
+                {
+                    // Remove the velocity component toward the player so it comes to rest here
+                    _targetRb.velocity -= directionToPlayer * currentSpeedTowardsPlayer;
+                }
+            }
+            else if (_targetRb.bodyType == RigidbodyType2D.Kinematic)
+            {
+                // For kinematic bodies, explicitly place them at the stop distance and clear velocity
+                _targetRb.velocity = Vector2.zero;
+            }
+
+            return;
+        }
+
+        if (distance <= stopDistanceFromPlayer)
+            return;
+
+        // Only use horizontal component for direction to ensure purely horizontal pulling
+        Vector2 direction = new Vector2(Mathf.Sign(toPlayer.x), 0f).normalized;
+
+        // Only consider horizontal velocity when calculating speed towards player
+        float currentSpeedTowardsPlayerX = _targetRb.velocity.x * direction.x;
+        float clampedCurrentSpeed = Mathf.Max(0f, currentSpeedTowardsPlayerX);
+        float speedRatio = maxPullSpeed > 0f ? Mathf.Clamp01(clampedCurrentSpeed / maxPullSpeed) : 0f;
+
+        float desiredAcceleration = _pulledPullable.GetPullForce() * (1f - speedRatio);
+        if (desiredAcceleration <= 0f)
+        {
+            // Safety clamp: if we somehow exceeded max speed, bring it back down.
+            if (_targetRb.bodyType == RigidbodyType2D.Dynamic && maxPullSpeed > 0f)
+            {
+                float currentTowards = _targetRb.velocity.x * direction.x;
+                if (currentTowards > maxPullSpeed)
+                {
+                    float excess = currentTowards - maxPullSpeed;
+                    _targetRb.velocity -= new Vector2(direction.x * excess, 0f);
+                }
+            }
+            return;
+        }
+
+        if (_targetRb.bodyType == RigidbodyType2D.Dynamic)
+        {
+            float forceMagnitude = desiredAcceleration * _targetRb.mass;
+            _targetRb.AddForce(direction * forceMagnitude);
+
+            // Clamp after applying force to avoid overshoot from large accumulated forces.
+            if (maxPullSpeed > 0f)
+            {
+                float newTowards = _targetRb.velocity.x * direction.x;
+                if (newTowards > maxPullSpeed)
+                {
+                    float excess = newTowards - maxPullSpeed;
+                    _targetRb.velocity -= new Vector2(direction.x * excess, 0f);
+                }
+            }
+        }
+        else if (_targetRb.bodyType == RigidbodyType2D.Kinematic)
+        {
+            // For kinematic bodies, simulate acceleration by updating velocity manually
+            float newSpeed = clampedCurrentSpeed + desiredAcceleration * Time.fixedDeltaTime;
+            newSpeed = maxPullSpeed > 0f ? Mathf.Min(newSpeed, maxPullSpeed) : newSpeed;
+            Vector2 newVelocity = direction * newSpeed;
+            _targetRb.velocity = newVelocity;
         }
     }
 
