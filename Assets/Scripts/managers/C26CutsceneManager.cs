@@ -22,6 +22,7 @@ public class C26CutsceneManager : MonoBehaviour
         }
         if (other.gameObject.CompareTag("Player")) {
             _startCutscene = true;
+            GetComponent<BoxCollider2D>().enabled = false;
         }
     }
 

@@ -527,6 +527,9 @@ public class ShadowTwinMovement : MonoBehaviour
         if(PlayerManager.obj.IsCoopActive) {
             return;
         }
+        if(!PlayerPowersManager.obj.CanSeparate) {
+            return;
+        }
         if (context.started)
         {
             //Check if twin is close enough to merge

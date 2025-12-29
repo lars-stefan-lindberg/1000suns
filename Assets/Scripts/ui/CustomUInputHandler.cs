@@ -51,9 +51,9 @@ public class CustomUIInputHandler : MonoBehaviour
 
     private void PerformCancelBindingAction() {
         //Need to prevent "global" UI actions from being triggered when in character selection, relying on local action handling
-        if(LobbyManager.obj.IsSelectingCharacters) {
-            return;
-        }
+        // if(LobbyManager.obj.IsSelectingCharacters) {
+        //     return;
+        // }
         onCancel.Invoke();
     }
 

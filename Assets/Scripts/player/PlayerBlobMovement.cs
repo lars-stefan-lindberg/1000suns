@@ -139,6 +139,9 @@ public class PlayerBlobMovement : MonoBehaviour
         if(PlayerManager.obj.IsCoopActive) {
             return;
         }
+        if(!PlayerPowersManager.obj.CanSeparate) {
+            return;
+        }
         if (context.started)
         {
             if(PlayerManager.obj.IsSeparated && !CloseEnoughToMerge()) {

@@ -116,8 +116,7 @@ public class MainMenuManager : MonoBehaviour
             TextMeshProUGUI continueButtonText = continueButton.GetComponentInChildren<TextMeshProUGUI>();
             continueButtonText.color = new Color(0.65f, 0.65f, 0.65f, 1f);
         } else {
-            //EventSystem.current.SetSelectedGameObject(_continueButton);
-            EventSystem.current.SetSelectedGameObject(_playButton);
+            EventSystem.current.SetSelectedGameObject(_continueButton);
         }
     }
 
@@ -183,25 +182,27 @@ public class MainMenuManager : MonoBehaviour
     }
 
     public void OnPlayButtonClicked() {
-        // bool hasValidSave = SaveManager.obj.HasValidSave(); 
-        // if (!hasValidSave) {
-        //     StartGame();
-        // } else {
-        //     isNavigatingToMenu = true;
-        //     SoundFXManager.obj.PlayUIConfirm();
+        bool hasValidSave = SaveManager.obj.HasValidSave(); 
+        if (!hasValidSave) {
+            StartGame();
+        } else {
+            isNavigatingToMenu = true;
+            SoundFXManager.obj.PlayUIConfirm();
 
-        //     ShowConfirmNewGameMenu();
-        //     EventSystem.current.SetSelectedGameObject(_confirmNewGameButton.gameObject);
-        // }
-        _playButton.SetActive(false);
-        _optionsButton.gameObject.SetActive(false);
-        _exitButton.gameObject.SetActive(false);
+            ShowConfirmNewGameMenu();
+            EventSystem.current.SetSelectedGameObject(_confirmNewGameButton.gameObject);
+        }
 
-        _singlePlayerButton.SetActive(true);
-        _coopButton.SetActive(true);
+        //Co-op specific code:
+        // _playButton.SetActive(false);
+        // _optionsButton.gameObject.SetActive(false);
+        // _exitButton.gameObject.SetActive(false);
 
-        SoundFXManager.obj.PlayUIConfirm();
-        EventSystem.current.SetSelectedGameObject(_singlePlayerButton);
+        // _singlePlayerButton.SetActive(true);
+        // _coopButton.SetActive(true);
+
+        // SoundFXManager.obj.PlayUIConfirm();
+        // EventSystem.current.SetSelectedGameObject(_singlePlayerButton);
     }
 
     public void OnPlayCoopButtonClicked() {
@@ -250,6 +251,10 @@ public class MainMenuManager : MonoBehaviour
         CollectibleManager.obj.ResetCollectibles();
         PlayerStatsManager.obj.numberOfDeaths = 0;
         Player.obj.gameObject.SetActive(false);
+        if(ShadowTwinPlayer.obj != null && ShadowTwinPlayer.obj.gameObject.activeSelf)
+            ShadowTwinPlayer.obj.gameObject.SetActive(false);
+        PlayerManager.obj.IsSeparated = false;
+        PlayerManager.obj.IsCoopActive = false;
         LevelManager.obj.ResetLevels();
 
         SoundMixerManager.obj.SetMasterVolume(masterVolume);
@@ -662,13 +667,15 @@ public class MainMenuManager : MonoBehaviour
             LeaveControllerConfigMenu();
         } else if(_confirmNewGameMenu.activeSelf) {
             LeaveConfirmNewGameMenu();
-        } else if(_titleMenu.activeSelf && _singlePlayerButton.activeSelf) {
-            LeaveToMainMenu();
-        } else if(_playerDeviceSetup.activeSelf) {
-            LeaveToPlayModeMenu();
-        } else if(_characterSelection.activeSelf) {
-            LeaveToPlayerDeviceSetup();
-        }
+        } 
+        //Co-op specific:
+        // else if(_titleMenu.activeSelf && _singlePlayerButton.activeSelf) {
+        //     LeaveToMainMenu();
+        // } else if(_playerDeviceSetup.activeSelf) {
+        //     LeaveToPlayModeMenu();
+        // } else if(_characterSelection.activeSelf) {
+        //     LeaveToPlayerDeviceSetup();
+        // }
     }
 
     private void LeaveToPlayerDeviceSetup() {
