@@ -6,7 +6,7 @@ public class BackgroundManager : MonoBehaviour
     private Camera _mainCamera;
     [SerializeField] private float _parallaxEffect;
     [SerializeField] private Direction _direction = Direction.Vertical;
-    private float _startPosition;
+    private Vector2 _startPosition;
 
     private enum Direction {
         Vertical,
@@ -15,8 +15,8 @@ public class BackgroundManager : MonoBehaviour
 
     void Start()
     {
-        _startPosition = transform.position.y;
         _mainCamera = Camera.main;
+        _startPosition = transform.position;
         UpdatePosition();
     }
 
@@ -28,11 +28,11 @@ public class BackgroundManager : MonoBehaviour
     private void UpdatePosition() {
         if(_direction == Direction.Vertical) {
             float distance = _mainCamera.transform.position.y * _parallaxEffect;
-            transform.position = new Vector2(transform.position.x, _startPosition + distance);
+            transform.position = new Vector2(transform.position.x, _startPosition.y + distance);
         }
         else if(_direction == Direction.Horizontal) {
-            float distance = _mainCamera.transform.position.x * _parallaxEffect;
-            transform.position = new Vector2(_startPosition - distance, transform.position.y);
+            float distance = (_mainCamera.transform.position.x - _startPosition.x) * _parallaxEffect;
+            transform.position = new Vector2(_startPosition.x - distance, transform.position.y);
         }
     }
 }

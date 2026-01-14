@@ -8707,12 +8707,16 @@ PrefabInstance:
       value: 2.125
       objectReference: {fileID: 0}
     - target: {fileID: 1359554260276318857, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
+      propertyPath: m_SortingOrder
+      value: -5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1359554260276318857, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 24b552ce126d941b2953c56dfff27fe3, type: 2}
     - target: {fileID: 1657636802850301417, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 131.375
+      value: 130.875
       objectReference: {fileID: 0}
     - target: {fileID: 1657636802850301417, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
       propertyPath: m_LocalPosition.y
@@ -8786,13 +8790,17 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6644931415762059624, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
+      propertyPath: m_Interpolate
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7225188016169276505, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
       propertyPath: _soulVfx
       value: 
       objectReference: {fileID: 9180255512246155427, guid: bf108f54cbe3644a899f40503b273f0e, type: 3}
     - target: {fileID: 7225188016169276505, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
       propertyPath: isDevMode
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7225188016169276505, guid: 563c17571a61d40a38a47eba414d9db6, type: 3}
       propertyPath: _ghostTrail
@@ -18317,7 +18325,7 @@ MonoBehaviour:
   occlusionLayer: 0
   translucentLayer: 0
   translucentPresetId: 0
-  color: {r: 0.8396226, g: 0.7510893, b: 0.6930847, a: 0.577}
+  color: {r: 0.95, g: 0.8835, b: 0.8075, a: 0.54}
   size: 6.6
   spotAngleInner: 360
   spotAngleOuter: 360
