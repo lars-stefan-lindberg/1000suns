@@ -6,11 +6,11 @@ using UnityEngine.InputSystem;
 public class ShadowTwinMovement : MonoBehaviour
 {
     // --- Jump Kick Start fields ---
-    private bool _isJumpKickActive = false;
-    private float _jumpKickTimer = 0f;
-    public float _jumpKickDuration = 0.1f; // seconds
-    public float _jumpKickHorizontal = 4f; // tune as needed
-    private float _jumpKickDirection = 1f;
+    // private bool _isJumpKickActive = false;
+    // private float _jumpKickTimer = 0f;
+    // public float _jumpKickDuration = 0.1f; // seconds
+    // public float _jumpKickHorizontal = 4f; // tune as needed
+    // private float _jumpKickDirection = 1f;
     // --------------------------------
     public static ShadowTwinMovement obj;
 
@@ -99,16 +99,16 @@ public class ShadowTwinMovement : MonoBehaviour
             }
         }
         // Update jump kick timer
-        if (_isJumpKickActive)
-        {
-            if(_jumpKickDirection != _movementInput.x){
-                _isJumpKickActive = false;
-            } else {
-                _jumpKickTimer -= Time.deltaTime;
-                if (_jumpKickTimer <= 0f)
-                    _isJumpKickActive = false;
-            }
-        }
+        // if (_isJumpKickActive)
+        // {
+        //     if(_jumpKickDirection != _movementInput.x){
+        //         _isJumpKickActive = false;
+        //     } else {
+        //         _jumpKickTimer -= Time.deltaTime;
+        //         if (_jumpKickTimer <= 0f)
+        //             _isJumpKickActive = false;
+        //     }
+        // }
     }
 
     public float baseProjectilePushPower = 7f;
@@ -942,11 +942,11 @@ public class ShadowTwinMovement : MonoBehaviour
         ExecuteJump(_stats.JumpPower);
         
         // Activate jump kick start
-        if(!IsPulling && Mathf.Abs(_frameVelocity.x) >= _stats.MaxSpeed) {
-            _isJumpKickActive = true;
-            _jumpKickTimer = _jumpKickDuration;
-            _jumpKickDirection = isFacingLeft() ? -1f : 1f;
-        }
+        // if(!IsPulling && Mathf.Abs(_frameVelocity.x) >= _stats.MaxSpeed) {
+        //     _isJumpKickActive = true;
+        //     _jumpKickTimer = _jumpKickDuration;
+        //     _jumpKickDirection = isFacingLeft() ? -1f : 1f;
+        // }
 
         if(_isDashing) {
             //Reset the high speed of the dash
@@ -1112,10 +1112,10 @@ public class ShadowTwinMovement : MonoBehaviour
         }
 
         // Apply jump kick boost to horizontal frame velocity if active
-        if (_isJumpKickActive)
-        {
-            _frameVelocity.x += _jumpKickHorizontal * _jumpKickDirection;
-        }
+        // if (_isJumpKickActive)
+        // {
+        //     _frameVelocity.x += _jumpKickHorizontal * _jumpKickDirection;
+        // }
     }
 
     #endregion

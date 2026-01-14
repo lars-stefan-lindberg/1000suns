@@ -1,14 +1,18 @@
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class BackgroundManager : MonoBehaviour
 {
     private Camera _mainCamera;
-    [SerializeField] private float _parallaxEffect;
-    [SerializeField] private Direction _direction = Direction.Vertical;
-    private Vector2 _startPosition;
 
-    private enum Direction {
+    [SerializeField] private float _parallaxEffect = 0.5f;
+    [SerializeField] private float _smoothTime = 8f; // tweak: 5–12 is typical
+    [SerializeField] private Direction _direction = Direction.Vertical;
+
+    private Vector3 _startPosition;
+    private Vector3 _currentVelocity;
+
+    private enum Direction
+    {
         Vertical,
         Horizontal
     }
@@ -17,22 +21,34 @@ public class BackgroundManager : MonoBehaviour
     {
         _mainCamera = Camera.main;
         _startPosition = transform.position;
-        UpdatePosition();
     }
 
-    void FixedUpdate()
+    void LateUpdate()
     {
         UpdatePosition();
     }
 
-    private void UpdatePosition() {
-        if(_direction == Direction.Vertical) {
-            float distance = _mainCamera.transform.position.y * _parallaxEffect;
-            transform.position = new Vector2(transform.position.x, _startPosition.y + distance);
+    private void UpdatePosition()
+    {
+        Vector3 target = _startPosition;
+
+        if (_direction == Direction.Vertical)
+        {
+            float cameraOffsetY = _mainCamera.transform.position.y;
+            target.y = _startPosition.y + cameraOffsetY * _parallaxEffect;
         }
-        else if(_direction == Direction.Horizontal) {
-            float distance = (_mainCamera.transform.position.x - _startPosition.x) * _parallaxEffect;
-            transform.position = new Vector2(_startPosition.x - distance, transform.position.y);
+        else // Horizontal
+        {
+            float cameraOffsetX = _startPosition.x -_mainCamera.transform.position.x;
+            target.x = _startPosition.x + cameraOffsetX * _parallaxEffect;
         }
+
+        // Smoothly approach target (visual-only smoothing)
+        transform.position = Vector3.SmoothDamp(
+            transform.position,
+            target,
+            ref _currentVelocity,
+            1f / _smoothTime
+        );
     }
 }

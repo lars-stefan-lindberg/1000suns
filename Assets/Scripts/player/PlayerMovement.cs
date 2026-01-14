@@ -7,11 +7,15 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour, IPlayerController
 {
     // --- Jump Kick Start fields ---
-    private bool _isJumpKickActive = false;
-    private float _jumpKickTimer = 0f;
-    public float _jumpKickDuration = 0.1f; // seconds
-    public float _jumpKickHorizontal = 4f; // tune as needed
-    private float _jumpKickDirection = 1f;
+    // private bool _isJumpKickActive = false;
+    // private float _jumpKickTimer = 0f;
+    // public float _jumpKickDuration = 0.1f; // seconds
+    // public float _jumpKickHorizontal = 4f; // tune as needed
+    // private float _jumpKickDirection = 1f;
+ 
+    [Header("Pixel Snap")]
+    [SerializeField] private bool _snapHorizontalToPixelGrid = true;
+    [SerializeField] private int _pixelsPerUnit = 8;
     // --------------------------------
     public static PlayerMovement obj;
 
@@ -110,16 +114,44 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             }
         }
         // Update jump kick timer
-        if (_isJumpKickActive)
+        //Note: disabled for now due to horizontal scrolling gets weird since camera is following player rigidly
+        // if (_isJumpKickActive)
+        // {
+        //     if(_jumpKickDirection != _movementInput.x){
+        //         _isJumpKickActive = false;
+        //     } else {
+        //         _jumpKickTimer -= Time.deltaTime;
+        //         if (_jumpKickTimer <= 0f)
+        //             _isJumpKickActive = false;
+        //     }
+        // }
+    }
+
+    private void LateUpdate()
+    {
+        if (_snapHorizontalToPixelGrid)
         {
-            if(_jumpKickDirection != _movementInput.x){
-                _isJumpKickActive = false;
-            } else {
-                _jumpKickTimer -= Time.deltaTime;
-                if (_jumpKickTimer <= 0f)
-                    _isJumpKickActive = false;
-            }
+            SnapHorizontalToPixelGrid();
         }
+    }
+
+    private void SnapHorizontalToPixelGrid()
+    {
+        if (_pixelsPerUnit <= 0)
+            return;
+
+        float step = 1f / _pixelsPerUnit;
+        float worldX = transform.position.x;
+        float snappedWorldX = Mathf.Round(worldX / step) * step;
+        float deltaX = snappedWorldX - worldX;
+
+        Transform visualTarget = anchor != null ? anchor.transform : (spriteRenderer != null ? spriteRenderer.transform : null);
+        if (visualTarget == null)
+            return;
+
+        Vector3 localPos = visualTarget.localPosition;
+        localPos.x = deltaX;
+        visualTarget.localPosition = localPos;
     }
 
     private void FlipPlayer(float _xValue)
@@ -1020,11 +1052,12 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         ExecuteJump(_stats.JumpPower);
         
         // Activate jump kick start
-        if(!isForcePushJumping && !_isDashing && Mathf.Abs(_frameVelocity.x) >= _stats.MaxSpeed) {
-            _isJumpKickActive = true;
-            _jumpKickTimer = _jumpKickDuration;
-            _jumpKickDirection = isFacingLeft() ? -1f : 1f;
-        }
+        // Disabled for now due to horizontal scrolling issue
+        // if(!isForcePushJumping && !_isDashing && Mathf.Abs(_frameVelocity.x) >= _stats.MaxSpeed) {
+        //     _isJumpKickActive = true;
+        //     _jumpKickTimer = _jumpKickDuration;
+        //     _jumpKickDirection = isFacingLeft() ? -1f : 1f;
+        // }
 
         if(_isDashing) {
             //Reset the high speed of the dash
@@ -1132,10 +1165,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         
 
         // Apply jump kick boost to horizontal frame velocity if active
-        if (_isJumpKickActive)
-        {
-            _frameVelocity.x += _jumpKickHorizontal * _jumpKickDirection;
-        }
+        // if (_isJumpKickActive)
+        // {
+        //     _frameVelocity.x += _jumpKickHorizontal * _jumpKickDirection;
+        // }
     }
 
     #endregion
