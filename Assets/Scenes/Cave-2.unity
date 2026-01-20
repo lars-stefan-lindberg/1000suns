@@ -42405,6 +42405,87 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1001 &1121008752
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 491464377237855767, guid: 550eeccd691734285bd9830178b5b140, type: 3}
+      propertyPath: m_Name
+      value: SceneMetadata
+      objectReference: {fileID: 0}
+    - target: {fileID: 5469460401231062988, guid: 550eeccd691734285bd9830178b5b140, type: 3}
+      propertyPath: _darknessColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5469460401231062988, guid: 550eeccd691734285bd9830178b5b140, type: 3}
+      propertyPath: _darknessColor.b
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 5469460401231062988, guid: 550eeccd691734285bd9830178b5b140, type: 3}
+      propertyPath: _darknessColor.g
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 5469460401231062988, guid: 550eeccd691734285bd9830178b5b140, type: 3}
+      propertyPath: _darknessColor.r
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 5469460401231062988, guid: 550eeccd691734285bd9830178b5b140, type: 3}
+      propertyPath: backgroundScene._sceneName
+      value: CaveBg1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5469460401231062988, guid: 550eeccd691734285bd9830178b5b140, type: 3}
+      propertyPath: backgroundScene._sceneAsset
+      value: 
+      objectReference: {fileID: 102900000, guid: 49dcf73c3e66c41c7abfab1c1bccca2d, type: 3}
+    - target: {fileID: 7238864598812726562, guid: 550eeccd691734285bd9830178b5b140, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 880
+      objectReference: {fileID: 0}
+    - target: {fileID: 7238864598812726562, guid: 550eeccd691734285bd9830178b5b140, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -63.875
+      objectReference: {fileID: 0}
+    - target: {fileID: 7238864598812726562, guid: 550eeccd691734285bd9830178b5b140, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.020960212
+      objectReference: {fileID: 0}
+    - target: {fileID: 7238864598812726562, guid: 550eeccd691734285bd9830178b5b140, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7238864598812726562, guid: 550eeccd691734285bd9830178b5b140, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7238864598812726562, guid: 550eeccd691734285bd9830178b5b140, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7238864598812726562, guid: 550eeccd691734285bd9830178b5b140, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7238864598812726562, guid: 550eeccd691734285bd9830178b5b140, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7238864598812726562, guid: 550eeccd691734285bd9830178b5b140, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7238864598812726562, guid: 550eeccd691734285bd9830178b5b140, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 550eeccd691734285bd9830178b5b140, type: 3}
 --- !u!1 &1197190446
 GameObject:
   m_ObjectHideFlags: 0
@@ -64255,7 +64336,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1832592506
 Transform:
   m_ObjectHideFlags: 0
@@ -64334,6 +64415,8 @@ MonoBehaviour:
   roomObjects:
   - {fileID: 818454186}
   - {fileID: 205210174}
+  - {fileID: 1832592505}
+  _darknessColor: {r: 0.01, g: 0.01, b: 0.01, a: 1}
   OnRoomEnter:
     m_PersistentCalls:
       m_Calls: []
@@ -69716,7 +69799,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5130816198234200559, guid: c3622d1a7a82746b4a5baa46f5ce8690, type: 3}
       propertyPath: _scenesToLoad.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5130816198234200559, guid: c3622d1a7a82746b4a5baa46f5ce8690, type: 3}
       propertyPath: _currentScene._sceneAsset
@@ -69726,6 +69809,14 @@ PrefabInstance:
       propertyPath: _scenesToUnload.Array.size
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5130816198234200559, guid: c3622d1a7a82746b4a5baa46f5ce8690, type: 3}
+      propertyPath: _scenesToLoad.Array.data[0]._sceneName
+      value: Cave-4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5130816198234200559, guid: c3622d1a7a82746b4a5baa46f5ce8690, type: 3}
+      propertyPath: _scenesToLoad.Array.data[0]._sceneAsset
+      value: 
+      objectReference: {fileID: 102900000, guid: d078b5c36165e45c4955664c580c2d85, type: 3}
     - target: {fileID: 5130816198234200559, guid: c3622d1a7a82746b4a5baa46f5ce8690, type: 3}
       propertyPath: _scenesToUnload.Array.data[0]._sceneName
       value: Cave-1
@@ -74872,6 +74963,7 @@ MonoBehaviour:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 1121008752}
   - {fileID: 1448804096}
   - {fileID: 470554420}
   - {fileID: 178726573}

@@ -1,6 +1,12 @@
 using UnityEngine;
 using UnityEngine.U2D;
 
+/*
+This manager lives in it's own scene. Each room has a scene reference for the background layers that should be loaded.
+When the layers are loaded, they are added as a child to the main camera to enable smooth parallax effect.
+Depending on the room, the background layers will be moved into "parallaxed" position relative to the starting position of the layers,
+ensuring that the same background will always be shown in each specific room.
+*/
 public class BackgroundLayersManager : MonoBehaviour
 {
     private static bool _sharedParallaxOriginInitialized = false;
