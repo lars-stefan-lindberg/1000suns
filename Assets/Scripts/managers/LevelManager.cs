@@ -10,6 +10,7 @@ public class LevelManager : MonoBehaviour
     public static LevelManager obj;
     public bool isRunningAfterSceneLoaded = false;
     [SerializeField] private SceneField _titleScreen;
+    [SerializeField] private float _reloadSceneDelayTime = 0.4f;
 
     private Dictionary<string, bool> levelCompletionMap = new Dictionary<string, bool>();
 
@@ -39,6 +40,27 @@ public class LevelManager : MonoBehaviour
         Scene activeScene = SceneManager.GetActiveScene();
         GameObject metadataObject = activeScene.GetRootGameObjects().FirstOrDefault(gameObject => gameObject.CompareTag("SceneMetadata"));
         return metadataObject?.GetComponent<SceneMetadata>();
+    }
+
+    public bool IsBackgroundLayersLoaded(SceneField backgroundScene) {
+        Camera mainCamera = Camera.main;
+        if(mainCamera != null) {
+            BackgroundLayersManager backgroundLayersManager = mainCamera.gameObject.GetComponentInChildren<BackgroundLayersManager>();
+            if(backgroundLayersManager != null) {
+                return backgroundLayersManager.backgroundScene.SceneName == backgroundScene.SceneName;
+            }
+        }
+        return false;
+    }
+
+    public void RemoveBackgroundLayers() {
+        Camera mainCamera = Camera.main;
+        if(mainCamera != null) {
+            BackgroundLayersManager backgroundLayersManager = mainCamera.gameObject.GetComponentInChildren<BackgroundLayersManager>();
+            if(backgroundLayersManager != null) {
+                Destroy(backgroundLayersManager.gameObject);
+            }
+        }
     }
 
     private IEnumerator LoadSceneDelayedCoroutine(string sceneName) {
@@ -150,20 +172,17 @@ public class LevelManager : MonoBehaviour
 
                 Reaper.obj.playerKilled = false;
 
-                if(PlayerManager.obj.IsSeparated) {
-                    PlayerManager.obj.PlaySpawn(PlayerManager.PlayerType.HUMAN);
-                    PlayerManager.obj.PlaySpawn(PlayerManager.PlayerType.SHADOW_TWIN);
-                } else {
-                    PlayerManager.obj.PlaySpawn();
-                }
-                //Need to play a slightly delayed spawn sound due to when loading a game the sound is broken at the beginning. No idea why!
-                StartCoroutine(DelayedSpawnSfx(playerSpawnPointCollider.transform));
-                
                 IEnumerable<GameObject> levelSwitchers = sceneGameObjects.Where(gameObject => gameObject.CompareTag("LevelSwitcher"));
                 foreach(GameObject levelSwitcherGameObject in levelSwitchers) {
                     LevelSwitcher levelSwitcher = levelSwitcherGameObject.GetComponent<LevelSwitcher>();
                     levelSwitcher.LoadNextRoom();
                 }
+
+                //Load any potential collectibles
+                CollectibleManager.obj.MaybeLoadCollectible(scene.name);
+
+                //Give parallax bg a moment to settle before fading in
+                StartCoroutine(DelayedSceneFadeIn(playerSpawnPointCollider.transform));
             }
             
 
@@ -177,12 +196,6 @@ public class LevelManager : MonoBehaviour
                 }
                 SaveManager.obj.ConsumeRestoreLightingFlag();
             }
-
-            //Load any potential collectibles
-            CollectibleManager.obj.MaybeLoadCollectible(scene.name);
-
-            SceneFadeManager.obj.StartFadeIn();
-            PlayerStatsManager.obj.ResumeTimer();
 
             // If we just loaded a game from a save, restore audio state (music + ambience)
             if (SaveManager.obj != null && SaveManager.obj.RestoreAudioOnNextScene) {
@@ -199,6 +212,21 @@ public class LevelManager : MonoBehaviour
             }
         }
         isRunningAfterSceneLoaded = false;
+    }
+
+    private IEnumerator DelayedSceneFadeIn(Transform playerSpawnPoint) {
+        yield return new WaitForSeconds(_reloadSceneDelayTime);
+        SceneFadeManager.obj.StartFadeIn();
+        PlayerStatsManager.obj.ResumeTimer();
+
+        if(PlayerManager.obj.IsSeparated) {
+            PlayerManager.obj.PlaySpawn(PlayerManager.PlayerType.HUMAN);
+            PlayerManager.obj.PlaySpawn(PlayerManager.PlayerType.SHADOW_TWIN);
+        } else {
+            PlayerManager.obj.PlaySpawn();
+        }
+        //Need to play a slightly delayed spawn sound due to when loading a game the sound is broken at the beginning. No idea why!
+        StartCoroutine(DelayedSpawnSfx(playerSpawnPoint));
     }
 
     private void SetPlayersStartingState() {

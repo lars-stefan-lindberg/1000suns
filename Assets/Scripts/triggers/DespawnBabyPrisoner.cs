@@ -6,7 +6,6 @@ public class DespawnBabyPrisoner : MonoBehaviour
         if(other.gameObject.CompareTag("BabyPrisoner")) {
             BabyPrisoner babyPrisoner = other.gameObject.GetComponent<BabyPrisoner>();
             babyPrisoner.Disable();
-            GameEventManager.obj.BabyPrisonerAlerted = true;
         }
     }
 }

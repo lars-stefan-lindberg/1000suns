@@ -12,6 +12,7 @@ public class LevelSwitcher : MonoBehaviour
     [SerializeField] private SceneField _nextScene;
     [SerializeField] private GameObject _currentRoomCamera;
     [SerializeField] private bool _activateAlternativeCamera = false;
+    [SerializeField] private bool _activateFollowCamera = false;
     [SerializeField] private bool _fireCustomCameraHandlingEvent = false;
     [SerializeField] private SceneField[] _scenesToLoad;
     [SerializeField] private SceneField[] _scenesToUnload;
@@ -92,9 +93,11 @@ public class LevelSwitcher : MonoBehaviour
             }
 
             PlayerManager.obj.TransitionToNextRoom(direction, playerType);
+            
+            //TODO: If separated, merge players
             //If separated, teleport second player to target
-            if(PlayerManager.obj.IsSeparated)
-                PlayerManager.obj.TeleportSecondPlayerToTarget(playerType, _secondPlayerTeleportationTarget);
+            // if(PlayerManager.obj.IsSeparated)
+            //     PlayerManager.obj.TeleportSecondPlayerToTarget(playerType, _secondPlayerTeleportationTarget);
         }
 
         _currentRoomCamera.SetActive(false);
@@ -108,6 +111,9 @@ public class LevelSwitcher : MonoBehaviour
             CameraManager cameraManager = cameras.GetComponent<CameraManager>();
             if(_activateAlternativeCamera) {
                 cameraManager.ActivateAlternativeCamera();
+            } else if(_activateFollowCamera) {
+                var playerTranform = PlayerManager.obj.GetPlayerTransform(playerType);
+                cameraManager.ActivateFollowCamera(playerTranform);
             } else {
                 cameraManager.ActivateMainCamera();
             }

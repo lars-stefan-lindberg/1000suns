@@ -7,18 +7,16 @@ public class BabyPrisonerAlertTrigger : MonoBehaviour
     private BoxCollider2D _boxCollider;
 
     void Awake() {
-        if(GameEventManager.obj.BabyPrisonerAlerted) {
-            gameObject.SetActive(false);
-            Destroy(gameObject, 3);
-        }
         _boxCollider = GetComponent<BoxCollider2D>();
     }
 
     void OnTriggerEnter2D(Collider2D other) 
     {
         if(other.gameObject.CompareTag("Player")) {
-            PlayerMovement.obj.Freeze(playerFreezeTime);
-            babyPrisoner.Alert();
+            if(playerFreezeTime > 0) {
+                PlayerMovement.obj.Freeze(playerFreezeTime);
+            }
+            babyPrisoner.Hide(transform.position);
             _boxCollider.enabled = false;
         }
     }

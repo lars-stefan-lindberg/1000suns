@@ -79,7 +79,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -5
   m_Sprite: {fileID: 687300538, guid: 06dcf14c2b2864faeb6ab863a23f8207, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -123,7 +123,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.064022064, y: 0.004550934}
+  m_Offset: {x: -0.07171631, y: 0.004550934}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5416667, y: 0.4583333}
@@ -134,7 +134,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.1380005, y: 0.7609482}
+  m_Size: {x: 0.8763428, y: 0.7609482}
   m_EdgeRadius: 0
 --- !u!50 &2341463094542395622
 Rigidbody2D:
@@ -196,21 +196,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6e91005b6d0e484dba81e0880e4be68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isGrounded: 1
-  isGroundedCheckOffset: 0.55
-  groundAheadCheck: 0.51
-  isGroundFloorAhead: 1
-  frontCheck: 0.81
   speed: 3
   alertSpeed: 10
+  hideSpeed: 6
   maxSpeed: 1.6
   speedAcceleration: 1
   timeToTurnAround: 1.31
   turnAroundTimer: 1.3199993
-  isTurning: 0
-  isAlerted: 0
-  playerCastDistance: 7
-  originHorizontalPos: 0
+  alertRunDirection: -1
   maxTravellingDistance: 3
   groundLayer:
     serializedVersion: 2
@@ -244,12 +237,12 @@ MonoBehaviour:
   type: 0
   spriteMode: 0
   sprite: {fileID: 21300000, guid: 6592d6be03fd808449716a11558d506f, type: 3}
-  color: {r: 0.4811321, g: 0.4811321, b: 0.4811321, a: 0.601}
+  color: {r: 1, g: 1, b: 1, a: 0.601}
   flipX: 0
   flipY: 0
   lightSpriteTransform:
     applyRotation: 0
-    scale: {x: 0.5, y: 0.5}
+    scale: {x: 0.47, y: 0.23}
     rotation: 0
     position: {x: 0, y: 0}
   lightSpriteShape:

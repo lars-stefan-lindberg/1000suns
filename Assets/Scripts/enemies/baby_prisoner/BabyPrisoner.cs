@@ -6,28 +6,31 @@ public class BabyPrisoner : MonoBehaviour
     private BoxCollider2D _collider;
     private Rigidbody2D _rigidBody;
     private Animator _animator;
-    public bool isGrounded = false;
-    public float isGroundedCheckOffset = 0.55f; //TODO: Get dynamic value based on enemy height
-    public float groundAheadCheck = 0.51f;
-    public bool isGroundFloorAhead = true;
-    public float frontCheck = 0.51f;
+    private bool isGrounded = false;
+    private float isGroundedCheckOffset = 0.55f; //TODO: Get dynamic value based on enemy height
+    private float groundAheadCheck = 0.51f;
+    private bool isGroundFloorAhead = true;
+    private float frontCheck = 0.51f;
 
     public float speed = 0f;
     public float alertSpeed = 4f;
+    public float hideSpeed = 6f;
     public float maxSpeed = 3;
     public float speedAcceleration = 1f;
 
     public float timeToTurnAround = 0.5f;
     public float turnAroundTimer = 1.3f;
-    public bool isTurning = false;
+    private bool isTurning = false;
 
-    public bool isAlerted = false;
+    private bool isAlerted = false;
+    private bool _isHiding = false;
+    public int alertRunDirection = 1; //-1: left, 1: right
 
     bool IsMoving => Mathf.Abs(_rigidBody.velocity.x) > 0.01;
 
-    public float playerCastDistance = 0;
+    private float playerCastDistance = 0;
 
-    public float originHorizontalPos;
+    private float originHorizontalPos;
     public float maxTravellingDistance = 5f;
 
     [Header("Dependencies")]
@@ -80,7 +83,7 @@ public class BabyPrisoner : MonoBehaviour
             
         // }
 
-        if(!isTurning && !isAlerted) {
+        if(!isTurning && !isAlerted && !_isHiding) {
             float currentHorizontalPos = transform.position.x;
             if(((currentHorizontalPos >= (originHorizontalPos + maxTravellingDistance)) && !IsMovingLeft()) || 
                 ((currentHorizontalPos <= (originHorizontalPos - maxTravellingDistance)) && IsMovingLeft())) 
@@ -90,7 +93,7 @@ public class BabyPrisoner : MonoBehaviour
             }
         }
 
-        if (isGrounded && !isAlerted)
+        if (isGrounded && !isAlerted && !_isHiding)
         {
             GracefulSpeedChange();
         }
@@ -165,11 +168,35 @@ public class BabyPrisoner : MonoBehaviour
         StartCoroutine(AlertRunDelay(alertRunDuration));
     }
 
+    public void Hide(Vector2 triggerPosition) {
+        Vector2 direction = (Vector2)transform.position - triggerPosition;
+        direction.Normalize();
+        if(direction.x == 1) {
+            Vector3 currentRotation = transform.eulerAngles;
+            currentRotation.y = -180;
+            transform.eulerAngles = currentRotation;
+        } else {
+            Vector3 currentRotation = transform.eulerAngles;
+            currentRotation.y = 0;
+            transform.eulerAngles = currentRotation;
+        }
+
+        speed = hideSpeed;
+        _animator.speed = 1.5f;
+        _isHiding = true;
+        isTurning = false;
+        _lightSprite2DFadeManager.SetFadedInState();
+        _lightSprite2DFadeManager.StartFadeOut();
+    }
+
     private IEnumerator AlertRunDelay(float alertRunDelay) {
         yield return new WaitForSeconds(alertRunDelay);
         _animator.SetBool("isAlerted", isAlerted);
-        if(IsFacingLeft()) 
+        if(!IsFacingLeft() && alertRunDirection == -1) {
             FlipHorizontal();
+        } else if(IsFacingLeft() && alertRunDirection == 1) {
+            FlipHorizontal();
+        }
         speed = alertSpeed;
         _escapeAudioSource = SoundFXManager.obj.PlayBabyPrisonerEscape(transform);
     }
@@ -208,5 +235,6 @@ public class BabyPrisoner : MonoBehaviour
     private IEnumerator DelayedSetGameObjectInactive() {
         yield return new WaitForSeconds(2.1f);
         gameObject.SetActive(false);
+        Destroy(gameObject, 2f);
     }
 }

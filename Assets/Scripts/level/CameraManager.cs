@@ -6,6 +6,7 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private GameObject _mainCamera;
     [SerializeField] private GameObject _alternativeCamera;
     [SerializeField] private GameObject _customCamera;
+    [SerializeField] private GameObject _followCamera;
 
     public GameObject ActivateMainCamera()
     {
@@ -13,6 +14,11 @@ public class CameraManager : MonoBehaviour
         if(_alternativeCamera != null)
         DeactivateCamera(_alternativeCamera);
         return _mainCamera;
+    }
+
+    public void ActivateFollowCamera(Transform followTransform) {
+        ActivateCamera(_followCamera);
+        _followCamera.GetComponent<CinemachineVirtualCamera>().Follow = followTransform;
     }
 
     public void ActivateCustomCamera()
