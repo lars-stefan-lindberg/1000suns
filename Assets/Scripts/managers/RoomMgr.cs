@@ -13,6 +13,7 @@ public class RoomMgr : MonoBehaviour
     public UnityEvent OnRoomExit;
     private float _darknessFadeSpeed = 9f;
     private Coroutine _fadeDarknessCoroutine;
+    private float _roomTransitionDelay = 0.2f;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -21,7 +22,11 @@ public class RoomMgr : MonoBehaviour
             roomObjects.ForEach(roomObject => roomObject.SetActive(true));
             Color darknessColor = LightingManager2D.Get().profile.DarknessColor;
             if(darknessColor != _darknessColor) {
-                _fadeDarknessCoroutine = StartCoroutine(FadeDarkness(darknessColor));
+                if(IsBrighterThan(_darknessColor, darknessColor)) {
+                    _fadeDarknessCoroutine = StartCoroutine(FadeDarkness(darknessColor, _roomTransitionDelay));
+                } else {
+                    _fadeDarknessCoroutine = StartCoroutine(FadeDarkness(darknessColor, 0f));
+                }
             }
             OnRoomEnter?.Invoke();
         }
@@ -39,8 +44,9 @@ public class RoomMgr : MonoBehaviour
         }
     }
 
-    private IEnumerator FadeDarkness(Color startColor) {
-        Debug.Log("Changing darkness level.");
+    private IEnumerator FadeDarkness(Color startColor, float delay) {
+        yield return new WaitForSeconds(delay); //If changing to brighter, it looks better if we wait for room transition to complete
+
         if (startColor == _darknessColor)
         {
             LightingManager2D.Get().profile.DarknessColor = _darknessColor;
@@ -55,7 +61,19 @@ public class RoomMgr : MonoBehaviour
             yield return null;
         }
 
-        Debug.Log("Darkness level: " + _darknessColor);
         LightingManager2D.Get().profile.DarknessColor = _darknessColor;
+    }
+
+    private static bool IsBrighterThan(Color a, Color b)
+    {
+        return GetLuminance(a) > GetLuminance(b);
+    }
+
+    private static float GetLuminance(Color c)
+    {
+        // Standard Rec. 709 luminance formula
+        return 0.2126f * c.r +
+            0.7152f * c.g +
+            0.0722f * c.b;
     }
 }

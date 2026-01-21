@@ -1,0 +1,28 @@
+﻿Twin shadows - sorting layers
+
+Cave example of layers:
+Background - The actual background color texture
+Background1 - Big cave holes/openings
+Background2 - Rough shapes of the cave
+Background3 - Far away ruins
+Background near - Background that is close to the player. . No parallax
+Background props - Various objects in the background, like stone slabs, torches, monoliths, etc.
+Player - Player, enemies, interactable objects, etc.
+Foreground - Stalactites, pillars, surfaces, water droplets
+
+A huge constraint is that the lighting system only shines light on sprites put in Default (order in layer 0) or further back. If I want everything in the room to interact
+with the lighting system they need to be put in Default or further back, which only leaves me with 3 layers to work with, which is not ideal.
+
+List of Unity layers:
+Background (Order in layer: -10)
+- Background1 (Order in layer: -5)
+- Background2 (Order in layer: 0)
+- Background3 (Order in layer: 5)
+- Background near (Order in layer: 10)
+Background props
+Player
+ForegroundAffectedByLight
+Default (not really used any longer)
+Foreground
+UI
+CameraSortingLayer
