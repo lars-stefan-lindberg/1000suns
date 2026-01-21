@@ -5,7 +5,7 @@ using UnityEngine;
 public class C27FloorTilemapManager : MonoBehaviour
 {
     void Start() {
-        if(GameEventManager.obj.C275FloorBroken)
+        if(GameManager.obj.C275FloorBroken)
             gameObject.SetActive(false);
     }
 }

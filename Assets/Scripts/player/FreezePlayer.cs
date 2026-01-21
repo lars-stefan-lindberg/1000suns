@@ -6,7 +6,7 @@ public class FreezePlayer : MonoBehaviour
     private bool _hasBeenTriggered = false;
 
     void Awake() {
-        if(GameEventManager.obj.FirstPowerUpPicked) {
+        if(GameManager.obj.FirstPowerUpPicked) {
             _hasBeenTriggered = true;
             Destroy(gameObject, 3);
         }

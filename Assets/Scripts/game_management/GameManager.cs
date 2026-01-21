@@ -2,14 +2,19 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Reflection;
 
-public class GameEventManager : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
-    public static GameEventManager obj;
+    public static GameManager obj;
+    public GameProgress Progress { get; private set; }
+    public CaveTimeline CaveTimeline { get; private set; }
+
+    [Header("Debug (Read Only)")]
+    [SerializeField]
+    GameProgressDebugger debugView;
 
     //Cutscene events
     public bool CaveLevelStarted { get; set; }
     public bool C1MonologueEnded { get; set; }
-    public bool CaveAvatarFreed { get; set; }
     public bool CapeRoomZoomCompleted { get; set; }
     public bool CapePicked { get; set; }
     public bool FirstCaveCollectibleConversationEnded { get; set; }
@@ -35,45 +40,60 @@ public class GameEventManager : MonoBehaviour
 
     void Awake() {
         obj = this;
-        ResetGameEvents();
+        Progress = new GameProgress();
+        // var testEvent = new GameEventId();
+        // testEvent.id = "cave-3.soot-freed";
+        // Progress.RegisterEvent(testEvent);
+        CaveTimeline = new CaveTimeline();
+        CaveTimeline.SetTimeline(CaveTimelineId.Id.Eli);
+
+        // Hook debugger if present
+        if (debugView != null)
+            debugView.Bind(Progress);
     }
 
-    public void ResetGameEvents() {
-        CaveAvatarFreed = false;
-        PrisonerIntroSeen = false;
-        BabyPrisonerAlerted = false;
-        CapeRoomZoomCompleted = false;
-        CapePicked = false;
-        FirstPowerUpPicked = false;
-        PowerUpRoomsFloorBroken = false;
-        CaveLevelStarted = false;
-        AfterPowerUpRoomsCompletedWallBreak = false;
-        PowerUpRoomCompletedWallBreak = false;
-        C20CutsceneCompleted = false;
-        IsPauseAllowed = true;
-        C215WallBroken = false;
-        C275FloorBroken = false;
-        FirstCaveCollectibleConversationEnded = false;
-        FirstPrisonerFightStarted = false;
-        FirstPrisonerKilled = false;
-        FirstCaveMiniBossKilled = false;
-        C1MonologueEnded = false;
-        C26CutsceneCompleted = false;
-        C27CutsceneCompleted = false;
-        C30CutsceneCompleted = false;
-        MirrorConversationEnded = false;
-        C31CutsceneCompleted = false;
+    // --------- Public API ---------
+
+    public bool HasEvent(GameEventId eventId)
+    {
+        return Progress.HasEvent(eventId);
     }
 
-    void OnDestroy() {
-        obj = null;
+    public void RegisterEvent(GameEventId eventId)
+    {
+        Progress.RegisterEvent(eventId);
+    }
+
+    public void NewGame()
+    {
+        Progress.Clear();
+    }
+
+    // --------- Save / Load hooks ---------
+
+    public GameProgress GetProgressForSave()
+    {
+        return Progress;
+    }
+
+    public void LoadProgress(GameProgress loaded)
+    {
+        Progress = loaded;
+    }
+
+    public CaveTimeline GetCaveTimelineForSave() {
+        return CaveTimeline;
+    }
+
+    public void LoadCaveTimeline(CaveTimeline loaded) {
+        CaveTimeline = loaded;
     }
 
     // Returns a list of event keys (by property name) that have occurred
     public List<string> GetCompletedEvents()
     {
         var completed = new List<string>();
-        var props = typeof(GameEventManager).GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
+        var props = typeof(GameManager).GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
         foreach (var prop in props)
         {
             // Only persist bool properties that are both readable and writable, excluding IsPauseAllowed
@@ -93,7 +113,7 @@ public class GameEventManager : MonoBehaviour
     public void ApplyCompletedEvents(List<string> events)
     {
         // Start from a clean slate
-        ResetGameEvents();
+        Progress.Clear();
 
         if (events == null || events.Count == 0)
         {
@@ -101,7 +121,7 @@ public class GameEventManager : MonoBehaviour
         }
 
         var toSet = new HashSet<string>(events);
-        var props = typeof(GameEventManager).GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
+        var props = typeof(GameManager).GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
         foreach (var prop in props)
         {
             // Only apply to bool properties that are both readable and writable, excluding IsPauseAllowed
@@ -113,5 +133,9 @@ public class GameEventManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    void OnDestroy() {
+        obj = null;
     }
 }

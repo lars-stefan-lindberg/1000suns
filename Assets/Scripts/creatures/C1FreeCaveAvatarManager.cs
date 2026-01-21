@@ -10,9 +10,6 @@ public class C1FreeCaveAvatarManager : MonoBehaviour
 
     void Start()
     {
-        if(GameEventManager.obj.CaveAvatarFreed) {
-            Destroy(gameObject);
-        }
         _collider = GetComponent<BoxCollider2D>();
         _conversationManager.OnConversationEnd += OnConversationCompleted;
     }

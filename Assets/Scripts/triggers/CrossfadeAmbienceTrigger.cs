@@ -6,7 +6,7 @@ public class CrossfadeAmbienceTrigger : MonoBehaviour
     [SerializeField] private BoxCollider2D _otherAmbienceTrigger;
 
     void OnTriggerEnter2D(Collider2D other) {
-        if(GameEventManager.obj.CapePicked) {
+        if(GameManager.obj.CapePicked) {
             return;
         }
         if(other.CompareTag("Player")) {

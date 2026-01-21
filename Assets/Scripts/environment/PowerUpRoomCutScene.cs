@@ -22,7 +22,7 @@ public class PowerUpRoomCutScene : MonoBehaviour
 
     void Awake() {
         _animator = GetComponent<Animator>();
-        if(GameEventManager.obj.FirstPowerUpPicked) {
+        if(GameManager.obj.FirstPowerUpPicked) {
             _cutsceneFinished = true;
         }
     }
@@ -46,7 +46,7 @@ public class PowerUpRoomCutScene : MonoBehaviour
     }
 
     private IEnumerator StartCutscene() {
-        GameEventManager.obj.IsPauseAllowed = false;
+        GameManager.obj.IsPauseAllowed = false;
         PlayerMovement.obj.Freeze();
 
         yield return new WaitForSeconds(1);
@@ -69,7 +69,7 @@ public class PowerUpRoomCutScene : MonoBehaviour
         Player.obj.SetBlackCape();
         yield return new WaitForSeconds(2.5f);
 
-        GameEventManager.obj.FirstPowerUpPicked = true;
+        GameManager.obj.FirstPowerUpPicked = true;
         
         _animator.SetTrigger("disableFast");
         SetIsPicked();
@@ -97,7 +97,7 @@ public class PowerUpRoomCutScene : MonoBehaviour
         yield return new WaitForSeconds(2f);
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         PlayerMovement.obj.UnFreeze();
-        GameEventManager.obj.IsPauseAllowed = true;
+        GameManager.obj.IsPauseAllowed = true;
 
         _cutsceneFinished = true;
 

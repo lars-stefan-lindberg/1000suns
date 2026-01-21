@@ -16,7 +16,7 @@ public class EnterCapeRoomTrigger : MonoBehaviour
     private bool _isTriggered = false;
 
     void Awake() {
-        if(GameEventManager.obj.CapePicked) {
+        if(GameManager.obj.CapePicked) {
             _isTriggered = true;
             Destroy(gameObject, 3);
         }
@@ -26,7 +26,7 @@ public class EnterCapeRoomTrigger : MonoBehaviour
     private void OnTriggerExit2D(Collider2D collider) {
         if(collider.transform.CompareTag("Player") && !_isTriggered) {
             PlayerMovement.obj.Freeze();
-            GameEventManager.obj.IsPauseAllowed = false;
+            GameManager.obj.IsPauseAllowed = false;
             StartCoroutine(EnterCapeRoomSequence());
             _isTriggered = true;
         }
@@ -78,6 +78,6 @@ public class EnterCapeRoomTrigger : MonoBehaviour
         yield return new WaitForSeconds(2);
 
         PlayerMovement.obj.UnFreeze();
-        GameEventManager.obj.IsPauseAllowed = true;
+        GameManager.obj.IsPauseAllowed = true;
     }
 }

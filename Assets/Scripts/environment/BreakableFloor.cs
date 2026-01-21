@@ -73,7 +73,7 @@ public class BreakableFloor : MonoBehaviour
             _floorCollider.enabled = false;
             _playerOnTopDetectionCollider.enabled = false;
             _fadeSprite = true;
-            GameEventManager.obj.PowerUpRoomsFloorBroken = true;
+            GameManager.obj.PowerUpRoomsFloorBroken = true;
             Destroy(gameObject, 5);
         }
         if(_fadeSprite) {

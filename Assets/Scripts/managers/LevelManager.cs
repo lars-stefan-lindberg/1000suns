@@ -412,6 +412,8 @@ public class LevelManager : MonoBehaviour
     }
 
     private void SetCaveAvatarPosition(Scene scene) {
+        GameEventId sootFreed = new GameEventId();
+        sootFreed.id = "cave-3.soot-freed";
         if (scene.name == "C35") {
             CaveAvatar.obj.SetStartingPositionInRoom35();
         } else if(scene.name == "C34") {
@@ -435,15 +437,15 @@ public class LevelManager : MonoBehaviour
             else
                 CaveAvatar.obj.SetStartingPositionInRoom31();
         } else if(scene.name == "C30") {
-            if(GameEventManager.obj.C30CutsceneCompleted)
+            if(GameManager.obj.C30CutsceneCompleted)
                 CaveAvatar.obj.SetStartingPositionInRoom31();
             else
                 CaveAvatar.obj.SetStartingPositionInRoom30();
-        } else if(GameEventManager.obj.C27CutsceneCompleted) {
+        } else if(GameManager.obj.C27CutsceneCompleted) {
             CaveAvatar.obj.SetStartingPositionInRoom30();
-        } else if(GameEventManager.obj.C26CutsceneCompleted) {
+        } else if(GameManager.obj.C26CutsceneCompleted) {
             CaveAvatar.obj.SetStartingPositionInRoom27();
-        } else if(!GameEventManager.obj.CaveAvatarFreed && !PlayerMovement.obj.isDevMode) {
+        } else if(!GameManager.obj.Progress.HasEvent(sootFreed) && !PlayerMovement.obj.isDevMode) {
             CaveAvatar.obj.SetStartingPositionInRoom1();
         } else {
             CaveAvatar.obj.SetFollowPlayerStartingPosition();

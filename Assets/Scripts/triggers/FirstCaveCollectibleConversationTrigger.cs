@@ -9,7 +9,7 @@ public class FirstCaveCollectibleConversationTrigger : MonoBehaviour
 
     void Start()
     {
-        if(GameEventManager.obj.FirstCaveCollectibleConversationEnded)
+        if(GameManager.obj.FirstCaveCollectibleConversationEnded)
             gameObject.SetActive(false);
         else
             _conversationManager.OnConversationEnd += OnConversationCompleted;
@@ -44,6 +44,6 @@ public class FirstCaveCollectibleConversationTrigger : MonoBehaviour
     public void OnConversationCompleted() {
         PlayerMovement.obj.UnFreeze();
         CaveAvatar.obj.FollowPlayer();
-        GameEventManager.obj.FirstCaveCollectibleConversationEnded = true;
+        GameManager.obj.FirstCaveCollectibleConversationEnded = true;
     }
 }

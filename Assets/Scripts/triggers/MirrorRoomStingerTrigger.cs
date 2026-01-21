@@ -11,7 +11,7 @@ public class MirrorRoomStingerTrigger : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.CompareTag("Player")) {
-            if(GameEventManager.obj.MirrorConversationEnded) {
+            if(GameManager.obj.MirrorConversationEnded) {
                 return;
             }
             SoundFXManager.obj.PlayCaveAvatarEvilEyesTransition();

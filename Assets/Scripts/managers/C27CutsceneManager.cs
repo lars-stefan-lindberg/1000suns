@@ -8,7 +8,7 @@ public class C27CutsceneManager : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if(GameEventManager.obj.C27CutsceneCompleted) {
+        if(GameManager.obj.C27CutsceneCompleted) {
             return;
         }
         if (other.gameObject.CompareTag("Player")) {
@@ -18,7 +18,7 @@ public class C27CutsceneManager : MonoBehaviour
 
     private IEnumerator Cutscene() {
         PlayerBlobMovement.obj.Freeze();
-        GameEventManager.obj.IsPauseAllowed = false;
+        GameManager.obj.IsPauseAllowed = false;
         
         yield return new WaitForSeconds(2f);
 
@@ -27,8 +27,8 @@ public class C27CutsceneManager : MonoBehaviour
         yield return new WaitForSeconds(3f);
 
         PlayerBlobMovement.obj.UnFreeze();
-        GameEventManager.obj.IsPauseAllowed = true;
-        GameEventManager.obj.C27CutsceneCompleted = true;
+        GameManager.obj.IsPauseAllowed = true;
+        GameManager.obj.C27CutsceneCompleted = true;
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         yield return null;
     }

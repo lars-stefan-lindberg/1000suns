@@ -16,7 +16,7 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
 
     void Awake() {
         obj = this;
-        if(GameEventManager.obj.CapePicked) {
+        if(GameManager.obj.CapePicked) {
             gameObject.SetActive(false);
             Destroy(gameObject, 3);
         }
@@ -26,7 +26,7 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
         if(_startCutscene) {
             _startCutscene = false;
 
-            GameEventManager.obj.IsPauseAllowed = false;
+            GameManager.obj.IsPauseAllowed = false;
             PlayerMovement.obj.Freeze();
             StartCoroutine(FadeOutAndStopAmbience());
 
@@ -103,7 +103,7 @@ public class CapeRoomBackgroundBlobManager : MonoBehaviour
         //Make sure events, powers, and music is saved if reloading the room
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
 
-        GameEventManager.obj.IsPauseAllowed = true;
+        GameManager.obj.IsPauseAllowed = true;
     }
 
     void OnDestroy() {

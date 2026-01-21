@@ -26,7 +26,7 @@ public class DialogueTrigger : MonoBehaviour
     }
 
     void OnTriggerEnter2D(Collider2D other) {
-        if(GameEventManager.obj.C1MonologueEnded) {
+        if(GameManager.obj.C1MonologueEnded) {
             return;
         }
         if(other.CompareTag("Player")) {
@@ -47,6 +47,6 @@ public class DialogueTrigger : MonoBehaviour
     }
     private void OnDialogueCompleted() {
         PlayerMovement.obj.UnFreeze();
-        GameEventManager.obj.C1MonologueEnded = true;
+        GameManager.obj.C1MonologueEnded = true;
     }
 }

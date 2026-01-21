@@ -9,7 +9,7 @@ public class Cape : MonoBehaviour
     private Animator _animator;
 
     void Awake() {
-        if(GameEventManager.obj.CapePicked) {
+        if(GameManager.obj.CapePicked) {
             _container.SetActive(false);
             Destroy(gameObject, 3);
         }
@@ -20,7 +20,7 @@ public class Cape : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other) {
         if (other.gameObject.CompareTag("Player")) {
             CapeRoomBackgroundBlobManager.obj.StartCutscene();
-            GameEventManager.obj.CapePicked = true;
+            GameManager.obj.CapePicked = true;
             
             StartCoroutine(DelayCapePickupSetInactive());
         }

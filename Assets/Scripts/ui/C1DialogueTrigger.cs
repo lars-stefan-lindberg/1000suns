@@ -19,9 +19,6 @@ public class C1DialogueTrigger : MonoBehaviour
     }
 
     void OnTriggerEnter2D(Collider2D other) {
-        if(GameEventManager.obj.CaveAvatarFreed) {
-            return;
-        }
         if(other.CompareTag("Player")) {
             _collider.enabled = false;
             StartCoroutine(SetupDialogue());
@@ -30,7 +27,7 @@ public class C1DialogueTrigger : MonoBehaviour
 
     private IEnumerator SetupDialogue() {
         PlayerMovement.obj.Freeze();
-        GameEventManager.obj.IsPauseAllowed = false;
+        GameManager.obj.IsPauseAllowed = false;
         yield return new WaitForSeconds(0.5f);
         _conversationManager.StartConversation();
     }

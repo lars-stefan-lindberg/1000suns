@@ -9,7 +9,7 @@ public class C31ConversationTrigger : MonoBehaviour
     private BoxCollider2D _collider;
 
     void Start() {
-        if(GameEventManager.obj.C31CutsceneCompleted) {
+        if(GameManager.obj.C31CutsceneCompleted) {
             Destroy(this);
         }
         _collider = GetComponent<BoxCollider2D>();
@@ -49,7 +49,7 @@ public class C31ConversationTrigger : MonoBehaviour
         _c31Manager.StartAttackSequence();
         yield return new WaitForSeconds(1f);
         PlayerMovement.obj.UnFreeze();
-        GameEventManager.obj.C31CutsceneCompleted = true;
+        GameManager.obj.C31CutsceneCompleted = true;
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         _conversationManager.OnConversationEnd -= OnConversationCompleted;
         yield return null;

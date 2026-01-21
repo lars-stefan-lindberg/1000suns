@@ -82,7 +82,7 @@ public class PauseMenuManager : MonoBehaviour
 
     public void OnPause(InputAction.CallbackContext context)
     {
-        if(!GameEventManager.obj.IsPauseAllowed)
+        if(!GameManager.obj.IsPauseAllowed)
             return;
         if (context.performed)
         {

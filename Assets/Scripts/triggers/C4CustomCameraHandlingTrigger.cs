@@ -9,7 +9,7 @@ public class C4CustomCameraHandlingTrigger : MonoBehaviour
     void Awake()
     {
         _boxCollider2D = GetComponent<BoxCollider2D>();
-        if(GameEventManager.obj.CapePicked || GameEventManager.obj.CapeRoomZoomCompleted) {
+        if(GameManager.obj.CapePicked || GameManager.obj.CapeRoomZoomCompleted) {
             _isTriggered = true;
             Destroy(gameObject, 3);
         }

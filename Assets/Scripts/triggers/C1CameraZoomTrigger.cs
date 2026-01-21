@@ -9,10 +9,6 @@ public class C1CameraZoomTrigger : MonoBehaviour
     private BoxCollider2D _collider;
 
     private void Awake() {
-        if(GameEventManager.obj.CaveAvatarFreed) {
-            Destroy(gameObject);
-            return;
-        }
         _collider = GetComponent<BoxCollider2D>();
     }
 
@@ -25,7 +21,7 @@ public class C1CameraZoomTrigger : MonoBehaviour
 
     private IEnumerator HandleCameras() {
         PlayerMovement.obj.Freeze();
-        GameEventManager.obj.IsPauseAllowed = false;
+        GameManager.obj.IsPauseAllowed = false;
 
         _zoomedCam.SetActive(true);
         CinemachineVirtualCamera zoomedCamera = _zoomedCam.GetComponent<CinemachineVirtualCamera>();
@@ -39,7 +35,7 @@ public class C1CameraZoomTrigger : MonoBehaviour
         yield return new WaitForSeconds(2f);
 
         PlayerMovement.obj.UnFreeze();
-        GameEventManager.obj.IsPauseAllowed = true;
+        GameManager.obj.IsPauseAllowed = true;
 
         yield return null;
     }

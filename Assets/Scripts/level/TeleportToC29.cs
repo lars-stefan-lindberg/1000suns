@@ -87,7 +87,7 @@ public class TeleportToC29 : MonoBehaviour
 
         PlayerMovement.obj.UnFreeze();
 
-        GameEventManager.obj.IsPauseAllowed = true;
+        GameManager.obj.IsPauseAllowed = true;
 
         MusicManager.obj.PlayCaveSong();
         SaveManager.obj.SaveGame(scene.name);

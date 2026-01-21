@@ -8,9 +8,9 @@ public class PrisonerAlertCutSceneTrigger : MonoBehaviour
     public GameObject lockedDoor;
     public float cutSceneDuration = 4.5f;
     void OnTriggerEnter2D(Collider2D other) {
-        if(GameEventManager.obj.FirstPrisonerKilled) return;
+        if(GameManager.obj.FirstPrisonerKilled) return;
         if(other.gameObject.CompareTag("Player")) {
-            if(GameEventManager.obj.FirstPrisonerFightStarted) {
+            if(GameManager.obj.FirstPrisonerFightStarted) {
                 prisoner.gameObject.SetActive(true);
                 lockedDoor.SetActive(true);
                 gameObject.SetActive(false);
@@ -33,6 +33,6 @@ public class PrisonerAlertCutSceneTrigger : MonoBehaviour
         yield return new WaitForSeconds(2.3f);
         prisoner.isStatic = false;
         gameObject.SetActive(false);
-        GameEventManager.obj.FirstPrisonerFightStarted = true;
+        GameManager.obj.FirstPrisonerFightStarted = true;
     }
 }

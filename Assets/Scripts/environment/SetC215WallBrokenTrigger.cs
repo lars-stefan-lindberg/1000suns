@@ -6,6 +6,6 @@ public class SetC215WallBrokenTrigger : MonoBehaviour
 {
     void OnTriggerEnter2D(Collider2D other) {
         if(other.CompareTag("Player"))
-            GameEventManager.obj.C215WallBroken = true;
+            GameManager.obj.C215WallBroken = true;
     }
 }

@@ -26,7 +26,7 @@ public class FirstRoomLoader : MonoBehaviour
 
     void Start()
     {
-        if(!GameEventManager.obj.CaveLevelStarted) {
+        if(!GameManager.obj.CaveLevelStarted) {
             _zoomedCamera.SetActive(true);
             CinemachineVirtualCamera zoomedCamera = _zoomedCamera.GetComponent<CinemachineVirtualCamera>();
             zoomedCamera.enabled = true;
@@ -36,7 +36,7 @@ public class FirstRoomLoader : MonoBehaviour
             LightingManager2D.Get().profile.DarknessColor = new Color(0.05f, 0.05f, 0.05f, 1f);
             StartCoroutine(Cutscene());
 
-            GameEventManager.obj.CaveLevelStarted = true;
+            GameManager.obj.CaveLevelStarted = true;
 
             PlayerStatsManager.obj.ResumeTimer();
 
@@ -106,7 +106,7 @@ public class FirstRoomLoader : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         PlayerMovement.obj.UnFreeze();
-        GameEventManager.obj.IsPauseAllowed = true;
+        GameManager.obj.IsPauseAllowed = true;
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name, ColorUtility.ToHtmlStringRGBA(new Color(0.33f, 0.33f, 0.33f, 1f)));
 
         yield return null;

@@ -44,7 +44,7 @@ public class BlobExtraJumpTrigger : MonoBehaviour
         } else if(PlayerBlobMovement.obj != null && PlayerBlobMovement.obj.gameObject.activeSelf) {
             PlayerBlobMovement.obj.Freeze();
         }
-        GameEventManager.obj.IsPauseAllowed = false;
+        GameManager.obj.IsPauseAllowed = false;
 
         yield return new WaitForSeconds(1);
 
@@ -89,7 +89,7 @@ public class BlobExtraJumpTrigger : MonoBehaviour
 
         PlayerPowersManager.obj.BlobCanExtraJump = true;
         PlayerBlobMovement.obj.UnFreeze();
-        GameEventManager.obj.IsPauseAllowed = true;
+        GameManager.obj.IsPauseAllowed = true;
         
         //Fade in music
         StartCoroutine(SoundMixerManager.obj.StartMusicFade(1.5f, musicVolume));

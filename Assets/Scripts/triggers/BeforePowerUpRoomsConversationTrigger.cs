@@ -9,7 +9,7 @@ public class BeforePowerUpRoomsConversationTrigger : MonoBehaviour
 
     void Start()
     {
-        if(GameEventManager.obj.PowerUpRoomsFloorBroken)
+        if(GameManager.obj.PowerUpRoomsFloorBroken)
             gameObject.SetActive(false);
         else
             _conversationManager.OnConversationEnd += OnConversationCompleted;

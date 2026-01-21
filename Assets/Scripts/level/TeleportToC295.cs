@@ -28,7 +28,7 @@ public class TeleportToC295 : MonoBehaviour
 
     private IEnumerator TeleportToC295Routine() 
     {
-        GameEventManager.obj.IsPauseAllowed = false;
+        GameManager.obj.IsPauseAllowed = false;
         PlayerBlobMovement.obj.Freeze();
 
         yield return new WaitForSeconds(0.2f);

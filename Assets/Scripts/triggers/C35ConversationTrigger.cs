@@ -72,7 +72,7 @@ public class C35ConversationTrigger : MonoBehaviour
     }
 
     private IEnumerator BreakFloor() {
-        GameEventManager.obj.IsPauseAllowed = false;
+        GameManager.obj.IsPauseAllowed = false;
         PlayerStatsManager.obj.PauseTimer();
         MusicManager.obj.PlayEndSong();
         AmbienceManager.obj.FadeOutAmbienceSource1(1f);

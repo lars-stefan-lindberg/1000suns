@@ -55,7 +55,7 @@ public class FirstCoopRoomLoader : MonoBehaviour
         yield return new WaitForSeconds(3f);
         PlayerMovement.obj.UnFreeze();
         ShadowTwinMovement.obj.UnFreeze();
-        GameEventManager.obj.IsPauseAllowed = true;
+        GameManager.obj.IsPauseAllowed = true;
 
         yield return null;
     }

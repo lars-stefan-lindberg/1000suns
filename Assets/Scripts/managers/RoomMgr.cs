@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using FunkyCode;
@@ -7,19 +6,23 @@ using System.Collections;
 //Standard room size: X: 40, Y: 22.5
 public class RoomMgr : MonoBehaviour
 {
-    [SerializeField] private List<GameObject> roomObjects;
+    [SerializeField] private GameObject roomObjectsToLoad;
     [SerializeField] private Color _darknessColor;
     public UnityEvent OnRoomEnter;
     public UnityEvent OnRoomExit;
     private float _darknessFadeSpeed = 9f;
     private Coroutine _fadeDarknessCoroutine;
-    private float _roomTransitionDelay = 0.2f;
+    private Coroutine _unloadRoomObjectsCoroutine;
+    private float _roomTransitionDelay = 0.3f;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if(other.CompareTag("Player"))
         {
-            roomObjects.ForEach(roomObject => roomObject.SetActive(true));
+            if(_unloadRoomObjectsCoroutine != null) {
+                StopCoroutine(_unloadRoomObjectsCoroutine);
+            }
+            roomObjectsToLoad.SetActive(true);
             Color darknessColor = LightingManager2D.Get().profile.DarknessColor;
             if(darknessColor != _darknessColor) {
                 if(IsBrighterThan(_darknessColor, darknessColor)) {
@@ -39,9 +42,14 @@ public class RoomMgr : MonoBehaviour
             if(_fadeDarknessCoroutine != null) {
                 StopCoroutine(_fadeDarknessCoroutine);
             }
-            roomObjects.ForEach(roomObject => roomObject.SetActive(false));
+            _unloadRoomObjectsCoroutine = StartCoroutine(UnloadRoomObjects());
             OnRoomExit?.Invoke();
         }
+    }
+
+    private IEnumerator UnloadRoomObjects() {
+        yield return new WaitForSeconds(_roomTransitionDelay);
+        roomObjectsToLoad.SetActive(false);
     }
 
     private IEnumerator FadeDarkness(Color startColor, float delay) {

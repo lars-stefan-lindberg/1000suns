@@ -50,9 +50,9 @@ public class SaveManager : MonoBehaviour
             Player.obj.SetHasCape(data.hasCape);
 
             // Apply saved game events back into the manager
-            if (GameEventManager.obj != null)
+            if (GameManager.obj != null)
             {
-                GameEventManager.obj.ApplyCompletedEvents(data?.completedEvents);
+                GameManager.obj.ApplyCompletedEvents(data?.completedEvents);
             }
 
             // Apply saved player powers back into the manager
@@ -162,7 +162,7 @@ public class SaveManager : MonoBehaviour
         data.timePlayed = PlayerStatsManager.obj.GetElapsedTime();
         data.hasCape = Player.obj.hasCape;
         data.playerPowers = PlayerPowersManager.obj != null ? PlayerPowersManager.obj.GetUnlockedPowers() : new List<string>();
-        data.completedEvents = GameEventManager.obj != null ? GameEventManager.obj.GetCompletedEvents() : new List<string>();
+        data.completedEvents = GameManager.obj != null ? GameManager.obj.GetCompletedEvents() : new List<string>();
         data.completedLevels = LevelManager.obj != null ? LevelManager.obj.ExportCompletedLevels() : new List<string>();
         data.pickedCollectibles = CollectibleManager.obj != null ? CollectibleManager.obj.ExportPickedCollectibles() : new List<string>();
         data.followingCollectibles = CollectibleManager.obj != null ? CollectibleManager.obj.ExportFollowingCollectibles() : new List<string>();

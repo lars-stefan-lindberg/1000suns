@@ -19,10 +19,6 @@ public class CaveAvatarRootsManager : MonoBehaviour
     }
 
     void Awake() {
-        if(GameEventManager.obj.CaveAvatarFreed) {
-            Destroy(gameObject);
-            return;
-        }
         _collider = GetComponent<BoxCollider2D>();
     }
 

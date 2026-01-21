@@ -8,7 +8,7 @@ public class C27CaveAvatarSetupManager : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if(GameEventManager.obj.C27CutsceneCompleted) {
+        if(GameManager.obj.C27CutsceneCompleted) {
             return;
         }
         if (other.gameObject.CompareTag("Player")) {

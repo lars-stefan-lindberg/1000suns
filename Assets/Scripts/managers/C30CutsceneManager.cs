@@ -32,14 +32,14 @@ public class C30CutsceneManager : MonoBehaviour
 
     private void OnDialogueCompleted() {
         PlayerMovement.obj.UnFreeze();
-        GameEventManager.obj.IsPauseAllowed = true;
-        GameEventManager.obj.C30CutsceneCompleted = true;
+        GameManager.obj.IsPauseAllowed = true;
+        GameManager.obj.C30CutsceneCompleted = true;
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if(GameEventManager.obj.C30CutsceneCompleted) {
+        if(GameManager.obj.C30CutsceneCompleted) {
             return;
         }
         if (other.gameObject.CompareTag("Player")) {
@@ -54,7 +54,7 @@ public class C30CutsceneManager : MonoBehaviour
             PlayerBlobMovement.obj.Freeze();
             PlayerBlobMovement.obj.ToHuman();
         }
-        GameEventManager.obj.IsPauseAllowed = false;
+        GameManager.obj.IsPauseAllowed = false;
         
         yield return new WaitForSeconds(1f);
 

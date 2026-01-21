@@ -243,7 +243,7 @@ public class MainMenuManager : MonoBehaviour
         while(!loadPersistentGameplayOperation.isDone) {
             yield return null;
         }
-        GameEventManager.obj.IsPauseAllowed = false;
+        GameManager.obj.IsPauseAllowed = false;
 
         //Reset player properties
         Player.obj.SetHasCape(false);
@@ -291,7 +291,7 @@ public class MainMenuManager : MonoBehaviour
         while(!loadPersistentGameplayOperation.isDone) {
             yield return null;
         }
-        GameEventManager.obj.IsPauseAllowed = false;
+        GameManager.obj.IsPauseAllowed = false;
 
         //Reset player properties
         Player.obj.SetHasCape(true);
@@ -357,7 +357,7 @@ public class MainMenuManager : MonoBehaviour
         while(!loadPersistentGameplayOperation.isDone) {
             yield return null;
         }
-        GameEventManager.obj.IsPauseAllowed = false;
+        GameManager.obj.IsPauseAllowed = false;
 
         SaveData saveData = SaveManager.obj.LoadGame();
         if(saveData == null) {

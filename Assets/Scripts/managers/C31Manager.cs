@@ -12,7 +12,7 @@ public class C31Manager : MonoBehaviour
     {
         if(LevelManager.obj.IsLevelCompleted("C31"))
             return;
-        if(GameEventManager.obj.C31CutsceneCompleted) {
+        if(GameManager.obj.C31CutsceneCompleted) {
             _startAttackSequence = true;
         }
     }

@@ -8,11 +8,11 @@ public class C20CutsceneTrigger : MonoBehaviour
     [SerializeField] private GameObject _mainCamera;
 
     void OnTriggerEnter2D(Collider2D other) {
-        if(GameEventManager.obj.C20CutsceneCompleted) {
+        if(GameManager.obj.C20CutsceneCompleted) {
             return;
         }
         if(other.CompareTag("Player")) {
-            GameEventManager.obj.AfterPowerUpRoomsCompletedWallBreak = true;
+            GameManager.obj.AfterPowerUpRoomsCompletedWallBreak = true;
             GetComponent<BoxCollider2D>().enabled = false;
             StartCoroutine(Cutscene());
         }
@@ -53,7 +53,7 @@ public class C20CutsceneTrigger : MonoBehaviour
         PlayerMovement.obj.UnFreeze();
 
         //Set game event to prevent cutscene from showing again
-        GameEventManager.obj.C20CutsceneCompleted = true;
+        GameManager.obj.C20CutsceneCompleted = true;
 
         yield return null;
     }

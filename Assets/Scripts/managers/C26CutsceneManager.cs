@@ -17,7 +17,7 @@ public class C26CutsceneManager : MonoBehaviour
 
     private bool _startCutscene = false;
     void OnTriggerEnter2D(Collider2D other) {
-        if(GameEventManager.obj.C26CutsceneCompleted) {
+        if(GameManager.obj.C26CutsceneCompleted) {
             return;
         }
         if (other.gameObject.CompareTag("Player")) {
@@ -65,7 +65,7 @@ public class C26CutsceneManager : MonoBehaviour
     {
         if(_startCutscene) {
             _startCutscene = false;
-            GameEventManager.obj.IsPauseAllowed = false;
+            GameManager.obj.IsPauseAllowed = false;
             PlayerMovement.obj.Freeze();
             StartCoroutine(Cutscene());
         }
@@ -159,8 +159,8 @@ public class C26CutsceneManager : MonoBehaviour
 
         MusicManager.obj.PlayBlobRooms();
         PlayerBlobMovement.obj.UnFreeze();
-        GameEventManager.obj.IsPauseAllowed = true;
-        GameEventManager.obj.C26CutsceneCompleted = true;
+        GameManager.obj.IsPauseAllowed = true;
+        GameManager.obj.C26CutsceneCompleted = true;
         PlayerPowersManager.obj.CanTurnFromHumanToBlob = true;
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         yield return null;

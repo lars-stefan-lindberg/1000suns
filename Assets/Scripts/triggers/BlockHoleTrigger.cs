@@ -12,9 +12,9 @@ public class BlockHoleTrigger : MonoBehaviour
     }
 
     void OnTriggerEnter2D(Collider2D other) {
-        if(GameEventManager.obj.AfterPowerUpRoomsCompletedWallBreak)
+        if(GameManager.obj.AfterPowerUpRoomsCompletedWallBreak)
             return;
-        if(!GameEventManager.obj.FirstPowerUpPicked)
+        if(!GameManager.obj.FirstPowerUpPicked)
             return;
         if(_floor.activeSelf)
             return;

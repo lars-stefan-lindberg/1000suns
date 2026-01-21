@@ -19,7 +19,7 @@ public class C15DialogueTrigger : MonoBehaviour
     }
 
     void OnTriggerEnter2D(Collider2D other) {
-        if(GameEventManager.obj.MirrorConversationEnded) {
+        if(GameManager.obj.MirrorConversationEnded) {
             return;
         }
         if(other.CompareTag("Player")) {
@@ -36,7 +36,7 @@ public class C15DialogueTrigger : MonoBehaviour
 
     private void OnConversationCompleted() {
         PlayerMovement.obj.UnFreeze();
-        GameEventManager.obj.MirrorConversationEnded = true;
+        GameManager.obj.MirrorConversationEnded = true;
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
     }
 }

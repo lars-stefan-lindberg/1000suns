@@ -4,7 +4,7 @@ using UnityEngine;
 public class SwitchToSecondCaveSongOnlyTrigger : MonoBehaviour
 {
     void Awake() {
-        if(GameEventManager.obj.AfterPowerUpRoomsCompletedWallBreak) {
+        if(GameManager.obj.AfterPowerUpRoomsCompletedWallBreak) {
             gameObject.SetActive(false);
             Destroy(gameObject, 3);
         }

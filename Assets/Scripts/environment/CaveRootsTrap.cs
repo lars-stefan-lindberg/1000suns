@@ -16,10 +16,6 @@ public class CaveRootsTrap : MonoBehaviour
 
     void Start()
     {
-        if(GameEventManager.obj.CaveAvatarFreed) {
-            Destroy(gameObject);
-            return;
-        }
         _renderer = GetComponent<SpriteRenderer>();
     }
 

@@ -10,7 +10,7 @@ public class CapeRoomSwitchToFullRoomCam : MonoBehaviour
     private bool _isTriggered = false;
 
     void Awake() {
-        if(GameEventManager.obj.CapePicked || GameEventManager.obj.CapeRoomZoomCompleted) {
+        if(GameManager.obj.CapePicked || GameManager.obj.CapeRoomZoomCompleted) {
             _isTriggered = true;
             Destroy(gameObject, 3);
         }
@@ -19,7 +19,7 @@ public class CapeRoomSwitchToFullRoomCam : MonoBehaviour
     private void OnTriggerExit2D(Collider2D collider) {
         if(collider.transform.CompareTag("Player") && !_isTriggered) {
             PlayerMovement.obj.Freeze();
-            GameEventManager.obj.IsPauseAllowed = false;
+            GameManager.obj.IsPauseAllowed = false;
             StartCoroutine(SwitchToFullRoomCamera());
             _isTriggered = true;
         }
@@ -38,8 +38,8 @@ public class CapeRoomSwitchToFullRoomCam : MonoBehaviour
 
         yield return new WaitForSeconds(5);
         PlayerMovement.obj.UnFreeze();
-        GameEventManager.obj.CapeRoomZoomCompleted = true;
+        GameManager.obj.CapeRoomZoomCompleted = true;
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
-        GameEventManager.obj.IsPauseAllowed = true;
+        GameManager.obj.IsPauseAllowed = true;
     }
 }

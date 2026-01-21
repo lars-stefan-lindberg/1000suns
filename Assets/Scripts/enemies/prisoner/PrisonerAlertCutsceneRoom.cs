@@ -14,7 +14,7 @@ public class PrisonerAlertCutsceneRoom : MonoBehaviour
     {
         if(other.CompareTag("Player"))
         {
-            if(GameEventManager.obj.PrisonerIntroSeen) {
+            if(GameManager.obj.PrisonerIntroSeen) {
                 babyPrisoner.SetActive(false);
                 prisoner.SetActive(false);
                 lockedDoor.SetActive(false);

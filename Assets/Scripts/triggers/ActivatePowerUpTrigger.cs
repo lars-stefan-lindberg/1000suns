@@ -7,7 +7,7 @@ public class ActivatePowerUpTrigger : MonoBehaviour
     private bool _hasBeenActivated = false;
 
     private void OnTriggerEnter2D(Collider2D collision) {
-        if(!GameEventManager.obj.FirstPowerUpPicked) 
+        if(!GameManager.obj.FirstPowerUpPicked) 
             return;
         if(_hasBeenActivated) {
             return;

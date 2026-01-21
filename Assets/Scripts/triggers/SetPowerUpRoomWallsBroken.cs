@@ -10,7 +10,7 @@ public class SetPowerUpRoomWallsBroken : MonoBehaviour
         }
         if (collision.gameObject.CompareTag("Player"))
         { 
-            GameEventManager.obj.PowerUpRoomCompletedWallBreak = true;
+            GameManager.obj.PowerUpRoomCompletedWallBreak = true;
             _hasBeenActivated = true;
         }
     }   
