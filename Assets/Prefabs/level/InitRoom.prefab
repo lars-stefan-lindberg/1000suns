@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 7238864598812726562}
   - component: {fileID: 5469460401231062988}
   m_Layer: 2
-  m_Name: SceneMetadata
-  m_TagString: SceneMetadata
+  m_Name: InitRoom
+  m_TagString: InitRoom
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -44,4 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 679fd561a32dc42af853e757248b8753, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ReloadOnDeath: 1
+  backgroundScene:
+    _sceneAsset: {fileID: 0}
+    _sceneName: 
+  walkableSurfaceScene:
+    _sceneAsset: {fileID: 0}
+    _sceneName: 

@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -9,8 +8,8 @@ public class TempBgLoaderTrigger : MonoBehaviour
     void OnTriggerEnter2D(Collider2D collision)
     {
         //Get bg scene id from active scene
-        SceneMetadata metadata = LevelManager.obj.GetActiveSceneMetadata();
-        SceneField backgroundScene = metadata.backgroundScene;
+        InitRoom initRoom = LevelManager.obj.GetActiveSceneInitRoomData();
+        SceneField backgroundScene = initRoom.backgroundScene;
         //Check if bg is already loaded and on main camera
         if (backgroundScene != null && !LevelManager.obj.IsBackgroundLayersLoaded(backgroundScene))
         {

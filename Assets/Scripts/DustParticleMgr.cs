@@ -14,7 +14,6 @@ public class DustParticleMgr : MonoBehaviour
         Enabled = true;
     }
 
-    // Update is called once per frame
     void OnDestroy()
     {
         obj = null;
