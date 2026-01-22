@@ -412,7 +412,7 @@ public class LevelManager : MonoBehaviour
     }
 
     private void SetCaveAvatarPosition(Scene scene) {
-        GameEventId sootFreed = new GameEventId();
+        GameEventId sootFreed = ScriptableObject.CreateInstance<GameEventId>();
         sootFreed.id = "cave-3.soot-freed";
         if (scene.name == "C35") {
             CaveAvatar.obj.SetStartingPositionInRoom35();
@@ -451,5 +451,6 @@ public class LevelManager : MonoBehaviour
             CaveAvatar.obj.SetFollowPlayerStartingPosition();
             CaveAvatar.obj.FollowPlayer();
         }
+        Destroy(sootFreed);
     }
 }

@@ -97,7 +97,8 @@ public class UIElement : MonoBehaviour, IMoveHandler, ISelectHandler, IDeselectH
 
     private void PauseAndResetColorChange() {
         _colorChange.Pause();
-        _label.color = _startColor;
+        if(_label != null)
+            _label.color = _startColor;
     }
 
     protected void OnDisable()

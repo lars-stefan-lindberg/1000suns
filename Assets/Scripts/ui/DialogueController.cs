@@ -123,6 +123,16 @@ public class DialogueController : MonoBehaviour
               });
     }
 
+    public void HardStopConversation() {
+        _paragraphs.Clear();
+        _conversationEnded = false;
+        _continueIcon.SetActive(false);
+        _background.localRotation = Quaternion.Euler(90f, 0f, 0f);
+        _isDisplayed = false;
+        _typeWriter.ShowText("");
+        EventSystem.current.SetSelectedGameObject(null);
+    }
+
     private void FinishParagraphEarly() {
         _typeWriter.SkipTypewriter();
         _isTyping = false;

@@ -41,6 +41,13 @@ public class ConversationManager : MonoBehaviour
         }
     }
 
+    public void HardStopConversation() {
+        currentDialogueIndex = conversationList.Count;
+        if(_dialogueController.IsDisplayed()) {
+            _dialogueController.HardStopConversation();
+        }
+    }
+
     private void ShowNextDialogue()
     {
         if (currentDialogueIndex < conversationList.Count)

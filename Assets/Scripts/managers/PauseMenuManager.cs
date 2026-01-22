@@ -12,6 +12,7 @@ public class PauseMenuManager : MonoBehaviour
 {
     public static PauseMenuManager obj;
     public bool isNavigatingToMenu = true;
+    private ISkippable _skippable;
     [SerializeField] private GameObject _pauseMenu;
     [SerializeField] private GameObject _firstSelectedPauseMenuItem;
     [SerializeField] private SceneField _titleScreen;
@@ -25,6 +26,9 @@ public class PauseMenuManager : MonoBehaviour
     [SerializeField] private AutoScrollRect _keyboardConfigAutoScroll;
     [SerializeField] private TextMeshProUGUI _keyboardConfigInstructionsConfirmActionKeyText;
     [SerializeField] private Button _quitButton;
+    [SerializeField] private GameObject _skipCutsceneOption;
+    [SerializeField] private GameObject _retryRoomOption;
+    [SerializeField] private Button _resumeButton;
     [SerializeField] private Button _firstKeyboardMenuButton;
     [SerializeField] private Button _keyboardConfigMenuBackButton;
     [SerializeField] private Button _keyboardConfigMenuButton;
@@ -118,16 +122,40 @@ public class PauseMenuManager : MonoBehaviour
                 _ambienceSlider.value = SoundMixerManager.obj.GetAmbienceVolume();
                 
                 _collectibleCountText.text = CollectibleManager.obj.GetNumberOfCollectiblesPicked().ToString();
+
+                if(_skippable != null) {
+                    _skipCutsceneOption.SetActive(true);
+                    _retryRoomOption.SetActive(false);
+                    Navigation resumeButtonNav = _resumeButton.navigation;
+                    resumeButtonNav.selectOnDown = _skipCutsceneOption.GetComponent<Button>();
+                    _resumeButton.navigation = resumeButtonNav;
+                    Navigation musicSliderNavigation = _musicSlider.navigation;
+                    musicSliderNavigation.selectOnUp = _skipCutsceneOption.GetComponent<Button>();
+                    _musicSlider.navigation = musicSliderNavigation;
+                } else {
+                    _skipCutsceneOption.SetActive(false);
+                    _retryRoomOption.SetActive(true);
+                    Navigation resumeButtonNav = _resumeButton.navigation;
+                    resumeButtonNav.selectOnDown = _retryRoomOption.GetComponent<Button>();
+                    _resumeButton.navigation = resumeButtonNav;
+                    Navigation musicSliderNavigation = _musicSlider.navigation;
+                    musicSliderNavigation.selectOnUp = _retryRoomOption.GetComponent<Button>();
+                    _musicSlider.navigation = musicSliderNavigation;
+                }
                 
                 EventSystem.current.SetSelectedGameObject(_firstSelectedPauseMenuItem);
             }
         }
     }
 
+    public void OnResumeButtonClick() {
+        SoundFXManager.obj.PlayUIConfirm();
+        ResumeGame();
+    }
+
     public void ResumeGame() {
         // Only resume if we're actually paused
         if (_isPaused) {
-            SoundFXManager.obj.PlayUIConfirm();
             // Apply the unmuffled effect - this will immediately restore the volume to the player's preferred level
             StartCoroutine(SoundMixerManager.obj.StartMusicUnmuffle(0.5f));
             
@@ -175,6 +203,35 @@ public class PauseMenuManager : MonoBehaviour
             return null;
         }
         return dialogueObject.GetComponentInChildren<DialogueController>();
+    }
+
+    public void RegisterSkippable(ISkippable skippable)
+    {
+        _skippable = skippable;
+    }
+
+    public void UnregisterSkippable()
+    {
+        _skippable = null;
+    }
+
+    public void OnSkipCutsceneClick() {
+        SoundFXManager.obj.PlayUIConfirm();
+        Time.timeScale = 1f;
+        StartCoroutine(SkipCutsceneCoroutine());
+    }
+
+    private IEnumerator SkipCutsceneCoroutine() {
+        GameManager.obj.IsPauseAllowed = false;
+        SceneFadeManager.obj.StartFadeOut();
+        StartCoroutine(SoundMixerManager.obj.StartMasterFade(1f, 0));
+        while(SceneFadeManager.obj.IsFadingOut) {
+            yield return null;
+        }   
+        yield return new WaitForSeconds(0.3f);
+        _skippable.RequestSkip();
+        ResumeGame();
+        yield return null;
     }
         
 
