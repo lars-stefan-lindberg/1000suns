@@ -16,7 +16,7 @@ public class MothStationManager : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.CompareTag("Player") && !PlayerPowersManager.obj.CanForcePushJump && PlayerManager.obj.GetActivePlayerType() == PlayerManager.PlayerType.HUMAN)
+        if(other.CompareTag("Player") && !PlayerPowersManager.obj.EliCanForcePushJump && PlayerManager.obj.GetActivePlayerType() == PlayerManager.PlayerType.HUMAN)
         {
             StartCoroutine(Activated());
         }
@@ -24,7 +24,7 @@ public class MothStationManager : MonoBehaviour
 
     private IEnumerator Activated() {
         SoundFXManager.obj.PlayPlayerPickupCavePowerup(transform);
-        PlayerPowersManager.obj.CanForcePushJump = true;
+        PlayerPowersManager.obj.EliCanForcePushJump = true;
         Player.obj.FlashOnce();
         MothsManager.obj.SpawnMoths();
         StartCoroutine(FlashTorch());

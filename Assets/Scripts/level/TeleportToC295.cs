@@ -13,7 +13,7 @@ public class TeleportToC295 : MonoBehaviour
 
     void Awake()
     {
-        if(PlayerPowersManager.obj.CanTurnFromBlobToHuman) {
+        if(PlayerPowersManager.obj.EliCanTurnFromBlobToHuman) {
             Destroy(gameObject);
         }
     }

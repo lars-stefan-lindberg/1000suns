@@ -161,7 +161,7 @@ public class C26CutsceneManager : MonoBehaviour
         PlayerBlobMovement.obj.UnFreeze();
         GameManager.obj.IsPauseAllowed = true;
         GameManager.obj.C26CutsceneCompleted = true;
-        PlayerPowersManager.obj.CanTurnFromHumanToBlob = true;
+        PlayerPowersManager.obj.EliCanTurnFromHumanToBlob = true;
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         yield return null;
     }

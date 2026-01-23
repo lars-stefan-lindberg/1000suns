@@ -73,7 +73,7 @@ public class PlayerBlobMovement : MonoBehaviour
         }
         
         if(_movementInput.y > 0 && value.performed) {
-            if(!PlayerPowersManager.obj.CanTurnFromBlobToHuman) {
+            if(!PlayerPowersManager.obj.EliCanTurnFromBlobToHuman) {
                 return;
             }
             if(!IsEnoughSpaceForPlayer()) {
@@ -362,14 +362,14 @@ public class PlayerBlobMovement : MonoBehaviour
 
     public void OnJump(InputAction.CallbackContext context)
     {
-        if(!PlayerPowersManager.obj.BlobCanJump) {
+        if(!PlayerPowersManager.obj.EliBlobCanJump) {
             return;
         }
         if (context.performed)
         {
             if (isGrounded || CanUseCoyote)
                 _jumpToConsume = true;
-            else if(PlayerPowersManager.obj.BlobCanExtraJump && !isGrounded && !_airJumpPerformed)
+            else if(PlayerPowersManager.obj.EliBlobCanExtraJump && !isGrounded && !_airJumpPerformed)
                 _airJumpToConsume = true;
             _jumpHeldInput = true;
             _timeJumpWasPressed = _time;

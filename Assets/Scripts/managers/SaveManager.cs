@@ -54,7 +54,7 @@ public class SaveManager : MonoBehaviour
             }
             
             //Check if player turned to blob, but haven't acquired shapeshifting power yet
-            if (PlayerPowersManager.obj.CanTurnFromHumanToBlob && !PlayerPowersManager.obj.CanTurnFromBlobToHuman)
+            if (PlayerPowersManager.obj.EliCanTurnFromHumanToBlob && !PlayerPowersManager.obj.EliCanTurnFromBlobToHuman)
             {
                 RestoreBlobOnNextScene = true;
             }

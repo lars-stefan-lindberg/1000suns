@@ -6,12 +6,13 @@ public class PlayerPowersManager : MonoBehaviour
 {
     public static PlayerPowersManager obj;
 
-    public bool CanShadowDash {get; set;}
-    public bool CanForcePushJump {get; set;}
-    public bool CanTurnFromHumanToBlob { get; set; }
-    public bool CanTurnFromBlobToHuman { get; set; }
-    public bool BlobCanJump { get; set; }
-    public bool BlobCanExtraJump { get; set; }
+    public bool EliCanShadowDash {get; set;} //Deprecated, but might use in future
+    public bool EliCanForcePushJump {get; set;} //Deprecated, but might use in future
+    public bool EliBlobCanExtraJump { get; set; } //Deprecated, but might use in future
+    public bool EliCanForcePush { get; set; }
+    public bool EliCanTurnFromHumanToBlob { get; set; }
+    public bool EliCanTurnFromBlobToHuman { get; set; }
+    public bool EliBlobCanJump { get; set; }
     public bool CanSwitchBetweenTwinsMerged { get; set; }
     public bool CanSeparate { get; set; }
 
@@ -23,12 +24,10 @@ public class PlayerPowersManager : MonoBehaviour
     {
         ResetGameEvents();
         if(PlayerMovement.obj != null && PlayerMovement.obj.isDevMode) {
-            CanShadowDash = true;
-            //CanForcePushJump = true;
-            CanTurnFromBlobToHuman = true;
-            CanTurnFromHumanToBlob = true;
-            BlobCanJump = true;
-            BlobCanExtraJump = true;
+            EliCanForcePush = true;
+            EliCanTurnFromBlobToHuman = true;
+            EliCanTurnFromHumanToBlob = true;
+            EliBlobCanJump = true;
             CanSwitchBetweenTwinsMerged = true;
             CanSeparate = true;
         }      
@@ -37,24 +36,20 @@ public class PlayerPowersManager : MonoBehaviour
     void OnEnable()
     {
         if(PlayerMovement.obj != null && PlayerMovement.obj.isDevMode) {
-            CanShadowDash = true;
-            //CanForcePushJump = true;
-            CanTurnFromBlobToHuman = true;
-            CanTurnFromHumanToBlob = true;
-            BlobCanJump = true;
-            BlobCanExtraJump = true;
+            EliCanForcePush = true;
+            EliCanTurnFromBlobToHuman = true;
+            EliCanTurnFromHumanToBlob = true;
+            EliBlobCanJump = true;
             CanSwitchBetweenTwinsMerged = true;
             CanSeparate = true;
         }     
     }
 
     public void ResetGameEvents() {
-        CanShadowDash = false;
-        CanForcePushJump = false;
-        CanTurnFromHumanToBlob = false;
-        CanTurnFromBlobToHuman = false;
-        BlobCanJump = false;
-        BlobCanExtraJump = false;
+        EliCanForcePush = false;
+        EliCanTurnFromHumanToBlob = false;
+        EliCanTurnFromBlobToHuman = false;
+        EliBlobCanJump = false;
         CanSwitchBetweenTwinsMerged = false;
         CanSeparate = false;
     }
@@ -69,7 +64,7 @@ public class PlayerPowersManager : MonoBehaviour
             if (prop.PropertyType == typeof(bool) && prop.CanRead && prop.CanWrite)
             {
                 var value = (bool)(prop.GetValue(this) ?? false);
-                if (value && prop.Name != nameof(CanForcePushJump))
+                if (value && prop.Name != nameof(EliCanForcePushJump))
                 {
                     unlocked.Add(prop.Name);
                 }

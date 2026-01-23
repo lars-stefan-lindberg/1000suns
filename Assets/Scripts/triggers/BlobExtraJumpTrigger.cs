@@ -12,7 +12,7 @@ public class BlobExtraJumpTrigger : MonoBehaviour
     private LightSprite2DFlicker _lightSprite2DFlicker;
 
     void Awake() {
-        if(PlayerPowersManager.obj.BlobCanExtraJump) {
+        if(PlayerPowersManager.obj.EliBlobCanExtraJump) {
             Destroy(gameObject);
             return;
         }
@@ -87,7 +87,7 @@ public class BlobExtraJumpTrigger : MonoBehaviour
 
         yield return new WaitForSeconds(1.5f);
 
-        PlayerPowersManager.obj.BlobCanExtraJump = true;
+        PlayerPowersManager.obj.EliBlobCanExtraJump = true;
         PlayerBlobMovement.obj.UnFreeze();
         GameManager.obj.IsPauseAllowed = true;
         

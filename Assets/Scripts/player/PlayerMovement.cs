@@ -480,7 +480,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         //     else if(_movementInput.y >= 0)
         //         CancelPowerJumpCharge();
         // } else {
-        if(PlayerPowersManager.obj.CanTurnFromHumanToBlob) {
+        if(PlayerPowersManager.obj.EliCanTurnFromHumanToBlob) {
             if(_movementInput.y < 0 && value.performed) {
                 if(isTransformingToBlob)
                     return;
@@ -630,7 +630,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             }
             if (!PowerJumpMaxCharged)
             {
-                if(PlayerPowersManager.obj.CanForcePushJump && _movementInput.x != 0 && PlayerPush.obj.IsFullyCharged() && (isGrounded || CanUseCoyote)) {
+                if(PlayerPowersManager.obj.EliCanForcePushJump && _movementInput.x != 0 && PlayerPush.obj.IsFullyCharged() && (isGrounded || CanUseCoyote)) {
                     _jumpToConsume = true;
                     _isDashing = false;
                     ExecuteForcePushJump();

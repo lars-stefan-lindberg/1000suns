@@ -83,7 +83,7 @@ public class TeleportToC29 : MonoBehaviour
         }
         _tutorialCanvas.SetActive(false);
         Time.timeScale = 1;
-        PlayerPowersManager.obj.CanTurnFromBlobToHuman = true;
+        PlayerPowersManager.obj.EliCanTurnFromBlobToHuman = true;
 
         PlayerMovement.obj.UnFreeze();
 

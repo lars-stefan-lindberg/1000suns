@@ -172,7 +172,7 @@ public class LevelManager : MonoBehaviour
 
         if(Player.obj != null)
             Player.obj.SetHasPowerUp(false);
-        PlayerPowersManager.obj.CanForcePushJump = false;
+        PlayerPowersManager.obj.EliCanForcePushJump = false;
         //MothsManager.obj.DestroyMoths();
         
         if(PlayerManager.obj.IsSeparated) {
