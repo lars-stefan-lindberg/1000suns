@@ -59,7 +59,7 @@ public class TeleportToC29 : MonoBehaviour
         PlayerMovement.obj.isForcePushJumping = false;
         PlayerMovement.obj.jumpedWhileForcePushJumping = false;
         PlayerMovement.obj.CancelJumping();
-        Player.obj.SetHasCape(true);
+        Player.obj.SetAnimatorLayerAndHasCape(true);
 
         Player.obj.PlayGetUpAnimation();
 

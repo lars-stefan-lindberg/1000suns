@@ -246,7 +246,7 @@ public class MainMenuManager : MonoBehaviour
         GameManager.obj.IsPauseAllowed = false;
 
         //Reset player properties
-        Player.obj.SetHasCape(false);
+        Player.obj.SetAnimatorLayerAndHasCape(false);
         PlayerPowersManager.obj.ResetGameEvents();
         CollectibleManager.obj.ResetCollectibles();
         PlayerStatsManager.obj.numberOfDeaths = 0;
@@ -294,9 +294,9 @@ public class MainMenuManager : MonoBehaviour
         GameManager.obj.IsPauseAllowed = false;
 
         //Reset player properties
-        Player.obj.SetHasCape(true);
+        Player.obj.SetAnimatorLayerAndHasCape(true);
         Player.obj.gameObject.SetActive(false);
-        ShadowTwinPlayer.obj.SetHasCrown(true);
+        ShadowTwinPlayer.obj.SetAnimatorLayerAndHasCrown(true);
         ShadowTwinPlayer.obj.gameObject.SetActive(false);
         PlayerPowersManager.obj.ResetGameEvents();
         PlayerPowersManager.obj.CanSeparate = true;

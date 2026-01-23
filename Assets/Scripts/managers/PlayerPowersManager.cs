@@ -13,6 +13,7 @@ public class PlayerPowersManager : MonoBehaviour
     public bool EliCanTurnFromHumanToBlob { get; set; }
     public bool EliCanTurnFromBlobToHuman { get; set; }
     public bool EliBlobCanJump { get; set; }
+    public bool DeeCanForcePull { get; set; }
     public bool CanSwitchBetweenTwinsMerged { get; set; }
     public bool CanSeparate { get; set; }
 
@@ -28,6 +29,7 @@ public class PlayerPowersManager : MonoBehaviour
             EliCanTurnFromBlobToHuman = true;
             EliCanTurnFromHumanToBlob = true;
             EliBlobCanJump = true;
+            DeeCanForcePull = true;
             CanSwitchBetweenTwinsMerged = true;
             CanSeparate = true;
         }      
@@ -40,6 +42,7 @@ public class PlayerPowersManager : MonoBehaviour
             EliCanTurnFromBlobToHuman = true;
             EliCanTurnFromHumanToBlob = true;
             EliBlobCanJump = true;
+            DeeCanForcePull = true;
             CanSwitchBetweenTwinsMerged = true;
             CanSeparate = true;
         }     
@@ -50,6 +53,7 @@ public class PlayerPowersManager : MonoBehaviour
         EliCanTurnFromHumanToBlob = false;
         EliCanTurnFromBlobToHuman = false;
         EliBlobCanJump = false;
+        DeeCanForcePull = false;
         CanSwitchBetweenTwinsMerged = false;
         CanSeparate = false;
     }

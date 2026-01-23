@@ -56,7 +56,7 @@ public class IntroController : MonoBehaviour
         PlayerMovement.obj.CancelJumping();
         PlayerMovement.obj.Freeze();
         PlayerMovement.obj.spriteRenderer.flipX = false;
-        Player.obj.SetHasCape(false);
+        Player.obj.SetAnimatorLayerAndHasCape(false);
 
         AsyncOperation loadCaveOperation = SceneManager.LoadSceneAsync(_caveRoom1, LoadSceneMode.Additive);
         while(!loadCaveOperation.isDone) {

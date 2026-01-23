@@ -10,7 +10,7 @@ public class Player : MonoBehaviour
     public bool hasPowerUp = false;
     public float spawnFreezeDuration = 1.4f;
     public Surface surface = Surface.Rock;
-    public bool hasCape = false;
+    private bool _hasCape = false;
     public float _forcePushFlashSpeed = 0.17f;
 
     private Animator _animator;
@@ -33,7 +33,11 @@ public class Player : MonoBehaviour
     void OnEnable()
     {
         _animator = GetComponentInChildren<Animator>();
-        SetHasCape(hasCape);
+        SetAnimatorLayerAndHasCape(_hasCape);
+    }
+
+    public bool GetHasCape() {
+        return _hasCape;
     }
 
     public void ResetAnimator() {
@@ -113,14 +117,14 @@ public class Player : MonoBehaviour
         _animator.SetTrigger("spawn");
     }
 
-    public void SetHasCape(bool _hasCape) {
-        if(_hasCape && hasPowerUp)
+    public void SetAnimatorLayerAndHasCape(bool hasCape) {
+        if(hasCape && hasPowerUp)
             _animator.SetLayerWeight(2, 1);
-        else if(_hasCape)
+        else if(hasCape)
             _animator.SetLayerWeight(1, 1);
         else
             _animator.SetLayerWeight(1, 0);
-        hasCape = _hasCape;
+        _hasCape = hasCape;
     }
 
     public void SetBlackCape() {

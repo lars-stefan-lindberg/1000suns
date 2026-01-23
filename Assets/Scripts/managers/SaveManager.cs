@@ -39,7 +39,8 @@ public class SaveManager : MonoBehaviour
             RestoreAudioOnNextScene = true; // consumed by LevelManager after next scene load
             PlayerStatsManager.obj.numberOfDeaths = data.playerDeaths;
             PlayerStatsManager.obj.SetElapsedTime(data.timePlayed);
-            Player.obj.SetHasCape(data.hasCape);
+            Player.obj.SetAnimatorLayerAndHasCape(data.hasCape);
+            ShadowTwinPlayer.obj.SetAnimatorLayerAndHasCrown(data.hasCrown);
 
             // Apply saved game events back into the manager
             if (GameManager.obj != null)
@@ -152,7 +153,8 @@ public class SaveManager : MonoBehaviour
         data.levelId = levelId;
         data.playerDeaths = PlayerStatsManager.obj.numberOfDeaths;
         data.timePlayed = PlayerStatsManager.obj.GetElapsedTime();
-        data.hasCape = Player.obj.hasCape;
+        data.hasCape = Player.obj.GetHasCape();
+        data.hasCrown = ShadowTwinPlayer.obj.GetHasCrown();
         data.playerPowers = PlayerPowersManager.obj != null ? PlayerPowersManager.obj.GetUnlockedPowers() : new List<string>();
         data.completedEvents = GameManager.obj != null ? GameManager.obj.GetCompletedEvents() : new List<string>();
         data.completedLevels = LevelManager.obj != null ? LevelManager.obj.ExportCompletedLevels() : new List<string>();

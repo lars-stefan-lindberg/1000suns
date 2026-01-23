@@ -87,7 +87,7 @@ public class ShadowTwinPull : MonoBehaviour
 
     public void OnShoot(InputAction.CallbackContext context)
     {
-        if(ShadowTwinPlayer.obj.hasCrown && !_isPullDisabled) {
+        if(PlayerPowersManager.obj.DeeCanForcePull && !_isPullDisabled) {
             if (context.performed)
             {                
                 Pull();

@@ -251,10 +251,10 @@ public class LevelManager : MonoBehaviour
             Player.obj.FadeInPlayerLight();
 
             if(Player.obj != null) {
-                if(Player.obj.hasCape || PlayerMovement.obj.isDevMode) {
-                    Player.obj.SetHasCape(true);
+                if(Player.obj.GetHasCape() || PlayerMovement.obj.isDevMode) {
+                    Player.obj.SetAnimatorLayerAndHasCape(true);
                 } else {
-                    Player.obj.SetHasCape(false);
+                    Player.obj.SetAnimatorLayerAndHasCape(false);
                 }
             }
         }
@@ -265,6 +265,14 @@ public class LevelManager : MonoBehaviour
             ShadowTwinMovement.obj.isTransforming = false;
             ShadowTwinMovement.obj.CancelJumping();
             ShadowTwinPlayer.obj.FadeInPlayerLight();
+
+            if(ShadowTwinPlayer.obj != null) {
+                if(ShadowTwinPlayer.obj.GetHasCrown() || PlayerMovement.obj.isDevMode) { //TODO: refactor dev mode to manager instead of playermovement
+                    ShadowTwinPlayer.obj.SetAnimatorLayerAndHasCrown(true);
+                } else {
+                    ShadowTwinPlayer.obj.SetAnimatorLayerAndHasCrown(false);
+                }
+            }
         }
     }
 

@@ -10,7 +10,7 @@ public class ShadowTwinPlayer : MonoBehaviour
     public bool hasPowerUp = false;
     public float spawnFreezeDuration = 1.4f;
     public Surface surface = Surface.Rock;
-    public bool hasCrown = false;
+    private bool _hasCrown = false;
     public float _forcePushFlashSpeed = 0.17f;
     private float _defaultGravity;
 
@@ -35,7 +35,11 @@ public class ShadowTwinPlayer : MonoBehaviour
     void OnEnable()
     {
         _animator = GetComponentInChildren<Animator>();
-        SetHasCrown(hasCrown);
+        SetAnimatorLayerAndHasCrown(_hasCrown);
+    }
+
+    public bool GetHasCrown() {
+        return _hasCrown;
     }
 
     public void ResetAnimator() {
@@ -112,14 +116,14 @@ public class ShadowTwinPlayer : MonoBehaviour
         _animator.SetTrigger("spawn");
     }
 
-    public void SetHasCrown(bool _hasCrown) {
-        if(_hasCrown && hasPowerUp)
+    public void SetAnimatorLayerAndHasCrown(bool hasCrown) {
+        if(hasCrown && hasPowerUp)
             _animator.SetLayerWeight(2, 1);
-        else if(_hasCrown)
+        else if(hasCrown)
             _animator.SetLayerWeight(1, 1);
         else
             _animator.SetLayerWeight(1, 0);
-        hasCrown = _hasCrown;
+        _hasCrown = hasCrown;
     }
 
     public void SetBlackCape() {

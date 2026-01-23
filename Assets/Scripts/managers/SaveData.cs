@@ -6,13 +6,12 @@ public class SaveData
     public string levelId;
     public int playerDeaths;
     public float timePlayed; // in seconds
-    public bool hasCape; //TODO: refactor to player power
+    public bool hasCape;
+    public bool hasCrown;
 
-    public List<string> playerPowers = new();  //TODO: Go through and clean up
-    public List<string> completedEvents = new();
-    // Levels that have been completed. We store as a list since JsonUtility can't serialize Dictionary.
-    public List<string> completedLevels = new();
-    // Collectible IDs that have been permanently picked by the player
+    public List<string> playerPowers = new();
+    public List<string> completedEvents = new(); // Levels that have been completed. We store as a list since JsonUtility can't serialize Dictionary.
+    public List<string> completedLevels = new(); // Collectible IDs that have been permanently picked by the player
     public List<string> pickedCollectibles = new();
     public List<string> followingCollectibles = new();
 

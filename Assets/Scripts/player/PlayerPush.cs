@@ -49,7 +49,7 @@ public class PlayerPush : MonoBehaviour
 
     public void OnShoot(InputAction.CallbackContext context)
     {
-        if(Player.obj.hasCape && !_isChargeDisabled) {
+        if(PlayerPowersManager.obj.EliCanForcePush && !_isChargeDisabled) {
             if (context.performed)
             {
                 if (defaultPower < StaminaMgr.obj.GetCurrentStamina()) {
