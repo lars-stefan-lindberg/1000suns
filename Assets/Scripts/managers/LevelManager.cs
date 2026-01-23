@@ -197,17 +197,6 @@ public class LevelManager : MonoBehaviour
         //Load any potential collectibles
         CollectibleManager.obj.MaybeLoadCollectible(scene.name);
 
-        // If we just loaded a game from a save, restore global lighting darkness color
-        if (SaveManager.obj != null && SaveManager.obj.RestoreLightingOnNextScene) {
-            var data = SaveManager.obj.LastLoadedSaveData;
-            if (data != null && !string.IsNullOrEmpty(data.darknessColorHex) && LightingManager2D.Get() != null && LightingManager2D.Get().profile != null) {
-                if (ColorUtility.TryParseHtmlString(data.darknessColorHex, out var parsed)) {
-                    LightingManager2D.Get().profile.DarknessColor = parsed;
-                }
-            }
-            SaveManager.obj.ConsumeRestoreLightingFlag();
-        }
-
         // If we just loaded a game from a save, restore audio state (music + ambience)
         if (SaveManager.obj != null && SaveManager.obj.RestoreAudioOnNextScene) {
             var data = SaveManager.obj.LastLoadedSaveData;

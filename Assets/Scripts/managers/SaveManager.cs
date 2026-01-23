@@ -1,7 +1,6 @@
 using System.IO;
 using UnityEngine;
 using System.Collections.Generic;
-using FunkyCode;
 
 public class SaveManager : MonoBehaviour
 {
@@ -11,9 +10,7 @@ public class SaveManager : MonoBehaviour
     public SaveData LastLoadedSaveData { get; private set; }
     public bool RestoreAudioOnNextScene { get; private set; }
     public bool RestoreBlobOnNextScene { get; private set; }
-    public bool RestoreLightingOnNextScene { get; private set; }
     public bool RestoreFollowingCreaturesOnNextScene { get; private set; }
-    private string lastSavedDarknessColorHex;
 
     void Awake() {
         obj = this;
@@ -22,13 +19,10 @@ public class SaveManager : MonoBehaviour
         obj = null;
     }
 
-    public void SaveGame(string levelId, string darknessColorHex = null, int slot = 1)
+    public void SaveGame(string levelId, int slot = 1)
     {
         string path = GetSavePath(slot);
-        SaveData data = BuildSaveData(levelId, darknessColorHex);
-        if(darknessColorHex != null) {
-            lastSavedDarknessColorHex = "#" + darknessColorHex;
-        }
+        SaveData data = BuildSaveData(levelId);
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(path, json);
         Debug.Log($"Game saved to slot {slot}: {path}");
@@ -43,8 +37,6 @@ public class SaveManager : MonoBehaviour
             var data = JsonUtility.FromJson<SaveData>(json);
             LastLoadedSaveData = data;
             RestoreAudioOnNextScene = true; // consumed by LevelManager after next scene load
-            RestoreLightingOnNextScene = true;
-            lastSavedDarknessColorHex = data.darknessColorHex;
             PlayerStatsManager.obj.numberOfDeaths = data.playerDeaths;
             PlayerStatsManager.obj.SetElapsedTime(data.timePlayed);
             Player.obj.SetHasCape(data.hasCape);
@@ -155,7 +147,7 @@ public class SaveManager : MonoBehaviour
         return Application.persistentDataPath + $"/save_{slot}.json";
     }
 
-    private SaveData BuildSaveData(string levelId, string darknessColorHex) {
+    private SaveData BuildSaveData(string levelId) {
         SaveData data = new SaveData();
         data.levelId = levelId;
         data.playerDeaths = PlayerStatsManager.obj.numberOfDeaths;
@@ -174,14 +166,6 @@ public class SaveManager : MonoBehaviour
         if (AmbienceManager.obj != null)
             data.currentAmbienceId = AmbienceManager.obj.GetCurrentAmbienceId();
 
-        // Capture global darkness color (as RGBA hex)
-        if (darknessColorHex != null)
-        {
-            data.darknessColorHex = "#" + darknessColorHex;
-        } else {
-            data.darknessColorHex = lastSavedDarknessColorHex;
-        }
-
         return data;
     }
 
@@ -193,11 +177,6 @@ public class SaveManager : MonoBehaviour
     // Called by LevelManager after it restores blob
     public void ConsumeRestoreBlobFlag() {
         RestoreBlobOnNextScene = false;
-    }
-
-    // Called by LevelManager after it restores lighting
-    public void ConsumeRestoreLightingFlag() {
-        RestoreLightingOnNextScene = false;
     }
 
     public void ConsumeRestoreFollowingCreaturesFlag() {

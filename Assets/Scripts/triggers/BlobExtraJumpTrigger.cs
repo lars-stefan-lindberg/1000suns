@@ -104,7 +104,6 @@ public class BlobExtraJumpTrigger : MonoBehaviour
     }
 
     private IEnumerator IncreaseDarkness() {
-        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name, ColorUtility.ToHtmlStringRGBA(new Color(0.015f, 0.015f, 0.015f, 1f)));
         yield return new WaitForSeconds(2);
         Color startDarkness = LightingManager2D.Get().profile.DarknessColor;
         Color targetDarkness = new Color(0.015f, 0.015f, 0.015f, 1f);

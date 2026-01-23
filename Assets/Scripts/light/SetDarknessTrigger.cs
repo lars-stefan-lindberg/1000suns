@@ -15,7 +15,6 @@ public class SetDarknessTrigger : MonoBehaviour
         if(other.CompareTag("Player")) {
             if(LightingManager2D.Get().profile.DarknessColor != _darknessColor) {
                 IsFading = true;
-                SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name, ColorUtility.ToHtmlStringRGBA(_darknessColor));
             }
         }
     }

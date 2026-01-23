@@ -107,7 +107,7 @@ public class FirstRoomLoader : MonoBehaviour
 
         PlayerMovement.obj.UnFreeze();
         GameManager.obj.IsPauseAllowed = true;
-        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name, ColorUtility.ToHtmlStringRGBA(new Color(0.33f, 0.33f, 0.33f, 1f)));
+        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
 
         yield return null;
     }
