@@ -1,6 +1,7 @@
 using System.IO;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 public class SaveManager : MonoBehaviour
 {
@@ -45,7 +46,9 @@ public class SaveManager : MonoBehaviour
             // Apply saved game events back into the manager
             if (GameManager.obj != null)
             {
-                GameManager.obj.ApplyCompletedEvents(data?.completedEvents);
+                GameProgress gameProgress = new GameProgress();
+                gameProgress.ImportCompletedEvents(data?.completedEvents);
+                GameManager.obj.LoadProgress(gameProgress);
             }
 
             // Apply saved player powers back into the manager
@@ -156,8 +159,10 @@ public class SaveManager : MonoBehaviour
         data.hasCape = Player.obj.GetHasCape();
         data.hasCrown = ShadowTwinPlayer.obj.GetHasCrown();
         data.playerPowers = PlayerPowersManager.obj != null ? PlayerPowersManager.obj.GetUnlockedPowers() : new List<string>();
-        data.completedEvents = GameManager.obj != null ? GameManager.obj.GetCompletedEvents() : new List<string>();
+        data.completedEvents = GameManager.obj != null ? GameManager.obj.GetProgressForSave().GetCompletedEventIds().ToList() : new List<string>();
         data.completedLevels = LevelManager.obj != null ? LevelManager.obj.ExportCompletedLevels() : new List<string>();
+        data.background = LevelManager.obj != null ? LevelManager.obj.GetActiveSceneInitRoomData().backgroundScene : "";
+        data.surface = LevelManager.obj != null ? LevelManager.obj.GetActiveSceneInitRoomData().walkableSurfaceScene : "";
         data.pickedCollectibles = CollectibleManager.obj != null ? CollectibleManager.obj.ExportPickedCollectibles() : new List<string>();
         data.followingCollectibles = CollectibleManager.obj != null ? CollectibleManager.obj.ExportFollowingCollectibles() : new List<string>();
         data.lastSaved = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");

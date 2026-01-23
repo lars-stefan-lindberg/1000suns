@@ -22,31 +22,35 @@ public class WalkableSurfacesManager : MonoBehaviour
     }
 
     public bool IsSurfaceLoaded(SceneField walkableSurfaceScene) {
-        MaybeRemoveUnusedSurfaces(walkableSurfaceScene);
+        return IsSurfaceLoaded(walkableSurfaceScene.SceneName);
+    }
 
-        if(_loadedSurfaces.Contains(walkableSurfaceScene.SceneName)) {
-            Debug.Log("Surface already loaded: " + walkableSurfaceScene.SceneName);
+    public bool IsSurfaceLoaded(string walkableSurfaceName) {
+        MaybeRemoveUnusedSurfaces(walkableSurfaceName);
+
+        if(_loadedSurfaces.Contains(walkableSurfaceName)) {
+            Debug.Log("Surface already loaded: " + walkableSurfaceName);
             return true;
         }
         
-        Debug.Log("Surface not loaded: " + walkableSurfaceScene.SceneName);
+        Debug.Log("Surface not loaded: " + walkableSurfaceName);
         return false;
     }
 
-    private SceneField _lastCheckedSceneField;
+    private string _lastCheckedSceneName;
     private int _consequetiveChecks = 0;
     private readonly int _maxConsequetiveChecks = 5;
-    private void MaybeRemoveUnusedSurfaces(SceneField sceneField) {
-        _lastCheckedSceneField ??= sceneField;
+    private void MaybeRemoveUnusedSurfaces(string sceneName) {
+        _lastCheckedSceneName ??= sceneName;
 
-        if(sceneField.SceneName == _lastCheckedSceneField.SceneName) {
+        if(sceneName == _lastCheckedSceneName) {
             _consequetiveChecks++;
             Debug.Log("Consequetive checks: " + _consequetiveChecks);
             if(_consequetiveChecks > _maxConsequetiveChecks) {
                 WalkableSurface[] walkableSurfaces = GetComponentsInChildren<WalkableSurface>();
                 if(walkableSurfaces.Length > 1) {
                     foreach(WalkableSurface walkableSurface in walkableSurfaces) {
-                        if(walkableSurface.walkableSurfaceScene.SceneName != sceneField.SceneName) {
+                        if(walkableSurface.walkableSurfaceScene.SceneName != sceneName) {
                             RemoveWalkableSurface(walkableSurface.walkableSurfaceScene);
                         }
                     }
@@ -54,22 +58,26 @@ public class WalkableSurfacesManager : MonoBehaviour
             }
         } else {
             _consequetiveChecks = 0;
-            _lastCheckedSceneField = sceneField;
+            _lastCheckedSceneName = sceneName;
         }
     }
 
     public IEnumerator AddWalkableSurface(SceneField walkableSurfaceSceneField) {
-        if(IsSurfaceLoaded(walkableSurfaceSceneField))
+        yield return StartCoroutine(AddWalkableSurface(walkableSurfaceSceneField.SceneName));
+    }
+
+    public IEnumerator AddWalkableSurface(string walkableSurfaceName) {
+        if(IsSurfaceLoaded(walkableSurfaceName))
             yield break;
 
-        _loadedSurfaces.Add(walkableSurfaceSceneField.SceneName);
-        AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(walkableSurfaceSceneField.SceneName, LoadSceneMode.Additive);
+        _loadedSurfaces.Add(walkableSurfaceName);
+        AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(walkableSurfaceName, LoadSceneMode.Additive);
         while(!asyncOperation.isDone) {
             yield return null;
         }
-        GameObject walkableSurface = SceneManager.GetSceneByName(walkableSurfaceSceneField.SceneName).GetRootGameObjects().First(gameObject => gameObject.CompareTag("WalkableSurface"));
+        GameObject walkableSurface = SceneManager.GetSceneByName(walkableSurfaceName).GetRootGameObjects().First(gameObject => gameObject.CompareTag("WalkableSurface"));
         walkableSurface.transform.parent = transform;
-        SceneManager.UnloadSceneAsync(walkableSurfaceSceneField.SceneName);
+        SceneManager.UnloadSceneAsync(walkableSurfaceName);
 
         yield return null;
     }

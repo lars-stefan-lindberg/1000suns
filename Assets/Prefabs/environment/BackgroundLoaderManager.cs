@@ -24,15 +24,19 @@ public class BackgroundLoaderManager : MonoBehaviour
     }
 
     public IEnumerator LoadAndSetBackground(SceneField backgroundScene) {
-        AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(backgroundScene.SceneName, LoadSceneMode.Additive);
+        yield return StartCoroutine(LoadAndSetBackground(backgroundScene.SceneName));
+    }
+
+    public IEnumerator LoadAndSetBackground(string backgroundScene) {
+        AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(backgroundScene, LoadSceneMode.Additive);
         while(!asyncOperation.isDone) {
             yield return null;
         }
-        GameObject backgroundGameObject = SceneManager.GetSceneByName(backgroundScene.SceneName).GetRootGameObjects().First(gameObject => gameObject.CompareTag("BackgroundLayers"));
+        GameObject backgroundGameObject = SceneManager.GetSceneByName(backgroundScene).GetRootGameObjects().First(gameObject => gameObject.CompareTag("BackgroundLayers"));
         backgroundGameObject.transform.parent = Camera.main.gameObject.transform;
         backgroundGameObject.GetComponent<BackgroundLayersManager>().isActive = true;
 
-        SceneManager.UnloadSceneAsync(backgroundScene.SceneName);
+        SceneManager.UnloadSceneAsync(backgroundScene);
         
         yield return null;
     }

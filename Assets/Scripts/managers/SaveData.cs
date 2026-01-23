@@ -8,6 +8,8 @@ public class SaveData
     public float timePlayed; // in seconds
     public bool hasCape;
     public bool hasCrown;
+    public string background;
+    public string surface;
 
     public List<string> playerPowers = new();
     public List<string> completedEvents = new(); // Levels that have been completed. We store as a list since JsonUtility can't serialize Dictionary.

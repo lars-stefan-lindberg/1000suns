@@ -39,7 +39,11 @@ public class LevelManager : MonoBehaviour
     public InitRoom GetActiveSceneInitRoomData() {
         Scene activeScene = SceneManager.GetActiveScene();
         GameObject initRoomObject = activeScene.GetRootGameObjects().FirstOrDefault(gameObject => gameObject.CompareTag("InitRoom"));
-        return initRoomObject?.GetComponent<InitRoom>();
+        if(initRoomObject == null) {
+            Debug.LogWarning("Scene " + activeScene.name + " does not have any InitRoom data.");
+            return null;
+        }
+        return initRoomObject.GetComponent<InitRoom>();
     }
 
     private IEnumerator LoadSceneDelayedCoroutine(string sceneName) {

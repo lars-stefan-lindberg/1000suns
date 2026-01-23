@@ -35,6 +35,17 @@ public class GameProgress
         completedEventSet = null;
     }
 
+    public void ImportCompletedEvents(List<string> events)
+    {
+        completedEventIds = events;
+        if(completedEventSet == null)
+            EnsureSet();
+        else {
+            completedEventSet.Clear();
+            completedEventSet.UnionWith(completedEventIds);
+        }
+    }
+
     public IReadOnlyList<string> GetCompletedEventIds()
     {
         return completedEventIds;

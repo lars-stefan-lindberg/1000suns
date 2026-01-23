@@ -7,6 +7,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
+using System.Data.Common;
 
 public class MainMenuManager : MonoBehaviour
 {
@@ -385,6 +386,14 @@ public class MainMenuManager : MonoBehaviour
         }
         GameManager.obj.IsPauseAllowed = false;
 
+        Player.obj.gameObject.SetActive(false);
+        ShadowTwinPlayer.obj.gameObject.SetActive(false);
+        PlayerManager.obj.IsSeparated = false;
+        PlayerManager.obj.IsCoopActive = false;
+
+        //TODO: Set active player depending on cave timeline
+        Player.obj.gameObject.SetActive(true);
+
         SaveData saveData = SaveManager.obj.LoadGame();
         if(saveData == null) {
             Debug.LogWarning("No save data found. Starting new game.");
@@ -394,7 +403,22 @@ public class MainMenuManager : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
         SoundMixerManager.obj.SetMasterVolume(masterVolume);
+        
+        if(saveData.background != null && saveData.background != "") {
+            yield return StartCoroutine(BackgroundLoaderManager.obj.LoadAndSetBackground(saveData.background));
+        } else {
+            Debug.LogWarning("No background found in save data.");
+        }
+
+        if(saveData.surface != null && saveData.surface != "") {
+            yield return StartCoroutine(WalkableSurfacesManager.obj.AddWalkableSurface(saveData.surface));
+        } else {
+            Debug.LogWarning("No surface found in save data.");
+        }
+
         LevelManager.obj.LoadSceneDelayed(saveData.levelId);
+
+        GameManager.obj.IsPauseAllowed = true;
 
         SceneManager.UnloadSceneAsync(_titleScreen.SceneName);
     }

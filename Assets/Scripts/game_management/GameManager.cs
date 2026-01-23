@@ -1,6 +1,4 @@
 using UnityEngine;
-using System.Collections.Generic;
-using System.Reflection;
 
 public class GameManager : MonoBehaviour
 {
@@ -90,52 +88,6 @@ public class GameManager : MonoBehaviour
 
     public void SetCaveTimeline(CaveTimeline caveTimeline) {
         _caveTimeline = caveTimeline;
-    }
-
-    // Returns a list of event keys (by property name) that have occurred
-    public List<string> GetCompletedEvents()
-    {
-        var completed = new List<string>();
-        var props = typeof(GameManager).GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
-        foreach (var prop in props)
-        {
-            // Only persist bool properties that are both readable and writable, excluding IsPauseAllowed
-            if (prop.PropertyType == typeof(bool) && prop.CanRead && prop.CanWrite && prop.Name != nameof(IsPauseAllowed))
-            {
-                var value = (bool)(prop.GetValue(this) ?? false);
-                if (value)
-                {
-                    completed.Add(prop.Name);
-                }
-            }
-        }
-        return completed;
-    }
-
-    // Applies a list of event keys (by property name) to set occurred events
-    public void ApplyCompletedEvents(List<string> events)
-    {
-        // Start from a clean slate
-        Progress.Clear();
-
-        if (events == null || events.Count == 0)
-        {
-            return;
-        }
-
-        var toSet = new HashSet<string>(events);
-        var props = typeof(GameManager).GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
-        foreach (var prop in props)
-        {
-            // Only apply to bool properties that are both readable and writable, excluding IsPauseAllowed
-            if (prop.PropertyType == typeof(bool) && prop.CanWrite && prop.CanRead && prop.Name != nameof(IsPauseAllowed))
-            {
-                if (toSet.Contains(prop.Name))
-                {
-                    prop.SetValue(this, true);
-                }
-            }
-        }
     }
 
     void OnDestroy() {
