@@ -65,7 +65,6 @@ public class C1DialogueTrigger : MonoBehaviour, ISkippable
 
     private void OnConversationCompleted() {
         PlayerMovement.obj.UnFreeze();
-        _caveAvatarRootsManager.Stop();
         _conversationManager.OnConversationEnd -= OnConversationCompleted;
         _nextConversationManager.enabled = true;
         PauseMenuManager.obj.UnregisterSkippable();

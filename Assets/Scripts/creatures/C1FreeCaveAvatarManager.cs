@@ -7,6 +7,7 @@ public class C1FreeCaveAvatarManager : MonoBehaviour, ISkippable
     [SerializeField] private Transform _finalCaveAvatarFlyPosition;
     [SerializeField] private ConversationManager _conversationManager;
     [SerializeField] private GameObject _caveRootsTrap;
+    [SerializeField] private CaveAvatarRootsManager _caveAvatarRootsManager;
     private BoxCollider2D _collider;
     private Coroutine _cutsceneCoroutine;
 
@@ -53,6 +54,7 @@ public class C1FreeCaveAvatarManager : MonoBehaviour, ISkippable
 
     private IEnumerator StartCutscene() {
         PauseMenuManager.obj.RegisterSkippable(this);
+        _caveAvatarRootsManager.Stop();
         PlayerMovement.obj.Freeze();
 
         yield return new WaitForSeconds(1f);

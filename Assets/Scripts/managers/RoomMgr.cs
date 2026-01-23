@@ -2,18 +2,20 @@ using UnityEngine;
 using UnityEngine.Events;
 using FunkyCode;
 using System.Collections;
+using System.Collections.Generic;
 
 //Standard room size: X: 40, Y: 22.5
 public class RoomMgr : MonoBehaviour
 {
-    [SerializeField] private GameObject roomObjectsToLoad;
+    [SerializeField] private List<GameObject> roomObjectsToLoad;
     [SerializeField] private Color _darknessColor;
     public UnityEvent OnRoomEnter;
     public UnityEvent OnRoomExit;
     private float _darknessFadeSpeed = 9f;
     private Coroutine _fadeDarknessCoroutine;
     private Coroutine _unloadRoomObjectsCoroutine;
-    private float _roomTransitionDelay = 0.3f;
+    private float _roomTransitionDelay = 1.1f;  //Need to give time for room transition, but also retry room
+    private float _darknessIncreaseDelay = 0.3f;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -22,11 +24,13 @@ public class RoomMgr : MonoBehaviour
             if(_unloadRoomObjectsCoroutine != null) {
                 StopCoroutine(_unloadRoomObjectsCoroutine);
             }
-            roomObjectsToLoad.SetActive(true);
+            foreach (GameObject roomObject in roomObjectsToLoad) {
+                roomObject.SetActive(true);
+            }
             Color darknessColor = LightingManager2D.Get().profile.DarknessColor;
             if(darknessColor != _darknessColor) {
                 if(IsBrighterThan(_darknessColor, darknessColor)) {
-                    _fadeDarknessCoroutine = StartCoroutine(FadeDarkness(darknessColor, _roomTransitionDelay));
+                    _fadeDarknessCoroutine = StartCoroutine(FadeDarkness(darknessColor, _darknessIncreaseDelay));
                 } else {
                     _fadeDarknessCoroutine = StartCoroutine(FadeDarkness(darknessColor, 0f));
                 }
@@ -49,7 +53,9 @@ public class RoomMgr : MonoBehaviour
 
     private IEnumerator UnloadRoomObjects() {
         yield return new WaitForSeconds(_roomTransitionDelay);
-        roomObjectsToLoad.SetActive(false);
+        foreach (GameObject roomObject in roomObjectsToLoad) {
+            roomObject.SetActive(false);
+        }
     }
 
     private IEnumerator FadeDarkness(Color startColor, float delay) {

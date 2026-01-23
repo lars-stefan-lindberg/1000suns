@@ -8,18 +8,12 @@ public class CaveAvatarRootsManager : MonoBehaviour
     public float duration = 3f;
     private float timer = 0;
     private bool _startTimer = false;
-    private BoxCollider2D _collider;
 
     void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.gameObject.CompareTag("Player")) {
-            _collider.enabled = false;
             _startTimer = true;
         }
-    }
-
-    void Awake() {
-        _collider = GetComponent<BoxCollider2D>();
     }
 
     public void Stop()
