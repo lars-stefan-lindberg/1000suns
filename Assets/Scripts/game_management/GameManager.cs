@@ -6,7 +6,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager obj;
     public GameProgress Progress { get; private set; }
-    public CaveTimeline CaveTimeline { get; private set; }
+    private CaveTimeline _caveTimeline;
     public bool isDevMode = false;
 
     [Header("Debug (Read Only)")]
@@ -45,8 +45,8 @@ public class GameManager : MonoBehaviour
         // var testEvent = ScriptableObject.CreateInstance<GameEventId>();
         // testEvent.id = "cave-3.soot-freed";
         // Progress.RegisterEvent(testEvent);
-        CaveTimeline = new CaveTimeline();
-        CaveTimeline.SetTimeline(CaveTimelineId.Id.Eli);
+        //CaveTimeline = new CaveTimeline();
+        //CaveTimeline.SetTimeline(CaveTimelineId.Id.Eli);
 
         // Hook debugger if present
         if (debugView != null)
@@ -84,12 +84,12 @@ public class GameManager : MonoBehaviour
         Progress = loaded;
     }
 
-    public CaveTimeline GetCaveTimelineForSave() {
-        return CaveTimeline;
+    public CaveTimeline GetCaveTimeline() {
+        return _caveTimeline;
     }
 
-    public void LoadCaveTimeline(CaveTimeline loaded) {
-        CaveTimeline = loaded;
+    public void SetCaveTimeline(CaveTimeline caveTimeline) {
+        _caveTimeline = caveTimeline;
     }
 
     // Returns a list of event keys (by property name) that have occurred

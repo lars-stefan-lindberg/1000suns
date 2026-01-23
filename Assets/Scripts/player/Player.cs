@@ -184,7 +184,7 @@ public class Player : MonoBehaviour
     }
 
     public void SetCaveStartingCoordinates() {
-        transform.position = new Vector2(191.975f, 24.89f);
+        transform.position = new Vector2(160f, -63.625f);
     }
 
     public void SetCaveStartingCoordinatesCoop() {

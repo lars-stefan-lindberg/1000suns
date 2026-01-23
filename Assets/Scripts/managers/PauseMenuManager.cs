@@ -252,6 +252,8 @@ public class PauseMenuManager : MonoBehaviour
         //Disable custom ui input handler so it doesn't clash with main menu customUIinputhandler
         _pauseMenu.GetComponent<CustomUIInputHandler>().enabled = false;
 
+        BackgroundLoaderManager.obj.RemoveBackgroundLayers();
+
         float masterVolume = SoundMixerManager.obj.GetMasterVolume();
 
         SceneFadeManager.obj.StartFadeOut();

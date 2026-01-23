@@ -15,6 +15,8 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private SceneField _persistentGameplay;
     [SerializeField] private SceneField _introScene;
     [SerializeField] private SceneField _titleScreen;
+    [SerializeField] private SceneField _firstCaveBackground;
+    [SerializeField] private SceneField _firstCaveSurfaces;
     [SerializeField] private GameObject _titleScreenCanvas;
 
     public bool IsFadingOut { get; private set; }
@@ -245,30 +247,54 @@ public class MainMenuManager : MonoBehaviour
         }
         GameManager.obj.IsPauseAllowed = false;
 
-        //Reset player properties
+        //Reset game state
         Player.obj.SetAnimatorLayerAndHasCape(false);
+        ShadowTwinPlayer.obj.SetAnimatorLayerAndHasCrown(false);
         PlayerPowersManager.obj.ResetGameEvents();
         CollectibleManager.obj.ResetCollectibles();
         PlayerStatsManager.obj.numberOfDeaths = 0;
         Player.obj.gameObject.SetActive(false);
-        if(ShadowTwinPlayer.obj != null && ShadowTwinPlayer.obj.gameObject.activeSelf)
-            ShadowTwinPlayer.obj.gameObject.SetActive(false);
+        ShadowTwinPlayer.obj.gameObject.SetActive(false);
         PlayerManager.obj.IsSeparated = false;
         PlayerManager.obj.IsCoopActive = false;
         LevelManager.obj.ResetLevels();
+        BackgroundLoaderManager.obj.RemoveBackgroundLayers();
 
         SoundMixerManager.obj.SetMasterVolume(masterVolume);
-        AsyncOperation loadIntroSceneOperation = SceneManager.LoadSceneAsync(_introScene, LoadSceneMode.Additive);
-        while(!loadIntroSceneOperation.isDone) {
+        // AsyncOperation loadIntroSceneOperation = SceneManager.LoadSceneAsync(_introScene, LoadSceneMode.Additive);
+        // while(!loadIntroSceneOperation.isDone) {
+        //     yield return null;
+        // }
+        // Scene introScene = SceneManager.GetSceneByName(_introScene.SceneName);
+        // SceneManager.SetActiveScene(introScene);
+
+        // GameObject[] sceneGameObjects = introScene.GetRootGameObjects();
+        // GameObject cameras = sceneGameObjects.First(gameObject => gameObject.CompareTag("Cameras"));
+        // CameraManager cameraManager = cameras.GetComponent<CameraManager>();
+        // cameraManager.ActivateMainCamera();
+
+        AsyncOperation loadFirstCaveRoomOperation = SceneManager.LoadSceneAsync("Cave-1", LoadSceneMode.Additive);
+        while(!loadFirstCaveRoomOperation.isDone) {
             yield return null;
         }
-        Scene introScene = SceneManager.GetSceneByName(_introScene.SceneName);
-        SceneManager.SetActiveScene(introScene);
+        Scene firstScene = SceneManager.GetSceneByName("Cave-1");
+        SceneManager.SetActiveScene(firstScene);
 
-        GameObject[] sceneGameObjects = introScene.GetRootGameObjects();
+        GameObject[] sceneGameObjects = firstScene.GetRootGameObjects();
         GameObject cameras = sceneGameObjects.First(gameObject => gameObject.CompareTag("Cameras"));
         CameraManager cameraManager = cameras.GetComponent<CameraManager>();
         cameraManager.ActivateMainCamera();
+
+        //Load background
+        yield return StartCoroutine(BackgroundLoaderManager.obj.LoadAndSetBackground(_firstCaveBackground));
+        //Load surfaces
+        yield return StartCoroutine(WalkableSurfacesManager.obj.AddWalkableSurface(_firstCaveSurfaces));
+
+        GameObject levelSwitcherGameObject = sceneGameObjects.First(gameObject => gameObject.CompareTag("LevelSwitcher"));
+        LevelSwitcher levelSwitcher = levelSwitcherGameObject.GetComponent<LevelSwitcher>();
+        levelSwitcher.LoadNextRoom();
+
+        GameManager.obj.SetCaveTimeline(new CaveTimeline(CaveTimelineId.Id.Eli));
         
         SceneManager.UnloadSceneAsync(_titleScreen.SceneName);
     }

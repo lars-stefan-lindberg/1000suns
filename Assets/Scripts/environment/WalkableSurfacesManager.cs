@@ -93,6 +93,17 @@ public class WalkableSurfacesManager : MonoBehaviour
         }
     }
 
+    public void RemoveAllSurfaces() {
+        if(_loadedSurfaces.Count == 0)
+            return;
+
+        WalkableSurface[] walkableSurfaces = GetComponentsInChildren<WalkableSurface>();
+        foreach(WalkableSurface walkableSurface in walkableSurfaces) {
+            Destroy(walkableSurface.gameObject);
+        }
+        _loadedSurfaces.Clear();
+    }
+
     void OnDestroy()
     {
         obj = null;

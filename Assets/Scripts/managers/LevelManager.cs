@@ -42,27 +42,6 @@ public class LevelManager : MonoBehaviour
         return initRoomObject?.GetComponent<InitRoom>();
     }
 
-    public bool IsBackgroundLayersLoaded(SceneField backgroundScene) {
-        Camera mainCamera = Camera.main;
-        if(mainCamera != null) {
-            BackgroundLayersManager backgroundLayersManager = mainCamera.gameObject.GetComponentInChildren<BackgroundLayersManager>();
-            if(backgroundLayersManager != null) {
-                return backgroundLayersManager.backgroundScene.SceneName == backgroundScene.SceneName;
-            }
-        }
-        return false;
-    }
-
-    public void RemoveBackgroundLayers() {
-        Camera mainCamera = Camera.main;
-        if(mainCamera != null) {
-            BackgroundLayersManager backgroundLayersManager = mainCamera.gameObject.GetComponentInChildren<BackgroundLayersManager>();
-            if(backgroundLayersManager != null) {
-                Destroy(backgroundLayersManager.gameObject);
-            }
-        }
-    }
-
     private IEnumerator LoadSceneDelayedCoroutine(string sceneName) {
         yield return new WaitForSeconds(1f);
         SceneManager.LoadScene(sceneName, LoadSceneMode.Single);

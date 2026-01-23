@@ -6,7 +6,7 @@ public class CaveTimelineLoader : MonoBehaviour
     
     void Start()
     {
-        if(GameManager.obj.CaveTimeline.IsTimeline(timelineId))
+        if(GameManager.obj.GetCaveTimeline().IsTimeline(timelineId))
             gameObject.SetActive(true);
         else
             gameObject.SetActive(false);
