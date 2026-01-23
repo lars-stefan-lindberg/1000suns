@@ -260,6 +260,7 @@ public class MainMenuManager : MonoBehaviour
         PlayerManager.obj.IsCoopActive = false;
         LevelManager.obj.ResetLevels();
         BackgroundLoaderManager.obj.RemoveBackgroundLayers();
+        GameManager.obj.SetCaveTimeline(new CaveTimeline(CaveTimelineId.Id.Eli));
 
         SoundMixerManager.obj.SetMasterVolume(masterVolume);
         // AsyncOperation loadIntroSceneOperation = SceneManager.LoadSceneAsync(_introScene, LoadSceneMode.Additive);
@@ -295,7 +296,6 @@ public class MainMenuManager : MonoBehaviour
         LevelSwitcher levelSwitcher = levelSwitcherGameObject.GetComponent<LevelSwitcher>();
         levelSwitcher.LoadNextRoom();
 
-        GameManager.obj.SetCaveTimeline(new CaveTimeline(CaveTimelineId.Id.Eli));
         
         SceneManager.UnloadSceneAsync(_titleScreen.SceneName);
     }

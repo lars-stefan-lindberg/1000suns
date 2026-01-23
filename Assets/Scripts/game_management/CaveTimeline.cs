@@ -20,4 +20,8 @@ public class CaveTimeline
     public void Clear() {
         timelineId = default;
     }
+
+    public CaveTimelineId.Id GetCaveTimelineId() {
+        return timelineId;
+    }
 }

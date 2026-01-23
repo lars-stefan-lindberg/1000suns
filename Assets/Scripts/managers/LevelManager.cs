@@ -117,13 +117,23 @@ public class LevelManager : MonoBehaviour
                 playerSpawnPoint = sceneGameObjects.First(gameObject => gameObject.CompareTag("PlayerSpawnPoint"));
             }
             playerSpawnPointCollider = playerSpawnPoint.GetComponent<Collider2D>();
-            if(Player.obj != null)
-                Player.obj.transform.position = playerSpawnPointCollider.transform.position;
-            if(ShadowTwinPlayer.obj != null) {
-                ShadowTwinPlayer.obj.transform.position = playerSpawnPointCollider.transform.position;
+
+            //Set correct character active
+            CaveTimelineId.Id caveTimelineId = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+            if(caveTimelineId == CaveTimelineId.Id.Eli || caveTimelineId == CaveTimelineId.Id.Both) {
+                ShadowTwinPlayer.obj.gameObject.SetActive(false);
+                if(Player.obj != null)
+                    Player.obj.transform.position = playerSpawnPointCollider.transform.position;
+                else if(PlayerBlob.obj != null)
+                    PlayerBlob.obj.transform.position = playerSpawnPointCollider.transform.position - new Vector3(0, 0.5f, 0);
+            } else if(caveTimelineId == CaveTimelineId.Id.Dee) {
+                Player.obj.gameObject.SetActive(false);
+                PlayerBlob.obj.gameObject.SetActive(true);
+                if(ShadowTwinPlayer.obj != null) {
+                    ShadowTwinPlayer.obj.transform.position = playerSpawnPointCollider.transform.position;
+                }
             }
-            if(PlayerBlob.obj != null)
-                PlayerBlob.obj.transform.position = playerSpawnPointCollider.transform.position - new Vector3(0, 0.5f, 0);
+
             AdjustSpawnFaceDirection(activeCameraObject.transform.position.x, playerSpawnPoint.transform.position.x);
         }
 

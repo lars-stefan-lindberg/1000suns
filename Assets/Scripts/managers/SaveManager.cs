@@ -51,6 +51,10 @@ public class SaveManager : MonoBehaviour
                 GameManager.obj.LoadProgress(gameProgress);
             }
 
+            if(GameManager.obj != null) {
+                GameManager.obj.SetCaveTimeline(new CaveTimeline(data.caveTimeline));
+            }
+
             // Apply saved player powers back into the manager
             if (PlayerPowersManager.obj != null)
             {
@@ -163,6 +167,7 @@ public class SaveManager : MonoBehaviour
         data.completedLevels = LevelManager.obj != null ? LevelManager.obj.ExportCompletedLevels() : new List<string>();
         data.background = LevelManager.obj != null ? LevelManager.obj.GetActiveSceneInitRoomData().backgroundScene : "";
         data.surface = LevelManager.obj != null ? LevelManager.obj.GetActiveSceneInitRoomData().walkableSurfaceScene : "";
+        data.caveTimeline = GameManager.obj != null ? GameManager.obj.GetCaveTimeline().GetCaveTimelineId() : 0;
         data.pickedCollectibles = CollectibleManager.obj != null ? CollectibleManager.obj.ExportPickedCollectibles() : new List<string>();
         data.followingCollectibles = CollectibleManager.obj != null ? CollectibleManager.obj.ExportFollowingCollectibles() : new List<string>();
         data.lastSaved = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
