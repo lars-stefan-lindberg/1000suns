@@ -50,6 +50,7 @@ public class PauseMenuManager : MonoBehaviour
     private bool _isPaused = false;
     // Track if the music volume slider is currently selected
     private bool _isMusicSliderSelected = false;
+    private bool _muteSliderSfx = false;
 
     void Awake() {
         obj = this;
@@ -91,6 +92,7 @@ public class PauseMenuManager : MonoBehaviour
         if (context.performed)
         {
             if(_isPaused) {
+                SoundFXManager.obj.PlayUIConfirm();
                 ResumeGame();
             } else {
                 _roomNumber.text = SceneManager.GetActiveScene().name;
@@ -116,10 +118,12 @@ public class PauseMenuManager : MonoBehaviour
                 _pauseMainMenu.SetActive(true);
                 
                 // Set the music slider to reflect the player's preferred volume (not the muffled volume)
+                _muteSliderSfx = true;
                 _musicSlider.value = SoundMixerManager.obj.GetPlayerPreferredMusicVolume();
                 
                 _soundFXSlider.value = SoundMixerManager.obj.GetSoundFXVolume();
                 _ambienceSlider.value = SoundMixerManager.obj.GetAmbienceVolume();
+                _muteSliderSfx = false;
                 
                 _collectibleCountText.text = CollectibleManager.obj.GetNumberOfCollectiblesPicked().ToString();
 
@@ -224,7 +228,6 @@ public class PauseMenuManager : MonoBehaviour
     private IEnumerator SkipCutsceneCoroutine() {
         GameManager.obj.IsPauseAllowed = false;
         SceneFadeManager.obj.StartFadeOut();
-        StartCoroutine(SoundMixerManager.obj.StartMasterFade(1f, 0));
         while(SceneFadeManager.obj.IsFadingOut) {
             yield return null;
         }   
@@ -283,7 +286,8 @@ public class PauseMenuManager : MonoBehaviour
     }
 
     public void ChangeMusicVolume(float volume) {
-        SoundFXManager.obj.PlayUISlider();
+        if(!_muteSliderSfx)
+            SoundFXManager.obj.PlayUISlider();
         
         // If this is the first time the music slider is used after pausing,
         // temporarily restore the music clarity for better feedback
@@ -297,7 +301,8 @@ public class PauseMenuManager : MonoBehaviour
     }
 
     public void ChangeSoundFxVolume(float volume) {
-        SoundFXManager.obj.PlayUISlider();
+        if(!_muteSliderSfx)
+            SoundFXManager.obj.PlayUISlider();
         
         // If we were previously adjusting music, re-muffle it when switching to another slider
         if (_isMusicSliderSelected && _isPaused) {
@@ -309,7 +314,8 @@ public class PauseMenuManager : MonoBehaviour
     }
     
     public void ChangeAmbienceVolume(float volume) {
-        SoundFXManager.obj.PlayUISlider();
+        if(!_muteSliderSfx)
+            SoundFXManager.obj.PlayUISlider();
         
         // If we were previously adjusting music, re-muffle it when switching to another slider
         if (_isMusicSliderSelected && _isPaused) {
@@ -408,8 +414,10 @@ public class PauseMenuManager : MonoBehaviour
         }
 
         if(_pauseMainMenu.activeSelf) {
-            if(_isPaused)
+            if(_isPaused) {
+                SoundFXManager.obj.PlayUIConfirm();
                 ResumeGame();
+            }
         } else if(_keyboardConfigMenu.activeSelf) {
             LeaveKeyboardConfigMenu();
         } else if(_controllerConfigMenu.activeSelf) {

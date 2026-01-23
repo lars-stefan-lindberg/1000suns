@@ -44,6 +44,7 @@ public class FirstCaveRoomLoader : MonoBehaviour
     }
 
     private IEnumerator FadeInScreen() {
+        yield return new WaitForSeconds(2f); //Give title screen time to unload
         SceneFadeManager.obj.SetFadedOutState();
         SceneFadeManager.obj.SetFadeInSpeed(0.2f);
         SceneFadeManager.obj.StartFadeIn();

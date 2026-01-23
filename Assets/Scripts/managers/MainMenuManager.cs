@@ -80,6 +80,7 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject _confirmCancelButtonsPanel;
     private bool _hasPlayer2Joined;
     private InputDevice _player1InputDevice;
+    private bool _muteSliderSfx = false;
 
     void Awake() {
         obj = this;
@@ -121,6 +122,7 @@ public class MainMenuManager : MonoBehaviour
         } else {
             EventSystem.current.SetSelectedGameObject(_continueButton);
         }
+        SceneFadeManager.obj.StartFadeIn();
     }
 
     private float _coopGameStartCounddownTime = 1f;
@@ -295,7 +297,6 @@ public class MainMenuManager : MonoBehaviour
         GameObject levelSwitcherGameObject = sceneGameObjects.First(gameObject => gameObject.CompareTag("LevelSwitcher"));
         LevelSwitcher levelSwitcher = levelSwitcherGameObject.GetComponent<LevelSwitcher>();
         levelSwitcher.LoadNextRoom();
-
         
         SceneManager.UnloadSceneAsync(_titleScreen.SceneName);
     }
@@ -391,9 +392,6 @@ public class MainMenuManager : MonoBehaviour
         PlayerManager.obj.IsSeparated = false;
         PlayerManager.obj.IsCoopActive = false;
 
-        //TODO: Set active player depending on cave timeline
-        Player.obj.gameObject.SetActive(true);
-
         SaveData saveData = SaveManager.obj.LoadGame();
         if(saveData == null) {
             Debug.LogWarning("No save data found. Starting new game.");
@@ -401,7 +399,6 @@ public class MainMenuManager : MonoBehaviour
             yield break;
         }
 
-        yield return new WaitForSeconds(1f);
         SoundMixerManager.obj.SetMasterVolume(masterVolume);
         
         if(saveData.background != null && saveData.background != "") {
@@ -517,9 +514,11 @@ public class MainMenuManager : MonoBehaviour
     }
 
     public void ShowOptionsMenu() {
+        _muteSliderSfx = true; //For some reason the slider sfx is played first time the options menu is shown
         _musicSlider.value = SoundMixerManager.obj.GetMusicVolume();
         _soundFXSlider.value = SoundMixerManager.obj.GetSoundFXVolume();
         _ambienceSlider.value = SoundMixerManager.obj.GetAmbienceVolume();
+        _muteSliderSfx = false;
 
         _titleMenu.SetActive(false);
         _keyboardConfigMenu.SetActive(false);
@@ -692,17 +691,20 @@ public class MainMenuManager : MonoBehaviour
     }
 
     public void ChangeMusicVolume(float volume) {
-        SoundFXManager.obj.PlayUISlider();
+        if(!_muteSliderSfx)
+            SoundFXManager.obj.PlayUISlider();
         SoundMixerManager.obj.SetMusicVolume(volume);
     }
 
     public void ChangeSoundFxVolume(float volume) {
-        SoundFXManager.obj.PlayUISlider();
+        if(!_muteSliderSfx)
+            SoundFXManager.obj.PlayUISlider();
         SoundMixerManager.obj.SetSoundFXVolume(volume);
     }    
     
     public void ChangeAmbienceVolume(float volume) {
-        SoundFXManager.obj.PlayUISlider();
+        if(!_muteSliderSfx)
+            SoundFXManager.obj.PlayUISlider();
         SoundMixerManager.obj.SetAmbienceVolume(volume);
     }
 
