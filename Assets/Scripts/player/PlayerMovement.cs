@@ -19,7 +19,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     // --------------------------------
     public static PlayerMovement obj;
 
-    public bool isDevMode = true;
     [SerializeField] private ScriptableStats _stats;
     [SerializeField] private GameObject _playerBlob;
     [SerializeField] private GameObject _playerTwin;
@@ -800,7 +799,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private void BuildUpPowerJump()
     {
-        if(isDevMode) {
+        if(GameManager.obj.isDevMode) {
             if (_buildingUpPowerJump && _buildUpPowerJumpTime < POWER_JUMP_MAX_CHARGED_TIME)
             {
                 _buildUpPowerJumpTime += Time.deltaTime;
@@ -1012,7 +1011,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     private bool HasBufferedJump => _time < _timeJumpWasPressed + _stats.JumpBuffer;
     private bool CanUseCoyote => _coyoteUsable && !isGrounded && _time < _frameLeftGrounded + _stats.CoyoteTime;
     private bool CanUseAirJump =>
-        isDevMode &&
+        GameManager.obj.isDevMode &&
         !isGrounded &&
         _time > _frameLeftGrounded + _stats.CoyoteTime &&
         _numberOfAirJumps < MAX_NUMBER_OF_AIR_JUMPS &&

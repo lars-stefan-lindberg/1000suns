@@ -251,7 +251,7 @@ public class LevelManager : MonoBehaviour
             Player.obj.FadeInPlayerLight();
 
             if(Player.obj != null) {
-                if(Player.obj.GetHasCape() || PlayerMovement.obj.isDevMode) {
+                if(Player.obj.GetHasCape() || GameManager.obj.isDevMode) {
                     Player.obj.SetAnimatorLayerAndHasCape(true);
                 } else {
                     Player.obj.SetAnimatorLayerAndHasCape(false);
@@ -267,7 +267,7 @@ public class LevelManager : MonoBehaviour
             ShadowTwinPlayer.obj.FadeInPlayerLight();
 
             if(ShadowTwinPlayer.obj != null) {
-                if(ShadowTwinPlayer.obj.GetHasCrown() || PlayerMovement.obj.isDevMode) { //TODO: refactor dev mode to manager instead of playermovement
+                if(ShadowTwinPlayer.obj.GetHasCrown() || GameManager.obj.isDevMode) {
                     ShadowTwinPlayer.obj.SetAnimatorLayerAndHasCrown(true);
                 } else {
                     ShadowTwinPlayer.obj.SetAnimatorLayerAndHasCrown(false);
@@ -456,7 +456,7 @@ public class LevelManager : MonoBehaviour
             CaveAvatar.obj.SetStartingPositionInRoom30();
         } else if(GameManager.obj.C26CutsceneCompleted) {
             CaveAvatar.obj.SetStartingPositionInRoom27();
-        } else if(!GameManager.obj.Progress.HasEvent(sootFreed) && !PlayerMovement.obj.isDevMode) {
+        } else if(!GameManager.obj.Progress.HasEvent(sootFreed) && !GameManager.obj.isDevMode) {
             CaveAvatar.obj.SetStartingPositionInRoom1();
         } else {
             CaveAvatar.obj.SetFollowPlayerStartingPosition();

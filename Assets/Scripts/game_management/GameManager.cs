@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
     public static GameManager obj;
     public GameProgress Progress { get; private set; }
     public CaveTimeline CaveTimeline { get; private set; }
+    public bool isDevMode = false;
 
     [Header("Debug (Read Only)")]
     [SerializeField]

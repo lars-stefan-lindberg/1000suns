@@ -24,7 +24,7 @@ public class PlayerPowersManager : MonoBehaviour
     void Start()
     {
         ResetGameEvents();
-        if(PlayerMovement.obj != null && PlayerMovement.obj.isDevMode) {
+        if(GameManager.obj != null && GameManager.obj.isDevMode) {
             EliCanForcePush = true;
             EliCanTurnFromBlobToHuman = true;
             EliCanTurnFromHumanToBlob = true;
@@ -37,7 +37,7 @@ public class PlayerPowersManager : MonoBehaviour
 
     void OnEnable()
     {
-        if(PlayerMovement.obj != null && PlayerMovement.obj.isDevMode) {
+        if(GameManager.obj != null && GameManager.obj.isDevMode) {
             EliCanForcePush = true;
             EliCanTurnFromBlobToHuman = true;
             EliCanTurnFromHumanToBlob = true;
@@ -81,7 +81,7 @@ public class PlayerPowersManager : MonoBehaviour
     public void ApplyUnlockedPowers(List<string> powers)
     {
         // If in dev mode, keep everything enabled and ignore loaded powers to avoid overriding dev settings
-        if (PlayerMovement.obj != null && PlayerMovement.obj.isDevMode)
+        if (GameManager.obj != null && GameManager.obj.isDevMode)
         {
             var propsAll = typeof(PlayerPowersManager).GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
             foreach (var prop in propsAll)
