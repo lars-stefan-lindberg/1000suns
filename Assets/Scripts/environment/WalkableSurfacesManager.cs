@@ -29,11 +29,9 @@ public class WalkableSurfacesManager : MonoBehaviour
         MaybeRemoveUnusedSurfaces(walkableSurfaceName);
 
         if(_loadedSurfaces.Contains(walkableSurfaceName)) {
-            Debug.Log("Surface already loaded: " + walkableSurfaceName);
             return true;
         }
         
-        Debug.Log("Surface not loaded: " + walkableSurfaceName);
         return false;
     }
 
@@ -45,7 +43,6 @@ public class WalkableSurfacesManager : MonoBehaviour
 
         if(sceneName == _lastCheckedSceneName) {
             _consequetiveChecks++;
-            Debug.Log("Consequetive checks: " + _consequetiveChecks);
             if(_consequetiveChecks > _maxConsequetiveChecks) {
                 WalkableSurface[] walkableSurfaces = GetComponentsInChildren<WalkableSurface>();
                 if(walkableSurfaces.Length > 1) {
