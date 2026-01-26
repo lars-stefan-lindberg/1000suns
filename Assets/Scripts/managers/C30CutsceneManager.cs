@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 public class C30CutsceneManager : MonoBehaviour
 {
     [SerializeField] private Transform _caveAvatarFlyOffTarget;
-    [SerializeField] private CameraManager _cameraManager;
+    [SerializeField] private RoomCameraManager _cameraManager;
     [SerializeField] private DialogueController _dialogueController;
     [SerializeField] private DialogueContent _dialogueContent;
 

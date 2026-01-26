@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -27,6 +28,13 @@ public class FirstCaveRoomLoader : MonoBehaviour
         PlayerMovement.obj.spriteRenderer.flipX = false;
         Player.obj.SetAnimatorLayerAndHasCape(false);
         PlayerMovement.obj.Freeze();
+
+        GameObject[] sceneGameObjects = gameObject.scene.GetRootGameObjects();
+        GameObject mainCamera = sceneGameObjects.First(gameObject => gameObject.CompareTag("MainCamera"));
+        GameObject room = sceneGameObjects.First(gameObject => gameObject.CompareTag("Room"));
+        Collider2D roomCollider = room.GetComponent<Collider2D>();
+        RoomCameraController cameraController = mainCamera.GetComponent<RoomCameraController>();
+        CameraManager.obj.EnterRoom(cameraController, roomCollider, Player.obj.transform, Player.obj.transform.position);   
 
         CaveAvatar.obj.gameObject.SetActive(false);
 

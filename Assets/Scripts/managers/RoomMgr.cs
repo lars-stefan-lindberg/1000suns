@@ -3,6 +3,7 @@ using UnityEngine.Events;
 using FunkyCode;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 //Standard room size: X: 40, Y: 22.5
 public class RoomMgr : MonoBehaviour
@@ -36,6 +37,7 @@ public class RoomMgr : MonoBehaviour
                 }
             }
             OnRoomEnter?.Invoke();
+            StartCoroutine(MaybeActivateMainCamera());
         }
     }
 
@@ -49,6 +51,19 @@ public class RoomMgr : MonoBehaviour
             if(gameObject.activeSelf)
                 _unloadRoomObjectsCoroutine = StartCoroutine(UnloadRoomObjects());
             OnRoomExit?.Invoke();
+        }
+    }
+
+    //Used if we hit play mode from within a room
+    private IEnumerator MaybeActivateMainCamera() {
+        yield return new WaitForSeconds(_roomTransitionDelay);
+        if(!CameraManager.obj.IsRoomCameraActivated()) {
+            GameObject[] sceneGameObjects = gameObject.scene.GetRootGameObjects();
+            GameObject mainCamera = sceneGameObjects.First(gameObject => gameObject.CompareTag("MainCamera"));
+            RoomCameraController cameraController = mainCamera.GetComponent<RoomCameraController>();
+            GameObject room = sceneGameObjects.First(gameObject => gameObject.CompareTag("Room"));
+            Collider2D roomCollider = room.GetComponent<Collider2D>();
+            CameraManager.obj.EnterRoom(cameraController, roomCollider, Player.obj.transform, transform.position);
         }
     }
 

@@ -48,7 +48,7 @@ public class TeleportToC295 : MonoBehaviour
         GameObject[] sceneGameObjects = scene.GetRootGameObjects();
 
         GameObject cameras = sceneGameObjects.First(gameObject => gameObject.CompareTag("Cameras"));
-        CameraManager cameraManager = cameras.GetComponent<CameraManager>();
+        RoomCameraManager cameraManager = cameras.GetComponent<RoomCameraManager>();
         cameraManager.ActivateAlternativeCamera();
 
         _followCamera.Follow = Player.obj.transform;

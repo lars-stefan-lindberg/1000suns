@@ -88,19 +88,6 @@ public class LevelManager : MonoBehaviour
             yield return StartCoroutine(BackgroundLoaderManager.obj.LoadAndSetBackground(initRoom.backgroundScene));
         }
 
-        GameObject[] sceneGameObjects = scene.GetRootGameObjects();
-        
-        //If we have multiple cameras in room, activate the first/default one when loading the room. This will also
-        //do an early enough reset of any parallax backgrounds.
-        GameObject cameras = sceneGameObjects.First(gameObject => gameObject.CompareTag("Cameras"));
-        CameraManager cameraManager = cameras.GetComponent<CameraManager>();
-        GameObject activeCameraObject;
-        if(IsLevelCompleted(scene.name)) {
-            activeCameraObject = cameraManager.ActivateAlternativeCamera();
-        } else {
-            activeCameraObject = cameraManager.ActivateMainCamera();
-        }
-
         if(SaveManager.obj.RestoreBlobOnNextScene) {
             SaveManager.obj.ConsumeRestoreBlobFlag();
             PlayerMovement.obj.ToBlob();
@@ -131,7 +118,8 @@ public class LevelManager : MonoBehaviour
                 ShadowTwinPlayer.obj.transform.position = playerSpawnPointCollider.transform.position;
             }
         }
-        AdjustSpawnFaceDirection(activeCameraObject.transform.position.x, playerSpawnPoint.transform.position.x);        
+
+        AdjustSpawnFaceDirection(Camera.main.transform.position.x, playerSpawnPoint.transform.position.x);        
 
         if(CaveAvatar.obj != null && CaveAvatar.obj.gameObject.activeSelf) {
             SetCaveAvatarPosition(scene);
@@ -174,6 +162,13 @@ public class LevelManager : MonoBehaviour
             PlayerManager.obj.EnableLastActivePlayerGameObject();
             SetPlayersStartingState();
         }
+
+        GameObject[] sceneRootObjects = scene.GetRootGameObjects();
+        GameObject mainCamera = sceneRootObjects.First(gameObject => gameObject.CompareTag("MainCamera"));
+        RoomCameraController cameraController = mainCamera.GetComponent<RoomCameraController>();
+        GameObject room = sceneRootObjects.First(gameObject => gameObject.CompareTag("Room"));
+        Collider2D roomCollider = room.GetComponent<Collider2D>();
+        CameraManager.obj.EnterRoom(cameraController, roomCollider, PlayerManager.obj.GetPlayerTransform(PlayerManager.obj.GetLastActivePlayerType()), playerSpawnPointCollider.transform.position);  
 
         Reaper.obj.playerKilled = false;
 

@@ -7,8 +7,6 @@ using UnityEngine.SceneManagement;
 
 public class LevelEntry : MonoBehaviour
 {
-    [SerializeField] private bool _activateAlternativeCamera = false;
-    [SerializeField] private bool _activateFollowCamera = false;
     [SerializeField] private bool _fireCustomCameraHandlingEvent = false;
     [SerializeField] private bool _enablePlayerTransition = true;
     public UnityEvent OnCustomCameraHandling;
@@ -80,23 +78,15 @@ public class LevelEntry : MonoBehaviour
             PlayerManager.obj.TransitionToNextRoom(direction, playerType);
         }
 
-        activeCamera.gameObject.SetActive(false);
-        activeCamera.enabled = false;
-
         if(_fireCustomCameraHandlingEvent) {
             OnCustomCameraHandling?.Invoke();
         } else {
             GameObject[] sceneGameObjects = sceneToActivate.GetRootGameObjects();
-            GameObject cameras = sceneGameObjects.First(gameObject => gameObject.CompareTag("Cameras"));
-            CameraManager cameraManager = cameras.GetComponent<CameraManager>();
-            if(_activateAlternativeCamera) {
-                cameraManager.ActivateAlternativeCamera();
-            } else if(_activateFollowCamera) {
-                var playerTranform = PlayerManager.obj.GetPlayerTransform(playerType);
-                cameraManager.ActivateFollowCamera(playerTranform);
-            } else {
-                cameraManager.ActivateMainCamera();
-            }
+            GameObject mainCamera = sceneGameObjects.First(gameObject => gameObject.CompareTag("MainCamera"));
+            RoomCameraController cameraController = mainCamera.GetComponent<RoomCameraController>();
+            GameObject room = sceneGameObjects.First(gameObject => gameObject.CompareTag("Room"));
+            Collider2D roomCollider = room.GetComponent<Collider2D>();
+            CameraManager.obj.EnterRoom(cameraController, roomCollider, PlayerManager.obj.GetPlayerTransform(playerType), _spawnPoint.transform.position);
         }
 
         yield return null;

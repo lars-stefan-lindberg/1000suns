@@ -125,61 +125,6 @@ public class MainMenuManager : MonoBehaviour
         SceneFadeManager.obj.StartFadeIn();
     }
 
-    private float _coopGameStartCounddownTime = 1f;
-    private float _coopGameStartCounddownTimer = 0f;
-    private bool _isGameStarted = false;
-    void Update()
-    {
-        if(_characterSelection.activeSelf && !_isGameStarted) {
-            if(_characterSelectionWidgets.All(widget => widget.IsReady))
-            {
-                _coopGameStartCounddownTimer += Time.deltaTime;
-                if(_coopGameStartCounddownTimer >= _coopGameStartCounddownTime)
-                {
-                    StartCoopGame(false);
-                    _isGameStarted = true;
-                }
-            } else {
-                _coopGameStartCounddownTimer = 0f;
-            }
-        }
-        if (!_playerDeviceSetup.activeSelf)
-        {
-            return;
-        }
-
-        if (_hasPlayer2Joined)
-        {
-            return;
-        }
-
-        var availableDevices = InputDeviceListener.obj.GetAvailableDevicesExcluding(_player1InputDevice);
-
-        foreach (var info in availableDevices)
-        {
-            if (info.DeviceType == InputDeviceListener.JoinDeviceType.Keyboard)
-            {
-                if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
-                {
-                    _hasPlayer2Joined = true;
-                    SetupPlayer2InputDevice(info);
-                    return;
-                }
-            }
-            else
-            {
-                var gamepad = info.Device as Gamepad;
-
-                if (gamepad != null && gamepad.buttonSouth.wasPressedThisFrame)
-                {
-                    _hasPlayer2Joined = true;
-                    SetupPlayer2InputDevice(info);
-                    return;
-                }
-            }
-        }
-    }
-
     void OnDestroy() {
         InputDeviceListener.OnInputDeviceStream -= HandleInputDeviceChanged;
         InputDeviceListener.OnGamepadConnected -= HandleGamepadConnected;
@@ -210,18 +155,9 @@ public class MainMenuManager : MonoBehaviour
         // EventSystem.current.SetSelectedGameObject(_singlePlayerButton);
     }
 
-    public void OnPlayCoopButtonClicked() {
-        StartCoopGame(false);
-    }
-
     public void StartGame() {
         _playButton.GetComponent<Button>().interactable = false;
         StartCoroutine(StartGameCoroutine());
-    }
-
-    public void StartCoopGame(bool isSinglePlayer) {
-        _playCoopButton.GetComponent<Button>().interactable = false;
-        StartCoroutine(StartCoopGameCoroutine(isSinglePlayer));
     }
 
     [ContextMenu("Continue Game")]
@@ -283,81 +219,12 @@ public class MainMenuManager : MonoBehaviour
         Scene firstScene = SceneManager.GetSceneByName("Cave-1");
         SceneManager.SetActiveScene(firstScene);
 
-        GameObject[] sceneGameObjects = firstScene.GetRootGameObjects();
-        GameObject cameras = sceneGameObjects.First(gameObject => gameObject.CompareTag("Cameras"));
-        CameraManager cameraManager = cameras.GetComponent<CameraManager>();
-        cameraManager.ActivateMainCamera();
-
         //Load background
         yield return StartCoroutine(BackgroundLoaderManager.obj.LoadAndSetBackground(_firstCaveBackground));
         //Load surfaces
         yield return StartCoroutine(WalkableSurfacesManager.obj.AddWalkableSurface(_firstCaveSurfaces));
 
         LevelManager.obj.LoadAdjacentRooms(firstScene);
-        
-        SceneManager.UnloadSceneAsync(_titleScreen.SceneName);
-    }
-
-    private IEnumerator StartCoopGameCoroutine(bool isSinglePlayer) {
-        SoundFXManager.obj.PlayUIPlay();
-
-        float masterVolume = SoundMixerManager.obj.GetMasterVolume();
-
-        StartCoroutine(SoundMixerManager.obj.StartMasterFade(3f, 0.001f));
-        SceneFadeManager.obj.StartFadeOut(1f);
-        while(SceneFadeManager.obj.IsFadingOut)
-            yield return null;
-        while(SoundMixerManager.obj.GetMasterVolume() > 0.001f) {
-            yield return null;
-        }
-        MusicManager.obj.StopPlaying();
-
-        AsyncOperation loadPersistentGameplayOperation = SceneManager.LoadSceneAsync(_persistentGameplay, LoadSceneMode.Additive);
-        while(!loadPersistentGameplayOperation.isDone) {
-            yield return null;
-        }
-        GameManager.obj.IsPauseAllowed = false;
-
-        //Reset player properties
-        Player.obj.SetAnimatorLayerAndHasCape(true);
-        Player.obj.gameObject.SetActive(false);
-        ShadowTwinPlayer.obj.SetAnimatorLayerAndHasCrown(true);
-        ShadowTwinPlayer.obj.gameObject.SetActive(false);
-        PlayerPowersManager.obj.ResetGameEvents();
-        PlayerPowersManager.obj.CanSeparate = true;
-        PlayerPowersManager.obj.CanSwitchBetweenTwinsMerged = true;
-        CollectibleManager.obj.ResetCollectibles();
-        PlayerStatsManager.obj.numberOfDeaths = 0;
-        LevelManager.obj.ResetLevels();
-        PlayerManager.obj.IsSeparated = true;
-        LobbyManager.obj.IsJoiningPlayers = false;
-        LobbyManager.obj.IsSelectingCharacters = false;
-        if(isSinglePlayer) {
-            LobbyManager.obj.ClearPlayerSlots();
-            _characterSelectionWidgets.ForEach((widget) => {
-                Destroy(widget.gameObject);
-            });
-            _characterSelectionWidgets.Clear();
-            PlayerManager.obj.IsCoopActive = false;
-        } else {
-            PlayerManager.obj.IsCoopActive = true;
-        }
-
-        SoundMixerManager.obj.SetMasterVolume(masterVolume);
-
-        AsyncOperation loadC1_1Operation = SceneManager.LoadSceneAsync("C1-1", LoadSceneMode.Additive);
-        while(!loadC1_1Operation.isDone) {
-            yield return null;
-        }
-        Scene c1_1Scene = SceneManager.GetSceneByName("C1-1");
-        SceneManager.SetActiveScene(c1_1Scene);
-
-        GameObject[] sceneGameObjects = c1_1Scene.GetRootGameObjects();
-        GameObject cameras = sceneGameObjects.First(gameObject => gameObject.CompareTag("Cameras"));
-        CameraManager cameraManager = cameras.GetComponent<CameraManager>();
-        cameraManager.ActivateMainCamera();
-
-        LevelManager.obj.LoadAdjacentRooms(c1_1Scene);
         
         SceneManager.UnloadSceneAsync(_titleScreen.SceneName);
     }
@@ -421,14 +288,6 @@ public class MainMenuManager : MonoBehaviour
         
         ShowOptionsMenu();
         EventSystem.current.SetSelectedGameObject(_musicSliderGameObject);
-    }
-
-    public void OnSinglePlayerButtonClicked() {
-        isNavigatingToMenu = true;
-        SoundFXManager.obj.PlayUIConfirm();
-        
-        StartCoopGame(true);
-        EventSystem.current.SetSelectedGameObject(null);
     }
 
     public void OnCoopButtonClicked() {
