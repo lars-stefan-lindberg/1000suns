@@ -72,9 +72,7 @@ public class IntroController : MonoBehaviour
         
         CaveAvatar.obj.gameObject.SetActive(false);
 
-        GameObject levelSwitcherGameObject = sceneGameObjects.First(gameObject => gameObject.CompareTag("LevelSwitcher"));
-        LevelSwitcher levelSwitcher = levelSwitcherGameObject.GetComponent<LevelSwitcher>();
-        levelSwitcher.LoadNextRoom();
+        LevelManager.obj.LoadAdjacentRooms(caveRoom1);
 
         SceneManager.UnloadSceneAsync(_introScene.SceneName);
     }

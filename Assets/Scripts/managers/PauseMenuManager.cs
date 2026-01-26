@@ -255,8 +255,6 @@ public class PauseMenuManager : MonoBehaviour
         //Disable custom ui input handler so it doesn't clash with main menu customUIinputhandler
         _pauseMenu.GetComponent<CustomUIInputHandler>().enabled = false;
 
-        BackgroundLoaderManager.obj.RemoveBackgroundLayers();
-
         float masterVolume = SoundMixerManager.obj.GetMasterVolume();
 
         SceneFadeManager.obj.StartFadeOut();
@@ -268,6 +266,7 @@ public class PauseMenuManager : MonoBehaviour
             yield return null;
         }
         MusicManager.obj.StopPlaying();
+        yield return StartCoroutine(BackgroundLoaderManager.obj.RemoveBackgroundLayers());
         // Apply the unmuffled effect - this will immediately restore the volume to the player's preferred level
         StartCoroutine(SoundMixerManager.obj.StartMusicUnmuffle(0.5f));
         

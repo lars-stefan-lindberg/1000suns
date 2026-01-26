@@ -4,8 +4,9 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager obj;
     public GameProgress Progress { get; private set; }
-    private CaveTimeline _caveTimeline;
     public bool isDevMode = false;
+    private CaveTimeline _caveTimeline;
+    private string _currentSpawnPointId;
 
     [Header("Debug (Read Only)")]
     [SerializeField]
@@ -67,6 +68,16 @@ public class GameManager : MonoBehaviour
     public void NewGame()
     {
         Progress.Clear();
+    }
+
+    public void SetCurrentSpawnPointId(string spawnPointId)
+    {
+        _currentSpawnPointId = spawnPointId;
+    }
+
+    public string GetCurrentSpawnPointId()
+    {
+        return _currentSpawnPointId;
     }
 
     // --------- Save / Load hooks ---------

@@ -91,13 +91,6 @@ public class Reaper : MonoBehaviour
         LevelManager.obj.ReloadCurrentScene();
     }
 
-    private IEnumerator SpawnAfterDeathAnimation(PlayerManager.PlayerType playerType, float waitingTime) {
-        yield return new WaitForSeconds(waitingTime);
-        PlayerManager.obj.SetPlayerGameObjectInactive(playerType);
-
-        LevelManager.obj.SpawnPlayer(playerType);
-    }
-
     void OnDestroy() {
         obj = null;
     }

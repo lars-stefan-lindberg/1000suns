@@ -43,6 +43,10 @@ public class SaveManager : MonoBehaviour
             Player.obj.SetAnimatorLayerAndHasCape(data.hasCape);
             ShadowTwinPlayer.obj.SetAnimatorLayerAndHasCrown(data.hasCrown);
 
+            if(GameManager.obj != null) {
+                GameManager.obj.SetCurrentSpawnPointId(data.spawnPointId);
+            }
+
             // Apply saved game events back into the manager
             if (GameManager.obj != null)
             {
@@ -158,6 +162,7 @@ public class SaveManager : MonoBehaviour
     private SaveData BuildSaveData(string levelId) {
         SaveData data = new SaveData();
         data.levelId = levelId;
+        data.spawnPointId = GameManager.obj.GetCurrentSpawnPointId();
         data.playerDeaths = PlayerStatsManager.obj.numberOfDeaths;
         data.timePlayed = PlayerStatsManager.obj.GetElapsedTime();
         data.hasCape = Player.obj.GetHasCape();

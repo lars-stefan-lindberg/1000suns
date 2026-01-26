@@ -12,12 +12,12 @@ public class BackgroundLoaderManager : MonoBehaviour
         obj = this;
     }
 
-    public bool IsBackgroundLayersLoaded(SceneField backgroundScene) {
+    public bool IsBackgroundLayersLoaded(string backgroundSceneName) {
         Camera mainCamera = Camera.main;
         if(mainCamera != null) {
             BackgroundLayersManager backgroundLayersManager = mainCamera.gameObject.GetComponentInChildren<BackgroundLayersManager>();
             if(backgroundLayersManager != null) {
-                return backgroundLayersManager.backgroundScene.SceneName == backgroundScene.SceneName;
+                return backgroundLayersManager.backgroundScene.SceneName == backgroundSceneName;
             }
         }
         return false;
@@ -41,14 +41,16 @@ public class BackgroundLoaderManager : MonoBehaviour
         yield return null;
     }
 
-    public void RemoveBackgroundLayers() {
+    public IEnumerator RemoveBackgroundLayers() {
         Camera mainCamera = Camera.main;
         if(mainCamera != null) {
+            Debug.Log("Removing background layers.");
             BackgroundLayersManager backgroundLayersManager = mainCamera.gameObject.GetComponentInChildren<BackgroundLayersManager>();
             if(backgroundLayersManager != null) {
                 Destroy(backgroundLayersManager.gameObject);
             }
         }
+        yield return null;
     }
 
     void OnDestroy()

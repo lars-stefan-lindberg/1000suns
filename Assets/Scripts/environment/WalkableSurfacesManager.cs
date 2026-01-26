@@ -39,7 +39,7 @@ public class WalkableSurfacesManager : MonoBehaviour
 
     private string _lastCheckedSceneName;
     private int _consequetiveChecks = 0;
-    private readonly int _maxConsequetiveChecks = 5;
+    private readonly int _maxConsequetiveChecks = 8;
     private void MaybeRemoveUnusedSurfaces(string sceneName) {
         _lastCheckedSceneName ??= sceneName;
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 public class SaveData
 {
     public string levelId;
+    public string spawnPointId;
     public int playerDeaths;
     public float timePlayed; // in seconds
     public bool hasCape;

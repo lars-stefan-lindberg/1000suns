@@ -46,7 +46,8 @@ public class RoomMgr : MonoBehaviour
             if(_fadeDarknessCoroutine != null) {
                 StopCoroutine(_fadeDarknessCoroutine);
             }
-            _unloadRoomObjectsCoroutine = StartCoroutine(UnloadRoomObjects());
+            if(gameObject.activeSelf)
+                _unloadRoomObjectsCoroutine = StartCoroutine(UnloadRoomObjects());
             OnRoomExit?.Invoke();
         }
     }

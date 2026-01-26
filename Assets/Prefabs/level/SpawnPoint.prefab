@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 3658160454134421921}
   - component: {fileID: 3301090793475753213}
-  - component: {fileID: 182917639592817213}
+  - component: {fileID: 7339979703855284144}
   m_Layer: 2
-  m_Name: PlayerSpawnPoint
+  m_Name: SpawnPoint
   m_TagString: PlayerSpawnPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -65,7 +65,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.28916883, y: 0.59534836}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -76,9 +76,9 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.5783377, y: 2.1906967}
+  m_Size: {x: 0.75, y: 1.75}
   m_EdgeRadius: 0
---- !u!114 &182917639592817213
+--- !u!114 &7339979703855284144
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -87,7 +87,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6921377242360237166}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38bbcd87ac54842a28c15ec4f0cf4dfb, type: 3}
+  m_Script: {fileID: 11500000, guid: d79aa31c8820f42b984ed14fbe6b5120, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IsSecondPlayerSpawnPoint: 0
+  spawnPointID: 

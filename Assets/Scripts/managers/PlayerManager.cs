@@ -242,6 +242,10 @@ public class PlayerManager : MonoBehaviour
         return PlayerType.HUMAN;
     }
 
+    public PlayerType GetLastActivePlayerType() {
+        return _lastPlayerType;
+    }
+
     public void SetTransitioningBetweenLevels() {
         if(PlayerMovement.obj != null && PlayerMovement.obj.gameObject.activeSelf)
             PlayerMovement.obj.SetTransitioningBetweenLevels();

@@ -261,7 +261,6 @@ public class MainMenuManager : MonoBehaviour
         PlayerManager.obj.IsSeparated = false;
         PlayerManager.obj.IsCoopActive = false;
         LevelManager.obj.ResetLevels();
-        BackgroundLoaderManager.obj.RemoveBackgroundLayers();
         GameManager.obj.SetCaveTimeline(new CaveTimeline(CaveTimelineId.Id.Eli));
 
         SoundMixerManager.obj.SetMasterVolume(masterVolume);
@@ -294,9 +293,7 @@ public class MainMenuManager : MonoBehaviour
         //Load surfaces
         yield return StartCoroutine(WalkableSurfacesManager.obj.AddWalkableSurface(_firstCaveSurfaces));
 
-        GameObject levelSwitcherGameObject = sceneGameObjects.First(gameObject => gameObject.CompareTag("LevelSwitcher"));
-        LevelSwitcher levelSwitcher = levelSwitcherGameObject.GetComponent<LevelSwitcher>();
-        levelSwitcher.LoadNextRoom();
+        LevelManager.obj.LoadAdjacentRooms(firstScene);
         
         SceneManager.UnloadSceneAsync(_titleScreen.SceneName);
     }
@@ -360,9 +357,7 @@ public class MainMenuManager : MonoBehaviour
         CameraManager cameraManager = cameras.GetComponent<CameraManager>();
         cameraManager.ActivateMainCamera();
 
-        GameObject levelSwitcherGameObject = sceneGameObjects.First(gameObject => gameObject.CompareTag("LevelSwitcher"));
-        LevelSwitcher levelSwitcher = levelSwitcherGameObject.GetComponent<LevelSwitcher>();
-        levelSwitcher.LoadNextRoom();
+        LevelManager.obj.LoadAdjacentRooms(c1_1Scene);
         
         SceneManager.UnloadSceneAsync(_titleScreen.SceneName);
     }

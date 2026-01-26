@@ -14,6 +14,15 @@ public class LevelManager : MonoBehaviour
 
     private Dictionary<string, bool> levelCompletionMap = new Dictionary<string, bool>();
 
+    private static readonly string[] LevelSceneNamePrefixes =
+    {
+        "Forest-",
+        "Cave-",
+        "Tree-",
+        "Ocean-",
+        "Underworld-"
+    };
+
 
     void Awake() {
         obj = this;
@@ -38,9 +47,13 @@ public class LevelManager : MonoBehaviour
 
     public InitRoom GetActiveSceneInitRoomData() {
         Scene activeScene = SceneManager.GetActiveScene();
-        GameObject initRoomObject = activeScene.GetRootGameObjects().FirstOrDefault(gameObject => gameObject.CompareTag("InitRoom"));
+        return GetInitRoomData(activeScene);
+    }
+
+    public InitRoom GetInitRoomData(Scene scene) {
+        GameObject initRoomObject = scene.GetRootGameObjects().FirstOrDefault(gameObject => gameObject.CompareTag("InitRoom"));
         if(initRoomObject == null) {
-            Debug.LogWarning("Scene " + activeScene.name + " does not have any InitRoom data.");
+            Debug.LogWarning("Scene " + scene.name + " does not have any InitRoom data.");
             return null;
         }
         return initRoomObject.GetComponent<InitRoom>();
@@ -69,7 +82,11 @@ public class LevelManager : MonoBehaviour
     }
 
     private IEnumerator LoadScene(Scene scene) {
+        InitRoom initRoom = GetInitRoomData(scene);
         yield return StartCoroutine(LoadWalkableSurface(scene));
+        if(!BackgroundLoaderManager.obj.IsBackgroundLayersLoaded(initRoom.backgroundScene)) {
+            yield return StartCoroutine(BackgroundLoaderManager.obj.LoadAndSetBackground(initRoom.backgroundScene));
+        }
 
         GameObject[] sceneGameObjects = scene.GetRootGameObjects();
         
@@ -92,50 +109,29 @@ public class LevelManager : MonoBehaviour
         }
         
         Collider2D playerSpawnPointCollider;
-        if(PlayerManager.obj.IsSeparated) {
-            GameObject eliSpawnPoint = GetPlayerSpawnPoint(PlayerManager.PlayerType.HUMAN, sceneGameObjects);
-            Collider2D eliSpawningCollider = eliSpawnPoint.GetComponent<Collider2D>();
-            playerSpawnPointCollider = eliSpawningCollider;
-            if(Player.obj != null)
-                Player.obj.transform.position = eliSpawningCollider.transform.position;
-            else if(PlayerBlob.obj != null) {
-                PlayerBlob.obj.transform.position = eliSpawningCollider.transform.position - new Vector3(0, 0.5f, 0);;
-            }
-            GameObject shadowTwinSpawnPoint = GetPlayerSpawnPoint(PlayerManager.PlayerType.SHADOW_TWIN, sceneGameObjects);
-            Collider2D shadowTwinSpawningCollider = shadowTwinSpawnPoint.GetComponent<Collider2D>();
+        GameObject playerSpawnPoint;
+        playerSpawnPoint = FindSceneSpawnPoint(GameManager.obj.GetCurrentSpawnPointId());
+        if (playerSpawnPoint == null)
+            playerSpawnPoint = initRoom.defaultSpawnPoint;
+        playerSpawnPointCollider = playerSpawnPoint.GetComponent<Collider2D>();
+        //Set correct character active
+        CaveTimelineId.Id caveTimelineId = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(caveTimelineId == CaveTimelineId.Id.Eli || caveTimelineId == CaveTimelineId.Id.Both) {
             if(ShadowTwinPlayer.obj != null)
-                ShadowTwinPlayer.obj.transform.position = shadowTwinSpawningCollider.transform.position;
-
-            AdjustSpawnFaceDirectionIsSeparated(activeCameraObject.transform.position.x, eliSpawningCollider.transform.position.x, PlayerManager.PlayerType.HUMAN);
-            AdjustSpawnFaceDirectionIsSeparated(activeCameraObject.transform.position.x, shadowTwinSpawningCollider.transform.position.x, PlayerManager.PlayerType.SHADOW_TWIN);
-        } else {
-            GameObject playerSpawnPoint;
-            if(IsLevelCompleted(scene.name)) {
-                Debug.Log("Level has been completed. Scene: " + scene.name + ". Loading alternative spawn point.");
-                playerSpawnPoint = sceneGameObjects.First(gameObject => gameObject.CompareTag("AlternatePlayerSpawnPoint"));
-            } else {
-                playerSpawnPoint = sceneGameObjects.First(gameObject => gameObject.CompareTag("PlayerSpawnPoint"));
-            }
-            playerSpawnPointCollider = playerSpawnPoint.GetComponent<Collider2D>();
-
-            //Set correct character active
-            CaveTimelineId.Id caveTimelineId = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
-            if(caveTimelineId == CaveTimelineId.Id.Eli || caveTimelineId == CaveTimelineId.Id.Both) {
                 ShadowTwinPlayer.obj.gameObject.SetActive(false);
-                if(Player.obj != null)
-                    Player.obj.transform.position = playerSpawnPointCollider.transform.position;
-                else if(PlayerBlob.obj != null)
-                    PlayerBlob.obj.transform.position = playerSpawnPointCollider.transform.position - new Vector3(0, 0.5f, 0);
-            } else if(caveTimelineId == CaveTimelineId.Id.Dee) {
-                Player.obj.gameObject.SetActive(false);
-                PlayerBlob.obj.gameObject.SetActive(true);
-                if(ShadowTwinPlayer.obj != null) {
-                    ShadowTwinPlayer.obj.transform.position = playerSpawnPointCollider.transform.position;
-                }
+            PlayerManager.PlayerType playerType = PlayerManager.obj.GetLastActivePlayerType();
+            if(Player.obj != null && playerType == PlayerManager.PlayerType.HUMAN)
+                Player.obj.transform.position = playerSpawnPointCollider.transform.position;
+            else if(PlayerBlob.obj != null && playerType == PlayerManager.PlayerType.BLOB)
+                PlayerBlob.obj.transform.position = playerSpawnPointCollider.transform.position - new Vector3(0, 0.5f, 0);
+        } else if(caveTimelineId == CaveTimelineId.Id.Dee) {
+            Player.obj.gameObject.SetActive(false);
+            PlayerBlob.obj.gameObject.SetActive(true);
+            if(ShadowTwinPlayer.obj != null) {
+                ShadowTwinPlayer.obj.transform.position = playerSpawnPointCollider.transform.position;
             }
-
-            AdjustSpawnFaceDirection(activeCameraObject.transform.position.x, playerSpawnPoint.transform.position.x);
         }
+        AdjustSpawnFaceDirection(activeCameraObject.transform.position.x, playerSpawnPoint.transform.position.x);        
 
         if(CaveAvatar.obj != null && CaveAvatar.obj.gameObject.activeSelf) {
             SetCaveAvatarPosition(scene);
@@ -181,11 +177,7 @@ public class LevelManager : MonoBehaviour
 
         Reaper.obj.playerKilled = false;
 
-        IEnumerable<GameObject> levelSwitchers = sceneGameObjects.Where(gameObject => gameObject.CompareTag("LevelSwitcher"));
-        foreach(GameObject levelSwitcherGameObject in levelSwitchers) {
-            LevelSwitcher levelSwitcher = levelSwitcherGameObject.GetComponent<LevelSwitcher>();
-            levelSwitcher.LoadNextRoom();
-        }
+        StartCoroutine(LoadAdjacentRoomsPrivate(scene));
 
         //Load any potential collectibles
         CollectibleManager.obj.MaybeLoadCollectible(scene.name);
@@ -208,6 +200,67 @@ public class LevelManager : MonoBehaviour
         yield return StartCoroutine(DelayedSceneFadeIn(playerSpawnPointCollider.transform));
 
         yield return null;
+    }
+
+    private GameObject FindSceneSpawnPoint(string spawnPointId) {
+        SpawnPoint spawnPoint = FindObjectsOfType<SpawnPoint>().FirstOrDefault(spawnPoint => spawnPoint.SpawnPointID == spawnPointId);
+        if(spawnPoint == null) {
+            return null;
+        }
+        return spawnPoint.gameObject;
+    }
+
+    public void LoadAdjacentRooms(Scene scene) {
+        StartCoroutine(LoadAdjacentRoomsPrivate(scene));
+    }
+
+    private IEnumerator LoadAdjacentRoomsPrivate(Scene scene) {
+        InitRoom initRoomData = GetInitRoomData(scene);
+        List<SceneField> adjacentRooms = initRoomData.adjacentRooms;
+        foreach(SceneField room in adjacentRooms) {
+            Scene sceneToLoad = SceneManager.GetSceneByName(room.SceneName);
+            if(!sceneToLoad.isLoaded) {
+                SceneManager.LoadSceneAsync(room.SceneName, LoadSceneMode.Additive);
+            }
+            CollectibleManager.obj.MaybeLoadCollectible(room.SceneName);
+        }
+        yield return null;
+    }
+
+    public void UnloadNonAdjacentRooms(Scene currentScene) {
+        InitRoom initRoomData = GetInitRoomData(currentScene);
+        List<SceneField> adjacentRooms = initRoomData.adjacentRooms;
+
+        HashSet<string> excluded = new()
+        {
+            currentScene.name
+        };
+        foreach(SceneField sceneField in adjacentRooms) {
+            excluded.Add(sceneField.SceneName);
+        }
+
+        List<Scene> scenesToUnload = new List<Scene>();
+
+        for (int i = 0; i < SceneManager.sceneCount; i++)
+        {
+            Scene scene = SceneManager.GetSceneAt(i);
+
+            if (!scene.isLoaded)
+                continue;
+
+            if (excluded.Contains(scene.name))
+                continue;
+
+            if (LevelSceneNamePrefixes.Any(prefix => scene.name.StartsWith(prefix)))
+            {
+                scenesToUnload.Add(scene);
+            }
+        }
+
+        foreach (Scene scene in scenesToUnload)
+        {
+            SceneManager.UnloadSceneAsync(scene);
+        }
     }
 
     private IEnumerator DelayedSceneFadeIn(Transform playerSpawnPoint) {
@@ -266,79 +319,6 @@ public class LevelManager : MonoBehaviour
                     ShadowTwinPlayer.obj.SetAnimatorLayerAndHasCrown(false);
                 }
             }
-        }
-    }
-
-    public void SpawnPlayer(PlayerManager.PlayerType playerType) {
-        Scene scene = SceneManager.GetActiveScene();
-        GameObject[] sceneGameObjects = scene.GetRootGameObjects();
-
-        GameObject playerSpawnPoint;
-        if(IsLevelCompleted(scene.name)) {
-            Debug.Log("Level has been completed. Scene: " + scene.name + ". Loading alternative spawn point.");
-            playerSpawnPoint = sceneGameObjects.First(gameObject => gameObject.CompareTag("AlternatePlayerSpawnPoint"));
-        } else {
-            playerSpawnPoint = GetPlayerSpawnPoint(playerType, sceneGameObjects);
-        }
-        Collider2D playerSpawningCollider = playerSpawnPoint.GetComponent<Collider2D>();
-
-        GameObject cameras = sceneGameObjects.First(gameObject => gameObject.CompareTag("Cameras"));
-        CameraManager cameraManager = cameras.GetComponent<CameraManager>();
-        GameObject activeCameraObject = cameraManager.ActivateMainCamera();
-        
-        if(playerType == PlayerManager.PlayerType.HUMAN) {
-            if(Player.obj != null)
-                Player.obj.transform.position = playerSpawningCollider.transform.position;
-            if(PlayerBlob.obj != null)
-                PlayerBlob.obj.transform.position = playerSpawningCollider.transform.position - new Vector3(0, 0.5f, 0);
-        } else if(playerType == PlayerManager.PlayerType.SHADOW_TWIN) {
-            ShadowTwinPlayer.obj.transform.position = playerSpawningCollider.transform.position;
-        }
-        AdjustSpawnFaceDirection(activeCameraObject.transform.position.x, playerSpawnPoint.transform.position.x);
-        
-        PlayerManager.obj.EnableLastActivePlayerGameObject();
-        
-        if(playerType == PlayerManager.PlayerType.HUMAN) {
-            if(PlayerBlobMovement.obj != null) {
-                PlayerBlobMovement.obj.SetStartingOnGround();
-                PlayerBlobMovement.obj.isGrounded = true;
-                PlayerBlobMovement.obj.CancelJumping();
-                PlayerBlob.obj.FadeInPlayerLight();
-            }
-
-            if(PlayerMovement.obj != null) {
-                PlayerMovement.obj.SetStartingOnGround();
-                PlayerMovement.obj.isGrounded = true;
-                PlayerMovement.obj.isForcePushJumping = false;
-                PlayerMovement.obj.jumpedWhileForcePushJumping = false;
-                PlayerMovement.obj.isTransformingToBlob = false;
-                PlayerMovement.obj.isTransformingToTwin = false;
-                PlayerMovement.obj.CancelJumping();
-                Player.obj.FadeInPlayerLight();
-            }
-        } else if(playerType == PlayerManager.PlayerType.SHADOW_TWIN) {
-            if(ShadowTwinMovement.obj != null) {
-                ShadowTwinMovement.obj.SetStartingOnGround();
-                ShadowTwinMovement.obj.isGrounded = true;
-                ShadowTwinMovement.obj.isTransforming = false;
-                ShadowTwinMovement.obj.CancelJumping();
-                ShadowTwinPlayer.obj.FadeInPlayerLight();
-            }
-        }
-
-        PlayerManager.obj.PlaySpawn(playerType);
-        //Need to play a slightly delayed spawn sound due to when loading a game the sound is broken at the beginning. No idea why!
-        StartCoroutine(DelayedSpawnSfx(playerSpawningCollider.transform));
-    }   
-
-    private GameObject GetPlayerSpawnPoint(PlayerManager.PlayerType playerType, GameObject[] sceneGameObjects) {
-        if(playerType == PlayerManager.PlayerType.HUMAN)
-         return sceneGameObjects.First(gameObject => gameObject.CompareTag("PlayerSpawnPoint") && !gameObject.GetComponent<PlayerSpawnPointManager>().IsSecondPlayerSpawnPoint);
-        else if(playerType == PlayerManager.PlayerType.SHADOW_TWIN)
-         return sceneGameObjects.First(gameObject => gameObject.CompareTag("PlayerSpawnPoint") && gameObject.GetComponent<PlayerSpawnPointManager>().IsSecondPlayerSpawnPoint);
-        else {
-            Debug.Log("Unknown player type: " + playerType);
-            return null;
         }
     }
 

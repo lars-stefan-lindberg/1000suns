@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SetFollowPlayerTrigger : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class SetFollowPlayerTrigger : MonoBehaviour
             CaveAvatar.obj.FollowPlayer();
             GameManager.obj.IsPauseAllowed = true;
             GameManager.obj.RegisterEvent(_event);
+            SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         }
     }
 }

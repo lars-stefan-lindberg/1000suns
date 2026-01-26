@@ -32,9 +32,9 @@ public class C1FreeCaveAvatarManager : MonoBehaviour, ISkippable
         Player.obj.EndPullRoots();
         if(_caveRootsTrap != null)
             _caveRootsTrap.SetActive(false);
-        CaveAvatar.obj.SetFloatingEnabled(true);
         CaveAvatar.obj.SetPosition(_finalCaveAvatarFlyPosition.position);
         CaveAvatar.obj.SetFlipX(false);
+        CaveAvatar.obj.SetFloatingEnabled(true);
         _conversationManager.HardStopConversation();
         Player.obj.transform.position = new Vector2(273f, -90.875f);
         PlayerMovement.obj.SetStartingOnGround();
