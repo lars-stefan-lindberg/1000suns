@@ -1,13 +1,10 @@
 using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
-using UnityEditor.SceneManagement;
-#endif
 
 [RequireComponent(typeof(BoxCollider2D))]
 public class SpawnPoint : MonoBehaviour
 {
-    [SerializeField] private string spawnPointID;
+    [SerializeField, HideInInspector]
+    private string spawnPointID;
     public string SpawnPointID => spawnPointID;
 
     private BoxCollider2D _collider;
@@ -22,25 +19,16 @@ public class SpawnPoint : MonoBehaviour
 
     #if UNITY_EDITOR
 
-    void OnValidate()
+    public bool HasID => !string.IsNullOrEmpty(spawnPointID);
+
+    public void GenerateID()
     {
-        AssignIDIfNeeded();
-    }
-    void AssignIDIfNeeded()
-    {
-        // Never generate IDs on prefab assets
-        if (PrefabUtility.IsPartOfPrefabAsset(this))
+        if (HasID)
             return;
 
-        if (string.IsNullOrEmpty(spawnPointID))
-        {
-            var room = gameObject.scene;
-            if (room == null) return;
-
-            spawnPointID = $"{room.name}_{System.Guid.NewGuid().ToString()}";
-            EditorSceneManager.MarkSceneDirty(gameObject.scene);
-            EditorUtility.SetDirty(this);
-        }
+        var room = gameObject.scene;
+        if (room == null) return;
+        spawnPointID = $"{room.name}_{System.Guid.NewGuid().ToString()}";
     }
     #endif
 }
