@@ -17,6 +17,11 @@ public class SpawnPoint : MonoBehaviour
         return _collider;
     }
 
+    [ContextMenu("Clear spawn point id")]
+    public void ClearSpawnPointId() {
+        spawnPointID = "";
+    }
+
     #if UNITY_EDITOR
 
     public bool HasID => !string.IsNullOrEmpty(spawnPointID);

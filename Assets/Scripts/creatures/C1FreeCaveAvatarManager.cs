@@ -39,7 +39,6 @@ public class C1FreeCaveAvatarManager : MonoBehaviour, ISkippable
         Player.obj.transform.position = new Vector2(273f, -90.875f);
         PlayerMovement.obj.SetStartingOnGround();
         PlayerMovement.obj.isGrounded = true;
-        PauseMenuManager.obj.UnregisterSkippable();
         StartCoroutine(ResumeGameplay());
     }
 
@@ -49,6 +48,7 @@ public class C1FreeCaveAvatarManager : MonoBehaviour, ISkippable
             yield return null;
         }
         PlayerMovement.obj.UnFreeze();
+        GameManager.obj.IsPauseAllowed = true;
         yield return null;
     }
 
@@ -83,6 +83,5 @@ public class C1FreeCaveAvatarManager : MonoBehaviour, ISkippable
     private void OnConversationCompleted() {
         PlayerMovement.obj.UnFreeze();
         CaveAvatar.obj.SetTarget(_finalCaveAvatarFlyPosition);
-        PauseMenuManager.obj.UnregisterSkippable();
     }
 }

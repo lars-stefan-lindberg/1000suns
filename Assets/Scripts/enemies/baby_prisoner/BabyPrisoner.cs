@@ -26,6 +26,8 @@ public class BabyPrisoner : MonoBehaviour
     private bool _isHiding = false;
     public int alertRunDirection = 1; //-1: left, 1: right
 
+    [SerializeField] private bool _idleInPlaceUntilAlerted = false;
+
     bool IsMoving => Mathf.Abs(_rigidBody.velocity.x) > 0.01;
 
     private float playerCastDistance = 0;
@@ -83,7 +85,7 @@ public class BabyPrisoner : MonoBehaviour
             
         // }
 
-        if(!isTurning && !isAlerted && !_isHiding) {
+        if (!_idleInPlaceUntilAlerted && !isTurning && !isAlerted && !_isHiding) {
             float currentHorizontalPos = transform.position.x;
             if(((currentHorizontalPos >= (originHorizontalPos + maxTravellingDistance)) && !IsMovingLeft()) || 
                 ((currentHorizontalPos <= (originHorizontalPos - maxTravellingDistance)) && IsMovingLeft())) 
@@ -93,7 +95,7 @@ public class BabyPrisoner : MonoBehaviour
             }
         }
 
-        if (isGrounded && !isAlerted && !_isHiding)
+        if (isGrounded && !isAlerted && !_isHiding && !_idleInPlaceUntilAlerted)
         {
             GracefulSpeedChange();
         }
@@ -139,7 +141,15 @@ public class BabyPrisoner : MonoBehaviour
             if (!isTurning)
             {
                 Vector2 currentVelocity = _rigidBody.velocity;
-                currentVelocity.x = -_collider.transform.right.x * speed;
+                if (_idleInPlaceUntilAlerted && !isAlerted && !_isHiding)
+                {
+                    speed = 0;
+                    currentVelocity.x = 0;
+                }
+                else
+                {
+                    currentVelocity.x = -_collider.transform.right.x * speed;
+                }
                 _rigidBody.velocity = currentVelocity;
             }
         }
@@ -156,7 +166,7 @@ public class BabyPrisoner : MonoBehaviour
     }
 
     private bool IsFacingLeft() {
-        return transform.eulerAngles.y > -0.5 && transform.eulerAngles.y < 0.5;
+        return transform.eulerAngles.y == 0;
     }
 
     public float alertRunDuration = 1.5f;
@@ -169,9 +179,8 @@ public class BabyPrisoner : MonoBehaviour
     }
 
     public void Hide(Vector2 triggerPosition) {
-        Vector2 direction = (Vector2)transform.position - triggerPosition;
-        direction.Normalize();
-        if(direction.x == 1) {
+        float positionDiff = transform.position.x - triggerPosition.x;
+        if(positionDiff > 0) {
             Vector3 currentRotation = transform.eulerAngles;
             currentRotation.y = -180;
             transform.eulerAngles = currentRotation;
@@ -228,7 +237,9 @@ public class BabyPrisoner : MonoBehaviour
 
     public void Disable() {
         speed = 0;
-        SoundFXManager.obj.FadeOutAndStopSound(_escapeAudioSource, 2f);
+        if(_escapeAudioSource != null) {
+            SoundFXManager.obj.FadeOutAndStopSound(_escapeAudioSource, 2f);
+        }
         StartCoroutine(DelayedSetGameObjectInactive());
     }
 

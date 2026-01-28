@@ -43,7 +43,6 @@ public class C1DialogueTrigger : MonoBehaviour, ISkippable
         Player.obj.transform.position = new Vector2(273f, -90.875f);
         PlayerMovement.obj.SetStartingOnGround();
         PlayerMovement.obj.isGrounded = true;
-        PauseMenuManager.obj.UnregisterSkippable();
         StartCoroutine(ResumeGameplay());
     }
 
@@ -53,6 +52,7 @@ public class C1DialogueTrigger : MonoBehaviour, ISkippable
             yield return null;
         }
         PlayerMovement.obj.UnFreeze();
+        GameManager.obj.IsPauseAllowed = true;
         yield return null;
     }
 
@@ -67,6 +67,5 @@ public class C1DialogueTrigger : MonoBehaviour, ISkippable
         PlayerMovement.obj.UnFreeze();
         _conversationManager.OnConversationEnd -= OnConversationCompleted;
         _nextConversationManager.enabled = true;
-        PauseMenuManager.obj.UnregisterSkippable();
     }
 }

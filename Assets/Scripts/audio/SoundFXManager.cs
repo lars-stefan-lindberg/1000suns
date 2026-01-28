@@ -212,8 +212,8 @@ public class SoundFXManager : MonoBehaviour
     public void PlayCrystalRoomRumble() {
         PlayNonSpatiallyAwareSound(crystalRoomRumble, Camera.main.transform, 1f);
     }
-    public void PlayEarthquake() {
-        PlayNonSpatiallyAwareSound(earthquake, Camera.main.transform, 1f);
+    public AudioSource PlayEarthquake() {
+        return PlayNonSpatiallyAwareSound(earthquake, Camera.main.transform, 1f);
     }
     public void PlayC26Rumble() {
         PlayNonSpatiallyAwareSound(c26Rumble, Camera.main.transform, 1f);
