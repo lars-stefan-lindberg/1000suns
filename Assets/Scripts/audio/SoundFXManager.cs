@@ -385,11 +385,11 @@ public class SoundFXManager : MonoBehaviour
         PlaySound(prisonerSoulAbsorb3, spawnTransform, 1f);
     }
 
-    public void PlayCapeIntroduction(Transform spawnTransform) {
-        PlayNonSpatiallyAwareSound(capeIntroduction, spawnTransform, 1f);
+    public AudioSource PlayCapeIntroduction(Transform spawnTransform) {
+        return PlayNonSpatiallyAwareSound(capeIntroduction, spawnTransform, 1f);
     }
-    public void PlayCapePickUp(Transform spawnTransform) {
-        PlayNonSpatiallyAwareSound(capePickUp, spawnTransform, 1f);
+    public AudioSource PlayCapePickUp(Transform spawnTransform) {
+        return PlayNonSpatiallyAwareSound(capePickUp, spawnTransform, 1f);
     }
 
     public void PlayRevealSecret(Transform spawnTransform) {

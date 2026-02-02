@@ -44,6 +44,14 @@ public class WhiteFadeManager : MonoBehaviour
         }
     }
 
+    public void Reset()
+    {
+        _fadeOutStartColor.a = 0f;
+        _fadeOutImage.color = _fadeOutStartColor;
+        IsFadingOut = false;
+        IsFadingIn = false; 
+    }
+
     public void StartFadeOut() {
         _fadeOutImage.color = _fadeOutStartColor;
         IsFadingOut = true;

@@ -82,31 +82,33 @@ public class RoomCameraController : MonoBehaviour
 
     void ConfigureForRoomType()
     {
-        framing.m_LookaheadTime = 0;
-        framing.m_ScreenX = 0.5f;
-        framing.m_ScreenY = 0.5f;
-        framing.m_TrackedObjectOffset = Vector3.zero;
+        if(framing != null) {
+            framing.m_LookaheadTime = 0;
+            framing.m_ScreenX = 0.5f;
+            framing.m_ScreenY = 0.5f;
+            framing.m_TrackedObjectOffset = Vector3.zero;
 
-        switch (roomType)
-        {
-            case RoomCameraType.Static:
-                vcam.Follow = null;
-                break;
+            switch (roomType)
+            {
+                case RoomCameraType.Static:
+                    vcam.Follow = null;
+                    break;
 
-            case RoomCameraType.Horizontal:
-                framing.m_DeadZoneHeight = 999;
-                framing.m_DeadZoneWidth = 0;
-                break;
+                case RoomCameraType.Horizontal:
+                    framing.m_DeadZoneHeight = 999;
+                    framing.m_DeadZoneWidth = 0;
+                    break;
 
-            case RoomCameraType.Vertical:
-                framing.m_DeadZoneWidth = 999;
-                framing.m_DeadZoneHeight = 0;
-                break;
+                case RoomCameraType.Vertical:
+                    framing.m_DeadZoneWidth = 999;
+                    framing.m_DeadZoneHeight = 0;
+                    break;
 
-            case RoomCameraType.HorizontalAndVertical:
-                framing.m_DeadZoneWidth = 0;
-                framing.m_DeadZoneHeight = 0;
-                break;
+                case RoomCameraType.HorizontalAndVertical:
+                    framing.m_DeadZoneWidth = 0;
+                    framing.m_DeadZoneHeight = 0;
+                    break;
+            }
         }
     }
 

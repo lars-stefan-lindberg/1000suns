@@ -1,16 +1,17 @@
 using System.Collections;
-using Cinemachine;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class CapeRoomSwitchToFullRoomCam : MonoBehaviour
 {
-    [SerializeField] private GameObject _zoomedCamera;
-    [SerializeField] private GameObject _fullRoomCamera;
+    [SerializeField] private GameEventId _customCameraZoomedOutEventId;
+    [SerializeField] private GameObject _mainCamera;
+    [SerializeField] private SpawnPoint _spawnPoint;
     private bool _isTriggered = false;
 
     void Awake() {
-        if(GameManager.obj.CapePicked || GameManager.obj.CapeRoomZoomCompleted) {
+        if(GameManager.obj.HasEvent(_customCameraZoomedOutEventId)) {
             _isTriggered = true;
             Destroy(gameObject, 3);
         }
@@ -19,7 +20,6 @@ public class CapeRoomSwitchToFullRoomCam : MonoBehaviour
     private void OnTriggerExit2D(Collider2D collider) {
         if(collider.transform.CompareTag("Player") && !_isTriggered) {
             PlayerMovement.obj.Freeze();
-            GameManager.obj.IsPauseAllowed = false;
             StartCoroutine(SwitchToFullRoomCamera());
             _isTriggered = true;
         }
@@ -27,19 +27,17 @@ public class CapeRoomSwitchToFullRoomCam : MonoBehaviour
 
     private IEnumerator SwitchToFullRoomCamera() {
         yield return new WaitForSeconds(0.5f);
-        _fullRoomCamera.SetActive(true);
-        CinemachineVirtualCamera fullRoomCamera = _fullRoomCamera.GetComponent<CinemachineVirtualCamera>();
-        CinemachineVirtualCamera zoomedCamera = _zoomedCamera.GetComponent<CinemachineVirtualCamera>();
-        fullRoomCamera.enabled = true;
-        zoomedCamera.enabled = false;
-        _zoomedCamera.SetActive(false);
+        RoomCameraController cameraController = _mainCamera.GetComponent<RoomCameraController>();
+        GameObject[] sceneGameObjects = gameObject.scene.GetRootGameObjects();
+        GameObject room = sceneGameObjects.First(gameObject => gameObject.CompareTag("Room"));
+        Collider2D roomCollider = room.GetComponent<Collider2D>();
+        CameraManager.obj.EnterRoom(cameraController, roomCollider, PlayerManager.obj.GetPlayerTransform(), _spawnPoint.transform.position);
 
         MusicManager.obj.PlayPowerUpIntroSong();
 
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(4);
         PlayerMovement.obj.UnFreeze();
-        GameManager.obj.CapeRoomZoomCompleted = true;
+        GameManager.obj.RegisterEvent(_customCameraZoomedOutEventId);
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
-        GameManager.obj.IsPauseAllowed = true;
     }
 }
