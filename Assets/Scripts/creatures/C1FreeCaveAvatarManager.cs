@@ -83,5 +83,6 @@ public class C1FreeCaveAvatarManager : MonoBehaviour, ISkippable
     private void OnConversationCompleted() {
         PlayerMovement.obj.UnFreeze();
         CaveAvatar.obj.SetTarget(_finalCaveAvatarFlyPosition);
+        PauseMenuManager.obj.UnregisterSkippable();
     }
 }

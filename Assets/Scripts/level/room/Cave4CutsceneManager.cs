@@ -64,5 +64,6 @@ public class Cave4CutsceneManager : MonoBehaviour, ISkippable
         PlayerMovement.obj.UnFreeze();
         _conversationManager.OnConversationEnd -= OnConversationCompleted;
         GameManager.obj.RegisterEvent(_isCutsceneCompleted);
+        PauseMenuManager.obj.UnregisterSkippable();
     }
 }

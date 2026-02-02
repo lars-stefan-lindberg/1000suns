@@ -51,12 +51,15 @@ public class RoomCameraController : MonoBehaviour
     {
         gameObject.SetActive(true);
         player = playerTransform;
-        vcam.Follow = player;
-        vcamConfiner.m_BoundingShape2D = confiner;
-        CacheConfinerBounds();
-        vcamConfiner.InvalidateCache();
-
-        transform.position = new Vector3(spawnPosition.x, spawnPosition.y, transform.position.z);
+        
+        //Don't set confiner for static rooms, since camera shake won't work
+        if(roomType != RoomCameraType.Static) {
+            vcam.Follow = player;
+            vcamConfiner.m_BoundingShape2D = confiner;
+            CacheConfinerBounds();
+            vcamConfiner.InvalidateCache();
+            transform.position = new Vector3(spawnPosition.x, spawnPosition.y, transform.position.z);
+        }
 
         ConfigureForRoomType();
         _justActivated = true;

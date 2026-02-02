@@ -214,6 +214,10 @@ public class PauseMenuManager : MonoBehaviour
         _skippable = skippable;
     }
 
+    public void UnregisterSkippable() {
+        _skippable = null;
+    }
+
     public void OnSkipCutsceneClick() {
         SoundFXManager.obj.PlayUIConfirm();
         Time.timeScale = 1f;
@@ -228,7 +232,7 @@ public class PauseMenuManager : MonoBehaviour
         }   
         yield return new WaitForSeconds(0.3f);
         _skippable.RequestSkip();
-        _skippable = null;
+        UnregisterSkippable();
         ResumeGame();
         yield return null;
     }

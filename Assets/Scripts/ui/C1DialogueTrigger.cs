@@ -67,5 +67,6 @@ public class C1DialogueTrigger : MonoBehaviour, ISkippable
         PlayerMovement.obj.UnFreeze();
         _conversationManager.OnConversationEnd -= OnConversationCompleted;
         _nextConversationManager.enabled = true;
+        PauseMenuManager.obj.UnregisterSkippable();
     }
 }
