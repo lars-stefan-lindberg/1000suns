@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class SpriteFlash : MonoBehaviour
 {
-[SerializeField] private float _flashIntensity = 0.25f;
+    [SerializeField] private float _flashIntensity = 0.25f;
     [SerializeField] private float _increaseFlashSpeed = 0.3f;
     [SerializeField] private float _decreaseFlashSpeed = 0.6f;
 

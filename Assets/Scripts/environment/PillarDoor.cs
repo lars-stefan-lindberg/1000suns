@@ -1,12 +1,11 @@
 using System.Collections;
 using UnityEngine;
 
-public class GlyphDoorTrigger : MonoBehaviour
+public class PillarDoor : MonoBehaviour
 {
-    [SerializeField] private GameObject _door;
     [SerializeField] private Transform _doorMovingTransform;
-    [SerializeField] private SpriteFlash _glyphFlash;
-    private ParticleSystem _doorDust;
+    [SerializeField] private ParticleSystem _doorCaveDust;
+    [SerializeField] private ParticleSystem _doorFloorDust;
     private SpriteRenderer _doorSprite;
     private BoxCollider2D _doorCollider;
     [SerializeField] private float _doorRaiseDistance = 3.5f;
@@ -18,13 +17,14 @@ public class GlyphDoorTrigger : MonoBehaviour
     [SerializeField] private float _earthquakeFadeOutDuration = 0.25f;
     [SerializeField] private float _openCameraShakeAmplitude = 1.0f;
     [SerializeField] private float _openCameraShakeFrequency = 1.0f;
+    [SerializeField] private float _floorDustDuration = 0.15f;
 
     private Vector3 _doorStartPos;
     private Coroutine _sequenceRoutine;
     private Coroutine _earthquakeFadeRoutine;
+    private Coroutine _floorDustRoutine;
     private AudioSource _earthquakeSource;
     private float _earthquakeStartVolume = 1f;
-    private bool _playerInside;
 
     private enum DoorState
     {
@@ -36,14 +36,39 @@ public class GlyphDoorTrigger : MonoBehaviour
 
     private DoorState _doorState = DoorState.Closed;
 
+    private bool TryKillPlayerIfCrushed()
+    {
+        if (_doorCollider == null)
+            return false;
+
+        if (PlayerManager.obj == null || Reaper.obj == null)
+            return false;
+
+        PlayerManager.PlayerType playerType = PlayerManager.obj.GetActivePlayerType();
+        if (!PlayerManager.obj.IsPlayerGrounded(playerType))
+            return false;
+
+        Transform playerTransform = PlayerManager.obj.GetPlayerTransform(playerType);
+        if (playerTransform == null)
+            return false;
+
+        Collider2D playerCollider = playerTransform.GetComponent<Collider2D>();
+        if (playerCollider == null)
+            return false;
+
+        ColliderDistance2D colliderDistance = Physics2D.Distance(_doorCollider, playerCollider);
+        float touchTolerance = 0.01f;
+        if (!colliderDistance.isOverlapped && colliderDistance.distance > touchTolerance)
+            return false;
+
+        Reaper.obj.KillPlayerGeneric(playerType);
+        return true;
+    }
+
     void Awake()
     {
-        if (_door != null)
-        {
-            _doorDust = _door.GetComponentInChildren<ParticleSystem>();
-            _doorSprite = _door.GetComponentInChildren<SpriteRenderer>();
-            _doorCollider = _door.GetComponentInChildren<BoxCollider2D>();
-        }
+        _doorSprite = GetComponentInChildren<SpriteRenderer>();
+        _doorCollider = GetComponentInChildren<BoxCollider2D>();
 
         if (_doorMovingTransform == null)
         {
@@ -53,23 +78,24 @@ public class GlyphDoorTrigger : MonoBehaviour
                 _doorMovingTransform = _doorSprite.transform;
             else if (_doorCollider != null)
                 _doorMovingTransform = _doorCollider.transform;
-            else if (_door != null)
-                _doorMovingTransform = _door.transform;
+            else
+                _doorMovingTransform = transform;
         }
 
         if (_doorMovingTransform != null)
             _doorStartPos = _doorMovingTransform.position;
 
-        if (_doorDust != null)
-            _doorDust.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        if (_doorCaveDust != null)
+            _doorCaveDust.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
+        if (_doorFloorDust != null)
+            _doorFloorDust.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
     }
 
-    void OnTriggerEnter2D(Collider2D collision)
+    public void Open()
     {
-        if (!collision.CompareTag("Player"))
+        if (_doorState == DoorState.Opening)
             return;
-
-        _playerInside = true;
 
         if (_sequenceRoutine != null)
             StopCoroutine(_sequenceRoutine);
@@ -77,12 +103,13 @@ public class GlyphDoorTrigger : MonoBehaviour
         _sequenceRoutine = StartCoroutine(OpenDoorSequence());
     }
 
-    void OnTriggerExit2D(Collider2D collision)
+    public void Close()
     {
-        if (!collision.CompareTag("Player"))
+        if (_doorState == DoorState.Closed)
             return;
 
-        _playerInside = false;
+        if (_doorState == DoorState.Closing)
+            return;
 
         if (_sequenceRoutine != null)
             StopCoroutine(_sequenceRoutine);
@@ -90,7 +117,6 @@ public class GlyphDoorTrigger : MonoBehaviour
         if (_doorState == DoorState.Opening)
         {
             BeginFadeOutEarthquake();
-            StopOpenCameraShake();
         }
 
         _sequenceRoutine = StartCoroutine(CloseDoorSequence());
@@ -104,17 +130,15 @@ public class GlyphDoorTrigger : MonoBehaviour
         _doorState = DoorState.Opening;
         StartEarthquake();
 
-        if (_doorDust != null)
-            _doorDust.Play();
+        if (_doorCaveDust != null)
+            _doorCaveDust.Play();
 
         float raiseSpeed = Mathf.Max(0.01f, _doorRaiseSpeed);
-        Vector3 startPos = _doorStartPos;
-        Vector3 targetPos = startPos + Vector3.up * _doorRaiseDistance;
+        Vector3 startPos = _doorMovingTransform.position;
+        Vector3 targetPos = _doorStartPos + Vector3.up * _doorRaiseDistance;
 
         float duration = Mathf.Abs(_doorRaiseDistance) / raiseSpeed;
         duration = Mathf.Max(0.01f, duration);
-
-        StartOpenCameraShake(duration);
 
         float elapsed = 0f;
         while (elapsed < duration)
@@ -138,26 +162,21 @@ public class GlyphDoorTrigger : MonoBehaviour
         BeginFadeOutEarthquake();
         _doorState = DoorState.Open;
 
-        if (_doorDust != null)
-            _doorDust.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+        if (_doorCaveDust != null)
+            _doorCaveDust.Stop(true, ParticleSystemStopBehavior.StopEmitting);
 
         _sequenceRoutine = null;
     }
 
-    private void StartOpenCameraShake(float duration)
+    private IEnumerator StopFloorDustAfter(float duration)
     {
-        if (CameraShakeManager.obj == null)
-            return;
+        duration = Mathf.Max(0.01f, duration);
+        yield return new WaitForSeconds(duration);
 
-        CameraShakeManager.obj.ShakeCamera(_openCameraShakeAmplitude, _openCameraShakeFrequency, duration);
-    }
+        if (_doorFloorDust != null)
+            _doorFloorDust.Stop(true, ParticleSystemStopBehavior.StopEmitting);
 
-    private void StopOpenCameraShake()
-    {
-        if (CameraShakeManager.obj == null)
-            return;
-
-        CameraShakeManager.obj.ShakeCamera(0f, 0f, 0f);
+        _floorDustRoutine = null;
     }
 
     private IEnumerator CloseDoorSequence()
@@ -167,8 +186,8 @@ public class GlyphDoorTrigger : MonoBehaviour
 
         _doorState = DoorState.Closing;
 
-        if (_doorDust != null)
-            _doorDust.Play();
+        if (_doorCaveDust != null)
+            _doorCaveDust.Play();
 
         float slamSpeed = Mathf.Max(0.01f, _doorSlamSpeed);
         Vector3 startPos = _doorMovingTransform.position;
@@ -184,20 +203,43 @@ public class GlyphDoorTrigger : MonoBehaviour
             elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(elapsed / duration);
             _doorMovingTransform.position = Vector3.Lerp(startPos, targetPos, t);
+
+            if (TryKillPlayerIfCrushed())
+            {
+                _sequenceRoutine = null;
+                yield break;
+            }
+
             yield return null;
         }
 
         _doorMovingTransform.position = targetPos;
+
+        if (_doorFloorDust != null)
+        {
+            _doorFloorDust.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            _doorFloorDust.Play();
+
+            if (_floorDustRoutine != null)
+                StopCoroutine(_floorDustRoutine);
+            _floorDustRoutine = StartCoroutine(StopFloorDustAfter(_floorDustDuration));
+        }
+
+        if (TryKillPlayerIfCrushed())
+        {
+            _sequenceRoutine = null;
+            yield break;
+        }
 
         _doorState = DoorState.Closed;
 
         if (CameraShakeManager.obj != null)
             CameraShakeManager.obj.ForcePushShake();
 
-        if (_doorDust != null)
+        if (_doorCaveDust != null)
         {
             yield return new WaitForSeconds(_closeDustDuration);
-            _doorDust.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            _doorCaveDust.Stop(true, ParticleSystemStopBehavior.StopEmitting);
         }
 
         _sequenceRoutine = null;
