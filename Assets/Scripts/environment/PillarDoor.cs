@@ -103,6 +103,61 @@ public class PillarDoor : MonoBehaviour
         _sequenceRoutine = StartCoroutine(OpenDoorSequence());
     }
 
+    public void SetFullyOpenImmediate()
+    {
+        if (_sequenceRoutine != null)
+        {
+            StopCoroutine(_sequenceRoutine);
+            _sequenceRoutine = null;
+        }
+
+        if (_floorDustRoutine != null)
+        {
+            StopCoroutine(_floorDustRoutine);
+            _floorDustRoutine = null;
+        }
+
+        if (_earthquakeFadeRoutine != null)
+        {
+            StopCoroutine(_earthquakeFadeRoutine);
+            _earthquakeFadeRoutine = null;
+        }
+
+        if (_earthquakeSource != null)
+        {
+            _earthquakeSource.Stop();
+            _earthquakeSource.volume = _earthquakeStartVolume;
+        }
+
+        if (_doorMovingTransform == null)
+        {
+            if (_doorSprite == null)
+                _doorSprite = GetComponentInChildren<SpriteRenderer>();
+            if (_doorCollider == null)
+                _doorCollider = GetComponentInChildren<BoxCollider2D>();
+
+            if (_doorSprite != null && _doorCollider != null && _doorSprite.transform == _doorCollider.transform)
+                _doorMovingTransform = _doorSprite.transform;
+            else if (_doorSprite != null)
+                _doorMovingTransform = _doorSprite.transform;
+            else if (_doorCollider != null)
+                _doorMovingTransform = _doorCollider.transform;
+            else
+                _doorMovingTransform = transform;
+        }
+
+        if (_doorMovingTransform != null)
+            _doorMovingTransform.position = _doorStartPos + Vector3.up * _doorRaiseDistance;
+
+        if (_doorCaveDust != null)
+            _doorCaveDust.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
+        if (_doorFloorDust != null)
+            _doorFloorDust.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
+        _doorState = DoorState.Open;
+    }
+
     public void Close()
     {
         if (_doorState == DoorState.Closed)
