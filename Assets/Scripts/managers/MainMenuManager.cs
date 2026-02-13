@@ -13,6 +13,7 @@ public class MainMenuManager : MonoBehaviour
 {
     public static MainMenuManager obj;
     public bool isNavigatingToMenu = true;
+    [SerializeField] private MusicTrack _titleScreenMusic;
     [SerializeField] private SceneField _persistentGameplay;
     [SerializeField] private SceneField _introScene;
     [SerializeField] private SceneField _titleScreen;
@@ -40,7 +41,6 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject _musicSliderGameObject;
     [SerializeField] private Slider _musicSlider;
     [SerializeField] private Slider _soundFXSlider;
-    [SerializeField] private Slider _ambienceSlider;
 
     [SerializeField] private GameObject _playerDeviceSetup;
     [SerializeField] private GameObject _characterSelection;
@@ -92,7 +92,7 @@ public class MainMenuManager : MonoBehaviour
         titleScreenCanvas.sortingLayerName = "UI";
 
         _optionsButtonColor = _optionsButton.GetComponentInChildren<TextMeshProUGUI>().color;
-        MusicManager.obj.PlayTitleSong();
+        MusicManager.obj.Play(_titleScreenMusic);
         var rebinds = PlayerPrefs.GetString("rebinds");
         if (!string.IsNullOrEmpty(rebinds))
             actions.LoadBindingOverridesFromJson(rebinds);
@@ -137,7 +137,7 @@ public class MainMenuManager : MonoBehaviour
             StartGame();
         } else {
             isNavigatingToMenu = true;
-            SoundFXManager.obj.PlayUIConfirm();
+            UISoundPlayer.obj.PlaySelect();
 
             ShowConfirmNewGameMenu();
             EventSystem.current.SetSelectedGameObject(_confirmNewGameButton.gameObject);
@@ -151,7 +151,7 @@ public class MainMenuManager : MonoBehaviour
         // _singlePlayerButton.SetActive(true);
         // _coopButton.SetActive(true);
 
-        // SoundFXManager.obj.PlayUIConfirm();
+        // SoundFXManager.obj.Play2D(_uiSoundLibrary.select);
         // EventSystem.current.SetSelectedGameObject(_singlePlayerButton);
     }
 
@@ -167,18 +167,13 @@ public class MainMenuManager : MonoBehaviour
     }
 
     private IEnumerator StartGameCoroutine() {
-        SoundFXManager.obj.PlayUIPlay();
+        UISoundPlayer.obj.PlayPlayGame();
 
-        float masterVolume = SoundMixerManager.obj.GetMasterVolume();
+        MusicManager.obj.Stop();
 
-        StartCoroutine(SoundMixerManager.obj.StartMasterFade(3f, 0.001f));
         SceneFadeManager.obj.StartFadeOut(1f);
         while(SceneFadeManager.obj.IsFadingOut)
             yield return null;
-        while(SoundMixerManager.obj.GetMasterVolume() > 0.001f) {
-            yield return null;
-        }
-        MusicManager.obj.StopPlaying();
 
         AsyncOperation loadPersistentGameplayOperation = SceneManager.LoadSceneAsync(_persistentGameplay, LoadSceneMode.Additive);
         while(!loadPersistentGameplayOperation.isDone) {
@@ -199,7 +194,6 @@ public class MainMenuManager : MonoBehaviour
         LevelManager.obj.ResetLevels();
         GameManager.obj.SetCaveTimeline(new CaveTimeline(CaveTimelineId.Id.Eli));
 
-        SoundMixerManager.obj.SetMasterVolume(masterVolume);
         // AsyncOperation loadIntroSceneOperation = SceneManager.LoadSceneAsync(_introScene, LoadSceneMode.Additive);
         // while(!loadIntroSceneOperation.isDone) {
         //     yield return null;
@@ -230,18 +224,13 @@ public class MainMenuManager : MonoBehaviour
     }
 
     private IEnumerator ContinueGameCoroutine() {
-        SoundFXManager.obj.PlayUIPlay();
+        UISoundPlayer.obj.PlayPlayGame();
 
-        float masterVolume = SoundMixerManager.obj.GetMasterVolume();
+        MusicManager.obj.Stop();
 
-        StartCoroutine(SoundMixerManager.obj.StartMasterFade(3f, 0.001f));
         SceneFadeManager.obj.StartFadeOut(1f);
         while(SceneFadeManager.obj.IsFadingOut)
             yield return null;
-        while(SoundMixerManager.obj.GetMasterVolume() > 0.001f) {
-            yield return null;
-        }
-        MusicManager.obj.StopPlaying();
         
         AsyncOperation loadPersistentGameplayOperation = SceneManager.LoadSceneAsync(_persistentGameplay, LoadSceneMode.Additive);
         while(!loadPersistentGameplayOperation.isDone) {
@@ -260,8 +249,6 @@ public class MainMenuManager : MonoBehaviour
             StartCoroutine(StartGameCoroutine());
             yield break;
         }
-
-        SoundMixerManager.obj.SetMasterVolume(masterVolume);
         
         if(saveData.background != null && saveData.background != "") {
             yield return StartCoroutine(BackgroundLoaderManager.obj.LoadAndSetBackground(saveData.background));
@@ -284,7 +271,7 @@ public class MainMenuManager : MonoBehaviour
 
     public void OnOptionsButtonClicked() {
         isNavigatingToMenu = true;
-        SoundFXManager.obj.PlayUIConfirm();
+        UISoundPlayer.obj.PlaySelect();
         
         ShowOptionsMenu();
         EventSystem.current.SetSelectedGameObject(_musicSliderGameObject);
@@ -292,7 +279,7 @@ public class MainMenuManager : MonoBehaviour
 
     public void OnCoopButtonClicked() {
         isNavigatingToMenu = true;
-        SoundFXManager.obj.PlayUIConfirm();
+        UISoundPlayer.obj.PlaySelect();
         
         ShowPlayerDeviceSetupMenu();
         EventSystem.current.SetSelectedGameObject(null);
@@ -300,7 +287,7 @@ public class MainMenuManager : MonoBehaviour
 
     public void OnPlayerDeviceSetupConfirmButtonClicked() {
         isNavigatingToMenu = true;
-        SoundFXManager.obj.PlayUIConfirm();
+        UISoundPlayer.obj.PlaySelect();
 
         ShowCharacterSelectionMenu();
         EventSystem.current.SetSelectedGameObject(null);
@@ -360,7 +347,7 @@ public class MainMenuManager : MonoBehaviour
 
     public void LeaveConfirmNewGameMenu() {
         _confirmNewGameMenu.SetActive(false);
-        SoundFXManager.obj.PlayUIBack();
+        UISoundPlayer.obj.PlayBack();
         EventSystem.current.SetSelectedGameObject(null);
 
         _titleMenu.SetActive(true);
@@ -369,9 +356,8 @@ public class MainMenuManager : MonoBehaviour
 
     public void ShowOptionsMenu() {
         _muteSliderSfx = true; //For some reason the slider sfx is played first time the options menu is shown
-        _musicSlider.value = SoundMixerManager.obj.GetMusicVolume();
-        _soundFXSlider.value = SoundMixerManager.obj.GetSoundFXVolume();
-        _ambienceSlider.value = SoundMixerManager.obj.GetAmbienceVolume();
+        _musicSlider.value = AudioOptions.obj.MusicStep;
+        _soundFXSlider.value = AudioOptions.obj.SfxStep;
         _muteSliderSfx = false;
 
         _titleMenu.SetActive(false);
@@ -448,7 +434,7 @@ public class MainMenuManager : MonoBehaviour
     }
 
     public void ShowKeyboardConfigMenu() {
-        SoundFXManager.obj.PlayUIConfirm();
+        UISoundPlayer.obj.PlaySelect();
 
         _optionsMenu.SetActive(false);
 
@@ -466,7 +452,7 @@ public class MainMenuManager : MonoBehaviour
         var rebinds = actions.SaveBindingOverridesAsJson();
         PlayerPrefs.SetString("rebinds", rebinds);
 
-        SoundFXManager.obj.PlayUIBack();
+        UISoundPlayer.obj.PlayBack();
         EventSystem.current.SetSelectedGameObject(null);
         _keyboardConfigAutoScroll.ResetScrollRect();
 
@@ -496,7 +482,7 @@ public class MainMenuManager : MonoBehaviour
     }
 
     public void ShowControllerConfigMenu() {
-        SoundFXManager.obj.PlayUIConfirm();
+        UISoundPlayer.obj.PlaySelect();
 
         EventSystem.current.SetSelectedGameObject(null); //Make sure we unselect the controller config menu option. If we show attach controller screen, no other UI element will be selected, and going back won't select the controller config menu option
         _optionsMenu.SetActive(false);
@@ -530,14 +516,14 @@ public class MainMenuManager : MonoBehaviour
         var rebinds = actions.SaveBindingOverridesAsJson();
         PlayerPrefs.SetString("rebinds", rebinds);
 
-        SoundFXManager.obj.PlayUIBack();
+        UISoundPlayer.obj.PlayBack();
         ShowOptionsMenu();
 
         EventSystem.current.SetSelectedGameObject(_controllerConfigButton.gameObject);
     }
 
     public void ShowTitleMenu() {
-        SoundFXManager.obj.PlayUIBack();
+        UISoundPlayer.obj.PlayBack();
 
         _optionsMenu.SetActive(false);
         _titleMenu.SetActive(true);
@@ -546,20 +532,14 @@ public class MainMenuManager : MonoBehaviour
 
     public void ChangeMusicVolume(float volume) {
         if(!_muteSliderSfx)
-            SoundFXManager.obj.PlayUISlider();
-        SoundMixerManager.obj.SetMusicVolume(volume);
+            UISoundPlayer.obj.PlaySliderTick();
+        AudioOptions.obj.SetMusicStep(volume);
     }
 
     public void ChangeSoundFxVolume(float volume) {
         if(!_muteSliderSfx)
-            SoundFXManager.obj.PlayUISlider();
-        SoundMixerManager.obj.SetSoundFXVolume(volume);
-    }    
-    
-    public void ChangeAmbienceVolume(float volume) {
-        if(!_muteSliderSfx)
-            SoundFXManager.obj.PlayUISlider();
-        SoundMixerManager.obj.SetAmbienceVolume(volume);
+            UISoundPlayer.obj.PlaySliderTick();
+        AudioOptions.obj.SetSfxStep(volume);
     }
 
     public void OnNavigateBack() {
@@ -598,7 +578,7 @@ public class MainMenuManager : MonoBehaviour
     }
 
     public void LeaveToMainMenu() {
-        SoundFXManager.obj.PlayUIBack();
+        UISoundPlayer.obj.PlayBack();
         _singlePlayerButton.SetActive(false);
         _coopButton.SetActive(false);
         _playButton.SetActive(true);
@@ -610,7 +590,7 @@ public class MainMenuManager : MonoBehaviour
     public void LeaveToPlayModeMenu() {
         LobbyManager.obj.ClearPlayerSlots();
         LobbyManager.obj.IsJoiningPlayers = false;
-        SoundFXManager.obj.PlayUIBack();
+        UISoundPlayer.obj.PlayBack();
         _playerDeviceSetup.SetActive(false);
         _titleMenu.SetActive(true);
         _singlePlayerButton.SetActive(true);
@@ -623,7 +603,7 @@ public class MainMenuManager : MonoBehaviour
 
     private void SetupPlayer2InputDevice(InputDeviceListener.AvailableInputDeviceInfo deviceInfo)
     {
-        SoundFXManager.obj.PlayUIConfirm();
+        UISoundPlayer.obj.PlaySelect();
         LobbyManager.obj.AddPlayerSlot(new PlayerSlot { slotIndex = 1, device = deviceInfo.Device });
         //If device is keyboard show text "Keyboard", else show "Gamepad"
         _player2DeviceLabel.text = deviceInfo.Device is Keyboard ? "Keyboard" : "Gamepad";

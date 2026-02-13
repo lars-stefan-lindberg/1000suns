@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Cinemachine;
+using FMOD.Studio;
 using FunkyCode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -44,6 +45,8 @@ public class PlayerBlobMovement : MonoBehaviour
     private float _hitBoostMax = 10f;
     [SerializeField] private float _hitBoostRiseTime = 0.12f;
     [SerializeField] private float _hitBoostFallTime = 0.3f;
+    private SharedCharacterAudio _sharedPlayerAudio;
+    private EliAudio _eliAudio;
 
     void Awake() {
         obj = this;
@@ -52,6 +55,8 @@ public class PlayerBlobMovement : MonoBehaviour
         _playerInput = GetComponent<PlayerInput>();
         _animator = GetComponentInChildren<Animator>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        _sharedPlayerAudio = GetComponent<SharedCharacterAudio>();
+        _eliAudio = GetComponent<EliAudio>();
     }
 
     void OnDestroy() {
@@ -104,7 +109,7 @@ public class PlayerBlobMovement : MonoBehaviour
         if(PlayerPowersManager.obj.CanSwitchBetweenTwinsMerged && !PlayerManager.obj.IsSeparated)
         {    
             //Switch to shadow twin
-            SoundFXManager.obj.PlayPlayerShapeshiftToBlob(transform);
+            _eliAudio.PlayShapeshiftToHuman();
             isTransformingToTwin = true;
             //Player.obj.PlaySwitchToTwinAnimation();
             ToTwin();
@@ -132,7 +137,7 @@ public class PlayerBlobMovement : MonoBehaviour
     [SerializeField] private float _mergeSplitHoldDuration = 0.5f;
     private bool _mergeSplitHeld = false;
     private float _mergeSplitHoldTimer = 0f;
-    private AudioSource _mergeSplitAudioSource;
+    private EventInstance _mergeSplitSfxInstance;
 
     public void OnMergeSplit(InputAction.CallbackContext context)
     {
@@ -150,7 +155,7 @@ public class PlayerBlobMovement : MonoBehaviour
             }
             _mergeSplitHeld = true;
             _mergeSplitHoldTimer = 0f;
-            _mergeSplitAudioSource = SoundFXManager.obj.PlayForcePushStartCharging(transform);
+            _sharedPlayerAudio.PlayMergeSplit(ref _mergeSplitSfxInstance);
             PlayerBlob.obj.StartChargeFlash();
         }
         else if (context.canceled)
@@ -160,9 +165,8 @@ public class PlayerBlobMovement : MonoBehaviour
 
             //Only abort flash and sfx if eli is active. If not, the split happened and we want to finish the vfx and sfx
             if(PlayerSwitcher.obj.IsBlobActive()) {
-                if(_mergeSplitAudioSource != null && _mergeSplitAudioSource.isPlaying) {
-                    SoundFXManager.obj.FadeOutAndStopSound(_mergeSplitAudioSource, 0.05f);
-                    _mergeSplitAudioSource = null;
+                if(AudioUtils.IsPlaying(_mergeSplitSfxInstance)) {
+                    AudioUtils.SafeStop(ref _mergeSplitSfxInstance);
                 }
                 PlayerBlob.obj.AbortFlash();
             }
@@ -327,7 +331,7 @@ public class PlayerBlobMovement : MonoBehaviour
         _player.GetComponent<Player>().PlayToPlayerAnimation();
 
         if(playSfx) {
-            SoundFXManager.obj.PlayPlayerShapeshiftToHuman(_player.transform);
+            _eliAudio.PlayShapeshiftToHuman();
         }
     }
 
@@ -587,7 +591,7 @@ public class PlayerBlobMovement : MonoBehaviour
         _airJumpToConsume = false;
         _airJumpPerformed = true;
         PlayerBlobCharge.obj.ExecuteForcePushVfx();
-        SoundFXManager.obj.PlayJump(gameObject.transform);
+        _sharedPlayerAudio.PlayJump();
         StartCoroutine(JumpSqueeze(_jumpSqueezeX, _jumpSqueezeY, _jumpSqueezeTime));
         ExecuteJump(_stats.JumpPower);
     }
@@ -596,7 +600,7 @@ public class PlayerBlobMovement : MonoBehaviour
     {
         ExecuteJump(_stats.JumpPower);
         DustParticleMgr.obj.CreateDust(PlayerManager.PlayerType.BLOB);
-        SoundFXManager.obj.PlayJump(gameObject.transform);
+        _sharedPlayerAudio.PlayJump();
         StartCoroutine(JumpSqueeze(_jumpSqueezeX, _jumpSqueezeY, _jumpSqueezeTime));
         _jumpToConsume = false;
     }
@@ -863,7 +867,7 @@ public class PlayerBlobMovement : MonoBehaviour
         if (_landed)
         {
             DustParticleMgr.obj.CreateDust(PlayerManager.PlayerType.BLOB);
-            SoundFXManager.obj.PlayLand(PlayerBlob.obj.surface, gameObject.transform);
+            _sharedPlayerAudio.PlayLand(PlayerBlob.obj.surface);
             StartCoroutine(JumpSqueeze(_landedSqueezeX, _landedSqueezeY, _landedSqueezeTime));
             _landed = false;
         }

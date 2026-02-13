@@ -2,9 +2,8 @@ using UnityEngine;
 
 public class PlayCaveIntense2 : MonoBehaviour
 {
+    [SerializeField] private MusicTrack _musicTrack;
     public void PlayCaveIntense2Song() {
-        if(!MusicManager.obj.IsPlaying()) {
-            MusicManager.obj.PlayCaveIntense2();
-        }
+        MusicManager.obj.Play(_musicTrack);
     }
 }

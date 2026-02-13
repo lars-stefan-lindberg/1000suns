@@ -34,13 +34,15 @@ public class DoorSwitch : MonoBehaviour
     private void OpenDoor() {
         if(_isTriggered)
         {
-            SoundFXManager.obj.PlayBabyPrisonerIdle(_door.transform);
+            //Deprecated use new FMOD system
+            //SoundFXManager.obj.PlayBabyPrisonerIdle(_door.transform);
             _door.SetActive(false);
         }
     }
 
     private void CloseDoor() {
-        SoundFXManager.obj.PlayBabyPrisonerIdle(_door.transform);
+        //Deprecated use new FMOD system
+        //SoundFXManager.obj.PlayBabyPrisonerIdle(_door.transform);
         _door.SetActive(true);
     }
 }

@@ -24,9 +24,10 @@ public class C295LoopManager : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player")) {
             GetComponent<BoxCollider2D>().enabled = false;
-            MusicManager.obj.PlayCaveSpaceRoomLoop();
-            if (_loopSource == null)
-                _loopSource = MusicManager.obj.GetLoopSource();
+            //TODO: setup this logic in FMOD
+            //MusicManager.obj.PlayCaveSpaceRoomLoop();
+            // if (_loopSource == null)
+            //     _loopSource = MusicManager.obj.GetLoopSource();
             _isPlaying = true;
             _lastPlayerDist = Vector3.Distance(_target.position, PlayerManager.obj.GetPlayerTransform().position);
             _pitchState = 0;

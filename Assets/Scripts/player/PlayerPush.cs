@@ -1,4 +1,5 @@
 using System.Collections;
+using FMOD.Studio;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -28,12 +29,13 @@ public class PlayerPush : MonoBehaviour
 
     bool CanUsePoweredForcePush => PlayerMovement.obj.isGrounded && Player.obj.hasPowerUp && _buildUpPower >= maxForce;
 
-    private AudioSource _forcePushStartChargingAudioSource;
+    private EventInstance _forcePushStartSfxInstance;
 
     //Is used to disable charge while transforming to blob
     private bool _isChargeDisabled = false;
     private bool _startedChargeAnimation = false;
     private bool _startedFullyChargedAnimation = false;
+    private EliAudio _eliAudio;
 
     public enum ChargePowerType {
         Partial,
@@ -45,6 +47,7 @@ public class PlayerPush : MonoBehaviour
     {
         obj = this;
         _collider = GetComponent<BoxCollider2D>();
+        _eliAudio = GetComponent<EliAudio>();
     }
 
     public void OnShoot(InputAction.CallbackContext context)
@@ -54,7 +57,7 @@ public class PlayerPush : MonoBehaviour
             {
                 if (defaultPower < StaminaMgr.obj.GetCurrentStamina()) {
                     pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().HardCancel();
-                    _forcePushStartChargingAudioSource = SoundFXManager.obj.PlayForcePushStartCharging(transform);
+                    _eliAudio.PlayForcePushStart(ref _forcePushStartSfxInstance);
                     _buildUpPower = defaultPower;
                     _buildingUpPower = true;
                     _buildUpPowerTime = 0;
@@ -104,10 +107,8 @@ public class PlayerPush : MonoBehaviour
         _startedChargeAnimation = false;
         _startedFullyChargedAnimation = false;
 
-        if(_forcePushStartChargingAudioSource != null && _forcePushStartChargingAudioSource.isPlaying) {
-            SoundFXManager.obj.FadeOutAndStopSound(_forcePushStartChargingAudioSource, 0.05f);
-            _forcePushStartChargingAudioSource = null;
-        }
+        if(AudioUtils.IsPlaying(_forcePushStartSfxInstance))
+            AudioUtils.SafeStop(ref _forcePushStartSfxInstance);
 
         Player.obj.RestorePlayerPushLight();
 
@@ -181,7 +182,7 @@ public class PlayerPush : MonoBehaviour
         ChargePowerType chargePowerType = GetChargePowerType();
         PlayerMovement.obj.ExecuteDash(chargePowerType);
         ExecuteDashVfx(chargePowerType);
-        SoundFXManager.obj.PlayForcePushExecute(transform);
+        _eliAudio.PlayForcePushRelease();
     }
 
     private ChargePowerType GetChargePowerType() {
@@ -218,7 +219,7 @@ public class PlayerPush : MonoBehaviour
     public float playerOffsetY = 0.1f;
     private IEnumerator DelayedProjectile(float delay, float power, ChargePowerType chargePowerType) {
         yield return new WaitForSeconds(delay);
-        SoundFXManager.obj.PlayForcePushExecute(transform);
+        _eliAudio.PlayForcePushRelease();
         int playerFacingDirection = PlayerMovement.obj.isFacingLeft() ? -1 : 1;
         ProjectileManager.obj.shootProjectile(
             new Vector3(_collider.bounds.center.x + (_playerOffset * playerFacingDirection) , gameObject.transform.position.y - playerOffsetY, gameObject.transform.position.z),

@@ -1,4 +1,5 @@
 using System.Collections;
+using FMOD.Studio;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -26,12 +27,16 @@ public class Block : MonoBehaviour
 
     private Prisoner _prisonerInContact;
 
+    private BlockAudio _blockAudio;
+    private EventInstance _blockSlideSfxInstance;
+
     private void Awake()
     {
         _rigidBody = GetComponent<Rigidbody2D>();
         _collider = GetComponent<BoxCollider2D>();
         _childCollider = GetComponentInChildren<BoxCollider2D>();
         _pullable = GetComponentInChildren<Pullable>();
+        _blockAudio = GetComponent<BlockAudio>();
     }
 
     public void SetGravity(float gravityScale) {
@@ -82,8 +87,7 @@ public class Block : MonoBehaviour
             if(!hitFromTheLeft && somethingToTheLeft)
                 return;
 
-            float clipLength = projectile.power / PlayerPush.obj.maxForce;
-            PlaySlideSound(clipLength);
+            PlaySlideSound();
         } else if(collision.transform.CompareTag("Enemy")) {
             _prisonerInContact = collision.GetComponent<Prisoner>();
             if(HitUnderneath(collision)) {
@@ -96,14 +100,14 @@ public class Block : MonoBehaviour
         }
     }
 
-    private void PlaySlideSound(float clipLength) {
-        if(_slideSoundAudioSource == null || !_slideSoundAudioSource.isPlaying) {
-                _slideSoundAudioSource = SoundFXManager.obj.PlayBlockSliding(transform, clipLength);
-        } else {
-            _slideSoundAudioSource.Stop();
-            _slideSoundAudioSource = null;
-            _slideSoundAudioSource = SoundFXManager.obj.PlayBlockSliding(transform, clipLength);
-        }
+    private void PlaySlideSound() {
+        AudioUtils.SafeStop(ref _blockSlideSfxInstance, STOP_MODE.ALLOWFADEOUT);
+        _blockAudio.PlaySlide(ref _blockSlideSfxInstance);
+    }
+
+    private void StopSlideSound() {
+        if(AudioUtils.IsPlaying(_blockSlideSfxInstance))
+            AudioUtils.SafeStop(ref _blockSlideSfxInstance);
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -131,7 +135,7 @@ public class Block : MonoBehaviour
 
         if(!_isBeingPulled && _pullable.IsPulled) {
             _isBeingPulled = true;
-            PlaySlideSound(1f);
+            PlaySlideSound();
         } else if(_isBeingPulled && !_pullable.IsPulled) {
             _isBeingPulled = false;
         }
@@ -153,13 +157,7 @@ public class Block : MonoBehaviour
             Vector2.down, _grounderDistance, groundLayer);
 
         if(!groundHit) {
-            if(_slideSoundAudioSource != null && _slideSoundAudioSource.isPlaying) {
-                _slideSoundAudioSource.mute = true;
-            }
-        } else {
-            if(_slideSoundAudioSource != null && _slideSoundAudioSource.mute) {
-                _slideSoundAudioSource.mute = false;
-            }
+            StopSlideSound();
         }
 
         _isMovingHorizontally = Mathf.Abs(_rigidBody.velocity.x) > 0.01f;
@@ -171,7 +169,7 @@ public class Block : MonoBehaviour
                 isMovingRight ? Vector2.right : Vector2.left, _frontCheck, groundLayer);
             if(isWallAhead) {
                 if(_wallImpactCoolDownTimer >= _wallImpactCoolDownTime) {
-                    SoundFXManager.obj.PlayBlockWallImpact(transform);
+                    _blockAudio.PlayWallHit();
                     _wallImpactCoolDownTimer = 0;
                 } else {
                     _wallImpactCoolDownTimer += Time.deltaTime;
@@ -182,14 +180,15 @@ public class Block : MonoBehaviour
         }
 
         if(!_isGrounded && groundHit && _booted)
-            SoundFXManager.obj.PlayBlockLand(transform);
+            _blockAudio.PlayLand();
         if(_isGrounded && !groundHit && _isMovingHorizontally)
-            SoundFXManager.obj.PlayBlockSlideOffEdge(transform);
+            _blockAudio.PlaySlideOffEdge();
         
         _isGrounded = groundHit;
 
-        if(!_isMovingHorizontally && _slideSoundAudioSource != null && _slideSoundAudioSource.isPlaying)
-            _slideSoundAudioSource.mute = true;
+        if(!_isMovingHorizontally) {
+            StopSlideSound();
+        }
     }
 
     private void FixedUpdate() {

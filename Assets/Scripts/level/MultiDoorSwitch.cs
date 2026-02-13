@@ -11,7 +11,8 @@ public class MultiDoorSwitch : MonoBehaviour
         {
             _objectEnteredCount++;
             IsTriggered = true;
-            SoundFXManager.obj.PlayBabyPrisonerIdle(transform);
+            //Deprecated use new FMOD system
+            //SoundFXManager.obj.PlayBabyPrisonerIdle(transform);
         }
     }
 
@@ -23,7 +24,8 @@ public class MultiDoorSwitch : MonoBehaviour
             if (_objectEnteredCount == 0)
             {
                 IsTriggered = false;
-                SoundFXManager.obj.PlayBabyPrisonerIdle(transform);
+                //Deprecated use new FMOD system
+                //SoundFXManager.obj.PlayBabyPrisonerIdle(transform);
             }
         }
     }

@@ -21,7 +21,6 @@ public class C35OverhearConversationTrigger : MonoBehaviour
         if (_dialogueController != null)
         {
             _dialogueController.OnDialogueClosed += OnDialogueCompleted;
-            _dialogueController.OnDialogueClosing += OnDialogueClosing;
         }    
     }
 
@@ -30,7 +29,6 @@ public class C35OverhearConversationTrigger : MonoBehaviour
         if (_dialogueController != null)
         {
             _dialogueController.OnDialogueClosed -= OnDialogueCompleted;
-            _dialogueController.OnDialogueClosing -= OnDialogueClosing;
         }
     }
 
@@ -42,14 +40,9 @@ public class C35OverhearConversationTrigger : MonoBehaviour
         }
     }
 
-    private void OnDialogueClosing() {
-        SoundFXManager.obj.PlayDialogueClose();
-    }
-
     private void OnDialogueCompleted() {
         PlayerMovement.obj.UnFreeze();
         _dialogueController.OnDialogueClosed -= OnDialogueCompleted;
-        _dialogueController.OnDialogueClosing -= OnDialogueClosing;
         _nextConversationManager.enabled = true;
         //Reset Soot portrait
         _rightPortrait.localScale = new Vector3(1, 1, 1);
@@ -71,8 +64,7 @@ public class C35OverhearConversationTrigger : MonoBehaviour
         _dialogueText.fontSize -= 15;
         yield return new WaitForSeconds(2f);
         
-        SoundFXManager.obj.PlayDialogueOpen();
-        _dialogueController.ShowDialogue(_dialogueContent);
+        _dialogueController.ShowDialogue(_dialogueContent, true, true);
         
         yield return null;
     }

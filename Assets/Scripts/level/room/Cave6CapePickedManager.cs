@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using FMOD.Studio;
+using FMODUnity;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -12,12 +14,12 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
     [SerializeField] private Transform _finalPlayerPosition;
     [SerializeField] private GameObject _blobsContainer;
     [SerializeField] private GameObject _pickCapeTrigger;
-    [SerializeField] private float _roarSfxFadeOutDuration = 1f;
-
+    [SerializeField] private MusicTrack _musicTrack;
+    [SerializeField] private EventReference _powerupFanfareStinger;
+    [SerializeField] private EventReference _capePickedRoarSfx;
+    
+    private EventInstance _capePickedRoarInstance;
     private Coroutine _cutsceneCoroutine;
-    private Coroutine _roarSfxCoroutine;
-    private AudioSource _roarSfxAudioSource;
-    private float _roarSfxStartVolume = 1f;
 
     public void RequestSkip() {
         StopCoroutine(_cutsceneCoroutine);
@@ -29,7 +31,7 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
 
         _cape.SetActive(false);
         _blobsContainer.SetActive(false);
-        StartCoroutine(FadeOutAndStopAmbience());
+        FadeOutAndStopAmbience();
 
         CaveAvatar.obj.SetPosition(_finalPlayerPosition.position);
         CaveAvatar.obj.FollowPlayer();
@@ -39,9 +41,9 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
         Player.obj.transform.position = _finalPlayerPosition.position;
         Player.obj.ResetAnimator();
 
-        BeginFadeOutRoarSfx();
+        AudioUtils.SafeStop(ref _capePickedRoarInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
 
-        MusicManager.obj.PlayCaveFirstSong();
+        MusicManager.obj.Play(_musicTrack);
 
         GameManager.obj.RegisterEvent(_capePicked);
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
@@ -58,6 +60,12 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
         yield return null;
     }
 
+    private void StartSoundEvent(EventReference reference, ref EventInstance instance) {
+        instance = SoundFXManager.obj.CreateAttachedInstance(reference, gameObject, null);
+        instance.start();
+        instance.release();
+    }
+
     public void Activate() {
         if(GameManager.obj.HasEvent(_capePicked)) 
             return;
@@ -68,9 +76,9 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
         PauseMenuManager.obj.RegisterSkippable(this);
 
         PlayerMovement.obj.Freeze();
-        StartCoroutine(FadeOutAndStopAmbience());
+        FadeOutAndStopAmbience();
 
-        StartRoarSfx();
+        StartSoundEvent(_capePickedRoarSfx, ref _capePickedRoarInstance);
 
         List<Animator> animators = new List<Animator>();
         foreach(var blob in _blobs) {
@@ -115,7 +123,7 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
         Time.timeScale = 0;
         _tutorialCanvas.SetActive(true);
         TutorialDialogManager.obj.StartFadeIn();
-        SoundFXManager.obj.PlayPowerUpDialogueStinger();
+        SoundFXManager.obj.Play2D(_powerupFanfareStinger);
         while(!TutorialDialogManager.obj.tutorialCompleted) {
             yield return null;
         }
@@ -127,86 +135,14 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
         yield return new WaitForSeconds(2);
         PlayerMovement.obj.UnFreeze();
 
-        MusicManager.obj.PlayCaveFirstSong();
+        MusicManager.obj.Play(_musicTrack);
         
         GameManager.obj.RegisterEvent(_capePicked);
 
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
     }
 
-    public IEnumerator FadeOutAndStopAmbience() {
-        float ambienceVolume = SoundMixerManager.obj.GetAmbienceVolume();
-        StartCoroutine(SoundMixerManager.obj.StartAmbienceFade(1f, 0.001f));
-        while(SoundMixerManager.obj.GetAmbienceVolume() > 0.001f) {
-            yield return null;
-        }
-        //Give SoundMixerManager time to fully complete the fading
-        yield return new WaitForSeconds(0.1f);
-        AmbienceManager.obj.StopAmbience();
-        SoundMixerManager.obj.SetAmbienceVolume(ambienceVolume);
-    }
-
-    private void StartRoarSfx()
-    {
-        if (SoundFXManager.obj == null)
-            return;
-
-        if (_roarSfxCoroutine != null)
-        {
-            StopCoroutine(_roarSfxCoroutine);
-            _roarSfxCoroutine = null;
-        }
-
-        if (_roarSfxAudioSource == null || !_roarSfxAudioSource.isPlaying)
-        {
-            _roarSfxAudioSource = SoundFXManager.obj.PlayCapePickUp(Camera.main.transform);
-            if (_roarSfxAudioSource != null)
-                _roarSfxStartVolume = _roarSfxAudioSource.volume;
-        }
-
-        if (_roarSfxAudioSource != null)
-            _roarSfxAudioSource.volume = _roarSfxStartVolume;
-    }
-
-    private void BeginFadeOutRoarSfx()
-    {
-        if (_roarSfxAudioSource == null)
-            return;
-
-        if (_roarSfxCoroutine != null) {
-            StopCoroutine(_roarSfxCoroutine);
-        }
-        _roarSfxCoroutine = StartCoroutine(FadeOutAndStop(_roarSfxAudioSource, _roarSfxFadeOutDuration));
-    }
-
-    private IEnumerator FadeOutAndStop(AudioSource source, float duration)
-    {
-        if (source == null)
-            yield break;
-
-        float t = 0f;
-        float startVolume = source.volume;
-        duration = Mathf.Max(0.01f, duration);
-
-        while (t < duration)
-        {
-            if (source == null)
-                yield break;
-
-            t += Time.deltaTime;
-            float a = Mathf.Clamp01(t / duration);
-            source.volume = Mathf.Lerp(startVolume, 0f, a);
-            yield return null;
-        }
-
-        if (source != null)
-        {
-            source.volume = 0f;
-            source.Stop();
-            source.volume = _roarSfxStartVolume;
-        }
-
-        if (source == _roarSfxAudioSource)
-            _roarSfxCoroutine = null;
+    public void FadeOutAndStopAmbience() {
+        AmbienceManager.obj.Stop();
     }
 }

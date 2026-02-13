@@ -1,4 +1,5 @@
 using System.Collections;
+using FMODUnity;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -10,6 +11,7 @@ public class C33Manager : MonoBehaviour
     [SerializeField] private GameObject _blockingWall;
     [SerializeField] private float _blockingWallFadeMultiplier = 1.5f;
     [SerializeField] private Transform _caveAvatarFleeTargetPosition;
+    [SerializeField] private EventReference _brokenFloorReappearSfx;
     public float _attackInterval = 2f;
     public int _numberOfAttacks = 20;
     private int _attackCount = 0;
@@ -37,7 +39,7 @@ public class C33Manager : MonoBehaviour
             _collider.enabled = false;
             _startAttackSequence = true;
             _blockingWall.SetActive(true);
-            SoundFXManager.obj.PlayBrokenFloorReappear(transform);
+            SoundFXManager.obj.Play2D(_brokenFloorReappearSfx);
             StartCoroutine(FadeInBlockingWall());
         }
     }

@@ -2,12 +2,15 @@ using UnityEngine;
 
 public class ShadowTwinPlayerAnimationEvents : MonoBehaviour
 {
-    public void PlayDefaultRunStep() {
-        SoundFXManager.obj.PlayStep(ShadowTwinPlayer.obj.surface, gameObject.transform, 1f);
+    private SharedCharacterAudio _sharedPlayerAudio;
+
+    void Awake()
+    {
+        _sharedPlayerAudio = transform.parent.gameObject.GetComponent<SharedCharacterAudio>();
     }
 
-    public void PlaySubtleRunStep() {
-        SoundFXManager.obj.PlayStep(ShadowTwinPlayer.obj.surface, gameObject.transform, 0.8f);
+    public void PlayFootstep() {
+        _sharedPlayerAudio.PlayFootstep(ShadowTwinPlayer.obj.surface);
     }
 
     public void JumpSqueeze() {

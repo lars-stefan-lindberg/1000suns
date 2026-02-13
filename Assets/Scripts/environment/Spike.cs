@@ -1,4 +1,5 @@
 using System.Collections;
+using FMODUnity;
 using UnityEngine;
 
 public class Spike : MonoBehaviour
@@ -20,6 +21,10 @@ public class Spike : MonoBehaviour
     private Color _fadeStartColor;
     [Range(0.1f, 10f), SerializeField] private float _fadeSpeed = 5f;
     [SerializeField] private GameObject _dustParticles;
+    [SerializeField] private EventReference _fallStartSfx;
+    [SerializeField] private EventReference _fallingSfx;
+    [SerializeField] private EventReference _impactGroundSfx;
+    [SerializeField] private EventReference _impactLiquidSfx;
 
     private float _originXPosition;
     private readonly float _shakeDistance = 0.1f;
@@ -75,7 +80,7 @@ public class Spike : MonoBehaviour
         }
         if(_startFalling) {
             _startFalling = false;
-            SoundFXManager.obj.PlayFallingSpikeCrackling(transform);
+            SoundFXManager.obj.PlayAtPosition(_fallStartSfx, transform.position);
         }
         if(_isRespawning) {
             _respawnTimer += Time.deltaTime;
@@ -113,14 +118,14 @@ public class Spike : MonoBehaviour
     private void Fall() {
         _collider.enabled = true;
         _rigidBody.gravityScale = gravity;
-        SoundFXManager.obj.PlayFallingSpikeFall(transform);
+        SoundFXManager.obj.PlayAtPosition(_fallingSfx, transform.position);
     }
 
     private void OnCollisionEnter2D(Collision2D collision) {
         if(!_isFalling)
             return;
         if(!hitLiquid) {
-            SoundFXManager.obj.PlayFallingSpikeHit(transform);
+            SoundFXManager.obj.PlayAtPosition(_impactGroundSfx, transform.position);
         }
         _hasDetectedPlayer = true;
         _isFalling = false;
@@ -147,7 +152,7 @@ public class Spike : MonoBehaviour
         if(collision.gameObject.CompareTag("ToxicLiquid"))
         {
             hitLiquid = true;
-            SoundFXManager.obj.PlayFallingSpikeHitLiquid(transform);
+            SoundFXManager.obj.PlayAtPosition(_impactLiquidSfx, transform.position);
         }
     }
 

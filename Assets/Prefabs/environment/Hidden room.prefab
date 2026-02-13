@@ -9853,6 +9853,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isBig: 0
+  _revealSecretStinger:
+    Guid:
+      Data1: -685255636
+      Data2: 1262691360
+      Data3: 415709833
+      Data4: -1334008296
+    Path: event:/game/01_cave/stingers/cave_reveal_secret
   visibleLayer: {fileID: 4784712282965838549}
   background: {fileID: 0}
   breakAnimation: {fileID: 903147335871033044}
@@ -9861,12 +9868,36 @@ MonoBehaviour:
   otherBreakableWall: {fileID: 0}
   breakWall: 0
   shakeWall: 0
+  hintWall: 0
+  hintWallCooldownTime: 1
   fadeMultiplier: 3.5
   numberOfShakeParticles: 10
+  _breakableWallCracklingSfx:
+    Guid:
+      Data1: -1567375926
+      Data2: 1187328710
+      Data3: -998484592
+      Data4: -1764896597
+    Path: event:/env/general/breakable_wall_crackling
+  _breakableWallBreakSfx:
+    Guid:
+      Data1: -2110278422
+      Data2: 1124292947
+      Data3: 2124177852
+      Data4: 22169992
+    Path: event:/env/general/breakable_wall_break
+  _breakableWallHintSfx:
+    Guid:
+      Data1: -1786500914
+      Data2: 1200937149
+      Data3: -1883343734
+      Data4: 1877862227
+    Path: event:/env/general/breakable_wall_hint
   shakeDistance: 0.1
   shakeTime: 0.12
   shakeFrameWait: 0.08
   isSecret: 1
+  hasHint: 0
 --- !u!1 &4784712282965838549
 GameObject:
   m_ObjectHideFlags: 0
@@ -10669,6 +10700,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isBig: 0
+  _revealSecretStinger:
+    Guid:
+      Data1: -685255636
+      Data2: 1262691360
+      Data3: 415709833
+      Data4: -1334008296
+    Path: event:/game/01_cave/stingers/cave_reveal_secret
   visibleLayer: {fileID: 4784712282965838549}
   background: {fileID: 0}
   breakAnimation: {fileID: 788812395528218009}
@@ -10677,12 +10715,36 @@ MonoBehaviour:
   otherBreakableWall: {fileID: 3289234976905472185}
   breakWall: 0
   shakeWall: 0
+  hintWall: 0
+  hintWallCooldownTime: 1
   fadeMultiplier: 3.5
   numberOfShakeParticles: 10
+  _breakableWallCracklingSfx:
+    Guid:
+      Data1: -1567375926
+      Data2: 1187328710
+      Data3: -998484592
+      Data4: -1764896597
+    Path: event:/env/general/breakable_wall_crackling
+  _breakableWallBreakSfx:
+    Guid:
+      Data1: -2110278422
+      Data2: 1124292947
+      Data3: 2124177852
+      Data4: 22169992
+    Path: event:/env/general/breakable_wall_break
+  _breakableWallHintSfx:
+    Guid:
+      Data1: -1786500914
+      Data2: 1200937149
+      Data3: -1883343734
+      Data4: 1877862227
+    Path: event:/env/general/breakable_wall_hint
   shakeDistance: 0.1
   shakeTime: 0.12
   shakeFrameWait: 0.08
   isSecret: 1
+  hasHint: 0
 --- !u!1 &7775426014942835339
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using FMODUnity;
 using UnityEngine;
 
 public class BigMushroom : MonoBehaviour
@@ -8,6 +9,7 @@ public class BigMushroom : MonoBehaviour
     private ParticleSystem _particles;
     private BoxCollider2D _collider;
     [SerializeField] private Transform _anchorTransform;
+    [SerializeField] private EventReference _bounce;
     private bool _playerEntered;
 
     void Awake() {
@@ -26,7 +28,7 @@ public class BigMushroom : MonoBehaviour
             bool landedOnMushroom = playerBottom.y > mushroomTop.y - _collisionMargin;
 
             if(landedOnMushroom && PlayerManager.obj.GetPlayerVerticalVelocity() < 0) {
-                SoundFXManager.obj.PlayMushroomBigBounce(transform);
+                SoundFXManager.obj.PlayAtPosition(_bounce, transform.position);
                 _animator.SetTrigger("bounce");
                 _particles.Emit(5);
                 _playerEntered = true;

@@ -179,9 +179,15 @@ public class SaveManager : MonoBehaviour
 
         // Capture audio state
         if (MusicManager.obj != null)
-            data.currentMusicId = MusicManager.obj.GetCurrentMusicId();
+            if(MusicManager.obj.CurrentTrack != null)
+                data.currentMusicId = MusicManager.obj.CurrentTrack.trackId;
+            else
+                data.currentMusicId = "";
         if (AmbienceManager.obj != null)
-            data.currentAmbienceId = AmbienceManager.obj.GetCurrentAmbienceId();
+            if(AmbienceManager.obj.CurrentAmbience != null)
+                data.currentAmbienceId = AmbienceManager.obj.CurrentAmbience.ambienceId;
+            else
+                data.currentAmbienceId = "";
 
         return data;
     }

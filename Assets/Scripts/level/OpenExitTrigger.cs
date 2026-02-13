@@ -1,8 +1,10 @@
+using FMODUnity;
 using UnityEngine;
 
 public class OpenExitTrigger : MonoBehaviour
 {
     [SerializeField] private GameObject _levelExitDoor;
+    [SerializeField] private EventReference _brokenFloorReappearSfx;
     private int _playerCount = 0;
 
     void OnTriggerEnter2D(Collider2D collision)
@@ -32,7 +34,7 @@ public class OpenExitTrigger : MonoBehaviour
     }
 
     private void OpenDoor() {
-        SoundFXManager.obj.PlayBrokenFloorReappear(transform);
+        SoundFXManager.obj.Play2D(_brokenFloorReappearSfx);
         _levelExitDoor.SetActive(false);
     }
 }

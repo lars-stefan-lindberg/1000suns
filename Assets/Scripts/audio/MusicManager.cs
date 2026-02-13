@@ -1,506 +1,131 @@
 using UnityEngine;
+using FMOD.Studio;
+using FMODUnity;
+using System.Collections;
 
 public class MusicManager : MonoBehaviour
 {
     public static MusicManager obj;
+    [SerializeField] private MusicLibrary musicLibrary;
 
-    public enum MusicId {
+    private EventInstance currentInstance;
+    private MusicTrack currentTrack;
+    private PARAMETER_ID endingParamId;
+    private bool currentTrackHasEnding;
+    private enum MusicLogicalState {
         None,
-        CaveSong,
-        CaveFirstSong,
-        CaveSecondSong,
-        CaveLoop,
-        BlobRooms,
-        CaveIntense1,
-        CaveIntense2,
-        CaveAvatarChase,
-        CaveBeforeFirstPrisoner
+        Playing
     }
+    private MusicLogicalState _musicLogicalState = MusicLogicalState.None;
 
-    private MusicId _currentMusicId = MusicId.None;
-
-    [SerializeField] private AudioSource musicObject;
-    [SerializeField] private float crossfadeDuration = 1.5f;
-    [SerializeField] private AnimationCurve fadeCurve;
-
-    [SerializeField] private AudioClip _titleSongIntro;
-    [SerializeField] private AudioClip _titleSongLoop;
-
-    [SerializeField] private AudioClip _caveSongIntro;
-    [SerializeField] private AudioClip _caveSongLoop;    
-    [SerializeField] private AudioClip _caveSongOutro;    
-    [SerializeField] private AudioClip _caveSongFirstIntro;
-    [SerializeField] private AudioClip _caveSongFirstLoop;    
-    [SerializeField] private AudioClip _caveSongSecondIntro;
-    [SerializeField] private AudioClip _caveSongSecondLoop;
-    public AudioClip caveBeforeFirstPrisonerLoop;
-
-    [SerializeField] private AudioClip _introSong;
-    [SerializeField] private AudioClip _powerUpIntroSong;
-    [SerializeField] private AudioClip _powerUpPickupSong;
-    [SerializeField] private AudioClip _caveIntense1Intro;
-    [SerializeField] private AudioClip _caveIntense1Loop;    
-    public AudioClip caveIntense2Intro;
-    public AudioClip caveIntense2Loop;
-    public AudioClip caveIntense1Outro;
-    [SerializeField] private AudioClip _caveAvatarChaseIntro;
-    [SerializeField] private AudioClip _caveAvatarChaseLoop;
-    public AudioClip caveAvatarChaseOutro;
-    [SerializeField] private AudioClip _caveSpaceRoomIntro;
-    public AudioClip caveSpaceRoomOutro;
-    [SerializeField] private AudioClip _caveSpaceRoomLoopIntro;
-    [SerializeField] private AudioClip _caveSpaceRoomLoop;
-    [SerializeField] private AudioClip _caveSpaceRoomInfiniteLoop;
-
-    [SerializeField] private AudioClip _endSong;
-    [SerializeField] private AudioClip _blobTransform;
-    [SerializeField] private AudioClip _blobRooms;
-
-    private AudioSource _introSource;
-    private AudioSource _loopSource;
-    private AudioSource _oneTimeSource;
-    private AudioSource _nextBarSource;
-    private float _currentVolume = 1f;
-
-    // For Pause/Resume fade state
-    private enum MusicFadeState { None, PausedIntro, PausedLoop }
-    private MusicFadeState _pausedState = MusicFadeState.None;
-    private float _pausedVolume = 1f;
-
-    void Awake() {
+    void Awake()
+    {
         obj = this;
     }
 
-    public void PlayTitleSong() {
-        PlayIntroAndLoop(_titleSongIntro, _titleSongLoop);
+    // Public API — this is what scenes call
+    public void Play(MusicTrack track)
+    {
+        if (track == null)
+            return;
+
+        if (currentTrack == track)
+            return; // already playing
+
+        _musicLogicalState = MusicLogicalState.Playing;
+        currentTrack = track;
+
+        SwapTrack(track);
     }
 
-    [ContextMenu("Play cave song")]
-    public void PlayCaveSong() {
-        PlayIntroAndLoop(_caveSongIntro, _caveSongLoop);
-        _currentMusicId = MusicId.CaveSong;
-    }    
-    public void PlayCaveSongOutro() {
-        PlayOneTime(_caveSongOutro);
-    }
-    public void PlayCaveSpaceRoomIntro() {
-        PlayOneTime(_caveSpaceRoomIntro);
-    }
-    public void PlayCaveSpaceRoomLoop() {
-        PlayIntroAndLoop(_caveSpaceRoomLoopIntro, _caveSpaceRoomLoop);
-    }
-    public void PlayCaveSpaceRoomInfiniteLoop() {
-        PlayLoop(_caveSpaceRoomInfiniteLoop);
-    }
-    [ContextMenu("Play cave first song")]
-    public void PlayCaveFirstSong() {
-        PlayIntroAndLoop(_caveSongFirstIntro, _caveSongFirstLoop);
-        _currentMusicId = MusicId.CaveFirstSong;
-    }
-    [ContextMenu("Play cave second song")]
-    public void PlayCaveSecondSong() {
-        PlayIntroAndLoop(_caveSongSecondIntro, _caveSongSecondLoop);
-        _currentMusicId = MusicId.CaveSecondSong;
-    }
-    [ContextMenu("Play cave loop")]
-    public void PlayCaveLoop() {
-        PlayLoop(_caveSongLoop);
-        _currentMusicId = MusicId.CaveLoop;
-    }
-    public void PlayBlobRooms() {
-        PlayLoop(_blobRooms);
-        _currentMusicId = MusicId.BlobRooms;
+    public void Stop()
+    {
+        if(currentTrack == null)
+            return;
+        if(_musicLogicalState == MusicLogicalState.None)
+            return;
+
+        _musicLogicalState = MusicLogicalState.None;
+        currentTrack = null;
+
+        StartCoroutine(StopCurrent());
     }
 
-    [ContextMenu("Play end song")]
-    public void PlayEndSong() {
-        PlayOneTime(_endSong);
+    public void EndCurrentTrack()
+    {
+        if (_musicLogicalState != MusicLogicalState.Playing)
+            return;
+
+        if (!currentTrackHasEnding)
+            return;
+
+        currentInstance.setParameterByID(endingParamId, 1f, true);
+
+        // Release ownership immediately (FMOD will finish playback)
+        currentInstance.release();
+        currentInstance.clearHandle();
+
+        // Logically, music is now done
+        currentTrack = null;
+        _musicLogicalState = MusicLogicalState.None;
     }
 
-    [ContextMenu("Play intro song")]
-    public void PlayIntroSong() {
-        PlayOneTime(_introSong);
+    public MusicTrack CurrentTrack => currentTrack;
+
+    public void PlayById(string trackId)
+    {
+        if (musicLibrary == null)
+            return;
+
+        musicLibrary.Init();
+        var track = musicLibrary.GetById(trackId);
+        Play(track);
     }
 
-    [ContextMenu("Play power up intro song")]
-    public void PlayPowerUpIntroSong() {
-        PlayOneTime(_powerUpIntroSong);
-    }
-
-    [ContextMenu("Play power up pickup song")]
-    public void PlayPowerUpPickupSong() {
-        PlayOneTime(_powerUpPickupSong);
-    }
-
-    public void PlayBlobTransform() {
-        PlayOneTime(_blobTransform);
-    }
-
-    [ContextMenu("Play cave before first prisoner song")]
-    public void PlayCaveBeforeFirstPrisoner() {
-        PlayLoop(caveBeforeFirstPrisonerLoop);
-        _currentMusicId = MusicId.CaveBeforeFirstPrisoner;
-    }
-
-    [ContextMenu("Play cave intense 1")]
-    public void PlayCaveIntense1() {
-        PlayIntroAndLoop(_caveIntense1Intro, _caveIntense1Loop);
-        _currentMusicId = MusicId.CaveIntense1;
-    }
-    [ContextMenu("Play cave intense 2")]
-    public void PlayCaveIntense2() {
-        PlayIntroAndLoop(caveIntense2Intro, caveIntense2Loop);
-        _currentMusicId = MusicId.CaveIntense2;
-    }
-    [ContextMenu("Play cave avatar chase")]
-    public void PlayCaveAvatarChase() {
-        PlayIntroAndLoop(_caveAvatarChaseIntro, _caveAvatarChaseLoop);
-        _currentMusicId = MusicId.CaveAvatarChase;
-    }
-
-    private void PlayIntroAndLoop(AudioClip introClip, AudioClip loopClip) {
-        StopPlaying();
-        _introSource = Instantiate(musicObject, Camera.main.gameObject.transform.position, Quaternion.identity);
-        _introSource.transform.parent = transform;
-        _loopSource = Instantiate(musicObject, Camera.main.gameObject.transform.position, Quaternion.identity);
-        _loopSource.transform.parent = transform;
-        _introSource.clip = introClip;
-        _introSource.playOnAwake = false;
-        double introDuration = (double)_introSource.clip.samples / _introSource.clip.frequency;
-        
-        _loopSource.clip = loopClip;
-        _loopSource.playOnAwake = false;
-        _loopSource.loop = true;
-
-        double startTime = AudioSettings.dspTime + 1;
-        _introSource.PlayScheduled(startTime);
-        _loopSource.PlayScheduled(startTime + introDuration);
-        
-        // Set the current volume
-        _introSource.volume = _currentVolume;
-        _loopSource.volume = _currentVolume;
-    }
-
-    private void PlayOneTime(AudioClip clip) {
-        StopPlaying();
-        _oneTimeSource = Instantiate(musicObject, Camera.main.transform.position, Quaternion.identity);
-        _oneTimeSource.transform.parent = transform;
-        _oneTimeSource.clip = clip;
-        _oneTimeSource.playOnAwake = false;
-        _oneTimeSource.loop = false;
-        _oneTimeSource.volume = _currentVolume;
-
-        double startTime = AudioSettings.dspTime + 1;
-        _oneTimeSource.PlayScheduled(startTime);
-    }
-
-    private void PlayLoop(AudioClip clip) {
-        StopPlaying();
-        _loopSource = Instantiate(musicObject, Camera.main.transform.position, Quaternion.identity);
-        _loopSource.transform.parent = transform;
-        _loopSource.clip = clip;
-        _loopSource.playOnAwake = false;
-        _loopSource.loop = true;
-        _loopSource.volume = _currentVolume;
-
-        // Ensure a low pass filter is always present
-        if (_loopSource.GetComponent<AudioLowPassFilter>() == null)
-            _loopSource.gameObject.AddComponent<AudioLowPassFilter>();
-
-        double startTime = AudioSettings.dspTime + 1;
-        _loopSource.PlayScheduled(startTime);
-    }
-
-    public void ScheduleClipOnNextBar(AudioClip clip, int beatsPerMinute, bool loop = true) {
-        // Calculate time to next bar
-        double currentTime = AudioSettings.dspTime;
-        double beatsPerSecond = beatsPerMinute / 60.0;
-        double currentBeat = currentTime * beatsPerSecond;
-        double nextBar = Mathf.Ceil((float)currentBeat / 4) * 4; // Assuming 4/4 time signature
-        double nextBarTime = nextBar / beatsPerSecond;
-
-        // Create and setup the new audio source
-        if (_nextBarSource != null) {
-            Destroy(_nextBarSource.gameObject);
+    private void SwapTrack(MusicTrack nextTrack)
+    {
+        // Fade out old (FMOD handles timing)
+        if (currentInstance.isValid())
+        {
+            currentInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+            currentInstance.release();
+            currentInstance.clearHandle();
         }
-        _nextBarSource = Instantiate(musicObject, Camera.main.transform.position, Quaternion.identity);
-        _nextBarSource.transform.parent = transform;
-        _nextBarSource.clip = clip;
-        _nextBarSource.playOnAwake = false;
-        _nextBarSource.loop = loop;
-        _nextBarSource.volume = 0f;
 
-        // Apply low-pass filter to help with transition
-        AudioLowPassFilter lowPassFilter = _nextBarSource.gameObject.AddComponent<AudioLowPassFilter>();
-        lowPassFilter.cutoffFrequency = 22000; // Start with no filtering
+        // Start new
+        currentInstance = RuntimeManager.CreateInstance(nextTrack.eventRef);
+        currentTrackHasEnding = nextTrack.hasEnding;
+        if(currentTrackHasEnding) {
+            currentInstance.getDescription(out var desc);
+            desc.getParameterDescriptionByName(
+                nextTrack.endingParameterName,
+                out var paramDesc
+            );
+            endingParamId = paramDesc.id;
 
-        // Schedule the new clip
-        _nextBarSource.PlayScheduled(nextBarTime);
-
-        // Start crossfade
-        StartCoroutine(CrossfadeToNewClip(nextBarTime));
+            // Ensure we're in "normal" mode
+            currentInstance.setParameterByID(endingParamId, 0f);
+        }
+        currentInstance.start();
     }
 
-    private System.Collections.IEnumerator CrossfadeToNewClip(double startTime) {
-        // Capture current volume levels before we start fading
-        float startVolume = _currentVolume;
-        
-        // Determine which source is currently active
-        bool usingLoopSource = _loopSource != null;
-        bool usingIntroSource = _introSource != null;
-        
-        if (!usingLoopSource && !usingIntroSource) {
+    IEnumerator StopCurrent()
+    {
+        if (!currentInstance.isValid())
             yield break;
-        }
-        
-        // Store the initial volumes
-        float loopSourceInitialVolume = usingLoopSource ? _loopSource.volume : 0f;
-        float introSourceInitialVolume = usingIntroSource ? _introSource.volume : 0f;
-        
-        // Wait until just before the scheduled time
-        double prepTime = startTime - 0.1;
-        while (AudioSettings.dspTime < prepTime) {
-            yield return null;
-        }
-        
-        // Add low-pass filters to active sources
-        AudioLowPassFilter loopSourceLowPass = null;
-        AudioLowPassFilter introSourceLowPass = null;
-        
-        if (usingLoopSource && !_loopSource.gameObject.TryGetComponent<AudioLowPassFilter>(out loopSourceLowPass)) {
-            loopSourceLowPass = _loopSource.gameObject.AddComponent<AudioLowPassFilter>();
-            loopSourceLowPass.cutoffFrequency = 22000;
-        }
-        
-        if (usingIntroSource && !_introSource.gameObject.TryGetComponent<AudioLowPassFilter>(out introSourceLowPass)) {
-            introSourceLowPass = _introSource.gameObject.AddComponent<AudioLowPassFilter>();
-            introSourceLowPass.cutoffFrequency = 22000;
-        }
-        
-        AudioLowPassFilter nextLowPass = _nextBarSource.GetComponent<AudioLowPassFilter>();
-        if (nextLowPass == null) {
-            nextLowPass = _nextBarSource.gameObject.AddComponent<AudioLowPassFilter>();
-            nextLowPass.cutoffFrequency = 1000; // Start with filtering
-        }
-        
-        // Wait until the exact scheduled time
-        while (AudioSettings.dspTime < startTime) {
-            yield return null;
-        }
 
-        float elapsed = 0f;
-        
-        // Perform the crossfade with smooth curves
-        while (elapsed < crossfadeDuration) {
-            float normalizedTime = elapsed / crossfadeDuration;
-            
-            // Use either the animation curve or a smoothstep function for more natural fading
-            float fadeOutValue = fadeCurve != null && fadeCurve.keys.Length > 0 
-                ? fadeCurve.Evaluate(1 - normalizedTime) 
-                : Mathf.SmoothStep(1, 0, normalizedTime);
-                
-            float fadeInValue = fadeCurve != null && fadeCurve.keys.Length > 0 
-                ? fadeCurve.Evaluate(normalizedTime) 
-                : Mathf.SmoothStep(0, 1, normalizedTime);
-            
-            // Apply volume changes directly to active sources
-            if (usingLoopSource && _loopSource != null) {
-                _loopSource.volume = loopSourceInitialVolume * fadeOutValue;
-                if (loopSourceLowPass != null) {
-                    loopSourceLowPass.cutoffFrequency = Mathf.Lerp(22000, 1000, normalizedTime);
-                }
-            }
-            
-            if (usingIntroSource && _introSource != null) {
-                _introSource.volume = introSourceInitialVolume * fadeOutValue;
-                if (introSourceLowPass != null) {
-                    introSourceLowPass.cutoffFrequency = Mathf.Lerp(22000, 1000, normalizedTime);
-                }
-            }
-            
-            // Fade in the new track
-            _nextBarSource.volume = startVolume * fadeInValue;
-            
-            // Gradually remove low-pass filter from the fading in track
-            if (nextLowPass != null) {
-                nextLowPass.cutoffFrequency = Mathf.Lerp(1000, 22000, normalizedTime);
-            }
-            
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-
-        // Ensure the volumes are fully at 0 before stopping
-        if (usingLoopSource && _loopSource != null) _loopSource.volume = 0f;
-        if (usingIntroSource && _introSource != null) _introSource.volume = 0f;
-        _nextBarSource.volume = startVolume;
-        
-        // Remove the low-pass filter from the new source
-        if (nextLowPass != null) {
-            Destroy(nextLowPass);
-        }
-        
-        // Store references to old sources for cleanup
-        AudioSource oldIntroSource = _introSource;
-        AudioSource oldLoopSource = _loopSource;
-        
-        // Move next source to appropriate source variable
-        if (_nextBarSource.loop) {
-            _loopSource = _nextBarSource;
-        } else {
-            _oneTimeSource = _nextBarSource;
-            _loopSource = null;
-        }
-        _introSource = null;
-        _nextBarSource = null;
-        
-        // Clean up old sources after a longer delay to ensure smooth transition
-        yield return new WaitForSeconds(0.5f);
-        
-        // Clean up old sources
-        if (oldIntroSource != null && oldIntroSource != _loopSource && oldIntroSource != _oneTimeSource) {
-            oldIntroSource.Stop();
-            Destroy(oldIntroSource.gameObject);
-        }
-        if (oldLoopSource != null && oldLoopSource != _loopSource && oldLoopSource != _oneTimeSource) {
-            oldLoopSource.Stop();
-            Destroy(oldLoopSource.gameObject);
-        }
+        currentInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+        currentInstance.release();
+        currentInstance.clearHandle();
     }
 
-    public void StopPlaying() {
-        if(_introSource != null) {
-            _introSource.Stop();
-            Destroy(_introSource.gameObject);
+    void OnDestroy()
+    {
+        if (currentInstance.isValid())
+        {
+            currentInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+            currentInstance.release();
         }
-        if(_loopSource != null) {
-            _loopSource.Stop();
-            Destroy(_loopSource.gameObject);
-        }
-        _currentMusicId = MusicId.None;
-    }
-
-    public void StopPlayingOneTime() {
-        if(_oneTimeSource != null) {
-            _oneTimeSource.Stop();
-            Destroy(_oneTimeSource);
-        }
-    }
-
-    public bool IsPlaying() {
-        return (_introSource != null && _introSource.isPlaying) || 
-               (_loopSource != null && _loopSource.isPlaying);
-    }
-
-    public string GetCurrentMusicId() {
-        return _currentMusicId == MusicId.None ? null : _currentMusicId.ToString();
-    }
-
-    public void SetCurrentMusicId(MusicId musicId) {
-        _currentMusicId = musicId;
-    }
-
-    public void PlayById(string id) {
-        if (string.IsNullOrEmpty(id)) return;
-        if (!System.Enum.TryParse<MusicId>(id, out var musicId)) return;
-        switch (musicId) {
-            case MusicId.CaveSong: PlayCaveSong(); break;
-            case MusicId.CaveFirstSong: PlayCaveFirstSong(); break;
-            case MusicId.CaveSecondSong: PlayCaveSecondSong(); break;
-            case MusicId.CaveLoop: PlayCaveLoop(); break;
-            case MusicId.BlobRooms: PlayBlobRooms(); break;
-            case MusicId.CaveIntense1: PlayCaveIntense1(); break;
-            case MusicId.CaveIntense2: PlayCaveIntense2(); break;
-            case MusicId.CaveAvatarChase: PlayCaveAvatarChase(); break;
-            case MusicId.CaveBeforeFirstPrisoner: PlayCaveBeforeFirstPrisoner(); break;
-            default: break;
-        }
-    }
-
-    //Don't use this. It needs to be updated with the case when resuming/pausing an audio source where there's also scheduled audio sources.
-    public void Pause() {
-        Debug.Log("Pausing music...");
-        if (_introSource != null && _introSource.isPlaying) {
-            StartCoroutine(FadeOutAndPause(_introSource, MusicFadeState.PausedIntro));
-        } else if (_loopSource != null && _loopSource.isPlaying) {
-            StartCoroutine(FadeOutAndPause(_loopSource, MusicFadeState.PausedLoop));
-        }
-    }
-
-    //Don't use this. It needs to be updated with the case when resuming/pausing an audio source where there's also scheduled audio sources.
-    public void Resume() {
-        Debug.Log("Resuming music...");
-        if (_pausedState == MusicFadeState.PausedIntro && _introSource != null) {
-            StartCoroutine(FadeInAndResume(_introSource));
-        } else if (_pausedState == MusicFadeState.PausedLoop && _loopSource != null) {
-            StartCoroutine(FadeInAndResume(_loopSource));
-        }
-    }
-
-    private System.Collections.IEnumerator FadeOutAndPause(AudioSource source, MusicFadeState pauseType) {
-        if (source == null) yield break;
-        _pausedState = pauseType;
-        _pausedVolume = source.volume;
-        float duration = crossfadeDuration > 0 ? crossfadeDuration : 2f;
-        float elapsed = 0f;
-        float startVol = source.volume;
-        while (elapsed < duration) {
-            float t = elapsed / duration;
-            float fade = (fadeCurve != null && fadeCurve.keys.Length > 0) ? fadeCurve.Evaluate(1 - t) : Mathf.SmoothStep(1, 0, t);
-            source.volume = startVol * fade;
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-        source.volume = 0f;
-        source.Pause();
-    }
-
-    private System.Collections.IEnumerator FadeInAndResume(AudioSource source) {
-        if (source == null) yield break;
-        source.UnPause();
-        float duration = crossfadeDuration > 0 ? crossfadeDuration : 2f;
-        float elapsed = 0f;
-        float targetVol = _pausedVolume;
-        source.volume = 0f;
-        while (elapsed < duration) {
-            float t = elapsed / duration;
-            float fade = (fadeCurve != null && fadeCurve.keys.Length > 0) ? fadeCurve.Evaluate(t) : Mathf.SmoothStep(0, 1, t);
-            source.volume = targetVol * fade;
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-        source.volume = targetVol;
-        _pausedState = MusicFadeState.None;
-    }
-
-    void FixedUpdate() {
-        // Check for audio sources that are not playing but still exist
-        if (_introSource != null && !_introSource.isPlaying && _pausedState == MusicFadeState.None) {
-            Destroy(_introSource.gameObject);
-            _introSource = null;
-        }
-        
-        if (_loopSource != null && !_loopSource.isPlaying && _pausedState == MusicFadeState.None) {
-            Destroy(_loopSource.gameObject);
-            _loopSource = null;
-        }
-        
-        if (_oneTimeSource != null && !_oneTimeSource.isPlaying) {
-            Destroy(_oneTimeSource.gameObject);
-            _oneTimeSource = null;
-        }
-        
-        if (_nextBarSource != null && !_nextBarSource.isPlaying) {
-            Destroy(_nextBarSource.gameObject);
-            _nextBarSource = null;
-        }
-    }
-
-    public AudioSource GetLoopSource() {
-        return _loopSource;
-    }
-
-    void OnDestroy() {
         obj = null;
     }
 }

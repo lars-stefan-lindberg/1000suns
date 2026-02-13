@@ -106,7 +106,7 @@ public class CharacterSelectionWidget : MonoBehaviour
         _rectTransform.anchoredPosition = 
             new Vector2(x, _rectTransform.anchoredPosition.y);
         UpdateUI();
-        SoundFXManager.obj.PlayUIBrowse();
+        UISoundPlayer.obj.PlayBrowse();
     }
 
     private float GetHorizontalInput(float originInput) {
@@ -131,9 +131,9 @@ public class CharacterSelectionWidget : MonoBehaviour
                     IsReady = true;
                     HideAllIcons();
                     _confirmedReadyIcon.SetActive(true);
-                    SoundFXManager.obj.PlayUIConfirm();
+                    UISoundPlayer.obj.PlaySelect();
                 } else {
-                    SoundFXManager.obj.PlayUIBack();
+                    UISoundPlayer.obj.PlayBack();
                 }
             }
         }
@@ -143,13 +143,13 @@ public class CharacterSelectionWidget : MonoBehaviour
         if(context.performed) {
             if(IsReady) {
                 SetNonReady();
-                SoundFXManager.obj.PlayUIBack();
+                UISoundPlayer.obj.PlayBack();
             } else {
                 //if both players are not ready, go back to player device setup
                 bool noCharactersSelected = LobbyManager.obj.GetPlayerSlots().TrueForAll(slot => slot.character == PlayerSlot.CharacterType.None);
                 if(noCharactersSelected) {
                     MainMenuManager.obj.OnNavigateBack();
-                    SoundFXManager.obj.PlayUIBack();
+                    UISoundPlayer.obj.PlayBack();
                 }
             }
         }

@@ -1,4 +1,5 @@
 using System.Collections;
+using FMODUnity;
 using UnityEngine;
 
 public class CaveAvatar : MonoBehaviour
@@ -13,6 +14,7 @@ public class CaveAvatar : MonoBehaviour
     [SerializeField] private GameObject[] _tailParts;
     [SerializeField] private Transform _playerTargetLeft;
     [SerializeField] private Transform _playerTargetRight;
+    [SerializeField] private EventReference _attackSfx;
     private Transform _target;
     private Animator _animator;
     public bool IsFollowingPlayer {get; set;}
@@ -112,7 +114,7 @@ public class CaveAvatar : MonoBehaviour
     public void Attack() {
         _animator.SetTrigger("attack");
         CameraShakeManager.obj.ForcePushShake();
-        SoundFXManager.obj.PlayCaveAvatarAttack(transform);
+        SoundFXManager.obj.Play2D(_attackSfx);
     }
 
     public void NudgeUpwards() {

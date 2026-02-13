@@ -13,7 +13,6 @@ public class C30CutsceneManager : MonoBehaviour
         if (_dialogueController != null)
         {
             _dialogueController.OnDialogueClosed += OnDialogueCompleted;
-            _dialogueController.OnDialogueClosing += OnDialogueClosing;
         }
     }
 
@@ -22,12 +21,7 @@ public class C30CutsceneManager : MonoBehaviour
         if (_dialogueController != null)
         {
             _dialogueController.OnDialogueClosed -= OnDialogueCompleted;
-            _dialogueController.OnDialogueClosing -= OnDialogueClosing;
         }
-    }
-
-    private void OnDialogueClosing() {
-        SoundFXManager.obj.PlayDialogueClose();
     }
 
     private void OnDialogueCompleted() {
@@ -71,8 +65,7 @@ public class C30CutsceneManager : MonoBehaviour
 
         yield return new WaitForSeconds(3f);
 
-        SoundFXManager.obj.PlayDialogueOpen();
-        _dialogueController.ShowDialogue(_dialogueContent);
+        _dialogueController.ShowDialogue(_dialogueContent, true, true);
 
         yield return null;
     }

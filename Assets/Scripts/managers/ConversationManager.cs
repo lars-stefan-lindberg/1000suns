@@ -36,7 +36,6 @@ public class ConversationManager : MonoBehaviour
         if (conversationList.Count > 0)
         {
             currentDialogueIndex = 0;
-            SoundFXManager.obj.PlayDialogueOpen();
             ShowNextDialogue();
         }
     }
@@ -53,7 +52,7 @@ public class ConversationManager : MonoBehaviour
         if (currentDialogueIndex < conversationList.Count)
         {
             ConversationEntry entry = conversationList[currentDialogueIndex];
-            _dialogueController.ShowDialogue(entry.dialogueContent);
+            _dialogueController.ShowDialogue(entry.dialogueContent, currentDialogueIndex == 0, currentDialogueIndex == conversationList.Count - 1);
         }
         else
         {
@@ -63,8 +62,6 @@ public class ConversationManager : MonoBehaviour
 
     private void OnDialogueClosing() {
         currentDialogueIndex++;
-        if (currentDialogueIndex == conversationList.Count)
-            SoundFXManager.obj.PlayDialogueClose();
     }
 
     private void OnDialogueCompleted()

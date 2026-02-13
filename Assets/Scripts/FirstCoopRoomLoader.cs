@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class FirstCoopRoomLoader : MonoBehaviour
 {
+    [SerializeField] private AmbienceTrack _ambience;
+
     void Start()
     {
         Player.obj.SetCaveStartingCoordinatesCoop();
@@ -33,7 +35,7 @@ public class FirstCoopRoomLoader : MonoBehaviour
         ShadowTwinMovement.obj.Freeze();
 
         StartCoroutine(FadeInAndPlaySounds());
-        StartCoroutine(AmbienceFadeIn());
+        AmbienceManager.obj.Play(_ambience);
         LightingManager2D.Get().profile.DarknessColor = new Color(0.33f, 0.33f, 0.33f, 1f);
 
         PlayerStatsManager.obj.ResumeTimer();
@@ -56,12 +58,6 @@ public class FirstCoopRoomLoader : MonoBehaviour
         ShadowTwinMovement.obj.UnFreeze();
         GameManager.obj.IsPauseAllowed = true;
 
-        yield return null;
-    }
-
-    private IEnumerator AmbienceFadeIn() {
-        AmbienceManager.obj.PlayCaveAmbience();
-        AmbienceManager.obj.FadeInAmbienceSource1(2f);
         yield return null;
     }
 }

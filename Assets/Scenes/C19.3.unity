@@ -635,6 +635,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fb65a136fe514ba69e62cc116bd8bfd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _stinger:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
 --- !u!61 &537529797
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -715,6 +722,27 @@ MonoBehaviour:
   _defaultCamera: {fileID: 417125480}
   _zoomedCamera: {fileID: 1323075731}
   _tutorialCanvas: {fileID: 209236341}
+  _receivePowerupStinger:
+    Guid:
+      Data1: 1293453985
+      Data2: 1079224911
+      Data3: 1694345906
+      Data4: -1536924873
+    Path: event:/game/01_cave/stingers/power_up_room_receive
+  _powerUpFanfareStinger:
+    Guid:
+      Data1: -2028024399
+      Data2: 1251664245
+      Data3: -66005605
+      Data4: 1624465437
+    Path: event:/game/general/stingers/power_up_fanfare
+  _pickupPowerupSfx:
+    Guid:
+      Data1: 584789043
+      Data2: 1282579024
+      Data3: 1235158926
+      Data4: -1399942165
+    Path: event:/game/general/power_up
   _recoveryTime: 3
 --- !u!114 &604632838
 MonoBehaviour:
@@ -46046,7 +46074,7 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -2027969955
-  m_SortingLayer: -2
+  m_SortingLayer: -4
   m_SortingOrder: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}

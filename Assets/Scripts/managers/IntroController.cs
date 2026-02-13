@@ -8,6 +8,7 @@ using System.Linq;
 
 public class IntroController : MonoBehaviour
 {
+    [SerializeField] private MusicTrack _introMusic;
     [SerializeField] private TypewriterByCharacter _typeWriter;
     [SerializeField] private DialogueContent _dialogueContent;
     [SerializeField] private SceneField _caveRoom1;
@@ -28,7 +29,7 @@ public class IntroController : MonoBehaviour
     {
         SceneFadeManager.obj.SetFadedOutState();
         yield return new WaitForSeconds(0.4f);
-        MusicManager.obj.PlayIntroSong();
+        MusicManager.obj.Play(_introMusic);
         SceneFadeManager.obj.SetFadeInSpeed(0.2f);
         yield return new WaitForSeconds(3f);
         SceneFadeManager.obj.StartFadeIn();
@@ -48,7 +49,7 @@ public class IntroController : MonoBehaviour
         }
 
         yield return new WaitForSeconds(2f);
-        MusicManager.obj.StopPlaying();
+        MusicManager.obj.Stop();
 
         Player.obj.gameObject.SetActive(true);
         PlayerMovement.obj.SetStartingOnGround();

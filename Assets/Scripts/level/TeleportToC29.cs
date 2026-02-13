@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Linq;
 using Cinemachine;
+using FMODUnity;
 using FunkyCode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -11,6 +12,9 @@ public class TeleportToC29 : MonoBehaviour
     [SerializeField] private GameObject _cameraToDeactivate;
     [SerializeField] private GameObject _tutorialCanvas;
     [SerializeField] private GameObject _shockWaveEmitter;
+    [SerializeField] private MusicTrack _musicTrack;
+    [SerializeField] private EventReference _powerupFanfareStinger;
+    [SerializeField] private EventReference _teleportSfx;
     
     void OnTriggerEnter2D(Collider2D other)
     {
@@ -22,12 +26,12 @@ public class TeleportToC29 : MonoBehaviour
 
     private IEnumerator TeleportToC29Routine() {
         PlayerBlobMovement.obj.Freeze();
-        MusicManager.obj.ScheduleClipOnNextBar(MusicManager.obj.caveIntense1Outro, 140, false);
+        //TODO: Set up the space room "music", including ending, in FMOD
+        //MusicManager.obj.ScheduleClipOnNextBar(MusicManager.obj.caveIntense1Outro, 140, false);
 
-        AmbienceManager.obj.SetCurrentAmbienceId(AmbienceManager.AmbienceId.None);
-        AmbienceManager.obj.FadeOutAmbienceSource2And3(1f);
+        AmbienceManager.obj.Stop();
 
-        SoundFXManager.obj.PlayCaveSpaceRoomTeleport();
+        SoundFXManager.obj.Play2D(_teleportSfx);
         WhiteFadeManager.obj.StartFadeOut();
 
         yield return new WaitForSeconds(1f);
@@ -77,7 +81,7 @@ public class TeleportToC29 : MonoBehaviour
         Time.timeScale = 0;
         _tutorialCanvas.SetActive(true);
         TutorialDialogManager.obj.StartFadeIn();
-        SoundFXManager.obj.PlayPowerUpDialogueStinger();
+        SoundFXManager.obj.Play2D(_powerupFanfareStinger);
         while(!TutorialDialogManager.obj.tutorialCompleted) {
             yield return null;
         }
@@ -89,7 +93,7 @@ public class TeleportToC29 : MonoBehaviour
 
         GameManager.obj.IsPauseAllowed = true;
 
-        MusicManager.obj.PlayCaveSong();
+        MusicManager.obj.Play(_musicTrack);
         SaveManager.obj.SaveGame(scene.name);
         yield return null;
     }

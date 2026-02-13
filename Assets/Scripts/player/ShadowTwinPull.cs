@@ -1,4 +1,5 @@
 using System.Collections;
+using FMOD.Studio;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -35,11 +36,9 @@ public class ShadowTwinPull : MonoBehaviour
     
     public FloatyPlatform platform;
 
-    private AudioSource _forcePushStartChargingAudioSource;
+    private EventInstance _forcePullStartSfxInstance;
 
     private bool _isPullDisabled = false;
-    private bool _startedChargeAnimation = false;
-    private bool _startedFullyChargedAnimation = false;
 
     public float pullForce = 10f;
     public float maxPullSpeed = 7f;
@@ -53,6 +52,7 @@ public class ShadowTwinPull : MonoBehaviour
     public LayerMask pullableMask;
     public LayerMask blockingMask;
     public float raySpacing = 0.2f; // space between the rays
+    private DeeAudio _deeAudio;
 
     public enum PullPowerType {
         Full,
@@ -179,13 +179,9 @@ public class ShadowTwinPull : MonoBehaviour
         pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().Cancel();
         Player.obj.AbortFlash();
         Player.obj.EndFullyChargedVfx();
-        _startedChargeAnimation = false;
-        _startedFullyChargedAnimation = false;
 
-        if(_forcePushStartChargingAudioSource != null && _forcePushStartChargingAudioSource.isPlaying) {
-            SoundFXManager.obj.FadeOutAndStopSound(_forcePushStartChargingAudioSource, 0.05f);
-            _forcePushStartChargingAudioSource = null;
-        }
+        if(AudioUtils.IsPlaying(_forcePullStartSfxInstance))
+            AudioUtils.SafeStop(ref _forcePullStartSfxInstance);
 
         ShadowTwinPlayer.obj.RestorePlayerPullLight();
 
@@ -328,8 +324,6 @@ public class ShadowTwinPull : MonoBehaviour
         }
     }
 
-    public float projectileDelay = 0.1f;
-
     void Pull()
     {
         CircleCollider2D closestFacingAnchorPoint = null;
@@ -344,7 +338,7 @@ public class ShadowTwinPull : MonoBehaviour
             ShadowTwinMovement.obj.StartAnchorPull();
             ShadowTwinPlayer.obj.DisableGravity();
             _ghostTrail.ShowGhosts();
-            SoundFXManager.obj.PlayForcePushStartCharging(transform);
+            _deeAudio.PlayForcePullStart(ref _forcePullStartSfxInstance);
         } else {
             _isPullingObject = true;
             PullDetectionResult pullable = DetectPullable();
@@ -352,7 +346,7 @@ public class ShadowTwinPull : MonoBehaviour
                 SetPullable(pullable.collider);
             }
             pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().HardCancel();
-            _forcePushStartChargingAudioSource = SoundFXManager.obj.PlayForcePushStartCharging(transform);
+            _deeAudio.PlayForcePullStart(ref _forcePullStartSfxInstance);
             ShadowTwinPlayer.obj.StartChargeFlash();
             ShadowTwinPlayer.obj.PlayerPullLight();
             ShadowTwinMovement.obj.IsPulling = true;
@@ -360,13 +354,6 @@ public class ShadowTwinPull : MonoBehaviour
             PullPowerType chargePowerType = GetChargePowerType();
             ExecuteForcePushVfx(chargePowerType);
         }
-    }
-
-    void Dash() {
-        PullPowerType chargePowerType = GetChargePowerType();
-        //PlayerMovement.obj.ExecuteDash(chargePowerType);
-        ExecuteDashVfx(chargePowerType);
-        SoundFXManager.obj.PlayForcePushExecute(transform);
     }
 
     private PullPowerType GetChargePowerType() {
@@ -386,25 +373,6 @@ public class ShadowTwinPull : MonoBehaviour
 
     public void ExecuteForcePushVfx(PullPowerType chargePowerType) {
         ShadowTwinPlayer.obj.ForcePushFlash();
-    }
-
-    private IEnumerator DelayedMovePlatform(float delay, float power) {
-        yield return new WaitForSeconds(delay);
-        platform.MovePlatform(PlayerMovement.obj.isFacingLeft(), power);
-    }
-
-    public float playerOffsetY = 0.1f;
-    private IEnumerator DelayedProjectile(float delay, float power, PullPowerType chargePowerType) {
-        yield return new WaitForSeconds(delay);
-        SoundFXManager.obj.PlayForcePushExecute(transform);
-        int playerFacingDirection = PlayerMovement.obj.isFacingLeft() ? -1 : 1;
-        ProjectileManager.obj.shootProjectile(
-            new Vector3(_collider.bounds.center.x + (_playerOffset * playerFacingDirection) , gameObject.transform.position.y - playerOffsetY, gameObject.transform.position.z),
-            playerFacingDirection,
-            power,
-            Player.obj.hasPowerUp);
-        
-        //PlayerMovement.obj.ExecuteForcePushWithProjectile(chargePowerType);
     }
 
     private void OnDrawGizmosSelected()

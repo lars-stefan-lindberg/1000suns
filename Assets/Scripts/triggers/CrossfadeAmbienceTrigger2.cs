@@ -17,9 +17,11 @@ public class CrossfadeAmbienceTrigger2 : MonoBehaviour
     }
 
     private IEnumerator CrossFadeAmbience() {
-        AmbienceManager.obj.PlayCaveAmbience();
-        AmbienceManager.obj.FadeInAmbienceSource1(1.5f);
-        yield return new WaitForSeconds(1f);
-        AmbienceManager.obj.FadeOutAmbienceSource2And3(1f);
+        yield return null;
+        //Is this used anywhere??
+        // AmbienceManager.obj.PlayCaveAmbience();
+        // AmbienceManager.obj.FadeInAmbienceSource1(1.5f);
+        // yield return new WaitForSeconds(1f);
+        // AmbienceManager.obj.FadeOutAmbienceSource2And3(1f);
     }
 }

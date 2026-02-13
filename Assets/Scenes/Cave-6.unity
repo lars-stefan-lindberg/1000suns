@@ -1853,6 +1853,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _capePicked: {fileID: 11400000, guid: 10453c8b9ee784b93b482e4f84817ea7, type: 2}
+  _musicTrack: {fileID: 0}
   _defaultCamera: {fileID: 883349949}
   _zoomedCamera: {fileID: 274527370}
   _beamOfLightLight: {fileID: 1106241574}
@@ -1863,8 +1864,14 @@ MonoBehaviour:
   _pickCapeTrigger: {fileID: 442311284}
   _blobsContainer: {fileID: 79239952}
   _fadeSpeed: 0.89
-  _capeIntroductionSfxFadeOutDuration: 1
   _cave6CapePickedManager: {fileID: 802567875}
+  _lightBeamSfx:
+    Guid:
+      Data1: -661209462
+      Data2: 1341422372
+      Data3: 561331876
+      Data4: 1061709039
+    Path: event:/game/01_cave/cape_room_light_beam
 --- !u!61 &547946415
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2677,6 +2684,13 @@ MonoBehaviour:
   _customCameraZoomedOutEventId: {fileID: 11400000, guid: 57647d489e02648f08b8c1bb691a59ba, type: 2}
   _mainCamera: {fileID: 883349948}
   _spawnPoint: {fileID: 867230801}
+  _stinger:
+    Guid:
+      Data1: 2107138088
+      Data2: 1142843448
+      Data3: -2088733042
+      Data4: -1555758206
+    Path: event:/game/01_cave/stingers/power_up_room_intro
 --- !u!61 &666435332
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2947,7 +2961,21 @@ MonoBehaviour:
   _finalPlayerPosition: {fileID: 1251989885}
   _blobsContainer: {fileID: 79239952}
   _pickCapeTrigger: {fileID: 442311284}
-  _roarSfxFadeOutDuration: 1
+  _musicTrack: {fileID: 11400000, guid: f430c39f8a18a4401a474609c2d7a41a, type: 2}
+  _powerupFanfareStinger:
+    Guid:
+      Data1: -2028024399
+      Data2: 1251664245
+      Data3: -66005605
+      Data4: 1624465437
+    Path: event:/game/general/stingers/power_up_fanfare
+  _capePickedRoarSfx:
+    Guid:
+      Data1: -85142882
+      Data2: 1146717878
+      Data3: -166883688
+      Data4: -2108946033
+    Path: event:/game/01_cave/cape_room_take_cape_roar
 --- !u!4 &802567876
 Transform:
   m_ObjectHideFlags: 0

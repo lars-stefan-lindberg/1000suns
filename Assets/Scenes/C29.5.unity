@@ -38,7 +38,6 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -478,7 +477,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -2027969955
-  m_SortingLayer: -2
+  m_SortingLayer: -4
   m_SortingOrder: -3
   m_Sprite: {fileID: 21300000, guid: 1db15aed79a024e72b2bc30f199a791a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -567,7 +566,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -2027969955
-  m_SortingLayer: -2
+  m_SortingLayer: -4
   m_SortingOrder: -3
   m_Sprite: {fileID: 21300000, guid: 1db15aed79a024e72b2bc30f199a791a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -820,7 +819,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -2027969955
-  m_SortingLayer: -2
+  m_SortingLayer: -4
   m_SortingOrder: -4
   m_RenderMode: 0
   m_MeshDistribution: 0
@@ -5951,7 +5950,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -2027969955
-  m_SortingLayer: -2
+  m_SortingLayer: -4
   m_SortingOrder: -4
   m_RenderMode: 0
   m_MeshDistribution: 0
@@ -10761,6 +10760,21 @@ MonoBehaviour:
   _cameraToDeactivate: {fileID: 2058243864}
   _tutorialCanvas: {fileID: 477010956}
   _shockWaveEmitter: {fileID: 1614932357}
+  _musicTrack: {fileID: 11400000, guid: f430c39f8a18a4401a474609c2d7a41a, type: 2}
+  _powerupFanfareStinger:
+    Guid:
+      Data1: -2028024399
+      Data2: 1251664245
+      Data3: -66005605
+      Data4: 1624465437
+    Path: event:/game/general/stingers/power_up_fanfare
+  _teleportSfx:
+    Guid:
+      Data1: 2016255071
+      Data2: 1306818322
+      Data3: 235933584
+      Data4: -895535784
+    Path: event:/game/01_cave/space_room/teleport
 --- !u!61 &976089608
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -11389,7 +11403,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -2027969955
-  m_SortingLayer: -2
+  m_SortingLayer: -4
   m_SortingOrder: -3
   m_Sprite: {fileID: 21300000, guid: 1db15aed79a024e72b2bc30f199a791a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -11575,7 +11589,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -2027969955
-  m_SortingLayer: -2
+  m_SortingLayer: -4
   m_SortingOrder: -4
   m_RenderMode: 0
   m_MeshDistribution: 0
@@ -16553,6 +16567,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shockwavePrefab: {fileID: 4323626538525687386, guid: 99b207e5a972741bf972f3d8779622dd, type: 3}
+  _statueShockWaveSfx:
+    Guid:
+      Data1: -1587827791
+      Data2: 1148753699
+      Data3: 448377988
+      Data4: 623752613
+    Path: event:/game/01_cave/space_room/eli_statue_shockwave
   minInterval: 0.6
   maxInterval: 2
   minPlayerDistance: 2
@@ -16829,7 +16850,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -2027969955
-  m_SortingLayer: -2
+  m_SortingLayer: -4
   m_SortingOrder: -3
   m_Sprite: {fileID: 21300000, guid: 1db15aed79a024e72b2bc30f199a791a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -17237,7 +17258,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -2027969955
-  m_SortingLayer: -2
+  m_SortingLayer: -4
   m_SortingOrder: -4
   m_RenderMode: 0
   m_MeshDistribution: 0
@@ -22398,6 +22419,7 @@ MonoBehaviour:
   m_BoundingShape2D: {fileID: 1460723104}
   m_Damping: 0.5
   m_MaxWindowSize: -1
+  m_Padding: 0
 --- !u!114 &2058243867
 MonoBehaviour:
   m_ObjectHideFlags: 0

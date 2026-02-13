@@ -39,7 +39,8 @@ public class DreadbinderEndRoom : MonoBehaviour
 
         float elapsed = 0f;
         
-        SoundFXManager.obj.PlayPrisonerSlide(transform);
+        //Not used any longer
+        //SoundFXManager.obj.PlayPrisonerSlide(transform);
         _ghostTrail.ShowGhosts();
         while (elapsed < duration)
         {

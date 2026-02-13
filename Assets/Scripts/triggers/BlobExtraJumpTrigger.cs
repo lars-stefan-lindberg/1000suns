@@ -1,11 +1,16 @@
 using System.Collections;
+using FMOD.Studio;
+using FMODUnity;
 using FunkyCode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class BlobExtraJumpTrigger : MonoBehaviour
+public class BlobExtraJumpTrigger : MonoBehaviour, ISkippable
 {
     [SerializeField] private GameObject _tutorialCanvas;
+    [SerializeField] private EventReference _powerupFanfareStinger;
+    [SerializeField] private EventReference _crystalRoomRumbleSfx;
+    private EventInstance _crystalRoomRumbleSfxInstance;
     private SpriteRenderer _renderer;
     private Animator _animator;
     private LightSprite2DFadeManager _lightSprite2DFadeManager;
@@ -30,10 +35,21 @@ public class BlobExtraJumpTrigger : MonoBehaviour
         }
     }
 
+    public void RequestSkip() {
+        //TODO
+        AudioUtils.SafeStop(ref _crystalRoomRumbleSfxInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+    }
+
+    private void StartSoundEvent(EventReference reference, ref EventInstance instance) {
+        instance = SoundFXManager.obj.CreateAttachedInstance(reference, gameObject, null);
+        instance.start();
+        instance.release();
+    }
+
     private IEnumerator Cutscene() {
-        //Fade out music
-        float musicVolume = SoundMixerManager.obj.GetMusicVolume();
-        StartCoroutine(SoundMixerManager.obj.StartMusicFade(1.5f, 0.001f));
+        //TODO: Fade out music using FMOD instead
+        // float musicVolume = SoundMixerManager.obj.GetMusicVolume();
+        // StartCoroutine(SoundMixerManager.obj.StartMusicFade(1.5f, 0.001f));
 
         _renderer.color = new Color(_renderer.color.r, _renderer.color.g, _renderer.color.b, 0.8f);
         //Freeze player
@@ -54,8 +70,8 @@ public class BlobExtraJumpTrigger : MonoBehaviour
         //Set "getting power" animation on blob
         PlayerBlob.obj.SetNewPower();
 
-
-        SoundFXManager.obj.PlayCrystalRoomRumble();
+        StartSoundEvent(_crystalRoomRumbleSfx, ref _crystalRoomRumbleSfxInstance);
+        
         //Start camera shake
         CameraShakeManager.obj.ShakeCamera(1.94f, 1.84f, 4.9f);
         yield return new WaitForSeconds(2.5f);
@@ -76,7 +92,7 @@ public class BlobExtraJumpTrigger : MonoBehaviour
         Time.timeScale = 0;
         _tutorialCanvas.SetActive(true);
         TutorialDialogManager.obj.StartFadeIn();
-        SoundFXManager.obj.PlayPowerUpDialogueStinger();
+        SoundFXManager.obj.Play2D(_powerupFanfareStinger);
         while(!TutorialDialogManager.obj.tutorialCompleted) {
             yield return null;
         }
@@ -91,8 +107,8 @@ public class BlobExtraJumpTrigger : MonoBehaviour
         PlayerBlobMovement.obj.UnFreeze();
         GameManager.obj.IsPauseAllowed = true;
         
-        //Fade in music
-        StartCoroutine(SoundMixerManager.obj.StartMusicFade(1.5f, musicVolume));
+        //TODO: Fade in music using FMOD instead
+        // StartCoroutine(SoundMixerManager.obj.StartMusicFade(1.5f, musicVolume));
 
         StartCoroutine(IncreaseDarkness());
 

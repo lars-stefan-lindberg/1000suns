@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 9124832465662887608}
   - component: {fileID: 958451316644684475}
   - component: {fileID: 439911554970688327}
+  - component: {fileID: 2268186556828748273}
   m_Layer: 2
   m_Name: Block
   m_TagString: Block
@@ -178,6 +179,19 @@ MonoBehaviour:
   _wallCheckCastDistance: 1.05
   basePushPower: 7.2
   deceleration: 20
+--- !u!114 &2268186556828748273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 622106780198347613}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50b480ef9bdcb46d6bf6c735a89b55f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _blockSoundSet: {fileID: 11400000, guid: 07ca1d46a8b8a48e7a3bea884f6c1090, type: 2}
 --- !u!1 &1974178393461014631
 GameObject:
   m_ObjectHideFlags: 0

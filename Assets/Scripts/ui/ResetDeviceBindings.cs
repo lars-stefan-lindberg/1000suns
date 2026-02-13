@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -15,7 +13,7 @@ public class ResetDeviceBindings : MonoBehaviour
     }
 
     public void ResetControlSchemeBinding() {
-        SoundFXManager.obj.PlayUIConfirm();
+        UISoundPlayer.obj.PlaySelect();
         foreach(InputActionMap map in _inputActions.actionMaps) {
             foreach(InputAction action in map.actions) {
                 action.RemoveBindingOverride(InputBinding.MaskByGroup(_targetControlScheme));

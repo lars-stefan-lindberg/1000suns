@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Linq;
 using Cinemachine;
+using FMODUnity;
 using FunkyCode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,6 +11,9 @@ public class TeleportToC295 : MonoBehaviour
     [SerializeField] private SceneField _sceneToTeleportTo;
     [SerializeField] private GameObject _lightPortal;
     [SerializeField] private CinemachineVirtualCamera _followCamera;
+    [SerializeField] private EventReference _introStinger;
+    [SerializeField] private AmbienceTrack _capeRoomAmbience;
+    [SerializeField] private EventReference _teleportSfx;
 
     void Awake()
     {
@@ -33,10 +37,8 @@ public class TeleportToC295 : MonoBehaviour
 
         yield return new WaitForSeconds(0.2f);
         
-        if(AmbienceManager.obj.IsAmbienceSource1Playing()) {
-            AmbienceManager.obj.FadeOutAmbienceSource1(1f);
-        }
-        SoundFXManager.obj.PlayCaveSpaceRoomTeleport();
+        AmbienceManager.obj.Stop();
+        SoundFXManager.obj.Play2D(_teleportSfx);
         WhiteFadeManager.obj.StartFadeOut();
 
         yield return new WaitForSeconds(1f);
@@ -60,11 +62,10 @@ public class TeleportToC295 : MonoBehaviour
         PlayerBlobMovement.obj.isGrounded = true;
         PlayerBlobMovement.obj.CancelJumping();
 
-        AmbienceManager.obj.PlayCapeRoomAmbience();
-        AmbienceManager.obj.FadeInAmbienceSource2And3(2f);
+        AmbienceManager.obj.Play(_capeRoomAmbience);
 
         yield return new WaitForSeconds(2f);
-        MusicManager.obj.PlayCaveSpaceRoomIntro();
+        SoundFXManager.obj.Play2D(_introStinger);
         yield return new WaitForSeconds(1f);
         WhiteFadeManager.obj.StartFadeIn();
 

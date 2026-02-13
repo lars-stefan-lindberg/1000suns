@@ -175,8 +175,37 @@ MonoBehaviour:
   isRespawnable: 1
   castDistance: 6.3
   gravity: 5
+  spawnTime: 3
   _fadeSpeed: 0.71
   _dustParticles: {fileID: 1872525979991460346, guid: c2a0ce56198a346c88013cf7afb1a9b2, type: 3}
+  _fallStartSfx:
+    Guid:
+      Data1: -424191073
+      Data2: 1284067905
+      Data3: -462594126
+      Data4: 444149954
+    Path: event:/env/01_cave/falling_spike_start
+  _fallingSfx:
+    Guid:
+      Data1: 1444102684
+      Data2: 1158394767
+      Data3: 333945490
+      Data4: -2142834548
+    Path: event:/env/01_cave/falling_spike_fall
+  _impactGroundSfx:
+    Guid:
+      Data1: -1238224994
+      Data2: 1169148354
+      Data3: -131759463
+      Data4: -25107515
+    Path: event:/env/01_cave/falling_spike_impact_ground
+  _impactLiquidSfx:
+    Guid:
+      Data1: -1572232510
+      Data2: 1263940535
+      Data3: -1938320475
+      Data4: 1601171125
+    Path: event:/env/01_cave/falling_spike_impact_liquid
   _raycastOffsetY: 0
 --- !u!95 &6237881809795408357
 Animator:

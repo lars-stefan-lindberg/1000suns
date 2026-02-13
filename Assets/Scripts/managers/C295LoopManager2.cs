@@ -33,10 +33,12 @@ public class C295LoopManager2 : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player")) {
             GetComponent<BoxCollider2D>().enabled = false;
-            MusicManager.obj.PlayCaveSpaceRoomInfiniteLoop();
+            //TODO: handle this later with new MusicManager and FMOD
+            //MusicManager.obj.PlayCaveSpaceRoomInfiniteLoop();
             if (_loopSource == null)
             {
-                _loopSource = MusicManager.obj.GetLoopSource();
+                //TODO: handle this later with new MusicManager and FMOD
+                //_loopSource = MusicManager.obj.GetLoopSource();
                 if (_loopSource != null)
                 {
                     _lowPassFilter = _loopSource.GetComponent<AudioLowPassFilter>(); //Assumption that low pass filter has already been added to _loopSource
@@ -66,16 +68,17 @@ public class C295LoopManager2 : MonoBehaviour
     {
         if (_isPlaying)
         {
+            //TODO: handle this later with new MusicManager and FMOD
             // Always get the current loop source from MusicManager
-            AudioSource currentSource = MusicManager.obj.GetLoopSource();
-            if (currentSource != _loopSource)
-            {
-                _loopSource = currentSource;
-                if (_loopSource != null)
-                {
-                    _lowPassFilter = _loopSource.GetComponent<AudioLowPassFilter>();
-                }
-            }
+            // AudioSource currentSource = MusicManager.obj.GetLoopSource();
+            // if (currentSource != _loopSource)
+            // {
+            //     _loopSource = currentSource;
+            //     if (_loopSource != null)
+            //     {
+            //         _lowPassFilter = _loopSource.GetComponent<AudioLowPassFilter>();
+            //     }
+            // }
 
             if (_loopSource == null) return;
 

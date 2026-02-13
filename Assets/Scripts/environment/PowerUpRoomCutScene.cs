@@ -1,5 +1,6 @@
 using System.Collections;
 using Cinemachine;
+using FMODUnity;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -10,6 +11,9 @@ public class PowerUpRoomCutScene : MonoBehaviour
     [SerializeField] private CinemachineVirtualCamera _defaultCamera;
     [SerializeField] private GameObject _zoomedCamera;
     [SerializeField] private GameObject _tutorialCanvas;
+    [SerializeField] private EventReference _receivePowerupStinger;
+    [SerializeField] private EventReference _powerUpFanfareStinger;
+    [SerializeField] private EventReference _pickupPowerupSfx;
 
     [SerializeField] private float _recoveryTime = 10;
     private float _recoveryTimer = 0;
@@ -58,7 +62,7 @@ public class PowerUpRoomCutScene : MonoBehaviour
 
         Player.obj.transform.position = new Vector2(1058.75f, Player.obj.transform.position.y);
         PlayerMovement.obj.SetNewPower();
-        MusicManager.obj.PlayPowerUpPickupSong();
+        SoundFXManager.obj.Play2D(_receivePowerupStinger);
         yield return new WaitForSeconds(1f);
         _animator.SetTrigger("enableFast");
         Player.obj.FlashFor(4.5f);
@@ -85,7 +89,7 @@ public class PowerUpRoomCutScene : MonoBehaviour
         Time.timeScale = 0;
         _tutorialCanvas.SetActive(true);
         TutorialDialogManager.obj.StartFadeIn();
-        SoundFXManager.obj.PlayPowerUpDialogueStinger();
+        SoundFXManager.obj.Play2D(_powerUpFanfareStinger);
         while(!TutorialDialogManager.obj.tutorialCompleted) {
             yield return null;
         }
@@ -121,7 +125,7 @@ public class PowerUpRoomCutScene : MonoBehaviour
     }
 
     private void SetIsPicked() {
-        SoundFXManager.obj.PlayPlayerPickupCavePowerup(transform);
+        SoundFXManager.obj.Play2D(_pickupPowerupSfx);
         Player.obj.SetHasPowerUp(true);
         _animator.SetBool("isPicked", true);
         _isPicked = true;

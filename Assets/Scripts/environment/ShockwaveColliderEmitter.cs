@@ -1,8 +1,11 @@
+using FMODUnity;
 using UnityEngine;
 
 public class ShockwaveColliderEmitter : MonoBehaviour
 {
     public GameObject shockwavePrefab;
+
+    [SerializeField] private EventReference _statueShockWaveSfx;
 
     [Header("Shockwave Timing Settings")]
     public float minInterval = 0.5f;
@@ -38,7 +41,7 @@ public class ShockwaveColliderEmitter : MonoBehaviour
     {
         ShockWaveManager.obj.CallShockWave(transform.position, 0.8f, 0.05f, 1f);
 
-        SoundFXManager.obj.PlayPlayerStatueShockWave(transform);
+        SoundFXManager.obj.Play2D(_statueShockWaveSfx);
 
         CameraShakeManager.obj.ForcePushShake();
 

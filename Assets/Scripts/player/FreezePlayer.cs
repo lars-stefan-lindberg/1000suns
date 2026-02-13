@@ -1,8 +1,10 @@
 using System.Collections;
+using FMODUnity;
 using UnityEngine;
 
 public class FreezePlayer : MonoBehaviour
 {
+    [SerializeField] private EventReference _stinger;
     private bool _hasBeenTriggered = false;
 
     void Awake() {
@@ -23,7 +25,7 @@ public class FreezePlayer : MonoBehaviour
 
     private IEnumerator FreezeAndPlayIntro() {
         PlayerMovement.obj.Freeze(6f);
-        MusicManager.obj.PlayPowerUpIntroSong();
+        SoundFXManager.obj.Play2D(_stinger);
         Destroy(gameObject);
         yield return null;
     }

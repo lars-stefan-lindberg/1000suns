@@ -7,6 +7,7 @@ public class LockedDoorOrb : MonoBehaviour
     public GameObject lockedDoor;
     public int numberOfSoulsBeforeUnlock = 0;
     public UnityEvent DoorDestroyed;
+    private MonsterDoorAudio _monsterDoorAudio;
     private Animator _animator;
     private int _numberOfSoulsCount = 0;
     private SpriteRenderer _spriteRenderer;
@@ -17,6 +18,7 @@ public class LockedDoorOrb : MonoBehaviour
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _fadeOutStartColor = new Color(_spriteRenderer.color.r, _spriteRenderer.color.g, _spriteRenderer.color.b, 1);
+        _monsterDoorAudio = GetComponent<MonsterDoorAudio>();
     }
 
     void OnTriggerEnter2D(Collider2D other) {
@@ -26,19 +28,19 @@ public class LockedDoorOrb : MonoBehaviour
             Destroy(other.gameObject);
             if(_numberOfSoulsCount == numberOfSoulsBeforeUnlock) {
                 lockedDoor.GetComponent<LockedDoor>().PlayDeathAnimation();
-                SoundFXManager.obj.PlayMonsterDoorDestroy(transform);
+                _monsterDoorAudio.PlayDestroy();
                 DoorDestroyed?.Invoke();
                 StartCoroutine(FadeOut());
             } else {
                 switch(_numberOfSoulsCount) {
                     case 1:
-                        SoundFXManager.obj.PlayPrisonerSoulAbsorb1(transform);
+                        _monsterDoorAudio.PlaySoulAbsorbed(1);
                         break;
                     case 2:
-                        SoundFXManager.obj.PlayPrisonerSoulAbsorb2(transform);
-                        break;
+                        _monsterDoorAudio.PlaySoulAbsorbed(2);
+                        break;;
                     default:
-                        SoundFXManager.obj.PlayPrisonerSoulAbsorb3(transform);
+                        _monsterDoorAudio.PlaySoulAbsorbed(3);
                         break;
                 }
             }

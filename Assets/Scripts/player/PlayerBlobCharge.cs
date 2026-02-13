@@ -1,3 +1,4 @@
+using FMOD.Studio;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -15,12 +16,14 @@ public static PlayerBlobCharge obj;
     private float _buildUpPower = 0;
     private bool _buildingUpPower = false;
     
-    private AudioSource _forcePushStartChargingAudioSource;
+    private EventInstance _chargeStartSfxInstance;
+    private EliBlobAudio _eliBlobAudio;
 
     private void Awake()
     {
         obj = this;
         _collider = GetComponent<BoxCollider2D>();
+        _eliBlobAudio = GetComponent<EliBlobAudio>();
     }
 
     public void OnShoot(InputAction.CallbackContext context)
@@ -58,10 +61,8 @@ public static PlayerBlobCharge obj;
     }
 
     public void ResetBuiltUpPower() {
-        if(_forcePushStartChargingAudioSource != null && _forcePushStartChargingAudioSource.isPlaying) {
-            SoundFXManager.obj.FadeOutAndStopSound(_forcePushStartChargingAudioSource, 0.05f);
-            _forcePushStartChargingAudioSource = null;
-        }
+        if(AudioUtils.IsPlaying(_chargeStartSfxInstance))
+            AudioUtils.SafeStop(ref _chargeStartSfxInstance);
 
         _buildingUpPower = false;
         _buildUpPower = _defaultPower;
@@ -87,7 +88,7 @@ public static PlayerBlobCharge obj;
     void Push()
     {
         ExecuteForcePushVfx();
-        SoundFXManager.obj.PlayForcePushExecute(transform);
+        _eliBlobAudio.PlayChargeRelease();
         //PlayerBlobMovement.obj.ExecuteChargedJump();
     }
 

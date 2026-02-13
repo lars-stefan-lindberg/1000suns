@@ -5,10 +5,10 @@ using UnityEngine;
 public class RebindUIElement : MonoBehaviour
 {
     public void OnRebindCancel() {
-        SoundFXManager.obj.PlayUIBack();
+        UISoundPlayer.obj.PlayBack();
     }
 
     public void OnRebindConfirm() {
-        SoundFXManager.obj.PlayUIConfirm();
+        UISoundPlayer.obj.PlaySelect();
     }
 }

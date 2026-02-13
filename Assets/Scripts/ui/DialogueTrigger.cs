@@ -12,7 +12,6 @@ public class DialogueTrigger : MonoBehaviour
         if (_dialogueController != null)
         {
             _dialogueController.OnDialogueClosed += OnDialogueCompleted;
-            _dialogueController.OnDialogueClosing += OnDialogueClosing;
         }
     }
 
@@ -21,7 +20,6 @@ public class DialogueTrigger : MonoBehaviour
         if (_dialogueController != null)
         {
             _dialogueController.OnDialogueClosed -= OnDialogueCompleted;
-            _dialogueController.OnDialogueClosing -= OnDialogueClosing;
         }
     }
 
@@ -38,13 +36,9 @@ public class DialogueTrigger : MonoBehaviour
     private IEnumerator SetupDialogue() {
         PlayerMovement.obj.Freeze();
         yield return new WaitForSeconds(0.5f);
-        SoundFXManager.obj.PlayDialogueOpen();
-        _dialogueController.ShowDialogue(_dialogueContent);
+        _dialogueController.ShowDialogue(_dialogueContent, true, true);
     }
 
-    private void OnDialogueClosing() {
-        SoundFXManager.obj.PlayDialogueClose();
-    }
     private void OnDialogueCompleted() {
         PlayerMovement.obj.UnFreeze();
         GameManager.obj.C1MonologueEnded = true;

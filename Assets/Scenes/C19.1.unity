@@ -1100,6 +1100,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _floor: {fileID: 1244482335}
   _fadeMultiplier: 1.5
+  _brokenFloorReappearSfx:
+    Guid:
+      Data1: 801306378
+      Data2: 1144905159
+      Data3: 1024952224
+      Data4: -268341816
+    Path: event:/game/general/breakable_floor_appear
 --- !u!61 &741046428
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -45413,6 +45420,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _floor: {fileID: 1244482335}
   _fadeMultiplier: 1.5
+  _brokenFloorReappearSfx:
+    Guid:
+      Data1: 801306378
+      Data2: 1144905159
+      Data3: 1024952224
+      Data4: -268341816
+    Path: event:/game/general/breakable_floor_appear
 --- !u!61 &1112324516
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -45569,6 +45583,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _floorCollider: {fileID: 1358123008}
+  _appearSfx:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  _breakSfx:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
   _shakeAnimation: {fileID: 1548773516}
   unbreakable: 0
   hasHint: 1
@@ -51226,7 +51254,7 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -2027969955
-  m_SortingLayer: -2
+  m_SortingLayer: -4
   m_SortingOrder: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}

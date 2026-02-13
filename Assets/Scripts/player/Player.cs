@@ -9,7 +9,7 @@ public class Player : MonoBehaviour
     private BoxCollider2D _collider;
     public bool hasPowerUp = false;
     public float spawnFreezeDuration = 1.4f;
-    public Surface surface = Surface.Rock;
+    public SurfaceType surface = SurfaceType.Rock;
     private bool _hasCape = false;
     public float _forcePushFlashSpeed = 0.17f;
 
@@ -55,9 +55,9 @@ public class Player : MonoBehaviour
         if((_groundLayerMasks.value & (1 << other.gameObject.layer)) != 0) {
             string surfaceTag = other.gameObject.tag;
             if(surfaceTag == "Rock")
-                surface = Surface.Rock;
+                surface = SurfaceType.Rock;
             else if(surfaceTag == "Roots")
-                surface = Surface.Roots;
+                surface = SurfaceType.Roots;
         }
     }
 

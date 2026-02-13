@@ -1,13 +1,19 @@
+using FMODUnity;
 using UnityEngine;
 
 public class PlayerAnimationEvents : MonoBehaviour
 {
-    public void PlayDefaultRunStep() {
-        SoundFXManager.obj.PlayStep(Player.obj.surface, gameObject.transform, 1f);
+    [SerializeField] private EventReference _rootsPull;
+    [SerializeField] private EventReference _breakableWallCracklingSfx;
+    private SharedCharacterAudio _sharedPlayerAudio;
+
+    void Awake()
+    {
+        _sharedPlayerAudio = transform.parent.gameObject.GetComponent<SharedCharacterAudio>();
     }
 
-    public void PlaySubtleRunStep() {
-        SoundFXManager.obj.PlayStep(Player.obj.surface, gameObject.transform, 0.8f);
+    public void PlayFootstep() {
+        _sharedPlayerAudio.PlayFootstep(Player.obj.surface);
     }
 
     public void ToBlob() {
@@ -23,12 +29,12 @@ public class PlayerAnimationEvents : MonoBehaviour
     }
 
     public void BreakCaveRoots() {
-        SoundFXManager.obj.PlayBreakableWallCrackling(Camera.main.transform);
+        SoundFXManager.obj.PlayAtPosition(_breakableWallCracklingSfx, Camera.main.transform.position);
         PlayerMovement.obj.NudgePlayer();
         CaveRootsTrap.obj.StartBreaking();
     }
 
     public void PullRoots() {
-        SoundFXManager.obj.PlayMushroomSmallRattle(Camera.main.transform);
+        SoundFXManager.obj.PlayAtPosition(_rootsPull, Camera.main.transform.position);
     }
 }

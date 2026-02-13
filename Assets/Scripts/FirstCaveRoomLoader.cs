@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class FirstCaveRoomLoader : MonoBehaviour
 {
     [SerializeField] private GameEventId _eliFirstCaveRoomLoaded;
+    [SerializeField] private AmbienceTrack _ambience;
 
     void Start() {
         if(!GameManager.obj.HasEvent(_eliFirstCaveRoomLoaded)) {
@@ -38,7 +39,7 @@ public class FirstCaveRoomLoader : MonoBehaviour
 
         CaveAvatar.obj.gameObject.SetActive(false);
 
-        StartCoroutine(AmbienceFadeIn());
+        AmbienceManager.obj.Play(_ambience);
         yield return StartCoroutine(FadeInScreen());
 
         GameManager.obj.RegisterEvent(_eliFirstCaveRoomLoaded);
@@ -56,12 +57,6 @@ public class FirstCaveRoomLoader : MonoBehaviour
         SceneFadeManager.obj.SetFadedOutState();
         SceneFadeManager.obj.SetFadeInSpeed(0.2f);
         SceneFadeManager.obj.StartFadeIn();
-        yield return null;
-    }
-
-    private IEnumerator AmbienceFadeIn() {
-        AmbienceManager.obj.PlayCaveAmbience();
-        AmbienceManager.obj.FadeInAmbienceSource1(2f);
         yield return null;
     }
 }

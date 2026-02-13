@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Cinemachine;
+using FMOD.Studio;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -32,6 +33,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     private PlayerInput _playerInput;
     private Vector2 _frameVelocity;
     private bool _cachedQueryStartInColliders;
+    private SharedCharacterAudio _sharedPlayerAudio;
+    private EliAudio _eliAudio;
 
     //[Header("Dependecies")]
     public GameObject buildPowerJumpAnimation;
@@ -68,6 +71,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _moveableLayerMasks = LayerMask.GetMask("JumpThroughs", "Block");
         _ceilingLayerMasks = LayerMask.GetMask("Ground");
         _playerInput = GetComponent<PlayerInput>();
+        _sharedPlayerAudio = GetComponent<SharedCharacterAudio>();
+        _eliAudio = GetComponent<EliAudio>();
     }
 
     private void OnDestroy()
@@ -250,9 +255,9 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         if (_landed)
         {
             DustParticleMgr.obj.CreateDust(PlayerManager.PlayerType.HUMAN);
-            SoundFXManager.obj.PlayLand(Player.obj.surface, gameObject.transform);
+            _sharedPlayerAudio.PlayLand(Player.obj.surface);
             if(_cameFromForcePushJump) {
-                SoundFXManager.obj.PlayForcePushLand(gameObject.transform);
+                _eliAudio.PlayForcePushLand();
                 _cameFromForcePushJump = false;
             }
             StartCoroutine(JumpSqueeze(_landedSqueezeX, _landedSqueezeY, _landedSqueezeTime));
@@ -483,7 +488,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             if(_movementInput.y < 0 && value.performed) {
                 if(isTransformingToBlob)
                     return;
-                SoundFXManager.obj.PlayPlayerShapeshiftToBlob(transform);
+                _eliAudio.PlayShapeshiftToBlob();
                 isTransformingToBlob = true;
                 PlayerPush.obj.ResetBuiltUpPower();
                 PlayerPush.obj.DisableChargeFor(0.2f);
@@ -671,7 +676,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     [SerializeField] private float _mergeSplitHoldDuration = 0.5f;
     private bool _mergeSplitHeld = false;
     private float _mergeSplitHoldTimer = 0f;
-    private AudioSource _mergeSplitAudioSource;
+    private EventInstance _mergeSplitSfxInstance;
 
     public void OnMergeSplit(InputAction.CallbackContext context)
     {
@@ -690,7 +695,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             }
             _mergeSplitHeld = true;
             _mergeSplitHoldTimer = 0f;
-            _mergeSplitAudioSource = SoundFXManager.obj.PlayForcePushStartCharging(transform);
+            _sharedPlayerAudio.PlayMergeSplit(ref _mergeSplitSfxInstance);
             Player.obj.StartChargeFlash();
         }
         else if (context.canceled)
@@ -700,9 +705,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
             //Only abort flash and sfx if eli is active. If not, the split happened and we want to finish the vfx and sfx
             if(PlayerSwitcher.obj.IsEliActive()) {
-                if(_mergeSplitAudioSource != null && _mergeSplitAudioSource.isPlaying) {
-                    SoundFXManager.obj.FadeOutAndStopSound(_mergeSplitAudioSource, 0.05f);
-                    _mergeSplitAudioSource = null;
+                if(AudioUtils.IsPlaying(_mergeSplitSfxInstance)) {
+                    AudioUtils.SafeStop(ref _mergeSplitSfxInstance);
                 }
                 Player.obj.AbortFlash();
             }
@@ -721,7 +725,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         if(PlayerPowersManager.obj.CanSwitchBetweenTwinsMerged && !PlayerManager.obj.IsSeparated)
         {    
             //Switch "form" to shadow twin
-            SoundFXManager.obj.PlayPlayerShapeshiftToBlob(transform);
+            _sharedPlayerAudio.PlayShapeshift();
             isTransformingToTwin = true;
             PlayerPush.obj.ResetBuiltUpPower();
             PlayerPush.obj.DisableCharge();
@@ -1072,9 +1076,9 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
         if(isForcePushJumping) {
             jumpedWhileForcePushJumping = true;
-            SoundFXManager.obj.PlayForcePushJump(gameObject.transform);
+            _eliAudio.PlayForcePushJump();
         } else
-            SoundFXManager.obj.PlayJump(gameObject.transform);
+            _sharedPlayerAudio.PlayJump();
 
         StartCoroutine(JumpSqueeze(_jumpSqueezeX, _jumpSqueezeY, _jumpSqueezeTime));
         _jumpToConsume = false;

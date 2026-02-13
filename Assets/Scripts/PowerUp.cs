@@ -1,3 +1,4 @@
+using FMODUnity;
 using UnityEngine;
 
 public class PowerUp : MonoBehaviour
@@ -6,6 +7,7 @@ public class PowerUp : MonoBehaviour
 
     [SerializeField] private float _recoveryTime = 10;
     [SerializeField] private bool _skipSpawn = false;
+    [SerializeField] private EventReference _pickupSfx;
     private float _recoveryTimer = 0;
 
     private bool _isPicked = false;
@@ -37,7 +39,7 @@ public class PowerUp : MonoBehaviour
 
     void FixedUpdate() {
         if(_isSpawned && _playerEntered && !_isPicked && !Player.obj.hasPowerUp) {
-            SoundFXManager.obj.PlayPlayerPickupCavePowerup(transform);
+            SoundFXManager.obj.Play2D(_pickupSfx);
             Player.obj.SetHasPowerUp(true);
             _animator.SetBool("isPicked", true);
             _isPicked = true;

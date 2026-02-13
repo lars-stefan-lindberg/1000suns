@@ -1,4 +1,5 @@
 using System.Collections;
+using FMODUnity;
 using FunkyCode;
 using UnityEngine;
 
@@ -7,6 +8,7 @@ public class MothStationManager : MonoBehaviour
     [SerializeField] private Animator _mothAnimator;
     [SerializeField] private LightSprite2D _torch;
     [SerializeField] private LightSprite2DFlicker _torchFlicker;
+    [SerializeField] private EventReference _pickupPowerupSfx;
     private BoxCollider2D _collider;
 
     void Awake()
@@ -23,7 +25,7 @@ public class MothStationManager : MonoBehaviour
     }
 
     private IEnumerator Activated() {
-        SoundFXManager.obj.PlayPlayerPickupCavePowerup(transform);
+        SoundFXManager.obj.Play2D(_pickupPowerupSfx);
         PlayerPowersManager.obj.EliCanForcePushJump = true;
         Player.obj.FlashOnce();
         MothsManager.obj.SpawnMoths();

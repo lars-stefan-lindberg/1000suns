@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Linq;
+using FMODUnity;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,6 +9,7 @@ public class CapeRoomSwitchToFullRoomCam : MonoBehaviour
     [SerializeField] private GameEventId _customCameraZoomedOutEventId;
     [SerializeField] private GameObject _mainCamera;
     [SerializeField] private SpawnPoint _spawnPoint;
+    [SerializeField] private EventReference _stinger;
     private bool _isTriggered = false;
 
     void Awake() {
@@ -33,7 +35,7 @@ public class CapeRoomSwitchToFullRoomCam : MonoBehaviour
         Collider2D roomCollider = room.GetComponent<Collider2D>();
         CameraManager.obj.EnterRoom(cameraController, roomCollider, PlayerManager.obj.GetPlayerTransform(), _spawnPoint.transform.position);
 
-        MusicManager.obj.PlayPowerUpIntroSong();
+        SoundFXManager.obj.Play2D(_stinger);
 
         yield return new WaitForSeconds(4);
         PlayerMovement.obj.UnFreeze();

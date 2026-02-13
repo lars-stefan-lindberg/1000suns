@@ -1,4 +1,5 @@
 using System.Collections;
+using FMODUnity;
 using UnityEngine;
 
 public class BreakableFloor : MonoBehaviour
@@ -6,8 +7,12 @@ public class BreakableFloor : MonoBehaviour
     private SpriteRenderer _spriteRenderer;
     private Transform _spriteRendererTransform;
     [SerializeField] private BoxCollider2D _floorCollider;
+    [SerializeField] private EventReference _appearSfx;
+    [SerializeField] private EventReference _breakSfx;
     private BoxCollider2D _playerOnTopDetectionCollider;
     [SerializeField] private ParticleSystem _shakeAnimation;
+    [SerializeField] private EventReference _breakableWallCracklingSfx;
+    [SerializeField] private EventReference _breakableFloorHintSfx;
 
     public bool unbreakable = false;
     public bool hasHint = true;
@@ -59,7 +64,7 @@ public class BreakableFloor : MonoBehaviour
     {
         if(_hintFloor) {
             _hintFloor = false;
-            SoundFXManager.obj.PlayBreakableFloorHint(transform);
+            SoundFXManager.obj.PlayAtPosition(_breakableFloorHintSfx, transform.position);
             _shakeAnimation.Emit(numberOfShakeParticles);
         }
         if(_shakeFloor) {
@@ -68,7 +73,7 @@ public class BreakableFloor : MonoBehaviour
         }
         if(_breakFloor) {
             _breakFloor = false;
-            SoundFXManager.obj.PlayBrokenFloorDisappear(transform);
+            SoundFXManager.obj.Play2D(_breakSfx);
             _shakeAnimation.Emit(numberOfShakeParticles);
             _floorCollider.enabled = false;
             _playerOnTopDetectionCollider.enabled = false;
@@ -91,7 +96,7 @@ public class BreakableFloor : MonoBehaviour
 
     private IEnumerator ShakeWall() {
         yield return new WaitForSeconds(0.05f);
-        SoundFXManager.obj.PlayBreakableWallCrackling(transform);
+        SoundFXManager.obj.PlayAtPosition(_breakableWallCracklingSfx, transform.position);
         _shakeAnimation.Emit(numberOfShakeParticles);
         float time = 0f;
         int index = 1;

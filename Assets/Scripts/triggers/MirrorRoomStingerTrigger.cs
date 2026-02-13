@@ -14,7 +14,8 @@ public class MirrorRoomStingerTrigger : MonoBehaviour
             if(GameManager.obj.MirrorConversationEnded) {
                 return;
             }
-            SoundFXManager.obj.PlayCaveAvatarEvilEyesTransition();
+            //Deprecated, use FMOD event reference instead
+            //SoundFXManager.obj.PlayCaveAvatarEvilEyesTransition();
             _collider.enabled = false;
         }
     }

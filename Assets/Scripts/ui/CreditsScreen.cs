@@ -57,16 +57,6 @@ public class CreditsScreen : MonoBehaviour
 
     private IEnumerator QuitToTitleScreenDelayed() {
         yield return new WaitForSeconds(13f);
-        float musicVolume = SoundMixerManager.obj.GetMusicVolume();
-        StartCoroutine(SoundMixerManager.obj.StartMusicFade(3f, 0.001f));
-        while(SoundMixerManager.obj.GetMusicVolume() > 0.001f) {
-            yield return null;
-        }
-        //Give SoundMixerManager time to fully complete the fading
-        yield return new WaitForSeconds(0.1f);
-        MusicManager.obj.StopPlayingOneTime();
-        SoundMixerManager.obj.SetMusicVolume(musicVolume);
-                
         PauseMenuManager.obj.Quit();
     }
 

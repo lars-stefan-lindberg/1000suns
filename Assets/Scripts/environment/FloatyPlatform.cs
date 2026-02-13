@@ -197,11 +197,13 @@ public class FloatyPlatform : MonoBehaviour
 
             if (somethingToTheRight && _rigidBody.velocity.x > 0) {
                 movePlatform = false;
-                SoundFXManager.obj.PlayFloatingPlatformWallHit(transform);
+                //TODO: wall hit sfx
+                //SoundFXManager.obj.PlayFloatingPlatformWallHit(transform);
             }
             if (somethingToTheLeft && _rigidBody.velocity.x < 0) {
                 movePlatform = false;
-                SoundFXManager.obj.PlayFloatingPlatformWallHit(transform);
+                //TODO: wall hit sfx
+                //SoundFXManager.obj.PlayFloatingPlatformWallHit(transform);
             }
         }
 

@@ -12,6 +12,7 @@ public class C35ConversationTrigger : MonoBehaviour
     [SerializeField] private GameObject _followCamera;
     [SerializeField] private bool _runOnConversationCompleted = true;
     [SerializeField] private bool _flipCaveAvatar = false;
+    [SerializeField] private MusicTrack _musicTrack;
     private BoxCollider2D _collider;
 
     void Start() {
@@ -74,8 +75,8 @@ public class C35ConversationTrigger : MonoBehaviour
     private IEnumerator BreakFloor() {
         GameManager.obj.IsPauseAllowed = false;
         PlayerStatsManager.obj.PauseTimer();
-        MusicManager.obj.PlayEndSong();
-        AmbienceManager.obj.FadeOutAmbienceSource1(1f);
+        MusicManager.obj.Play(_musicTrack);
+        AmbienceManager.obj.Stop();
         if(_followCamera != null) {
             _followCamera.SetActive(true);
             CinemachineVirtualCamera cinemachineVirtualCamera = _followCamera.GetComponent<CinemachineVirtualCamera>();

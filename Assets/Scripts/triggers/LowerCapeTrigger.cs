@@ -1,11 +1,14 @@
 using System.Collections;
 using Cinemachine;
+using FMOD.Studio;
+using FMODUnity;
 using FunkyCode;
 using UnityEngine;
 
 public class LowerCapeTrigger : MonoBehaviour, ISkippable
 {
     [SerializeField] private GameEventId _capePicked;
+    [SerializeField] private MusicTrack _musicTrack;
     [SerializeField] private CinemachineVirtualCamera _defaultCamera;
     [SerializeField] private GameObject _zoomedCamera;
     [SerializeField] private LightSprite2D _beamOfLightLight;
@@ -16,14 +19,12 @@ public class LowerCapeTrigger : MonoBehaviour, ISkippable
     [SerializeField] private GameObject _pickCapeTrigger;
     [SerializeField] private GameObject _blobsContainer;
     [Range(0.1f, 10f), SerializeField] private float _fadeSpeed = 5f;
-    [SerializeField] private float _capeIntroductionSfxFadeOutDuration = 0.5f;
     [SerializeField] private Cave6CapePickedManager _cave6CapePickedManager;
+    [SerializeField] private EventReference _lightBeamSfx;
     private Color _fadeStartColor;
     private bool _isTriggered = false;
     private Coroutine _cutsceneCoroutine;
-    private Coroutine _capeIntroductionSfxCoroutine;
-    private AudioSource _capeIntroductionSfxAudioSource;
-    private float _capeIntroductionSfxStartVolume = 1f;
+    private EventInstance _lightBeamSfxInstance;
 
     void Awake() {
         if(GameManager.obj.HasEvent(_capePicked)) {
@@ -41,6 +42,12 @@ public class LowerCapeTrigger : MonoBehaviour, ISkippable
         }
     }
 
+    private void StartSoundEvent(EventReference reference, ref EventInstance instance) {
+        instance = SoundFXManager.obj.CreateAttachedInstance(reference, gameObject, null);
+        instance.start();
+        instance.release();
+    }
+
     public void RequestSkip() {
         StopCoroutine(_cutsceneCoroutine);
 
@@ -56,15 +63,16 @@ public class LowerCapeTrigger : MonoBehaviour, ISkippable
         Player.obj.transform.position = _finalPlayerPosition.position;
         Player.obj.ResetAnimator();
         _beamOfLightLight.gameObject.SetActive(false);
-        BeginFadeOutCapeIntroductionSfx();
+
+        AudioUtils.SafeStop(ref _lightBeamSfxInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
 
         _defaultCamera.enabled = true;
         _zoomedCamera.SetActive(false);
         CinemachineVirtualCamera zoomedCameraVcam = _zoomedCamera.GetComponent<CinemachineVirtualCamera>();
         zoomedCameraVcam.enabled = false;
-        StartCoroutine(_cave6CapePickedManager.FadeOutAndStopAmbience());
+        _cave6CapePickedManager.FadeOutAndStopAmbience();
 
-        MusicManager.obj.PlayCaveFirstSong();
+        MusicManager.obj.Play(_musicTrack);
 
         GameManager.obj.RegisterEvent(_capePicked);
         StartCoroutine(ResumeGameplay());
@@ -90,7 +98,7 @@ public class LowerCapeTrigger : MonoBehaviour, ISkippable
 
         yield return new WaitForSeconds(2.5f);
 
-        StartCapeIntroductionSfx();
+        StartSoundEvent(_lightBeamSfx, ref _lightBeamSfxInstance);
 
         while(_beamOfLightRenderer.color.a < 0.65f) {
             _fadeStartColor.a += Time.deltaTime * _fadeSpeed;
@@ -128,69 +136,5 @@ public class LowerCapeTrigger : MonoBehaviour, ISkippable
         PauseMenuManager.obj.UnregisterSkippable();
 
         yield return null;
-    }
-
-    private void StartCapeIntroductionSfx()
-    {
-        if (SoundFXManager.obj == null)
-            return;
-
-        if (_capeIntroductionSfxCoroutine != null)
-        {
-            StopCoroutine(_capeIntroductionSfxCoroutine);
-            _capeIntroductionSfxCoroutine = null;
-        }
-
-        if (_capeIntroductionSfxAudioSource == null || !_capeIntroductionSfxAudioSource.isPlaying)
-        {
-            _capeIntroductionSfxAudioSource = SoundFXManager.obj.PlayCapeIntroduction(_cape.transform);
-            if (_capeIntroductionSfxAudioSource != null)
-                _capeIntroductionSfxStartVolume = _capeIntroductionSfxAudioSource.volume;
-        }
-
-        if (_capeIntroductionSfxAudioSource != null)
-            _capeIntroductionSfxAudioSource.volume = _capeIntroductionSfxStartVolume;
-    }
-
-    private void BeginFadeOutCapeIntroductionSfx()
-    {
-        if (_capeIntroductionSfxAudioSource == null)
-            return;
-
-        if (_capeIntroductionSfxCoroutine != null)
-            StopCoroutine(_capeIntroductionSfxCoroutine);
-
-        _capeIntroductionSfxCoroutine = StartCoroutine(FadeOutAndStop(_capeIntroductionSfxAudioSource, _capeIntroductionSfxFadeOutDuration));
-    }
-
-    private IEnumerator FadeOutAndStop(AudioSource source, float duration)
-    {
-        if (source == null)
-            yield break;
-
-        float t = 0f;
-        float startVolume = source.volume;
-        duration = Mathf.Max(0.01f, duration);
-
-        while (t < duration)
-        {
-            if (source == null)
-                yield break;
-
-            t += Time.deltaTime;
-            float a = Mathf.Clamp01(t / duration);
-            source.volume = Mathf.Lerp(startVolume, 0f, a);
-            yield return null;
-        }
-
-        if (source != null)
-        {
-            source.volume = 0f;
-            source.Stop();
-            source.volume = _capeIntroductionSfxStartVolume;
-        }
-
-        if (source == _capeIntroductionSfxAudioSource)
-            _capeIntroductionSfxCoroutine = null;
     }
 }

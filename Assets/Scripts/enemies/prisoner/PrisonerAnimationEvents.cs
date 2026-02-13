@@ -5,25 +5,26 @@ using UnityEngine.SceneManagement;
 public class PrisonerAnimationEvents : MonoBehaviour
 {
     private Prisoner prisoner;
+    private PrisonerAudio _prisonerAudio;
 
     void Awake() {
         prisoner = GetComponent<Prisoner>();
+        _prisonerAudio = GetComponent<PrisonerAudio>();
     }
 
     public void PlayDefaultCrawl() {
-        if(!prisoner.offScreen)
-            SoundFXManager.obj.PlayPrisonerCrawl(gameObject.transform);
+        _prisonerAudio.PlayCrawl();
     }
     public void PlaySpawn() {
         if(SceneManager.GetActiveScene().GetRootGameObjects().Contains(gameObject))
-            SoundFXManager.obj.PlayPrisonerSpawn(gameObject.transform);
+            _prisonerAudio.PlaySpawn();
     }
     public void PlaySlide() {
-        SoundFXManager.obj.PlayPrisonerSlide(gameObject.transform);
+        _prisonerAudio.PlaySlide();
     }
 
     public void PlayDeath() {
-        if(!prisoner.muteDeathSoundFX && !prisoner.offScreen)
-            SoundFXManager.obj.PlayPrisonerDeath(gameObject.transform);
+        if(!prisoner.muteDeathSoundFX)
+            _prisonerAudio.PlayDeath();
     }
 }

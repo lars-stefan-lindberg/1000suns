@@ -1,4 +1,5 @@
 using System.Collections;
+using FMOD.Studio;
 using UnityEngine;
 
 public class BabyPrisoner : MonoBehaviour
@@ -42,12 +43,14 @@ public class BabyPrisoner : MonoBehaviour
 
     private readonly float playScaredSoundEffectInterval = 1f;
     private float playScaredSoundEffectTimer = 0f;
-    private AudioSource _escapeAudioSource;
+    private EventInstance _escapeAudioInstance;
     private LightSprite2DFadeManager _lightSprite2DFadeManager;
+    private BabyPrisonerAudio _babyPrisonerAudio;
 
     void Start() {
         _collider = GetComponent<BoxCollider2D>();
         _rigidBody = GetComponent<Rigidbody2D>();
+        _babyPrisonerAudio = GetComponent<BabyPrisonerAudio>();
         _animator = GetComponentInChildren<Animator>();
         _lightSprite2DFadeManager = GetComponentInChildren<LightSprite2DFadeManager>();
         _enemyWidth = _collider.bounds.extents.x;
@@ -112,7 +115,7 @@ public class BabyPrisoner : MonoBehaviour
 
         if(isAlerted && IsMoving) {
             if(playScaredSoundEffectTimer >= playScaredSoundEffectInterval) {
-                SoundFXManager.obj.PlayBabyPrisonerScared(transform);
+                _babyPrisonerAudio.PlayScared();
                 playScaredSoundEffectTimer = 0;
             }
             playScaredSoundEffectTimer += Time.deltaTime;
@@ -122,6 +125,10 @@ public class BabyPrisoner : MonoBehaviour
         _animator.SetBool("isGrounded", isGrounded);
         _animator.SetBool("isMoving", IsMoving);
         _animator.SetBool("isAlerted", isAlerted);
+    }
+
+    public void PlayScaredSfx() {
+        _babyPrisonerAudio.PlayScared();
     }
 
     void FixedUpdate()
@@ -174,7 +181,7 @@ public class BabyPrisoner : MonoBehaviour
         speed = 0;
         isAlerted = true;
         isTurning = false;
-        SoundFXManager.obj.PlayBabyPrisonerAlert(transform);
+        _babyPrisonerAudio.PlayAlert();
         StartCoroutine(AlertRunDelay(alertRunDuration));
     }
 
@@ -196,6 +203,7 @@ public class BabyPrisoner : MonoBehaviour
         isTurning = false;
         _lightSprite2DFadeManager.SetFadedInState();
         _lightSprite2DFadeManager.StartFadeOut();
+        _babyPrisonerAudio.PlayScared();
     }
 
     private IEnumerator AlertRunDelay(float alertRunDelay) {
@@ -207,12 +215,12 @@ public class BabyPrisoner : MonoBehaviour
             FlipHorizontal();
         }
         speed = alertSpeed;
-        _escapeAudioSource = SoundFXManager.obj.PlayBabyPrisonerEscape(transform);
+        _babyPrisonerAudio.PlayEscape(ref _escapeAudioInstance);
     }
 
     public void Despawn() {
         _animator.SetTrigger("despawn");
-        SoundFXManager.obj.PlayBabyPrisonerDespawn(transform);
+        _babyPrisonerAudio.PlayDespawn();
         _lightSprite2DFadeManager.SetFadedInState();
         _lightSprite2DFadeManager.StartFadeOut();
         StartCoroutine(DelayedSetInactive(1f));
@@ -237,8 +245,8 @@ public class BabyPrisoner : MonoBehaviour
 
     public void Disable() {
         speed = 0;
-        if(_escapeAudioSource != null) {
-            SoundFXManager.obj.FadeOutAndStopSound(_escapeAudioSource, 2f);
+        if(AudioUtils.IsPlaying(_escapeAudioInstance)) {
+            AudioUtils.SafeStop(ref _escapeAudioInstance);
         }
         StartCoroutine(DelayedSetGameObjectInactive());
     }

@@ -6,6 +6,7 @@ public class C31ConversationTrigger : MonoBehaviour
 {
     [SerializeField] private ConversationManager _conversationManager;
     [SerializeField] private C31Manager _c31Manager;
+    [SerializeField] private MusicTrack _musicTrack;
     private BoxCollider2D _collider;
 
     void Start() {
@@ -44,7 +45,7 @@ public class C31ConversationTrigger : MonoBehaviour
     }
 
     private IEnumerator OnConversationCompletedCoroutine() {
-        MusicManager.obj.PlayCaveAvatarChase();
+        MusicManager.obj.Play(_musicTrack);
         yield return new WaitForSeconds(3f);
         _c31Manager.StartAttackSequence();
         yield return new WaitForSeconds(1f);

@@ -1,9 +1,12 @@
 using System.Collections;
+using DG.Tweening;
+using FMODUnity;
 using UnityEngine;
 
 public class CaveAvatarRootsManager : MonoBehaviour
 {
     [SerializeField] private Animator _rootsAnimator;
+    [SerializeField] private EventReference _rootsPulled;
 
     public float duration = 3f;
     private float timer = 0;
@@ -34,12 +37,12 @@ public class CaveAvatarRootsManager : MonoBehaviour
     }
 
     private IEnumerator Struggle() {
-        SoundFXManager.obj.PlayMushroomSmallRattle(Camera.main.transform);
+        SoundFXManager.obj.PlayAtPosition(_rootsPulled, Camera.main.transform.position);
         CaveAvatar.obj.NudgeUpwards();
         if(_rootsAnimator != null)
             _rootsAnimator.SetTrigger("expand");
         yield return new WaitForSeconds(1f);
-        SoundFXManager.obj.PlayMushroomSmallRattle(Camera.main.transform);
+        SoundFXManager.obj.PlayAtPosition(_rootsPulled, Camera.main.transform.position);
         CaveAvatar.obj.NudgeUpwards();
         if(_rootsAnimator != null)
             _rootsAnimator.SetTrigger("expand");

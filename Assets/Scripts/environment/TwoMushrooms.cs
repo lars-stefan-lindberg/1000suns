@@ -1,4 +1,5 @@
 using System.Collections;
+using FMODUnity;
 using UnityEngine;
 
 public class TwoMushrooms : MonoBehaviour
@@ -6,6 +7,8 @@ public class TwoMushrooms : MonoBehaviour
     private Animator _animator;
     private BoxCollider2D _collider;
     [SerializeField] private Transform _anchorTransform;
+    [SerializeField] private EventReference _rattle;
+    [SerializeField] private EventReference _bounce;
     private bool _playerEntered;
 
     void Awake() {
@@ -26,10 +29,10 @@ public class TwoMushrooms : MonoBehaviour
             _playerEntered = true;
 
             if(landedOnMushroom) {
-                SoundFXManager.obj.PlayMushroomSmallBounce(transform);
+                SoundFXManager.obj.PlayAtPosition(_bounce, transform.position);
                 StartCoroutine(Squeeze(_squeezeX, _squeezeY, _squeezeTime));
             } else {
-                SoundFXManager.obj.PlayMushroomSmallRattle(transform);
+                SoundFXManager.obj.PlayAtPosition(_rattle, transform.position);
             }
         }
     }

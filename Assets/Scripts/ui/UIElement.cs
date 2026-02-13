@@ -52,7 +52,7 @@ public class UIElement : MonoBehaviour, IMoveHandler, ISelectHandler, IDeselectH
     public void OnMove(AxisEventData eventData)
     {
         if(eventData.moveDir == MoveDirection.Up || eventData.moveDir == MoveDirection.Down) {
-            SoundFXManager.obj.PlayUIBrowse();
+            UISoundPlayer.obj.PlayBrowse();
         } 
         // else if(eventData.moveDir == MoveDirection.Left || eventData.moveDir == MoveDirection.Right) {
         //     SoundFXManager.obj.PlayUIBrowse();

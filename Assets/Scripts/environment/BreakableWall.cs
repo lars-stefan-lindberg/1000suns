@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using FMODUnity;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class BreakableWall : MonoBehaviour
 {
     public bool isBig = false;
+    public EventReference _revealSecretStinger;
     public GameObject visibleLayer;
     public GameObject background;
     private Animator _visibleLayerAnimator;
@@ -23,6 +25,9 @@ public class BreakableWall : MonoBehaviour
     private float _hintWallCooldownTimer = 0;
     public float fadeMultiplier = 0.1f;
     public int numberOfShakeParticles = 10;
+    public EventReference _breakableWallCracklingSfx;
+    public EventReference _breakableWallBreakSfx;
+    public EventReference _breakableWallHintSfx;
     private bool _fadeSprite = false;
     public float shakeDistance = 0.1f;
     public float shakeTime = 0.12f;
@@ -66,11 +71,11 @@ public class BreakableWall : MonoBehaviour
     {
         if(hintWall) {
             hintWall = false;
-            SoundFXManager.obj.PlayBreakableWallHint(transform);
+            SoundFXManager.obj.PlayAtPosition(_breakableWallHintSfx, transform.position);
             shakeAnimation.Emit(numberOfShakeParticles);
         }
         if(shakeWall) {
-            SoundFXManager.obj.PlayBreakableWallCrackling(transform);
+            SoundFXManager.obj.PlayAtPosition(_breakableWallCracklingSfx, transform.position);
             shakeAnimation.Emit(numberOfShakeParticles);
             shakeWall = false;
             StartCoroutine(ShakeWall());
@@ -78,9 +83,9 @@ public class BreakableWall : MonoBehaviour
         if(breakWall) {
             if(background != null)
                 background.SetActive(false);
-            SoundFXManager.obj.PlayBreakableWallBreak(transform);
+            SoundFXManager.obj.PlayAtPosition(_breakableWallBreakSfx, transform.position);
             if(isSecret)
-                SoundFXManager.obj.PlayRevealSecret(transform);
+                SoundFXManager.obj.Play2D(_revealSecretStinger);
             _visibleLayerAnimator.SetTrigger("reveal");
             //Fade out other breakable wall, if there is one
             if(otherBreakableWall != null) {

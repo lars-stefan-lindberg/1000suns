@@ -1,5 +1,6 @@
 using System.Collections;
 using Cinemachine;
+using FMOD.Studio;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -45,6 +46,8 @@ public class ShadowTwinMovement : MonoBehaviour
     public bool isOnMoveable = false;
     public Rigidbody2D moveableRigidBody;
     public JumpThroughPlatform jumpThroughPlatform;
+    private SharedCharacterAudio _sharedPlayerAudio;
+    private DeeAudio _deeAudio;
 
     private void Awake()
     {
@@ -55,6 +58,8 @@ public class ShadowTwinMovement : MonoBehaviour
         _moveableLayerMasks = LayerMask.GetMask("JumpThroughs", "Block");
         _ceilingLayerMasks = LayerMask.GetMask("Ground");
         _playerInput = GetComponent<PlayerInput>();
+        _sharedPlayerAudio = GetComponent<SharedCharacterAudio>();
+        _deeAudio = GetComponent<DeeAudio>();
     }
 
     private void OnDestroy()
@@ -197,7 +202,7 @@ public class ShadowTwinMovement : MonoBehaviour
         if (_landed)
         {
             DustParticleMgr.obj.CreateDust(PlayerManager.PlayerType.SHADOW_TWIN);
-            SoundFXManager.obj.PlayLand(ShadowTwinPlayer.obj.surface, gameObject.transform);
+            _sharedPlayerAudio.PlayLand(ShadowTwinPlayer.obj.surface);
             StartCoroutine(JumpSqueeze(_landedSqueezeX, _landedSqueezeY, _landedSqueezeTime));
             _landed = false;
         }
@@ -472,7 +477,7 @@ public class ShadowTwinMovement : MonoBehaviour
 
         if(PlayerPowersManager.obj.CanSwitchBetweenTwinsMerged && !PlayerManager.obj.IsSeparated) {
             //Switch to shadow twin
-            SoundFXManager.obj.PlayPlayerShapeshiftToBlob(transform);
+            _sharedPlayerAudio.PlayShapeshift();
             isTransforming = true;
             ShadowTwinPull.obj.CancelPulling();
             ShadowTwinPull.obj.DisablePull();
@@ -520,7 +525,7 @@ public class ShadowTwinMovement : MonoBehaviour
     [SerializeField] private float _mergeSplitHoldDuration = 0.5f;
     private bool _mergeSplitHeld = false;
     private float _mergeSplitHoldTimer = 0f;
-    private AudioSource _mergeSplitAudioSource;
+    private EventInstance _mergeSplitSfxInstance;
 
     public void OnMergeSplit(InputAction.CallbackContext context)
     {
@@ -539,7 +544,7 @@ public class ShadowTwinMovement : MonoBehaviour
             }
             _mergeSplitHeld = true;
             _mergeSplitHoldTimer = 0f;
-            _mergeSplitAudioSource = SoundFXManager.obj.PlayForcePushStartCharging(transform);
+            _sharedPlayerAudio.PlayMergeSplit(ref _mergeSplitSfxInstance);
             ShadowTwinPlayer.obj.StartChargeFlash();
         }
         else if (context.canceled)
@@ -549,9 +554,8 @@ public class ShadowTwinMovement : MonoBehaviour
 
             //Only abort flash and sfx if eli is active. If not, the split happened and we want to finish the vfx and sfx
             if(PlayerSwitcher.obj.IsDeeActive()) {
-                if(_mergeSplitAudioSource != null && _mergeSplitAudioSource.isPlaying) {
-                    SoundFXManager.obj.FadeOutAndStopSound(_mergeSplitAudioSource, 0.05f);
-                    _mergeSplitAudioSource = null;
+                if(AudioUtils.IsPlaying(_mergeSplitSfxInstance)) {
+                    AudioUtils.SafeStop(ref _mergeSplitSfxInstance);
                 }
                 ShadowTwinPlayer.obj.AbortFlash();
             }
@@ -960,7 +964,7 @@ public class ShadowTwinMovement : MonoBehaviour
         
         DustParticleMgr.obj.CreateDust(PlayerManager.PlayerType.SHADOW_TWIN);
 
-        SoundFXManager.obj.PlayJump(gameObject.transform);
+        _sharedPlayerAudio.PlayJump();
 
         StartCoroutine(JumpSqueeze(_jumpSqueezeX, _jumpSqueezeY, _jumpSqueezeTime));
         _jumpToConsume = false;
@@ -975,7 +979,7 @@ public class ShadowTwinMovement : MonoBehaviour
         ShadowTwinPull.obj.CancelPulling();
         SetIsAnchorReached(false);
         ExecuteJump(_stats.JumpPower);
-        SoundFXManager.obj.PlayJump(gameObject.transform);
+        _sharedPlayerAudio.PlayJump();
         _airJumpToConsume = false;
         StaminaMgr.obj.ExecutePower(new StaminaMgr.AirJump());
     }
@@ -1028,7 +1032,7 @@ public class ShadowTwinMovement : MonoBehaviour
     public void OnAnchorReached()
     {
         CameraShakeManager.obj.ForcePushShake();
-        SoundFXManager.obj.PlayForcePushExecute(transform);
+        _deeAudio.PlayAnchorReached();
         ShockWaveManager.obj.CallShockWave(anchorPosition, 0.2f, 0.05f, 0.15f);
         SetIsAnchorReached(true);
     }

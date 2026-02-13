@@ -17,16 +17,18 @@ public class CrossfadeAmbienceTrigger : MonoBehaviour
     }
 
     private IEnumerator CrossFadeAmbience() {
-        if(AmbienceManager.obj.IsAmbienceSource1Playing()) {
-            AmbienceManager.obj.PlayCapeRoomAmbience();
-            AmbienceManager.obj.FadeInAmbienceSource2And3(1.5f);
-            yield return new WaitForSeconds(1f);
-            AmbienceManager.obj.FadeOutAmbienceSource1(1f);
-        } else {
-            AmbienceManager.obj.PlayCaveAmbience();
-            AmbienceManager.obj.FadeInAmbienceSource1(1.5f);
-            yield return new WaitForSeconds(1f);
-            AmbienceManager.obj.FadeOutAmbienceSource2And3(1f);
-        }
+        yield return null;
+        //Is this used anywhere??
+        // if(AmbienceManager.obj.IsAmbienceSource1Playing()) {
+        //     AmbienceManager.obj.PlayCapeRoomAmbience();
+        //     AmbienceManager.obj.FadeInAmbienceSource2And3(1.5f);
+        //     yield return new WaitForSeconds(1f);
+        //     AmbienceManager.obj.FadeOutAmbienceSource1(1f);
+        // } else {
+        //     AmbienceManager.obj.PlayCaveAmbience();
+        //     AmbienceManager.obj.FadeInAmbienceSource1(1.5f);
+        //     yield return new WaitForSeconds(1f);
+        //     AmbienceManager.obj.FadeOutAmbienceSource2And3(1f);
+        // }
     }
 }

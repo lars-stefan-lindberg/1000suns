@@ -46,13 +46,14 @@ public class BigBlock : MonoBehaviour
                 _rigidBody.velocity = new Vector2(hitFromTheLeft ? power : -power, 0);
 
                 float clipLength = projectile.power / PlayerPush.obj.maxForce;
-                if(_slideSoundAudioSource == null || !_slideSoundAudioSource.isPlaying) {
-                    _slideSoundAudioSource = SoundFXManager.obj.PlayBlockSliding(transform, clipLength);
-                } else {
-                    _slideSoundAudioSource.Stop();
-                    _slideSoundAudioSource = null;
-                    _slideSoundAudioSource = SoundFXManager.obj.PlayBlockSliding(transform, clipLength);
-                }
+                //TODO: replace with BlockAudio
+                // if(_slideSoundAudioSource == null || !_slideSoundAudioSource.isPlaying) {
+                //     _slideSoundAudioSource = SoundFXManager.obj.PlayBlockSliding(transform, clipLength);
+                // } else {
+                //     _slideSoundAudioSource.Stop();
+                //     _slideSoundAudioSource = null;
+                //     _slideSoundAudioSource = SoundFXManager.obj.PlayBlockSliding(transform, clipLength);
+                // }
             } else {
                 PlayMovableHint();
             }
@@ -63,7 +64,8 @@ public class BigBlock : MonoBehaviour
     private bool _isBeingPulled = false;
 
     private void PlayMovableHint() {
-        SoundFXManager.obj.PlayBreakableWallCrackling(transform);
+        //Deprecated, use FMOD instead
+        //SoundFXManager.obj.PlayBreakableWallCrackling(transform);
         _shakeAnimation.Emit(numberOfShakeParticles);
     }
 
@@ -103,10 +105,11 @@ public class BigBlock : MonoBehaviour
 
         _isMovingHorizontally = Mathf.Abs(_rigidBody.velocity.x) > 0.01f;
 
-        if(!_isGrounded && groundHit && _booted)
-            SoundFXManager.obj.PlayBlockLand(transform);
-        if(_isGrounded && !groundHit && _isMovingHorizontally)
-            SoundFXManager.obj.PlayBlockSlideOffEdge(transform);
+        //TODO: replace with BlockAudio
+        // if(!_isGrounded && groundHit && _booted)
+        //     SoundFXManager.obj.PlayBlockLand(transform);
+        // if(_isGrounded && !groundHit && _isMovingHorizontally)
+        //     SoundFXManager.obj.PlayBlockSlideOffEdge(transform);
         
         _isGrounded = groundHit;
 

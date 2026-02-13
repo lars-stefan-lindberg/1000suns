@@ -13,6 +13,7 @@ public class FirstRoomLoader : MonoBehaviour
     [SerializeField] private DialogueController _dialogueController;
     [SerializeField] private DialogueContent _dialogueContent;
     [SerializeField] private Tilemap _tilemapRevealPath;
+    [SerializeField] private AmbienceTrack _ambience;
     private bool _dialogCompleted = false;
 
     void OnDestroy()
@@ -31,7 +32,7 @@ public class FirstRoomLoader : MonoBehaviour
             CinemachineVirtualCamera zoomedCamera = _zoomedCamera.GetComponent<CinemachineVirtualCamera>();
             zoomedCamera.enabled = true;
             StartCoroutine(FadeInAndPlaySounds());
-            StartCoroutine(AmbienceFadeIn());
+            AmbienceManager.obj.Play(_ambience);
             //Set darkness to dark
             LightingManager2D.Get().profile.DarknessColor = new Color(0.05f, 0.05f, 0.05f, 1f);
             StartCoroutine(Cutscene());
@@ -58,20 +59,16 @@ public class FirstRoomLoader : MonoBehaviour
     }
 
     private IEnumerator FadeInAndPlaySounds() {
-        SoundFXManager.obj.PlayPlayerLongFall();
+        //Deprecated
+        //SoundFXManager.obj.PlayPlayerLongFall();
         yield return new WaitForSeconds(2.5f);
-        SoundFXManager.obj.PlayPlayerLandHeavy();
+        //Deprecated
+        //SoundFXManager.obj.PlayPlayerLandHeavy();
         yield return new WaitForSeconds(2f);
         SceneFadeManager.obj.SetFadedOutState();
         SceneFadeManager.obj.SetFadeInSpeed(0.2f);
         SceneFadeManager.obj.StartFadeIn();
 
-        yield return null;
-    }
-
-    private IEnumerator AmbienceFadeIn() {
-        AmbienceManager.obj.PlayCaveAmbience();
-        AmbienceManager.obj.FadeInAmbienceSource1(2f);
         yield return null;
     }
 
@@ -93,7 +90,8 @@ public class FirstRoomLoader : MonoBehaviour
         yield return new WaitForSeconds(4);
 
         //Show dialog
-        SoundFXManager.obj.PlayDialogueOpen();
+        //Deprecated, use new sound system with Fmod
+        //SoundFXManager.obj.PlayDialogueOpen();
         _dialogueController.ShowDialogue(_dialogueContent);
 
         while (!_dialogCompleted) {
@@ -102,7 +100,9 @@ public class FirstRoomLoader : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
         DOTween.To(() => _tilemapRevealPath.color.a, x => _tilemapRevealPath.color = new Color(_tilemapRevealPath.color.r, _tilemapRevealPath.color.g, _tilemapRevealPath.color.b, x), 0, 1);
-        SoundFXManager.obj.PlayBrokenFloorReappear(_tilemapRevealPath.transform);
+
+        //Deprecated, use FMOD event reference instead
+        //SoundFXManager.obj.PlayBrokenFloorReappear(_tilemapRevealPath.transform);
         yield return new WaitForSeconds(0.5f);
 
         PlayerMovement.obj.UnFreeze();
@@ -129,7 +129,8 @@ public class FirstRoomLoader : MonoBehaviour
 
 
     private void OnDialogueClosing() {
-        SoundFXManager.obj.PlayDialogueClose();
+        //Deprecated, use new sound system with Fmod
+        //SoundFXManager.obj.PlayDialogueClose();
     }
 
     private void OnDialogueCompleted() {

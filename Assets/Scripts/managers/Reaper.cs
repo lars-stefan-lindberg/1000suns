@@ -5,9 +5,11 @@ public class Reaper : MonoBehaviour
 {
     public static Reaper obj;
     public bool playerKilled = false;
+    private SharedCharacterAudio _sharedCharacterAudio;
 
     void Awake() {
         obj = this;
+        _sharedCharacterAudio = GetComponent<SharedCharacterAudio>();
     }
 
     public float genericDeathAnimationTime = 0.8f;
@@ -18,14 +20,14 @@ public class Reaper : MonoBehaviour
             
             PlayerManager.obj.KillPlayerGeneric(PlayerManager.PlayerType.HUMAN, genericDeathAnimationTime);
             PlayerManager.obj.KillPlayerGeneric(PlayerManager.PlayerType.SHADOW_TWIN, genericDeathAnimationTime);
-            SoundFXManager.obj.PlayPlayerGenericDeath(PlayerManager.obj.GetPlayerTransform(playerType));
+            _sharedCharacterAudio.PlayGenericDeath(PlayerManager.obj.GetPlayerTransform(playerType));
             StartCoroutine(AfterDeathAnimationIsSeparated(genericDeathAnimationTime));
         }
         else if(!playerKilled){
             playerKilled = true;
             PlayerStatsManager.obj.numberOfDeaths += 1;
             PlayerManager.obj.KillPlayerGeneric(playerType, genericDeathAnimationTime);
-            SoundFXManager.obj.PlayPlayerGenericDeath(PlayerManager.obj.GetPlayerTransform());
+            _sharedCharacterAudio.PlayGenericDeath(PlayerManager.obj.GetPlayerTransform());
             StartCoroutine(AfterDeathAnimation(genericDeathAnimationTime));
         }
     }
@@ -36,13 +38,13 @@ public class Reaper : MonoBehaviour
             PlayerStatsManager.obj.numberOfDeaths += 1;
             PlayerManager.obj.KillPlayerGeneric(PlayerManager.PlayerType.HUMAN, genericDeathAnimationTime);
             PlayerManager.obj.KillPlayerGeneric(PlayerManager.PlayerType.SHADOW_TWIN, genericDeathAnimationTime);
-            SoundFXManager.obj.PlayPlayerGenericDeath(PlayerManager.obj.GetPlayerTransform());
+            _sharedCharacterAudio.PlayGenericDeath(PlayerManager.obj.GetPlayerTransform());
             StartCoroutine(AfterDeathAnimationIsSeparated(genericDeathAnimationTime));
         } else {
             playerKilled = true;
             PlayerStatsManager.obj.numberOfDeaths += 1;
             PlayerManager.obj.KillPlayerGeneric(genericDeathAnimationTime);
-            SoundFXManager.obj.PlayPlayerGenericDeath(PlayerManager.obj.GetPlayerTransform());
+            _sharedCharacterAudio.PlayGenericDeath(PlayerManager.obj.GetPlayerTransform());
             StartCoroutine(AfterDeathAnimation(genericDeathAnimationTime));
         }
     }
@@ -53,14 +55,14 @@ public class Reaper : MonoBehaviour
             
             PlayerManager.obj.KillPlayerShadow(PlayerManager.PlayerType.HUMAN, genericDeathAnimationTime);
             PlayerManager.obj.KillPlayerShadow(PlayerManager.PlayerType.SHADOW_TWIN, genericDeathAnimationTime);
-            SoundFXManager.obj.PlayPlayerShadowDeath(PlayerManager.obj.GetPlayerTransform(playerType));
+            _sharedCharacterAudio.PlayShadowDeath(PlayerManager.obj.GetPlayerTransform(playerType));
             StartCoroutine(AfterDeathAnimationIsSeparated(genericDeathAnimationTime));
         }
         else if(!playerKilled){
             playerKilled = true;
             PlayerStatsManager.obj.numberOfDeaths += 1;
             PlayerManager.obj.KillPlayerShadow(shadowDeathAnimationTime);
-            SoundFXManager.obj.PlayPlayerShadowDeath(PlayerManager.obj.GetPlayerTransform());
+            _sharedCharacterAudio.PlayShadowDeath(PlayerManager.obj.GetPlayerTransform());
             StartCoroutine(AfterDeathAnimation(shadowDeathAnimationTime));
         }
     }

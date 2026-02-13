@@ -1,18 +1,15 @@
-using System;
 using System.Collections;
-using FunkyCode;
 using UnityEngine;
 
 public class CaveCollectibleCreature : MonoBehaviour
 {
-    public event Action OnPicked;
-    public event Action OnPermanentlyCollected;
     public bool IsPicked {get; set;}
     public bool IsPermanentlyCollected {get; set;}
     public bool IsDespawned = false;
     public Transform portal;
 
     [SerializeField] private string _id;
+    [SerializeField] private int _creatureSfxIndex;
 
     private BoxCollider2D _collider;
 
@@ -23,6 +20,7 @@ public class CaveCollectibleCreature : MonoBehaviour
     [SerializeField] private GameObject[] _tailParts;
     [SerializeField] private float _floatDistance = 0.25f;
     private LightSprite2DFadeManager _lightSprite2DFadeManager;
+    private CaveCollectibleCreatureAudio _caveCollectibleCreatureAudio;
 
     private float _floatDirectionTimer = 0;
     [SerializeField] private float _floatDirectionChangeTime = 1f;
@@ -43,6 +41,7 @@ public class CaveCollectibleCreature : MonoBehaviour
         IsPicked = false;
         IsPermanentlyCollected = false;
         _lightSprite2DFadeManager = GetComponentInChildren<LightSprite2DFadeManager>();
+        _caveCollectibleCreatureAudio = GetComponent<CaveCollectibleCreatureAudio>();
         _originalPosition = transform.position;
     }
 
@@ -50,7 +49,7 @@ public class CaveCollectibleCreature : MonoBehaviour
         if(other.gameObject.CompareTag("Player")) {
             _collider.enabled = false;
             IsPicked = true;
-            OnPicked?.Invoke();
+            _caveCollectibleCreatureAudio.PlayCreatureSound(_creatureSfxIndex);
             StartCoroutine(FadeOutLight());
         }
     }
@@ -67,7 +66,7 @@ public class CaveCollectibleCreature : MonoBehaviour
             if(!_startedTakeOff) {
                 _startedTakeOff = true;
                 _targetTransform = portal; //Portal needs to be set before this is called
-                OnPermanentlyCollected?.Invoke();
+                _caveCollectibleCreatureAudio.PlayCreatureSound(_creatureSfxIndex);
                 StartCoroutine(PrepareTakeOff(_squeezeX, _squeezeY, _squeezeTime));
             }
         }

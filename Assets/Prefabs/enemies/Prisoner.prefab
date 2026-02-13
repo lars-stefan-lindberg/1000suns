@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 2591660405728026287}
   - component: {fileID: 2809307486220679348}
   - component: {fileID: 2998392795242845131}
+  - component: {fileID: 2897406358058272108}
   m_Layer: 9
   m_Name: Prisoner
   m_TagString: Enemy
@@ -243,7 +244,6 @@ MonoBehaviour:
   isAttacking: 0
   attackSpeedMultiplier: 2
   isStuck: 0
-  offScreen: 0
   muteDeathSoundFX: 0
   isSpawningPrisoners: 0
   prisonersToSpawn: []
@@ -331,3 +331,16 @@ MonoBehaviour:
   _rigidBody: {fileID: 5657598952868433655}
   _pullForce: 50
   _isHeavy: 0
+--- !u!114 &2897406358058272108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5873467829969753878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 271f961d5949b4e15b0caf3b19de15d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _sounds: {fileID: 11400000, guid: 4b6c275a70b35413bb5214d694c6da29, type: 2}

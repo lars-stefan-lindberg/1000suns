@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class PrisonerAlertCutSceneTrigger : MonoBehaviour
 {
+    [SerializeField] private MusicTrack _musicTrack;
     public BabyPrisoner babyPrisoner;
     public Prisoner prisoner;
     public GameObject lockedDoor;
@@ -15,10 +16,9 @@ public class PrisonerAlertCutSceneTrigger : MonoBehaviour
                 lockedDoor.SetActive(true);
                 gameObject.SetActive(false);
             } else {
-                MusicManager.obj.StopPlaying();
                 PlayerMovement.obj.Freeze(cutSceneDuration);
-                MusicManager.obj.PlayCaveIntense1();
-                SoundFXManager.obj.PlayBabyPrisonerScared(babyPrisoner.transform);
+                MusicManager.obj.Play(_musicTrack);
+                babyPrisoner.PlayScaredSfx();
                 prisoner.isStatic = true;
                 prisoner.gameObject.SetActive(true);
                 lockedDoor.SetActive(true);

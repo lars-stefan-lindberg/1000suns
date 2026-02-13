@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Linq;
+using FMOD.Studio;
+using FMODUnity;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class C26CutsceneManager : MonoBehaviour
+public class C26CutsceneManager : MonoBehaviour, ISkippable
 {
     [SerializeField] private GameObject _backgroundBlobs;
     [SerializeField] private Transform _sootFlyTarget1;
@@ -13,6 +15,15 @@ public class C26CutsceneManager : MonoBehaviour
     [SerializeField] private DialogueContent _dialogueContent1;
     [SerializeField] private DialogueContent _dialogueContent2;
     [SerializeField] private ParticleSystem _particleEffect;
+    [SerializeField] private MusicTrack _musicTrack;
+    [SerializeField] private EventReference _blobTransformStinger;
+    [SerializeField] private EventReference _sootEvilEyesStinger;
+    [SerializeField] private EventReference _rumblingSfx;
+    [SerializeField] private EventReference _blobTransformSfx;
+    private EventInstance _blobTransformStingerInstance;
+    private EventInstance _sootEvilEyesStingerInstance;
+    private EventInstance _rumblingInstance;
+    private EventInstance _blobTransformSfxInstance;
     private int _dialogueIndex = 0;
 
     private bool _startCutscene = false;
@@ -40,7 +51,6 @@ public class C26CutsceneManager : MonoBehaviour
         if (_dialogueController != null)
         {
             _dialogueController.OnDialogueClosed += OnDialogueCompleted;
-            _dialogueController.OnDialogueClosing += OnDialogueClosing;
         }
     }
 
@@ -49,16 +59,29 @@ public class C26CutsceneManager : MonoBehaviour
         if (_dialogueController != null)
         {
             _dialogueController.OnDialogueClosed -= OnDialogueCompleted;
-            _dialogueController.OnDialogueClosing -= OnDialogueClosing;
         }
-    }
-
-    private void OnDialogueClosing() {
-        SoundFXManager.obj.PlayDialogueClose();
     }
 
     private void OnDialogueCompleted() {
         _dialogueIndex++;
+    }
+
+    public void RequestSkip() {
+        //TODO
+        AudioUtils.SafeStop(ref _blobTransformStingerInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+        AudioUtils.SafeStop(ref _sootEvilEyesStingerInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+        AudioUtils.SafeStop(ref _rumblingInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+        AudioUtils.SafeStop(ref _blobTransformSfxInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+    }
+
+    private IEnumerator ResumeGameplay() {
+        SceneFadeManager.obj.StartFadeIn();
+        while(SceneFadeManager.obj.IsFadingIn) {
+            yield return null;
+        }
+        PlayerMovement.obj.UnFreeze();
+        GameManager.obj.IsPauseAllowed = true;
+        yield return null;
     }
 
     void Update()
@@ -69,6 +92,12 @@ public class C26CutsceneManager : MonoBehaviour
             PlayerMovement.obj.Freeze();
             StartCoroutine(Cutscene());
         }
+    }
+
+    private void StartSoundEvent(EventReference reference, ref EventInstance instance) {
+        instance = SoundFXManager.obj.CreateAttachedInstance(reference, gameObject, null);
+        instance.start();
+        instance.release();
     }
 
     private IEnumerator Cutscene() {
@@ -85,12 +114,11 @@ public class C26CutsceneManager : MonoBehaviour
 
         //Set eye color
         CaveAvatar.obj.SetEyeColor(new Color(0.6226415f, 0.02643288f, 0.02643288f, 1f));
-        SoundFXManager.obj.PlayCaveAvatarEvilEyesTransition();
+        StartSoundEvent(_sootEvilEyesStinger, ref _sootEvilEyesStingerInstance);
 
         yield return new WaitForSeconds(1f);
 
-        SoundFXManager.obj.PlayDialogueOpen();
-        _dialogueController.ShowDialogue(_dialogueContent1);
+        _dialogueController.ShowDialogue(_dialogueContent1, true, true);
 
         while(_dialogueIndex == 0) {
             yield return null;
@@ -98,7 +126,7 @@ public class C26CutsceneManager : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
 
-        SoundFXManager.obj.PlayStartTransformingToBlobFirstTime(Camera.main.transform);
+        StartSoundEvent(_blobTransformStinger, ref _blobTransformStingerInstance);
 
         //Loop through all children, get animators, and increase speed of animation
         Animator[] animators = _backgroundBlobs.GetComponentsInChildren<Animator>();
@@ -111,10 +139,10 @@ public class C26CutsceneManager : MonoBehaviour
         StartCoroutine(GraduallyIncreaseParticleSpeed(_particleEffect, -2, -5, 2.3f, 1f, 7f));
 
         yield return new WaitForSeconds(0.8f);
-        MusicManager.obj.PlayBlobTransform();
+        StartSoundEvent(_blobTransformSfx, ref _blobTransformSfxInstance);
         yield return new WaitForSeconds(1.2f);
 
-        SoundFXManager.obj.PlayC26Rumble();
+        StartSoundEvent(_rumblingSfx, ref _rumblingInstance);
 
         //Turn player into blob, slowly
         //Shake screen
@@ -132,8 +160,7 @@ public class C26CutsceneManager : MonoBehaviour
             animator.speed = 5;
         }
 
-        SoundFXManager.obj.PlayDialogueOpen();
-        _dialogueController.ShowDialogue(_dialogueContent2);
+        _dialogueController.ShowDialogue(_dialogueContent2, true, true);
 
         while(_dialogueIndex == 1) {
             yield return null;
@@ -157,7 +184,7 @@ public class C26CutsceneManager : MonoBehaviour
 
         yield return new WaitForSeconds(2f);
 
-        MusicManager.obj.PlayBlobRooms();
+        MusicManager.obj.Play(_musicTrack);
         PlayerBlobMovement.obj.UnFreeze();
         GameManager.obj.IsPauseAllowed = true;
         GameManager.obj.C26CutsceneCompleted = true;

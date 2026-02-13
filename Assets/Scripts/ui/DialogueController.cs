@@ -18,7 +18,9 @@ public class DialogueController : MonoBehaviour
     [SerializeField] private GameObject _rightPortrait;
     [SerializeField] private RectTransform _textBox;
     [SerializeField] private RectTransform _background;
+
     private Queue<DialogueContent.ParagraphEntry> _paragraphs = new();
+    private DialogueAudio _dialogueAudio;
 
     private bool _conversationEnded;
     private string p;
@@ -26,6 +28,7 @@ public class DialogueController : MonoBehaviour
 
     private bool _isDisplayed = false;
     private bool _isFirstParagraph = true;
+    private bool _isLastDialogue = false;
 
     void Awake() {
         _typeWriter.onTextShowed.AddListener(() => {
@@ -36,9 +39,11 @@ public class DialogueController : MonoBehaviour
             _isTyping = true;
             _continueIcon.SetActive(false);
         });
+        _dialogueAudio = GetComponent<DialogueAudio>();
     }
 
-    public void ShowDialogue(DialogueContent dialogueContent) {
+    //In longer conversations we only want to play open sfx at the start of the conversation. Use playOpenSfx to control this.
+    public void ShowDialogue(DialogueContent dialogueContent, bool isFirstDialogue = false, bool isLastDialogue = false) {
         bool leftMode = dialogueContent.actor == DialogueContent.DialogueActor.Player;
         if(leftMode) {
             _leftPortrait.GetComponent<Image>().sprite = dialogueContent.paragraphEntries[0].portrait;
@@ -54,6 +59,11 @@ public class DialogueController : MonoBehaviour
             _textBox.offsetMax = new Vector2(-288, 0); //right, top
         }
         InitializeConversation(dialogueContent);
+
+        if(isFirstDialogue)
+            _dialogueAudio.PlayOpen();
+        _isLastDialogue = isLastDialogue;
+
         _background.DOLocalRotate(new Vector3(0f, 0f, 0f), 0.5f, RotateMode.FastBeyond360)
               .SetEase(Ease.Linear).OnComplete(() => {
                     _isDisplayed = true;
@@ -66,7 +76,7 @@ public class DialogueController : MonoBehaviour
     public void DisplayNextParagraph() {
         if(_paragraphs.Count == 0) {
             if(_conversationEnded && !_isTyping) {
-                EndConversation();
+                EndDialogue();
                 return;
             }
         }
@@ -86,7 +96,7 @@ public class DialogueController : MonoBehaviour
                 if(_isFirstParagraph) {
                     _isFirstParagraph = false;
                 } else {
-                    SoundFXManager.obj.PlayDialogueConfirm();
+                    _dialogueAudio.PlayConfirm();
                 }
                 _typeWriter.ShowText(p);
             }catch (InvalidOperationException)
@@ -108,11 +118,14 @@ public class DialogueController : MonoBehaviour
         }
     }
 
-    private void EndConversation() {
+    private void EndDialogue() {
         OnDialogueClosing?.Invoke();
         _paragraphs.Clear();
         _conversationEnded = false;
-        SoundFXManager.obj.PlayDialogueConfirm();
+        _dialogueAudio.PlayConfirm();
+        if(_isLastDialogue) {
+            _dialogueAudio.PlayClose();
+        }
         _continueIcon.SetActive(false);
         _background.DOLocalRotate(new Vector3(90f, 0f, 0f), 0.5f, RotateMode.FastBeyond360)
               .SetEase(Ease.Linear).OnComplete(() => {

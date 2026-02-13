@@ -22,7 +22,8 @@ public class Torch : MonoBehaviour
     }
 
     public void LightUp() {
-        SoundFXManager.obj.PlayJump(transform);
+        //TODO: play proper sound effect
+        //SoundFXManager.obj.PlayJump(transform);
         _lightSprite.enabled = true;
         _lightSpriteFlicker.enabled = true;
     }

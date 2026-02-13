@@ -1,4 +1,5 @@
 using DG.Tweening;
+using FMODUnity;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -6,6 +7,7 @@ public class FadeOutTilemap : MonoBehaviour
 {
     [SerializeField] private Animator _visibleLayerAnimator;
     [SerializeField] private bool _playRevealSound = true;
+    [SerializeField] private EventReference _revealSecretStinger;
     private BoxCollider2D _collider;
     private Tilemap _tilemap;
 
@@ -22,7 +24,7 @@ public class FadeOutTilemap : MonoBehaviour
                 DOTween.To(() => _tilemap.color.a, x => _tilemap.color = new Color(_tilemap.color.r, _tilemap.color.g, _tilemap.color.b, x), 0, 1);
             }
             if(_playRevealSound)
-                SoundFXManager.obj.PlayRevealSecret(transform);
+                SoundFXManager.obj.Play2D(_revealSecretStinger);
             _collider.enabled = false;
             Destroy(gameObject, 5);
         }

@@ -1,4 +1,6 @@
 using System.Collections;
+using FMOD.Studio;
+using FMODUnity;
 using UnityEngine;
 
 public class PillarDoor : MonoBehaviour
@@ -6,6 +8,8 @@ public class PillarDoor : MonoBehaviour
     [SerializeField] private Transform _doorMovingTransform;
     [SerializeField] private ParticleSystem _doorCaveDust;
     [SerializeField] private ParticleSystem _doorFloorDust;
+    [SerializeField] private EventReference _earthquakeStinger;
+    private EventInstance _earthQuakeStingerInstance;
     private SpriteRenderer _doorSprite;
     private BoxCollider2D _doorCollider;
     [SerializeField] private float _doorRaiseDistance = 3.5f;
@@ -14,17 +18,13 @@ public class PillarDoor : MonoBehaviour
     [SerializeField] private float _closeDustDuration = 0.15f;
     [SerializeField] private float _shakeAmplitude = 0.05f;
     [SerializeField] private float _shakeFrequency = 25.0f;
-    [SerializeField] private float _earthquakeFadeOutDuration = 0.25f;
     [SerializeField] private float _openCameraShakeAmplitude = 1.0f;
     [SerializeField] private float _openCameraShakeFrequency = 1.0f;
     [SerializeField] private float _floorDustDuration = 0.15f;
 
     private Vector3 _doorStartPos;
     private Coroutine _sequenceRoutine;
-    private Coroutine _earthquakeFadeRoutine;
     private Coroutine _floorDustRoutine;
-    private AudioSource _earthquakeSource;
-    private float _earthquakeStartVolume = 1f;
 
     private enum DoorState
     {
@@ -115,18 +115,6 @@ public class PillarDoor : MonoBehaviour
         {
             StopCoroutine(_floorDustRoutine);
             _floorDustRoutine = null;
-        }
-
-        if (_earthquakeFadeRoutine != null)
-        {
-            StopCoroutine(_earthquakeFadeRoutine);
-            _earthquakeFadeRoutine = null;
-        }
-
-        if (_earthquakeSource != null)
-        {
-            _earthquakeSource.Stop();
-            _earthquakeSource.volume = _earthquakeStartVolume;
         }
 
         if (_doorMovingTransform == null)
@@ -302,65 +290,12 @@ public class PillarDoor : MonoBehaviour
 
     private void StartEarthquake()
     {
-        if (SoundFXManager.obj == null)
-            return;
-
-        if (_earthquakeFadeRoutine != null)
-        {
-            StopCoroutine(_earthquakeFadeRoutine);
-            _earthquakeFadeRoutine = null;
-        }
-
-        if (_earthquakeSource == null || !_earthquakeSource.isPlaying)
-        {
-            _earthquakeSource = SoundFXManager.obj.PlayEarthquake();
-            if (_earthquakeSource != null)
-                _earthquakeStartVolume = _earthquakeSource.volume;
-        }
-
-        if (_earthquakeSource != null)
-            _earthquakeSource.volume = _earthquakeStartVolume;
+        _earthQuakeStingerInstance = SoundFXManager.obj.CreateAttachedInstance(_earthquakeStinger, gameObject, null);
+        _earthQuakeStingerInstance.start();
     }
 
     private void BeginFadeOutEarthquake()
     {
-        if (_earthquakeSource == null)
-            return;
-
-        if (_earthquakeFadeRoutine != null)
-            StopCoroutine(_earthquakeFadeRoutine);
-
-        _earthquakeFadeRoutine = StartCoroutine(FadeOutAndStop(_earthquakeSource, _earthquakeFadeOutDuration));
-    }
-
-    private IEnumerator FadeOutAndStop(AudioSource source, float duration)
-    {
-        if (source == null)
-            yield break;
-
-        float t = 0f;
-        float startVolume = source.volume;
-        duration = Mathf.Max(0.01f, duration);
-
-        while (t < duration)
-        {
-            if (source == null)
-                yield break;
-
-            t += Time.deltaTime;
-            float a = Mathf.Clamp01(t / duration);
-            source.volume = Mathf.Lerp(startVolume, 0f, a);
-            yield return null;
-        }
-
-        if (source != null)
-        {
-            source.volume = 0f;
-            source.Stop();
-            source.volume = _earthquakeStartVolume;
-        }
-
-        if (source == _earthquakeSource)
-            _earthquakeFadeRoutine = null;
+        AudioUtils.SafeStop(ref _earthQuakeStingerInstance);
     }
 }

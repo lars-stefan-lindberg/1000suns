@@ -11,6 +11,7 @@ public class LevelManager : MonoBehaviour
     public bool isRunningAfterSceneLoaded = false;
     [SerializeField] private SceneField _titleScreen;
     [SerializeField] private float _reloadSceneDelayTime = 0.4f;
+    private SharedCharacterAudio _sharedCharacterAudio;
 
     private Dictionary<string, bool> levelCompletionMap = new Dictionary<string, bool>();
 
@@ -26,6 +27,7 @@ public class LevelManager : MonoBehaviour
 
     void Awake() {
         obj = this;
+        _sharedCharacterAudio = GetComponent<SharedCharacterAudio>();
     }
 
     private void OnEnable() {
@@ -319,7 +321,7 @@ public class LevelManager : MonoBehaviour
 
     private IEnumerator DelayedSpawnSfx(Transform transform) {
         yield return new WaitForSeconds(0.01f);
-        SoundFXManager.obj.PlayPlayerShadowSpawn(transform);
+        _sharedCharacterAudio.PlaySpawn(transform);
     }
 
     private void AdjustSpawnFaceDirection(float sceneLoadTriggerPosition, float playerSpawnPointPosition) {

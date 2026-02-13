@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: -6913263660845055090}
   - component: {fileID: 1485132814754727850}
   - component: {fileID: 6760610024400163779}
+  - component: {fileID: -4716705603780358100}
   m_Layer: 0
   m_Name: BabyPrisoner
   m_TagString: BabyPrisoner
@@ -204,6 +205,7 @@ MonoBehaviour:
   timeToTurnAround: 1.31
   turnAroundTimer: 1.3199993
   alertRunDirection: -1
+  _idleInPlaceUntilAlerted: 0
   maxTravellingDistance: 3
   groundLayer:
     serializedVersion: 2
@@ -278,3 +280,16 @@ MonoBehaviour:
   _fadeInAlpha: 1
   _startAlpha: 1
   _lightColor: {r: 0.72156864, g: 0.72156864, b: 0.72156864, a: 1}
+--- !u!114 &-4716705603780358100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1167462561473728010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7310da1d5f0ed4723bfdc38b4af5f1f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _sounds: {fileID: 11400000, guid: db47c9870e9484459af06b0509fddb35, type: 2}

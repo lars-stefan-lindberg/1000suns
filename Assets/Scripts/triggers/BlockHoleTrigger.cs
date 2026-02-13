@@ -1,9 +1,11 @@
+using FMODUnity;
 using UnityEngine;
 
 public class BlockHoleTrigger : MonoBehaviour
 {
     [SerializeField] private GameObject _floor;
     [SerializeField] private float _fadeMultiplier = 3.5f;
+    [SerializeField] private EventReference _brokenFloorReappearSfx;
     private bool _fadeInSprite = false;
     private SpriteRenderer _floorRenderer;
 
@@ -20,7 +22,7 @@ public class BlockHoleTrigger : MonoBehaviour
             return;
         if(other.gameObject.CompareTag("Player")) {
             _floor.SetActive(true);
-            SoundFXManager.obj.PlayBrokenFloorReappear(transform);
+            SoundFXManager.obj.Play2D(_brokenFloorReappearSfx);
             _fadeInSprite = true;
         }
     }

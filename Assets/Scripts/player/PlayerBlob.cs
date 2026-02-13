@@ -7,7 +7,7 @@ public class PlayerBlob : MonoBehaviour
     private Animator _animator;
     private BoxCollider2D _collider;
     private LayerMask _groundLayerMasks;
-    public Surface surface = Surface.Rock;
+    public SurfaceType surface = SurfaceType.Rock;
     private float _spawnFreezeDuration = 0.9f;
     private PlayerChargeFlash _playerChargeFlash;
     private PlayerFlash _playerFlash;
@@ -28,9 +28,9 @@ public class PlayerBlob : MonoBehaviour
         if((_groundLayerMasks.value & (1 << other.gameObject.layer)) != 0) {
             string surfaceTag = other.gameObject.tag;
             if(surfaceTag == "Rock")
-                surface = Surface.Rock;
+                surface = SurfaceType.Rock;
             else if(surfaceTag == "Roots")
-                surface = Surface.Roots;
+                surface = SurfaceType.Roots;
         }
     }
 
