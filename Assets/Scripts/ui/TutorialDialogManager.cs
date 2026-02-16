@@ -5,6 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.Localization;
 using UnityEngine.UI;
 
 public class TutorialDialogManager : MonoBehaviour
@@ -17,6 +18,8 @@ public class TutorialDialogManager : MonoBehaviour
     [Range(0.1f, 10f), SerializeField] private float _fadeOutSpeed = 2f;
     [Range(0.1f, 10f), SerializeField] private float _fadeInSpeed = 2f;
 
+    [SerializeField] private TMP_Text _descriptionText;
+    [SerializeField] private LocalizedString _descriptionString;
     [SerializeField] private Color _fadeAlpha;
     [SerializeField] private InputActionReference _usePowerActionReference;
     [SerializeField] private Image _gamepadConfigInstructionsUsePowerActionKeyIcon;
@@ -96,19 +99,30 @@ public class TutorialDialogManager : MonoBehaviour
         canvas.sortingLayerName = "UI";
 
         //Show keyboard, or gamepad, use power icon/text
-        if(_gamepadConfigInstructionsUsePowerActionKeyIcon != null) {
-            if(InputDeviceListener.obj.GetCurrentInputDevice() == InputDeviceListener.Device.Gamepad) {
-                _gamepadConfigInstructionsUsePowerActionKeyIcon.gameObject.SetActive(true);
-                _keyboardConfigInstructionsUsePowerActionKeyText.gameObject.SetActive(false);
-                Sprite userPowerButtonSprite = GamepadIconManager.obj.GetIcon(_usePowerActionReference.action);
-                _gamepadConfigInstructionsUsePowerActionKeyIcon.sprite = userPowerButtonSprite;
-            } else { //Use keyboard
-                _gamepadConfigInstructionsUsePowerActionKeyIcon.gameObject.SetActive(false);
-                _keyboardConfigInstructionsUsePowerActionKeyText.gameObject.SetActive(true);
-                userPowerActionKeyboardDisplayString = _usePowerActionReference.action.GetBindingDisplayString(InputBinding.MaskByGroup("Keyboard"));
-                _keyboardConfigInstructionsUsePowerActionKeyText.text = userPowerActionKeyboardDisplayString;
-            }
-        }
+        // if(_gamepadConfigInstructionsUsePowerActionKeyIcon != null) {
+        //     if(InputDeviceListener.obj.GetCurrentInputDevice() == InputDeviceListener.Device.Gamepad) {
+        //         _gamepadConfigInstructionsUsePowerActionKeyIcon.gameObject.SetActive(true);
+        //         _keyboardConfigInstructionsUsePowerActionKeyText.gameObject.SetActive(false);
+        //         Sprite userPowerButtonSprite = GamepadIconManager.obj.GetIcon(_usePowerActionReference.action);
+        //         _gamepadConfigInstructionsUsePowerActionKeyIcon.sprite = userPowerButtonSprite;
+        //     } else { //Use keyboard
+        //         _gamepadConfigInstructionsUsePowerActionKeyIcon.gameObject.SetActive(false);
+        //         _keyboardConfigInstructionsUsePowerActionKeyText.gameObject.SetActive(true);
+        //         userPowerActionKeyboardDisplayString = _usePowerActionReference.action.GetBindingDisplayString(InputBinding.MaskByGroup("Keyboard"));
+        //         _keyboardConfigInstructionsUsePowerActionKeyText.text = userPowerActionKeyboardDisplayString;
+        //     }
+        // }
+
+        //Get sprite name based on input action and current input device
+        //string buttonSpriteName = GamepadIconManager.obj.GetSpriteName(_usePowerActionReference.action);
+        string buttonSpriteName = "playstation_west_button";
+        _descriptionString.Arguments = new object[]
+        {
+            $"<sprite name=\"{buttonSpriteName}\">",
+        };
+
+        _descriptionString.StringChanged += UpdateText;
+        _descriptionString.RefreshString();
 
         Image[] images = GetComponentsInChildren<Image>();
         foreach(Image image in images) {
@@ -126,6 +140,11 @@ public class TutorialDialogManager : MonoBehaviour
         }
         _confirmButton = GetComponentInChildren<Button>();
         _confirmButton.enabled = false;
+    }
+
+    private void UpdateText(string value)
+    {
+        _descriptionText.text = value;
     }
 
     public void Focus() {

@@ -9,6 +9,10 @@ public class GamepadIconManager : MonoBehaviour
     public GamepadIcons xbox;
     public GamepadIcons ps4;
 
+    public string GetSpriteName(InputAction action) {
+        return GetIcon(action).name;
+    }
+
     public Sprite GetIcon(InputAction action) {
         var deviceLayoutName = default(string);
         var controlPath = default(string);

@@ -5,6 +5,10 @@ using Febucci.UI;
 using DG.Tweening;
 using System;
 using UnityEngine.UI;
+using System.Collections;
+using UnityEngine.Localization.Settings;
+using UnityEngine.Localization;
+using UnityEngine.Localization.Tables;
 
 public class DialogueController : MonoBehaviour
 {
@@ -18,6 +22,7 @@ public class DialogueController : MonoBehaviour
     [SerializeField] private GameObject _rightPortrait;
     [SerializeField] private RectTransform _textBox;
     [SerializeField] private RectTransform _background;
+    private string _tableCollectionName = "Dialogue_Text";
 
     private Queue<DialogueContent.ParagraphEntry> _paragraphs = new();
     private DialogueAudio _dialogueAudio;
@@ -29,6 +34,7 @@ public class DialogueController : MonoBehaviour
     private bool _isDisplayed = false;
     private bool _isFirstParagraph = true;
     private bool _isLastDialogue = false;
+    private Coroutine _loadAndPlayCoroutine;
 
     void Awake() {
         _typeWriter.onTextShowed.AddListener(() => {
@@ -98,7 +104,7 @@ public class DialogueController : MonoBehaviour
                 } else {
                     _dialogueAudio.PlayConfirm();
                 }
-                _typeWriter.ShowText(p);
+                _loadAndPlayCoroutine = StartCoroutine(LoadAndPlay(p));
             }catch (InvalidOperationException)
             {
                 return;
@@ -110,6 +116,37 @@ public class DialogueController : MonoBehaviour
         if(_paragraphs.Count == 0) {
             _conversationEnded = true;
         }
+    }
+
+    private IEnumerator LoadAndPlay(string key)
+    {
+        yield return LocalizationSettings.InitializationOperation;
+
+        var tableHandle = LocalizationSettings.StringDatabase
+            .GetTableAsync(_tableCollectionName);
+
+        yield return tableHandle;
+
+        if (!tableHandle.IsDone || tableHandle.Result == null)
+        {
+            Debug.LogError($"Localization table not found: {_tableCollectionName}");
+            yield break;
+        }
+
+        StringTable table = tableHandle.Result;
+
+        var entry = table.GetEntry(key);
+
+        if (entry == null)
+        {
+            //Debug.LogError($"Localization key not found: {key}");
+            _typeWriter.ShowText(key);
+            yield break;
+        }
+
+        string translatedText = entry.GetLocalizedString();
+
+        _typeWriter.ShowText(translatedText);
     }
 
     private void InitializeConversation(DialogueContent dialogueContent) {
@@ -134,9 +171,13 @@ public class DialogueController : MonoBehaviour
                 EventSystem.current.SetSelectedGameObject(null);
                 OnDialogueClosed?.Invoke();
               });
+        _loadAndPlayCoroutine = null;
     }
 
     public void HardStopConversation() {
+        if(_loadAndPlayCoroutine != null) {
+            StopCoroutine(_loadAndPlayCoroutine);
+        }
         _paragraphs.Clear();
         _conversationEnded = false;
         _continueIcon.SetActive(false);
