@@ -3,8 +3,9 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using TMPro;
 using UnityEngine.SceneManagement;
+using DG.Tweening;
+using System.Collections.Generic;
 using System.Linq;
 using System;
 
@@ -13,74 +14,59 @@ public class PauseMenuManager : MonoBehaviour
     public static PauseMenuManager obj;
     public bool isNavigatingToMenu = true;
     private ISkippable _skippable;
+
     [SerializeField] private GameObject _pauseMenu;
-    [SerializeField] private GameObject _firstSelectedPauseMenuItem;
+    [SerializeField] private GameObject _pauseMenuBg;
+    [SerializeField] private PauseMainScreen _pauseMainScreen;
+    [SerializeField] private GameObject _skipCutsceneMenuItem;
+    [SerializeField] private GameObject _retryRoomMenuItem;
+    [SerializeField] private Button _resumeButton;
+    [SerializeField] private Button _retryButton;
+    [SerializeField] private Button _skipCutsceneButton;
+    [SerializeField] private Button _optionsButton;
+    [SerializeField] private Button _quitButton;
+    [SerializeField] private OptionsScreen _optionsScreen;
+    [SerializeField] private GameObject _optionsMenuAudioButton;
+    [SerializeField] private AudioScreen _audioScreen;
+    [SerializeField] private GameObject _optionsMenuControllerButton;
+    [SerializeField] private ControllerScreen _controllerConfigScreen;
+    [SerializeField] private GameObject _optionsMenuKeyboardButton;
+    [SerializeField] private KeyboardScreen _keyboardConfigScreen;
     [SerializeField] private SceneField _titleScreen;
     [SerializeField] private GameObject _persistentGameplay;
-    [SerializeField] private Slider _musicSlider;
-    [SerializeField] private Slider _soundFXSlider;
-    [SerializeField] private TextMeshProUGUI _collectibleCountText;
-    [SerializeField] private GameObject _pauseMainMenu;
-    [SerializeField] private GameObject _keyboardConfigMenu;
-    [SerializeField] private AutoScrollRect _keyboardConfigAutoScroll;
-    [SerializeField] private TextMeshProUGUI _keyboardConfigInstructionsConfirmActionKeyText;
-    [SerializeField] private Button _quitButton;
-    [SerializeField] private GameObject _skipCutsceneOption;
-    [SerializeField] private GameObject _retryRoomOption;
-    [SerializeField] private Button _resumeButton;
-    [SerializeField] private Button _firstKeyboardMenuButton;
-    [SerializeField] private Button _keyboardConfigMenuBackButton;
-    [SerializeField] private Button _keyboardConfigMenuButton;
-    [SerializeField] private GameObject _controllerConfigMenu;
-    [SerializeField] private GameObject _controllerConfigMenuShowConfig;
-    [SerializeField] private GameObject _controllerConfigMenuShowAttachController;
-    [SerializeField] private Button _controllerConfigMenuButton;
-    [SerializeField] private Button _controllerConfigMenuBackButton;
-    [SerializeField] private Button _firstControllerMenuButton;
-    [SerializeField] private Image _gamepadConfigInstructionsConfirmActionKeyIcon;
-    [SerializeField] private Image _gamepadConfigInstructionsResetButtonActionKeyIcon;
-    [SerializeField] private TextMeshProUGUI _roomNumber;
-    public InputActionAsset actions;
-    public InputActionReference confirmActionReference;
-    public InputActionReference resetButtonActionReference;
+    [SerializeField] private InputActionReference _cancelActionReference;
     
-    private string confirmActionKeyboardDisplayString;
-
     private bool _isPaused = false;
-    // Track if the music volume slider is currently selected
-    private bool _isMusicSliderSelected = false;
-    private bool _muteSliderSfx = false;
+    private int _escapeKeyBindingIndex = -1;
+    private Sequence _menuTransitionSequence;
+    private bool _isTransitioning = false;
+    private Stack<UIScreen> screenStack = new();
 
     void Awake() {
         obj = this;
 
-        Canvas canvas = _pauseMenu.GetComponent<Canvas>();
-        canvas.worldCamera = Camera.main;
-        canvas.sortingLayerName = "UI";
-
-        var rebinds = PlayerPrefs.GetString("rebinds");
-        if (!string.IsNullOrEmpty(rebinds))
-            actions.LoadBindingOverridesFromJson(rebinds);
-        confirmActionKeyboardDisplayString = confirmActionReference.action.GetBindingDisplayString(InputBinding.MaskByGroup("Keyboard"));
+        SetCanvasCamera(_pauseMenuBg.GetComponent<Canvas>());
+        SetCanvasCamera(_pauseMainScreen.GetComponent<Canvas>());
+        SetCanvasCamera(_optionsScreen.GetComponent<Canvas>());
+        SetCanvasCamera(_audioScreen.GetComponent<Canvas>());
+        SetCanvasCamera(_controllerConfigScreen.GetComponent<Canvas>());
+        SetCanvasCamera(_keyboardConfigScreen.GetComponent<Canvas>());
     }
 
-    // Track the last selected game object to detect changes
-    private GameObject _lastSelectedGameObject = null;
+    void Start()
+    {
+       
+    }
+    
 
-    void Update() {
-        // Check if we're paused and if the selected UI element has changed
-        if (_isPaused) {
-            GameObject currentSelected = EventSystem.current.currentSelectedGameObject;
-            
-            // If selection changed
-            if (currentSelected != _lastSelectedGameObject) {
-                OnUIElementSelected(currentSelected);
-                _lastSelectedGameObject = currentSelected;
-            }
-        }
+    private void SetCanvasCamera(Canvas canvas) {
+        canvas.worldCamera = Camera.main;
+        canvas.sortingLayerName = "UI";
     }
 
     void OnDestroy() {
+        _cancelActionReference.action.performed -= OnCancel;
+        EnableEscapeInUIControls();
         obj = null;
     }
 
@@ -94,8 +80,8 @@ public class PauseMenuManager : MonoBehaviour
                 UISoundPlayer.obj.PlaySelect();
                 ResumeGame();
             } else {
-                _roomNumber.text = SceneManager.GetActiveScene().name;
-                
+                _cancelActionReference.action.performed += OnCancel;
+                DisableEscapeInUIControls();
                 UISoundPlayer.obj.PlayBack();
                 PlayerManager.obj.DisablePlayerMovement();
                 PlayerStatsManager.obj.PauseTimer();
@@ -110,40 +96,82 @@ public class PauseMenuManager : MonoBehaviour
                 
                 // Enable the pause menu UI
                 _pauseMenu.SetActive(true);
-                _pauseMainMenu.SetActive(true);
+                OpenScreen(_pauseMainScreen);
                 
-                // Set the music slider to reflect the player's preferred volume (not the muffled volume)
-                _muteSliderSfx = true;
-                _musicSlider.value = AudioOptions.obj.MusicStep;
-                
-                _soundFXSlider.value = AudioOptions.obj.SfxStep;
-                _muteSliderSfx = false;
-                
-                _collectibleCountText.text = CollectibleManager.obj.GetNumberOfCollectiblesPicked().ToString();
-
                 if(_skippable != null) {
-                    _skipCutsceneOption.SetActive(true);
-                    _retryRoomOption.SetActive(false);
+                    _skipCutsceneMenuItem.SetActive(true);
+                    _retryRoomMenuItem.SetActive(false);
                     Navigation resumeButtonNav = _resumeButton.navigation;
-                    resumeButtonNav.selectOnDown = _skipCutsceneOption.GetComponent<Button>();
+                    resumeButtonNav.selectOnDown = _skipCutsceneButton;
                     _resumeButton.navigation = resumeButtonNav;
-                    Navigation musicSliderNavigation = _musicSlider.navigation;
-                    musicSliderNavigation.selectOnUp = _skipCutsceneOption.GetComponent<Button>();
-                    _musicSlider.navigation = musicSliderNavigation;
+                    Navigation optionsButtonNavigation = _optionsButton.navigation;
+                    optionsButtonNavigation.selectOnUp = _skipCutsceneButton;
+                    _optionsButton.navigation = optionsButtonNavigation;
                 } else {
-                    _skipCutsceneOption.SetActive(false);
-                    _retryRoomOption.SetActive(true);
+                    _skipCutsceneMenuItem.SetActive(false);
+                    _retryRoomMenuItem.SetActive(true);
                     Navigation resumeButtonNav = _resumeButton.navigation;
-                    resumeButtonNav.selectOnDown = _retryRoomOption.GetComponent<Button>();
+                    resumeButtonNav.selectOnDown = _retryButton;
                     _resumeButton.navigation = resumeButtonNav;
-                    Navigation musicSliderNavigation = _musicSlider.navigation;
-                    musicSliderNavigation.selectOnUp = _retryRoomOption.GetComponent<Button>();
-                    _musicSlider.navigation = musicSliderNavigation;
+                    Navigation optionsButtonNavigation = _optionsButton.navigation;
+                    optionsButtonNavigation.selectOnUp = _retryButton;
+                    _optionsButton.navigation = optionsButtonNavigation;
                 }
-                
-                EventSystem.current.SetSelectedGameObject(_firstSelectedPauseMenuItem);
             }
         }
+    }
+
+    public void OpenScreen(UIScreen newScreen, GameObject triggerButton = null)
+    {
+        if (_isTransitioning)
+            return;
+
+        _isTransitioning = true;
+
+        UIScreen current = screenStack.Count > 0 ? screenStack.Peek() : null;
+
+        _menuTransitionSequence?.Kill();
+        _menuTransitionSequence = DOTween.Sequence();
+        _menuTransitionSequence.SetUpdate(true);
+
+        if(triggerButton != null)
+            current.SetBackSelectable(triggerButton);
+        // Hide current
+        if (current != null)
+            _menuTransitionSequence.Append(current.Hide());
+
+        // Show next
+        _menuTransitionSequence.Append(newScreen.Show());
+
+        _menuTransitionSequence.OnComplete(() =>
+        {
+            screenStack.Push(newScreen);
+            _isTransitioning = false;
+        });
+    }
+
+    public void GoBack()
+    {
+        if (_isTransitioning || screenStack.Count == 0)
+            return;
+
+        _isTransitioning = true;
+
+        UIScreen current = screenStack.Pop();
+        UIScreen previous = screenStack.Peek();
+
+        _menuTransitionSequence?.Kill();
+        _menuTransitionSequence = DOTween.Sequence();
+        _menuTransitionSequence.SetUpdate(true);
+
+        _menuTransitionSequence.Append(current.Hide());
+
+        _menuTransitionSequence.Append(previous.Show());
+
+        _menuTransitionSequence.OnComplete(() =>
+        {
+            _isTransitioning = false;
+        });
     }
 
     public void OnResumeButtonClick() {
@@ -151,41 +179,105 @@ public class PauseMenuManager : MonoBehaviour
         ResumeGame();
     }
 
+    public void OnRetryButtonClick() {
+        UISoundPlayer.obj.PlaySelect(); 
+        ResumeGame();
+        Reaper.obj.KillAllPlayersGeneric();
+    }
+
+    public void OnSkipCutsceneButtonClick() {
+        UISoundPlayer.obj.PlaySelect();
+        Time.timeScale = 1f;
+        StartCoroutine(SkipCutsceneCoroutine());
+    }
+
+    public void OnOptionsButtonClick() {
+        UISoundPlayer.obj.PlaySelect();
+        OpenScreen(_optionsScreen, _optionsButton.gameObject);
+    }
+
+    public void OnQuitButtonClick() {
+        _quitButton.interactable = false;
+        UISoundPlayer.obj.PlaySelect();
+        LevelTracker.obj.TrackQuitFromPauseMenu(SceneManager.GetActiveScene().name); 
+        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
+        SaveManager.obj.SetActiveSaveProfile(0);
+        Quit();
+    }
+
+    public void OnAudioMenuButtonClicked() {
+        UISoundPlayer.obj.PlaySelect();
+        AudioStateManager.obj.RestoreMusic();
+        OpenScreen(_audioScreen, _optionsMenuAudioButton);
+    }
+
+    public void GoBackFromAudioMenu() {
+        AudioStateManager.obj.SetPaused(true);
+        GoBack();
+    }
+
+    public void OnControllerMenuButtonClicked() {
+        UISoundPlayer.obj.PlaySelect();
+
+        OpenScreen(_controllerConfigScreen, _optionsMenuControllerButton);
+    }
+
+    public void OnKeyboardMenuButtonClicked() {
+        UISoundPlayer.obj.PlaySelect();
+
+        OpenScreen(_keyboardConfigScreen, _optionsMenuKeyboardButton);
+    }
+
+    public void RegisterSkippable(ISkippable skippable)
+    {
+        _skippable = skippable;
+    }
+
+    public void UnregisterSkippable() {
+        _skippable = null;
+    }
+
     public void ResumeGame() {
         // Only resume if we're actually paused
         if (_isPaused) {
-            AudioStateManager.obj.SetPaused(false);
-            
-            // Set the pause state
-            _isPaused = false;
-            
-            // Set the time scale back to 1 to resume the game
-            Time.timeScale = 1f;
-            
-            // Disable the pause menu UIs
-            _pauseMenu.SetActive(false);
-            _pauseMainMenu.SetActive(false);
-            _keyboardConfigMenu.SetActive(false);
-            _controllerConfigMenu.SetActive(false);
-            
-            // Reset music slider selection state
-            _isMusicSliderSelected = false;
-            _lastSelectedGameObject = null;
-            
+             _cancelActionReference.action.performed -= OnCancel;
+            EnableEscapeInUIControls();
             EventSystem.current.SetSelectedGameObject(null);
 
+            UIScreen uiScreen = screenStack.Pop();
+            uiScreen.Hide();
+            screenStack.Clear();
+            _pauseMainScreen.SetBackSelectable(null);
+            _pauseMenu.SetActive(false);
+
+            AudioStateManager.obj.SetPaused(false);
+            
             DialogueController dialogueController = FindActiveDialogueController();
             if(dialogueController != null && dialogueController.IsDisplayed()) {
                 dialogueController.FocusDialogue();
-            } else if(TutorialDialogManager.obj != null && !TutorialDialogManager.obj.tutorialCompleted) {
-                TutorialDialogManager.obj.Focus();
             } else if(!PlayerManager.obj.IsFrozen()) {
                 PlayerManager.obj.EnablePlayerMovement();
             }
-            
-            isNavigatingToMenu = true;
+
+            // Set the pause state
+            _isPaused = false;
+            // Set the time scale back to 1 to resume the game
+            Time.timeScale = 1f;
             PlayerStatsManager.obj.ResumeTimer();
         }
+    }
+
+    private IEnumerator SkipCutsceneCoroutine() {
+        GameManager.obj.IsPauseAllowed = false;
+        SceneFadeManager.obj.StartFadeOut();
+        while(SceneFadeManager.obj.IsFadingOut) {
+            yield return null;
+        }   
+        yield return new WaitForSeconds(0.3f);
+        _skippable.RequestSkip();
+        UnregisterSkippable();
+        ResumeGame();
+        yield return null;
     }
 
     private DialogueController FindActiveDialogueController() {
@@ -202,237 +294,87 @@ public class PauseMenuManager : MonoBehaviour
         return dialogueObject.GetComponentInChildren<DialogueController>();
     }
 
-    public void RegisterSkippable(ISkippable skippable)
-    {
-        _skippable = skippable;
-    }
-
-    public void UnregisterSkippable() {
-        _skippable = null;
-    }
-
-    public void OnSkipCutsceneClick() {
-        UISoundPlayer.obj.PlaySelect();
-        Time.timeScale = 1f;
-        StartCoroutine(SkipCutsceneCoroutine());
-    }
-
-    private IEnumerator SkipCutsceneCoroutine() {
-        GameManager.obj.IsPauseAllowed = false;
-        SceneFadeManager.obj.StartFadeOut();
-        while(SceneFadeManager.obj.IsFadingOut) {
-            yield return null;
-        }   
-        yield return new WaitForSeconds(0.3f);
-        _skippable.RequestSkip();
-        UnregisterSkippable();
-        ResumeGame();
-        yield return null;
-    }
-        
-
-    public void QuitButtonHandler() {
-        _quitButton.interactable = false;
-        UISoundPlayer.obj.PlayBack();
-        LevelTracker.obj.TrackQuitFromPauseMenu(SceneManager.GetActiveScene().name); 
-        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
-        Quit();
-    }
-
     public void Quit() {
         Time.timeScale = 1f;
         StartCoroutine(QuitCoroutine());
     }
 
     private IEnumerator QuitCoroutine() {
-        //Disable custom ui input handler so it doesn't clash with main menu customUIinputhandler
-        _pauseMenu.GetComponent<CustomUIInputHandler>().enabled = false;
-
         MusicManager.obj.Stop();
-        AudioStateManager.obj.QuitGame();
         AmbienceManager.obj.Stop();
+
+        UIScreen uiScreen = screenStack.Pop();
+        uiScreen.Hide();
+        screenStack.Clear();
+        _pauseMainScreen.SetBackSelectable(null);
         
-        SceneFadeManager.obj.StartFadeOut();
+        SceneFadeManager.obj.StartFadeOut(1f);
         while(SceneFadeManager.obj.IsFadingOut) {
             yield return null;
         }
         
         yield return StartCoroutine(BackgroundLoaderManager.obj.RemoveBackgroundLayers());
-        
-        AudioStateManager.obj.SetPaused(false);
 
+        //Give music some time to fade out before "unmuffling" the music
+        yield return new WaitForSeconds(1.5f);
+        AudioStateManager.obj.RestoreMusic();
+        _pauseMenu.SetActive(false);
+        
         SceneManager.LoadScene(_titleScreen.SceneName);
         Scene titleScreen = SceneManager.GetSceneByName(_titleScreen.SceneName);
         while(!titleScreen.isLoaded) {
             yield return null;
         }
+
+        //Now it should be safe to kill ongoing sfx, and turn sfx on again
+        AudioStateManager.obj.StopSfxEvents();
+        AudioStateManager.obj.RestoreSfx();
+
         while(LevelManager.obj.isRunningAfterSceneLoaded) {
             yield return null;
         }
 
+
+
         Destroy(_persistentGameplay);
     }
 
-    public void ChangeMusicVolume(float volume) {
-        if(!_muteSliderSfx)
-            UISoundPlayer.obj.PlaySliderTick();
-        
-        // If this is the first time the music slider is used after pausing,
-        // temporarily restore the music clarity for better feedback
-        if (!_isMusicSliderSelected && _isPaused) {
-            _isMusicSliderSelected = true;
-            AudioStateManager.obj.RestoreMusic();
-        }
-        
-        // Set the player's preferred music volume directly
-        // TODO: implement this with FMOD
-        AudioOptions.obj.SetMusicStep(volume);
-    }
-
-    public void ChangeSoundFxVolume(float volume) {
-        if(!_muteSliderSfx)
-            UISoundPlayer.obj.PlaySliderTick();
-        
-        // If we were previously adjusting music, re-muffle it when switching to another slider
-        if (_isMusicSliderSelected && _isPaused) {
-            _isMusicSliderSelected = false;
-            AudioStateManager.obj.SetPaused(true);
-        }
-        
-        // TODO: implement this with FMOD
-        AudioOptions.obj.SetSfxStep(volume);
-    }
-
-    public void ShowKeyboardConfigMenu() {
-        UISoundPlayer.obj.PlaySelect();
-        
-        // If we were previously adjusting music, re-muffle it when switching to another menu
-        if (_isMusicSliderSelected && _isPaused) {
-            _isMusicSliderSelected = false;
-            AudioStateManager.obj.SetPaused(true);
-        }
-
-        _pauseMainMenu.SetActive(false);
-
-        _keyboardConfigMenu.SetActive(true);
-        var rebinds = PlayerPrefs.GetString("rebinds");
-        if (!string.IsNullOrEmpty(rebinds))
-            actions.LoadBindingOverridesFromJson(rebinds);
-
-        //Get display string from confirm key
-        _keyboardConfigInstructionsConfirmActionKeyText.text = confirmActionKeyboardDisplayString;
-        EventSystem.current.SetSelectedGameObject(_firstKeyboardMenuButton.gameObject);
-    }
-
-    public void LeaveKeyboardConfigMenu() {
-        var rebinds = actions.SaveBindingOverridesAsJson();
-        PlayerPrefs.SetString("rebinds", rebinds);
-
-        UISoundPlayer.obj.PlayBack();
-        EventSystem.current.SetSelectedGameObject(null);
-        _keyboardConfigAutoScroll.ResetScrollRect();
-
-        _keyboardConfigMenu.SetActive(false);
-        _pauseMainMenu.SetActive(true);
-        EventSystem.current.SetSelectedGameObject(_keyboardConfigMenuButton.gameObject);
-    }
-
-    public void ShowControllerConfigMenu() {
-        UISoundPlayer.obj.PlaySelect();
-        
-        // If we were previously adjusting music, re-muffle it when switching to another menu
-        if (_isMusicSliderSelected && _isPaused) {
-            _isMusicSliderSelected = false;
-            AudioStateManager.obj.SetPaused(true);
-        }
-
-        _pauseMainMenu.SetActive(false);
-
-        var rebinds = PlayerPrefs.GetString("rebinds");
-            if (!string.IsNullOrEmpty(rebinds))
-                actions.LoadBindingOverridesFromJson(rebinds);
-
-        Sprite confirmButtonSprite = GamepadIconManager.obj.GetIcon(confirmActionReference.action);
-        _gamepadConfigInstructionsConfirmActionKeyIcon.sprite = confirmButtonSprite;
-
-        Sprite resetButtonSprite = GamepadIconManager.obj.GetIcon(resetButtonActionReference.action);
-        _gamepadConfigInstructionsResetButtonActionKeyIcon.sprite = resetButtonSprite;
-
-        if(Gamepad.current != null) {
-            _controllerConfigMenu.SetActive(true);
-            _controllerConfigMenuShowConfig.SetActive(true);
-            EventSystem.current.SetSelectedGameObject(_firstControllerMenuButton.gameObject);
-        } else {
-            _controllerConfigMenu.SetActive(true);
-            _controllerConfigMenuShowAttachController.SetActive(true);
+    private void OnCancel(InputAction.CallbackContext context) {
+        if(screenStack.Count > 1) {
+            UISoundPlayer.obj.PlayBack();
+            UIScreen screen = screenStack.Peek();
+            if(screen is AudioScreen)
+                GoBackFromAudioMenu();
+            else
+                GoBack();
+        } else if(screenStack.Count == 1) {
+            UISoundPlayer.obj.PlaySelect();
+            ResumeGame();
         }
     }
 
-    public void LeaveControllerConfigMenu() {
-        var rebinds = actions.SaveBindingOverridesAsJson();
-        PlayerPrefs.SetString("rebinds", rebinds);
+    private void DisableEscapeInUIControls() {
+        if (_cancelActionReference == null || _cancelActionReference.action == null)
+            return;
 
-        UISoundPlayer.obj.PlayBack();
-        _controllerConfigMenu.SetActive(false);
-        _controllerConfigMenuShowAttachController.SetActive(false);
-        _controllerConfigMenuShowConfig.SetActive(false);
-        _pauseMainMenu.SetActive(true);
+        var cancelAction = _cancelActionReference.action;
+        var bindings = cancelAction.bindings;
 
-        EventSystem.current.SetSelectedGameObject(null); //Make sure that the event system "catches up", and can select the config menu button on the next line
-        EventSystem.current.SetSelectedGameObject(_controllerConfigMenuButton.gameObject);
-    }
-
-    public void OnNavigateBack() {
-        isNavigatingToMenu = true;
-        
-        // If we were previously adjusting music, reset the flag
-        if (_isMusicSliderSelected) {
-            _isMusicSliderSelected = false;
-        }
-
-        if(_pauseMainMenu.activeSelf) {
-            if(_isPaused) {
-                UISoundPlayer.obj.PlaySelect();
-                ResumeGame();
-            }
-        } else if(_keyboardConfigMenu.activeSelf) {
-            LeaveKeyboardConfigMenu();
-        } else if(_controllerConfigMenu.activeSelf) {
-            LeaveControllerConfigMenu();
-        }
-    }
-
-    public void RetryRoomHandler() {
-        ResumeGame();
-        Reaper.obj.KillAllPlayersGeneric();
-    }
-
-    // Called when a UI element is selected
-    public void OnUIElementSelected(GameObject selectedGameObject) {
-        // Only process if we're paused and the selection has changed
-        if (_isPaused && selectedGameObject != _lastSelectedGameObject) {
-            _lastSelectedGameObject = selectedGameObject;
-            
-            // Check if the music slider is being selected
-            if (selectedGameObject == _musicSlider.gameObject) {
-                _isMusicSliderSelected = true;
-                AudioStateManager.obj.RestoreMusic();
-            }
-            // Check if we're moving away from the music slider
-            else if (_isMusicSliderSelected && selectedGameObject != _musicSlider.gameObject) {
-                _isMusicSliderSelected = false;
-                AudioStateManager.obj.SetPaused(true);
+        for (int i = 0; i < bindings.Count; i++) {
+            if (bindings[i].path == "<Keyboard>/escape") {
+                _escapeKeyBindingIndex = i;
+                cancelAction.ApplyBindingOverride(i, "");
+                break;
             }
         }
     }
 
-    // Called when the music slider is deselected
-    public void OnMusicSliderDeselected() {
-        if (_isMusicSliderSelected && _isPaused) {
-            _isMusicSliderSelected = false;
-            
-            // Re-apply the muffled effect when the slider is no longer being used
-            AudioStateManager.obj.SetPaused(true);
-        }
+    private void EnableEscapeInUIControls() {
+        if (_cancelActionReference == null || _cancelActionReference.action == null || _escapeKeyBindingIndex == -1)
+            return;
+
+        var cancelAction = _cancelActionReference.action;
+        cancelAction.RemoveBindingOverride(_escapeKeyBindingIndex);
+        _escapeKeyBindingIndex = -1;
     }
 }

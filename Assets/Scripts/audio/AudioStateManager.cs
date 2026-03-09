@@ -37,6 +37,7 @@ public class AudioStateManager : MonoBehaviour
         fadeRoutine = StartCoroutine(FadePause(target));
     }
 
+    // Restore volume and low pass filter
     public void RestoreMusic() {
         if (fadeRoutine != null)
             StopCoroutine(fadeRoutine);
@@ -44,14 +45,13 @@ public class AudioStateManager : MonoBehaviour
         fadeRoutine = StartCoroutine(FadePause(0f));
     }
 
-    public void QuitGame()
-    {
+    public void RestoreSfx() {
+        gameplaySfxBus.setPaused(false);
+    }
+
+    public void StopSfxEvents() {
         // Kill gameplay audio completely
         gameplaySfxBus.stopAllEvents(FMOD.Studio.STOP_MODE.IMMEDIATE);
-        gameplaySfxBus.setPaused(false);
-
-        // Unmuffle music
-        RestoreMusic();
     }
 
     private IEnumerator FadePause(float target)

@@ -46,6 +46,20 @@ public class InputDeviceListener : MonoBehaviour
         return _currentDevice;
     }
 
+    public string GetCurrentDeviceLayoutName()
+    {
+        if (_currentDevice == Device.Keyboard)
+        {
+            return "Keyboard";
+        }
+        else if (_currentDevice == Device.Gamepad && Gamepad.current != null)
+        {
+            return Gamepad.current.layout;
+        }
+        
+        return null;
+    }
+
     public int GetAvailableDeviceCount()
     {
         int count = 0;

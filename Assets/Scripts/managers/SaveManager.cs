@@ -13,6 +13,8 @@ public class SaveManager : MonoBehaviour
     public bool RestoreBlobOnNextScene { get; private set; }
     public bool RestoreFollowingCreaturesOnNextScene { get; private set; }
 
+    private int _activeSaveProfile = 0;
+
     void Awake() {
         obj = this;
     }
@@ -20,16 +22,28 @@ public class SaveManager : MonoBehaviour
         obj = null;
     }
 
-    public void SaveGame(string levelId, int slot = 1)
+    public void SetActiveSaveProfile(int saveProfileId) {
+        _activeSaveProfile = saveProfileId;
+    }
+
+    public int GetActiveSaveProfile() {
+        return _activeSaveProfile;
+    }
+
+    public void SaveGame(string levelId)
     {
-        string path = GetSavePath(slot);
+        if(_activeSaveProfile == 0) {
+            Debug.LogWarning("No save profile set...");
+            return;
+        }
+        string path = GetSavePath(_activeSaveProfile);
         SaveData data = BuildSaveData(levelId);
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(path, json);
-        Debug.Log($"Game saved to slot {slot}: {path}");
+        Debug.Log($"Game saved to slot {_activeSaveProfile}: {path}");
     }
 
-    public SaveData LoadGame(int slot = 1)
+    public SaveData LoadGame(int slot)
     {
         string path = GetSavePath(slot);
         if (File.Exists(path))
@@ -96,7 +110,7 @@ public class SaveManager : MonoBehaviour
     }
 
     // Quick check to see if a save file exists and appears valid for loading
-    public bool HasValidSave(int slot = 1)
+    public bool HasValidSave(int slot)
     {
         try
         {
@@ -144,7 +158,7 @@ public class SaveManager : MonoBehaviour
         }
     }
 
-    public void DeleteSave(int slot = 1)
+    public void DeleteSave(int slot)
     {
         string path = GetSavePath(slot);
         if (File.Exists(path))

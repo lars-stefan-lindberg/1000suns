@@ -1,18 +1,29 @@
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 using System.Linq;
 using System.Collections;
-using TMPro;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
-using System.Data.Common;
+using DG.Tweening;
 
 public class MainMenuManager : MonoBehaviour
 {
     public static MainMenuManager obj;
-    public bool isNavigatingToMenu = true;
+    [SerializeField] private CanvasGroup _mainMenuScreen;
+    [SerializeField] private CanvasGroup _mainMenuVisualsScreen;
+    [SerializeField] private GameObject _startGameButton;
+    [SerializeField] private GameObject _optionsButton;
+    [SerializeField] private SelectSaveFileScreen _selectSaveFileScreen;
+    [SerializeField] private OptionsScreen _optionsScreen;
+    [SerializeField] private GameObject _optionsMenuGameOptionsButton;
+    [SerializeField] private GameObject _optionsMenuAudioButton;
+    [SerializeField] private GameObject _optionsMenuControllerButton;
+    [SerializeField] private GameObject _optionsMenuKeyboardButton;
+    [SerializeField] private GameOptionsScreen _gameOptionsScreen;
+    [SerializeField] private AudioScreen _audioScreen;
+    [SerializeField] private ControllerScreen _controllerScreen;
+    [SerializeField] private KeyboardScreen _keyboardScreen;
     [SerializeField] private MusicTrack _titleScreenMusic;
     [SerializeField] private SceneField _persistentGameplay;
     [SerializeField] private SceneField _introScene;
@@ -20,128 +31,142 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private SceneField _firstCaveBackground;
     [SerializeField] private SceneField _firstCaveSurfaces;
     [SerializeField] private GameObject _titleScreenCanvas;
-
-    public bool IsFadingOut { get; private set; }
-
-    [SerializeField] private GameObject _continueButton;
+    [SerializeField] private GameObject _particlesCanvas;
+    [SerializeField] private GameObject _titleTextCanvas;
+    [SerializeField] private GameObject _lightsCanvas;
     [SerializeField] private GameObject _playButton;
-    [SerializeField] private GameObject _singlePlayerButton;
-    [SerializeField] private GameObject _coopButton;
-    [SerializeField] private GameObject _playCoopButton;
-    [SerializeField] private Button _optionsButton;
-    [SerializeField] private Button _exitButton;
-    [SerializeField] private Button _confirmNewGameButton;
-    [SerializeField] private Button _declineNewGameButton;
-    [SerializeField] private Button _keyboardConfigButton;
-    [SerializeField] private Button _controllerConfigButton;
-    private Color _optionsButtonColor;
-    [SerializeField] private Button _backButton;
-    [SerializeField] private Button _controllerConfigMenuBackButton;
-    [SerializeField] private Button _keyboardConfigMenuBackButton;
-    [SerializeField] private GameObject _musicSliderGameObject;
-    [SerializeField] private Slider _musicSlider;
-    [SerializeField] private Slider _soundFXSlider;
-
-    [SerializeField] private GameObject _playerDeviceSetup;
-    [SerializeField] private GameObject _characterSelection;
-    [SerializeField] private GameObject _optionsMenu;
-    [SerializeField] private GameObject _keyboardConfigMenu;
-    [SerializeField] private GameObject _confirmNewGameMenu;
-    [SerializeField] private AutoScrollRect _keyboardConfigAutoScroll;
-    [SerializeField] private Button _firstKeyboardMenuButton;
-    [SerializeField] private GameObject _controllerConfigMenu;
-    [SerializeField] private GameObject _controllerConfigMenuShowConfig;
-    [SerializeField] private GameObject _controllerConfigMenuShowAttachController;
-    [SerializeField] private Button _firstControllerMenuButton;
-    [SerializeField] private GameObject _titleMenu;
-
-    [SerializeField] private TextMeshProUGUI _keyboardConfigInstructionsConfirmActionKeyText;
-    [SerializeField] private Image _gamepadConfigInstructionsConfirmActionKeyIcon;
-    [SerializeField] private Image _gamepadConfigInstructionsResetButtonActionKeyIcon;
-    [SerializeField] private Sprite _gamepadConfirmIcon;
-    public InputActionAsset actions;
-    public InputActionReference confirmActionReference;
-    public InputActionReference cancelActionReference;
-    public InputActionReference resetButtonActionReference;
-    private string confirmActionKeyboardDisplayString;
-
-    [SerializeField] private Image _gamepadGeneralConfirmIcon;
-    [SerializeField] private Image _gamepadGeneralCancelIcon;
-    [SerializeField] private TextMeshProUGUI _keyboardGeneralCancelText;
-    [SerializeField] private TextMeshProUGUI _keyboardGeneralConfirmText;
-
-    [SerializeField] private TextMeshProUGUI _player1DeviceLabel;
-    [SerializeField] private TextMeshProUGUI _player2DeviceLabel;
-    [SerializeField] private GameObject _player2JoinXboxIcon;
-    [SerializeField] private GameObject _player2JoinPSIcon;
-    [SerializeField] private GameObject _player2JoinKeyboardText;
-    [SerializeField] private GameObject _playerDeviceSetupConfirmButton;
-    [SerializeField] private GameObject _characterSelectionWidgetPrefab;
-    [SerializeField] private GameObject _confirmCancelButtonsPanel;
-    private bool _hasPlayer2Joined;
-    private InputDevice _player1InputDevice;
-    private bool _muteSliderSfx = false;
+    [SerializeField] private GameObject _glitchKeyStudios;
+    [SerializeField] private GameObject _fmod;
+    [SerializeField] private InputActionReference _cancelActionReference;
+ 
+    private Sequence _menuTransitionSequence;
+    private bool _isTransitioning = false;
+    private Stack<UIScreen> screenStack = new();
+    private GameObject _mainMenuBackSelectable;
 
     void Awake() {
         obj = this;
     }
 
     void Start() {
+        //TODO set all canvases camera and sorting layer name. Has to be done since the camera is in another scene
         Canvas titleScreenCanvas = _titleScreenCanvas.GetComponent<Canvas>();
-        titleScreenCanvas.worldCamera = Camera.main;
-        titleScreenCanvas.sortingLayerName = "UI";
+        SetCanvasCamera(titleScreenCanvas);
 
-        _optionsButtonColor = _optionsButton.GetComponentInChildren<TextMeshProUGUI>().color;
+        Canvas particlesCanvas = _particlesCanvas.GetComponent<Canvas>();
+        SetCanvasCamera(particlesCanvas);
+
+        Canvas titleTextCanvas = _titleTextCanvas.GetComponent<Canvas>();
+        SetCanvasCamera(titleTextCanvas);
+        
+        Canvas lightsCanvas = _lightsCanvas.GetComponent<Canvas>();
+        SetCanvasCamera(lightsCanvas);
+
+        Canvas optionsScreenCanvas = _optionsScreen.GetComponent<Canvas>();
+        SetCanvasCamera(optionsScreenCanvas);
+
+        Canvas audioScreenCanvas = _audioScreen.GetComponent<Canvas>();
+        SetCanvasCamera(audioScreenCanvas);
+
+        Canvas gameConfigCanvas = _gameOptionsScreen.GetComponent<Canvas>();
+        SetCanvasCamera(gameConfigCanvas);
+
+        Canvas controllerConfigCanvas = _controllerScreen.GetComponent<Canvas>();
+        SetCanvasCamera(controllerConfigCanvas);
+
+        Canvas keyboardConfigCanvas = _keyboardScreen.GetComponent<Canvas>();
+        SetCanvasCamera(keyboardConfigCanvas);
+
+        Canvas selectSaveFileCanvas = _selectSaveFileScreen.GetComponent<Canvas>();
+        SetCanvasCamera(selectSaveFileCanvas);
+
+        SceneFadeManager.obj.SetFadedOutState();
+        //SceneFadeManager.obj.SetFadedInState();
+
+        StartCoroutine(StartSequence());
+
+        //EventSystem.current.SetSelectedGameObject(_playButton);
+        EventSystem.current.SetSelectedGameObject(_playButton);
+
         MusicManager.obj.Play(_titleScreenMusic);
-        var rebinds = PlayerPrefs.GetString("rebinds");
-        if (!string.IsNullOrEmpty(rebinds))
-            actions.LoadBindingOverridesFromJson(rebinds);
-        confirmActionKeyboardDisplayString = confirmActionReference.action.GetBindingDisplayString(InputBinding.MaskByGroup("Keyboard"));
 
-        InputDeviceListener.OnInputDeviceStream += HandleInputDeviceChanged;
-        InputDeviceListener.OnGamepadConnected += HandleGamepadConnected;
-        HandleInputDeviceChanged(InputDeviceListener.obj.GetCurrentInputDevice());
 
-        bool hasValidSave = SaveManager.obj.HasValidSave(); 
-        if (!hasValidSave) {
-            EventSystem.current.SetSelectedGameObject(_playButton);
+        _cancelActionReference.action.performed += OnCancel;
 
-            Button playButton = _playButton.GetComponent<Button>(); 
-            Navigation playButtonNewNav = playButton.navigation;
-            playButtonNewNav.selectOnUp = _exitButton;
-            playButton.navigation = playButtonNewNav;
+        // _optionsButtonColor = _optionsButton.GetComponentInChildren<TextMeshProUGUI>().color;
+        
+        // var rebinds = PlayerPrefs.GetString("rebinds");
+        // if (!string.IsNullOrEmpty(rebinds))
+        //     actions.LoadBindingOverridesFromJson(rebinds);
+        // confirmActionKeyboardDisplayString = confirmActionReference.action.GetBindingDisplayString(InputBinding.MaskByGroup("Keyboard"));
 
-            Navigation exitButtonNewNav = _exitButton.navigation;
-            exitButtonNewNav.selectOnDown = playButton;
-            _exitButton.navigation = exitButtonNewNav;
+        // InputDeviceListener.OnInputDeviceStream += HandleInputDeviceChanged;
+        // InputDeviceListener.OnGamepadConnected += HandleGamepadConnected;
+        // HandleInputDeviceChanged(InputDeviceListener.obj.GetCurrentInputDevice());
 
-            Button continueButton = _continueButton.GetComponent<Button>();
-            continueButton.interactable = false;
-            TextMeshProUGUI continueButtonText = continueButton.GetComponentInChildren<TextMeshProUGUI>();
-            continueButtonText.color = new Color(0.65f, 0.65f, 0.65f, 1f);
-        } else {
-            EventSystem.current.SetSelectedGameObject(_continueButton);
-        }
-        SceneFadeManager.obj.StartFadeIn();
+        // bool hasValidSave = SaveManager.obj.HasValidSave(); 
+        // if (!hasValidSave) {
+        //     EventSystem.current.SetSelectedGameObject(_playButton);
+
+        //     Button playButton = _playButton.GetComponent<Button>(); 
+        //     Navigation playButtonNewNav = playButton.navigation;
+        //     playButtonNewNav.selectOnUp = _exitButton;
+        //     playButton.navigation = playButtonNewNav;
+
+        //     Navigation exitButtonNewNav = _exitButton.navigation;
+        //     exitButtonNewNav.selectOnDown = playButton;
+        //     _exitButton.navigation = exitButtonNewNav;
+
+        //     Button continueButton = _continueButton.GetComponent<Button>();
+        //     continueButton.interactable = false;
+        //     TextMeshProUGUI continueButtonText = continueButton.GetComponentInChildren<TextMeshProUGUI>();
+        //     continueButtonText.color = new Color(0.65f, 0.65f, 0.65f, 1f);
+        // } else {
+        //     EventSystem.current.SetSelectedGameObject(_continueButton);
+        // }
+        // SceneFadeManager.obj.StartFadeIn();
+    }
+
+    private void SetCanvasCamera(Canvas canvas) {
+        canvas.worldCamera = Camera.main;
+        canvas.sortingLayerName = "UI";
+    }
+
+    private IEnumerator StartSequence() {
+        SceneFadeManager.obj.StartFadeIn(1f);
+        while(SceneFadeManager.obj.IsFadingIn)
+            yield return null;
+        // _glitchKeyStudios.SetActive(true);
+        // SceneFadeManager.obj.StartFadeIn(0.5f);
+        // yield return new WaitForSeconds(3f);
+        // SceneFadeManager.obj.StartFadeOut(1f);
+        // while(SceneFadeManager.obj.IsFadingOut)
+        //     yield return null;
+        // _glitchKeyStudios.SetActive(false);
+
+        // _fmod.SetActive(true);
+        // SceneFadeManager.obj.StartFadeIn(1f);
+        // yield return new WaitForSeconds(3f);
+        // SceneFadeManager.obj.StartFadeOut(1f);
+        // while(SceneFadeManager.obj.IsFadingOut)
+        //     yield return null;
+        // _fmod.SetActive(false);
+
+        //_title.SetActive(true);
+        //SceneFadeManager.obj.StartFadeIn(1f);
+        // MusicManager.obj.Play(_titleScreenMusic);
+
+        yield return null;
     }
 
     void OnDestroy() {
-        InputDeviceListener.OnInputDeviceStream -= HandleInputDeviceChanged;
-        InputDeviceListener.OnGamepadConnected -= HandleGamepadConnected;
+        _cancelActionReference.action.performed -= OnCancel;
+        _menuTransitionSequence = null;
         obj = null;
     }
 
-    public void OnPlayButtonClicked() {
-        bool hasValidSave = SaveManager.obj.HasValidSave(); 
-        if (!hasValidSave) {
-            StartGame();
-        } else {
-            isNavigatingToMenu = true;
-            UISoundPlayer.obj.PlaySelect();
-
-            ShowConfirmNewGameMenu();
-            EventSystem.current.SetSelectedGameObject(_confirmNewGameButton.gameObject);
-        }
+    public void OnNewGameButtonClicked() {
+        StartGame();
 
         //Co-op specific code:
         // _playButton.SetActive(false);
@@ -156,24 +181,26 @@ public class MainMenuManager : MonoBehaviour
     }
 
     public void StartGame() {
-        _playButton.GetComponent<Button>().interactable = false;
+        //_playButton.GetComponent<Button>().interactable = false;
         StartCoroutine(StartGameCoroutine());
     }
 
-    [ContextMenu("Continue Game")]
     public void ContinueGame() {
-        _continueButton.GetComponent<Button>().interactable = false;
         StartCoroutine(ContinueGameCoroutine());
     }
 
     private IEnumerator StartGameCoroutine() {
         UISoundPlayer.obj.PlayPlayGame();
 
+        _selectSaveFileScreen.Hide();
+
         MusicManager.obj.Stop();
 
         SceneFadeManager.obj.StartFadeOut(1f);
         while(SceneFadeManager.obj.IsFadingOut)
             yield return null;
+
+        yield return new WaitForSeconds(1f);
 
         AsyncOperation loadPersistentGameplayOperation = SceneManager.LoadSceneAsync(_persistentGameplay, LoadSceneMode.Additive);
         while(!loadPersistentGameplayOperation.isDone) {
@@ -243,7 +270,8 @@ public class MainMenuManager : MonoBehaviour
         PlayerManager.obj.IsSeparated = false;
         PlayerManager.obj.IsCoopActive = false;
 
-        SaveData saveData = SaveManager.obj.LoadGame();
+        int activeSaveSlot = SaveManager.obj.GetActiveSaveProfile();
+        SaveData saveData = SaveManager.obj.LoadGame(activeSaveSlot);
         if(saveData == null) {
             Debug.LogWarning("No save data found. Starting new game.");
             StartCoroutine(StartGameCoroutine());
@@ -269,390 +297,195 @@ public class MainMenuManager : MonoBehaviour
         SceneManager.UnloadSceneAsync(_titleScreen.SceneName);
     }
 
+    public void OnStartGameButtonClicked() {
+        UISoundPlayer.obj.PlaySelect();
+        ShowMainMenuSubMenu(_selectSaveFileScreen, _startGameButton);
+    }
+
     public void OnOptionsButtonClicked() {
-        isNavigatingToMenu = true;
         UISoundPlayer.obj.PlaySelect();
-        
-        ShowOptionsMenu();
-        EventSystem.current.SetSelectedGameObject(_musicSliderGameObject);
+        ShowMainMenuSubMenu(_optionsScreen, _optionsButton);
     }
 
-    public void OnCoopButtonClicked() {
-        isNavigatingToMenu = true;
-        UISoundPlayer.obj.PlaySelect();
-        
-        ShowPlayerDeviceSetupMenu();
-        EventSystem.current.SetSelectedGameObject(null);
-    }
-
-    public void OnPlayerDeviceSetupConfirmButtonClicked() {
-        isNavigatingToMenu = true;
-        UISoundPlayer.obj.PlaySelect();
-
-        ShowCharacterSelectionMenu();
-        EventSystem.current.SetSelectedGameObject(null);
-    }
-
-    public void OnConfirmNewGameButtonClicked() {
-        _confirmNewGameButton.interactable = false;
-        SaveManager.obj.DeleteSave();
-        StartCoroutine(StartGameCoroutine());
-    }
-
-    private List<CharacterSelectionWidget> _characterSelectionWidgets = new List<CharacterSelectionWidget>();
-    public void ShowCharacterSelectionMenu() {
-        _playerDeviceSetup.SetActive(false);
-        UpdateCancelConfirmUI(InputDeviceListener.Device.None);
-        _characterSelection.SetActive(true);
-        LobbyManager.obj.IsJoiningPlayers = false;
-        LobbyManager.obj.IsSelectingCharacters = true;
-
-        //Instantiate character selection widget
-        PlayerSlot playerSlot = LobbyManager.obj.GetPlayerSlots()[0];
-        PlayerInput player1Input = PlayerInput.Instantiate(
-            _characterSelectionWidgetPrefab,
-            controlScheme: null,
-            pairWithDevice: playerSlot.device
-        );
-        _characterSelectionWidgets.Add(player1Input.gameObject.GetComponent<CharacterSelectionWidget>());
-        player1Input.transform.SetParent(_characterSelection.transform, worldPositionStays: false);
-
-        CharacterSelectionWidget _widget1 = player1Input.gameObject.GetComponent<CharacterSelectionWidget>();
-        _widget1.playerIndex = playerSlot.slotIndex;
-        _widget1.SetPlayerSlot(playerSlot);
-        RectTransform rectTransform1 = _widget1.GetRectTransform();
-        rectTransform1.anchoredPosition = new Vector2(rectTransform1.anchoredPosition.x, 165);
-
-        //Instantiate character selection widget
-        PlayerSlot playerSlot2 = LobbyManager.obj.GetPlayerSlots()[1];
-        PlayerInput player2Input = PlayerInput.Instantiate(
-            _characterSelectionWidgetPrefab,
-            controlScheme: null,
-            pairWithDevice: playerSlot2.device
-        );
-        _characterSelectionWidgets.Add(player2Input.gameObject.GetComponent<CharacterSelectionWidget>());
-        player2Input.transform.SetParent(_characterSelection.transform, worldPositionStays: false);
-
-        CharacterSelectionWidget _widget2 = player2Input.gameObject.GetComponent<CharacterSelectionWidget>();
-        _widget2.playerIndex = playerSlot2.slotIndex;
-        _widget2.SetPlayerSlot(playerSlot2);
-        RectTransform rectTransform2 = _widget2.GetRectTransform();
-        rectTransform2.anchoredPosition = new Vector2(rectTransform2.anchoredPosition.x, -139);
-    }
-
-    public void ShowConfirmNewGameMenu() {
-        _titleMenu.SetActive(false);
-        _confirmNewGameMenu.SetActive(true);
-    }
-
-    public void LeaveConfirmNewGameMenu() {
-        _confirmNewGameMenu.SetActive(false);
-        UISoundPlayer.obj.PlayBack();
-        EventSystem.current.SetSelectedGameObject(null);
-
-        _titleMenu.SetActive(true);
-        EventSystem.current.SetSelectedGameObject(_playButton);
-    }
-
-    public void ShowOptionsMenu() {
-        _muteSliderSfx = true; //For some reason the slider sfx is played first time the options menu is shown
-        _musicSlider.value = AudioOptions.obj.MusicStep;
-        _soundFXSlider.value = AudioOptions.obj.SfxStep;
-        _muteSliderSfx = false;
-
-        _titleMenu.SetActive(false);
-        _keyboardConfigMenu.SetActive(false);
-        HideControllerConfigMenu();
-        _optionsMenu.SetActive(true);
-    }
-
-    public void ShowPlayerDeviceSetupMenu() {
-        _titleMenu.SetActive(false);
-
-        _playerDeviceSetup.SetActive(true);
-        _hasPlayer2Joined = false;
-        LobbyManager.obj.IsJoiningPlayers = true;
-        LobbyManager.obj.ClearPlayerSlots();
-        _playerDeviceSetupConfirmButton.GetComponent<Button>().interactable = false;
-        _playerDeviceSetupConfirmButton.GetComponentInChildren<TextMeshProUGUI>().color = Color.gray;
-
-        if (InputDeviceListener.obj.GetCurrentInputDevice() == InputDeviceListener.Device.Gamepad)
-        {
-            _player1InputDevice = Gamepad.current;
-            _player1DeviceLabel.text = "Gamepad";
-            LobbyManager.obj.AddPlayerSlot(new PlayerSlot { slotIndex = 0, device = Gamepad.current });
-        }
-        else
-        {
-            _player1InputDevice = Keyboard.current;
-            _player1DeviceLabel.text = "Keyboard";
-            LobbyManager.obj.AddPlayerSlot(new PlayerSlot { slotIndex = 0, device = Keyboard.current });
-        }
-        UpdatePlayerDeviceSetupPlayer2UI();
-    }
-
-    private void UpdatePlayerDeviceSetupPlayer2UI()
-    {
-        int numberOfAvailableDevices = InputDeviceListener.obj.GetAvailableDeviceCount();
-        if(numberOfAvailableDevices == 1) {
-            _player2DeviceLabel.text = "Connect device";
-            _player2JoinXboxIcon.SetActive(false);
-            _player2JoinPSIcon.SetActive(false);
-            _player2JoinKeyboardText.SetActive(false);
-        } else {
-            _player2DeviceLabel.text = "Join";
-            _player2JoinXboxIcon.SetActive(false);
-            _player2JoinPSIcon.SetActive(false);
-            _player2JoinKeyboardText.SetActive(false);
-            var avialableDevices = InputDeviceListener.obj.GetAvailableNonActiveDevices();
-
-            foreach (var info in avialableDevices)
-            {
-                switch (info.DeviceType)
-                {
-                    case InputDeviceListener.JoinDeviceType.Keyboard:
-                        _player2JoinKeyboardText.SetActive(true);
-                        break;
-                    case InputDeviceListener.JoinDeviceType.XboxGamepad:
-                        _player2JoinXboxIcon.SetActive(true);
-                        break;
-                    case InputDeviceListener.JoinDeviceType.PlayStationGamepad:
-                        _player2JoinPSIcon.SetActive(true);
-                        break;
-                    case InputDeviceListener.JoinDeviceType.OtherGamepad:
-                        _player2JoinXboxIcon.SetActive(true);
-                        break;
-                }
-            }
-        }
-    }
-
-    private void HandleGamepadConnected() {
-        if(_playerDeviceSetup.activeSelf) {
-            UpdatePlayerDeviceSetupPlayer2UI();
-        }
-    }
-
-    public void ShowKeyboardConfigMenu() {
-        UISoundPlayer.obj.PlaySelect();
-
-        _optionsMenu.SetActive(false);
-
-        _keyboardConfigMenu.SetActive(true);
-        var rebinds = PlayerPrefs.GetString("rebinds");
-        if (!string.IsNullOrEmpty(rebinds))
-            actions.LoadBindingOverridesFromJson(rebinds);
-
-        //Get display string from confirm key
-        _keyboardConfigInstructionsConfirmActionKeyText.text = confirmActionKeyboardDisplayString;
-        EventSystem.current.SetSelectedGameObject(_firstKeyboardMenuButton.gameObject);
-    }
-
-    public void LeaveKeyboardConfigMenu() {
-        var rebinds = actions.SaveBindingOverridesAsJson();
-        PlayerPrefs.SetString("rebinds", rebinds);
-
-        UISoundPlayer.obj.PlayBack();
-        EventSystem.current.SetSelectedGameObject(null);
-        _keyboardConfigAutoScroll.ResetScrollRect();
-
-        ShowOptionsMenu();
-        EventSystem.current.SetSelectedGameObject(_keyboardConfigButton.gameObject);
-    }
-
-    public void KeyboardConfirmRebindEventHandler() {
-        string confirmText = confirmActionReference.action.GetBindingDisplayString(InputBinding.MaskByGroup("Keyboard"));
-        _keyboardConfigInstructionsConfirmActionKeyText.text = confirmText;
-        _keyboardGeneralConfirmText.text = confirmText;
-    }
-
-    public void KeyboardCancelRebindEventHandler() {
-        _keyboardGeneralCancelText.text = cancelActionReference.action.GetBindingDisplayString(InputBinding.MaskByGroup("Keyboard"));;
-    }
-
-    public void GamepadConfirmRebindEventHandler() {
-        Sprite sprite = GamepadIconManager.obj.GetIcon(confirmActionReference.action);
-        _gamepadConfigInstructionsConfirmActionKeyIcon.sprite = sprite;    
-        _gamepadGeneralConfirmIcon.sprite = sprite;    
-    }
-
-    public void GamepadCancelRebindEventHandler() {
-        Sprite sprite = GamepadIconManager.obj.GetIcon(cancelActionReference.action);
-        _gamepadGeneralCancelIcon.sprite = sprite;    
-    }
-
-    public void ShowControllerConfigMenu() {
-        UISoundPlayer.obj.PlaySelect();
-
-        EventSystem.current.SetSelectedGameObject(null); //Make sure we unselect the controller config menu option. If we show attach controller screen, no other UI element will be selected, and going back won't select the controller config menu option
-        _optionsMenu.SetActive(false);
-        var rebinds = PlayerPrefs.GetString("rebinds");
-            if (!string.IsNullOrEmpty(rebinds))
-                actions.LoadBindingOverridesFromJson(rebinds);
-
-        Sprite confirmButtonSprite = GamepadIconManager.obj.GetIcon(confirmActionReference.action);
-        _gamepadConfigInstructionsConfirmActionKeyIcon.sprite = confirmButtonSprite;
-
-        Sprite resetButtonSprite = GamepadIconManager.obj.GetIcon(resetButtonActionReference.action);
-        _gamepadConfigInstructionsResetButtonActionKeyIcon.sprite = resetButtonSprite;
-
-        if(Gamepad.current != null) {
-            _controllerConfigMenu.SetActive(true);
-            _controllerConfigMenuShowConfig.SetActive(true);
-            EventSystem.current.SetSelectedGameObject(_firstControllerMenuButton.gameObject);
-        } else {
-            _controllerConfigMenu.SetActive(true);
-            _controllerConfigMenuShowAttachController.SetActive(true);
-        }
-    }
-
-    private void HideControllerConfigMenu() {
-        _controllerConfigMenu.SetActive(false);
-        _controllerConfigMenuShowAttachController.SetActive(false);
-        _controllerConfigMenuShowConfig.SetActive(false);
-    }
-
-    public void LeaveControllerConfigMenu() {
-        var rebinds = actions.SaveBindingOverridesAsJson();
-        PlayerPrefs.SetString("rebinds", rebinds);
-
-        UISoundPlayer.obj.PlayBack();
-        ShowOptionsMenu();
-
-        EventSystem.current.SetSelectedGameObject(_controllerConfigButton.gameObject);
-    }
-
-    public void ShowTitleMenu() {
-        UISoundPlayer.obj.PlayBack();
-
-        _optionsMenu.SetActive(false);
-        _titleMenu.SetActive(true);
-        EventSystem.current.SetSelectedGameObject(_optionsButton.gameObject);
-    }
-
-    public void ChangeMusicVolume(float volume) {
-        if(!_muteSliderSfx)
-            UISoundPlayer.obj.PlaySliderTick();
-        AudioOptions.obj.SetMusicStep(volume);
-    }
-
-    public void ChangeSoundFxVolume(float volume) {
-        if(!_muteSliderSfx)
-            UISoundPlayer.obj.PlaySliderTick();
-        AudioOptions.obj.SetSfxStep(volume);
-    }
-
-    public void OnNavigateBack() {
-        isNavigatingToMenu = true;
-
-        if(_optionsMenu.activeSelf) {
-            ShowTitleMenu();
-        } else if(_keyboardConfigMenu.activeSelf) {
-            LeaveKeyboardConfigMenu();
-        } else if(_controllerConfigMenu.activeSelf) {
-            LeaveControllerConfigMenu();
-        } else if(_confirmNewGameMenu.activeSelf) {
-            LeaveConfirmNewGameMenu();
-        } 
-        //Co-op specific:
-        // else if(_titleMenu.activeSelf && _singlePlayerButton.activeSelf) {
-        //     LeaveToMainMenu();
-        // } else if(_playerDeviceSetup.activeSelf) {
-        //     LeaveToPlayModeMenu();
-        // } else if(_characterSelection.activeSelf) {
-        //     LeaveToPlayerDeviceSetup();
-        // }
-    }
-
-    private void LeaveToPlayerDeviceSetup() {
-        LobbyManager.obj.IsSelectingCharacters = false;
-        _characterSelection.SetActive(false);
-        _characterSelectionWidgets.ForEach((widget) => {
-            Destroy(widget.gameObject);
-        });
-        _characterSelectionWidgets.Clear();
-        LobbyManager.obj.IsJoiningPlayers = true;
-        _playerDeviceSetup.SetActive(true);
-        UpdateCancelConfirmUI(InputDeviceListener.obj.GetCurrentInputDevice());
-        EventSystem.current.SetSelectedGameObject(_playerDeviceSetupConfirmButton);
-    }
-
-    public void LeaveToMainMenu() {
-        UISoundPlayer.obj.PlayBack();
-        _singlePlayerButton.SetActive(false);
-        _coopButton.SetActive(false);
-        _playButton.SetActive(true);
-        _optionsButton.gameObject.SetActive(true);
-        _exitButton.gameObject.SetActive(true);
-        EventSystem.current.SetSelectedGameObject(_playButton);
-    }
-
-    public void LeaveToPlayModeMenu() {
-        LobbyManager.obj.ClearPlayerSlots();
-        LobbyManager.obj.IsJoiningPlayers = false;
-        UISoundPlayer.obj.PlayBack();
-        _playerDeviceSetup.SetActive(false);
-        _titleMenu.SetActive(true);
-        _singlePlayerButton.SetActive(true);
-        _coopButton.SetActive(true);
-        _playButton.SetActive(false);
-        _optionsButton.gameObject.SetActive(false);
-        _exitButton.gameObject.SetActive(false);
-        EventSystem.current.SetSelectedGameObject(_coopButton);
-    }
-
-    private void SetupPlayer2InputDevice(InputDeviceListener.AvailableInputDeviceInfo deviceInfo)
-    {
-        UISoundPlayer.obj.PlaySelect();
-        LobbyManager.obj.AddPlayerSlot(new PlayerSlot { slotIndex = 1, device = deviceInfo.Device });
-        //If device is keyboard show text "Keyboard", else show "Gamepad"
-        _player2DeviceLabel.text = deviceInfo.Device is Keyboard ? "Keyboard" : "Gamepad";
-        _player2JoinXboxIcon.SetActive(false);
-        _player2JoinPSIcon.SetActive(false);
-        _player2JoinKeyboardText.SetActive(false);
-        _playerDeviceSetupConfirmButton.GetComponent<Button>().interactable = true;
-        _playerDeviceSetupConfirmButton.GetComponentInChildren<TextMeshProUGUI>().color = _optionsButtonColor;
-        EventSystem.current.SetSelectedGameObject(_playerDeviceSetupConfirmButton);
-    }
-
-    public void HandleInputDeviceChanged(InputDeviceListener.Device device) {
-        UpdateCancelConfirmUI(device);
-    }
-
-    public void UpdateCancelConfirmUI(InputDeviceListener.Device device) {
-        if(_characterSelection.activeSelf) {
+    //Special case since main menu has two canvas groups to hide/show
+    public void ShowMainMenuSubMenu(UIScreen newScreen, GameObject triggerButton = null) {
+        if(_isTransitioning) {
             return;
         }
-        if(device == InputDeviceListener.Device.Gamepad) {
-            _confirmCancelButtonsPanel.SetActive(true);
-            _gamepadGeneralConfirmIcon.gameObject.SetActive(true);
-            _gamepadGeneralCancelIcon.gameObject.SetActive(true);
-            _keyboardGeneralCancelText.gameObject.SetActive(false);
-            _keyboardGeneralConfirmText.gameObject.SetActive(false);
-            Sprite confirmButtonSprite = GamepadIconManager.obj.GetIcon(confirmActionReference.action);
-            _gamepadGeneralConfirmIcon.sprite = confirmButtonSprite;
-            Sprite cancelButtonSprite = GamepadIconManager.obj.GetIcon(cancelActionReference.action);
-            _gamepadGeneralCancelIcon.sprite = cancelButtonSprite;
-        } else if(device == InputDeviceListener.Device.None) {
-            _confirmCancelButtonsPanel.SetActive(false);
+        _isTransitioning = true;
+
+        _menuTransitionSequence?.Kill();
+        _menuTransitionSequence = DOTween.Sequence();
+
+        if(triggerButton != null)
+            _mainMenuBackSelectable = triggerButton;
+
+        // Disable interaction on main menu
+        _mainMenuScreen.interactable = false;
+        _mainMenuScreen.blocksRaycasts = false;
+
+        _mainMenuVisualsScreen.interactable = false;
+        _mainMenuVisualsScreen.blocksRaycasts = false;
+
+        // Fade out both in parallel
+        _menuTransitionSequence.Append(_mainMenuScreen.DOFade(0f, UIScreen.FADE_DURATION));
+        _menuTransitionSequence.Join(_mainMenuVisualsScreen.DOFade(0f, UIScreen.FADE_DURATION));
+
+        // Deactivate after fade
+        _menuTransitionSequence.AppendCallback(() =>
+        {
+            _mainMenuScreen.gameObject.SetActive(false);
+            _mainMenuVisualsScreen.gameObject.SetActive(false);
+        });
+
+        // 🔥 Wait for Options Show tween
+        _menuTransitionSequence.Append(newScreen.Show());
+        _menuTransitionSequence.OnComplete(() => {
+            screenStack.Push(newScreen);
+
+            _isTransitioning = false;
+        });
+        
+    }
+
+    //Used to switch between sub menus. Main screen is an exception since it has two canvases, visuals and menu.
+    //These two screens has to be separated since the particles screen is layered in between them.
+    public void OpenScreen(UIScreen newScreen, GameObject triggerButton = null)
+    {
+        if (_isTransitioning)
+            return;
+
+        _isTransitioning = true;
+
+        UIScreen current = screenStack.Count > 0 ? screenStack.Peek() : null;
+
+        _menuTransitionSequence?.Kill();
+        _menuTransitionSequence = DOTween.Sequence();
+
+        if(triggerButton != null)
+            current.SetBackSelectable(triggerButton);
+        // Hide current
+        if (current != null)
+            _menuTransitionSequence.Append(current.Hide());
+
+        // Show next
+        _menuTransitionSequence.Append(newScreen.Show());
+
+        _menuTransitionSequence.OnComplete(() =>
+        {
+            screenStack.Push(newScreen);
+            _isTransitioning = false;
+        });
+    }
+
+    public void GoBack()
+    {
+        if (_isTransitioning || screenStack.Count == 0)
+            return;
+
+        //Special case with title menu
+        if(screenStack.Count == 1) {
+            ShowTitleMenu();
+            return;
+        }
+
+        _isTransitioning = true;
+
+        UIScreen current = screenStack.Pop();
+        UIScreen previous = screenStack.Peek();
+
+        _menuTransitionSequence?.Kill();
+        _menuTransitionSequence = DOTween.Sequence();
+
+        _menuTransitionSequence.Append(current.Hide());
+
+        if(screenStack.Count == 0) {
+            ShowTitleMenu();
         } else {
-            _confirmCancelButtonsPanel.SetActive(true);
-            _gamepadGeneralConfirmIcon.gameObject.SetActive(false);
-            _gamepadGeneralCancelIcon.gameObject.SetActive(false);
-            _keyboardGeneralCancelText.gameObject.SetActive(true);
-            _keyboardGeneralConfirmText.gameObject.SetActive(true);
-            _keyboardGeneralConfirmText.text = confirmActionKeyboardDisplayString;
-            _keyboardGeneralCancelText.text = cancelActionReference.action.GetBindingDisplayString(InputBinding.MaskByGroup("Keyboard"));
+            _menuTransitionSequence.Append(previous.Show());
+
+            _menuTransitionSequence.OnComplete(() =>
+            {
+                _isTransitioning = false;
+            });
         }
     }
 
-    public Color GetMainButtonTextColor() {
-        return _optionsButtonColor;
+    private void ShowTitleMenu() {
+        if(_isTransitioning) {
+            return;
+        }
+        _isTransitioning = true;
+
+        UIScreen current = screenStack.Pop();
+
+        _menuTransitionSequence?.Kill();
+        _menuTransitionSequence = DOTween.Sequence();
+
+        _menuTransitionSequence.Append(current.Hide());
+
+        _menuTransitionSequence.AppendCallback(() =>
+        {
+            _mainMenuScreen.gameObject.SetActive(true);
+            _mainMenuVisualsScreen.gameObject.SetActive(true);
+            if(_mainMenuBackSelectable != null)
+                EventSystem.current.SetSelectedGameObject(_mainMenuBackSelectable);
+
+            _mainMenuScreen.alpha = 0f;
+            _mainMenuVisualsScreen.alpha = 0f;
+
+            _mainMenuScreen.interactable = false;
+            _mainMenuScreen.blocksRaycasts = false;
+
+            _mainMenuVisualsScreen.interactable = false;
+            _mainMenuVisualsScreen.blocksRaycasts = false;
+        });
+
+        _menuTransitionSequence.Append(_mainMenuScreen.DOFade(1f, UIScreen.FADE_DURATION));
+        _menuTransitionSequence.Join(_mainMenuVisualsScreen.DOFade(1f, UIScreen.FADE_DURATION));
+
+        _menuTransitionSequence.OnComplete(() =>
+        {
+            _mainMenuScreen.interactable = true;
+            _mainMenuScreen.blocksRaycasts = true;
+
+            _mainMenuVisualsScreen.interactable = true;
+            _mainMenuVisualsScreen.blocksRaycasts = true;
+
+            _isTransitioning = false;
+        });
+    }
+
+    public void OnGameOptionsButtonClicked() {
+        UISoundPlayer.obj.PlaySelect();
+        OpenScreen(_gameOptionsScreen, _optionsMenuGameOptionsButton);
+    }
+
+    public void OnAudioMenuButtonClicked() {
+        UISoundPlayer.obj.PlaySelect();
+        OpenScreen(_audioScreen, _optionsMenuAudioButton);
+    }
+
+    public void OnKeyboardMenuButtonClicked() {
+        UISoundPlayer.obj.PlaySelect();
+        OpenScreen(_keyboardScreen, _optionsMenuKeyboardButton);
+    }
+
+    public void OnControllerMenuButtonClicked() {
+        UISoundPlayer.obj.PlaySelect();
+        OpenScreen(_controllerScreen, _optionsMenuControllerButton);
     }
 
     public void ExitGame()
     {
+        UISoundPlayer.obj.PlaySelect();
         Debug.Log("Exiting game...");
         Application.Quit();
-    }    
+    }
+
+    private void OnCancel(InputAction.CallbackContext context) {
+        if(screenStack.Count >= 1)
+            UISoundPlayer.obj.PlayBack();
+        GoBack();
+    }
 }

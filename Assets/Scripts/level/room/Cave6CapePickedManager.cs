@@ -10,7 +10,7 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
     [SerializeField] private GameEventId _capePicked;
     [SerializeField] private GameObject _cape;
     [SerializeField] private List<GameObject> _blobs;
-    [SerializeField] private GameObject _tutorialCanvas;
+    [SerializeField] private PowerUpScreen _powerUpScreen;
     [SerializeField] private Transform _finalPlayerPosition;
     [SerializeField] private GameObject _blobsContainer;
     [SerializeField] private GameObject _pickCapeTrigger;
@@ -121,13 +121,11 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
         PauseMenuManager.obj.UnregisterSkippable();
         GameManager.obj.IsPauseAllowed = false;
         Time.timeScale = 0;
-        _tutorialCanvas.SetActive(true);
-        TutorialDialogManager.obj.StartFadeIn();
+        _powerUpScreen.Show();
         SoundFXManager.obj.Play2D(_powerupFanfareStinger);
-        while(!TutorialDialogManager.obj.tutorialCompleted) {
+        while(!_powerUpScreen.PowerUpScreenCompleted) {
             yield return null;
         }
-        _tutorialCanvas.SetActive(false);
         Time.timeScale = 1;
         GameManager.obj.IsPauseAllowed = true;
 

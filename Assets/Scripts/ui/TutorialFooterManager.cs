@@ -111,12 +111,12 @@ public class TutorialFooterManager : MonoBehaviour
             if(InputDeviceListener.obj.GetCurrentInputDevice() == InputDeviceListener.Device.Gamepad) {
                 _gamepadInstructions.SetActive(true);
                 if(_gamepadJumpIcon != null) {
-                    _gamepadJumpIcon.gameObject.SetActive(true);
-                    _gamepadJumpIcon.sprite = GamepadIconManager.obj.GetIcon(_jumpActionReference.action);
+                    // _gamepadJumpIcon.gameObject.SetActive(true);
+                    // _gamepadJumpIcon.sprite = GamepadIconManager.obj.GetIcon(_jumpActionReference.action);
                 }
                 if(_gamepadUsePowerIcon != null) {
-                    _gamepadUsePowerIcon.gameObject.SetActive(true);
-                    _gamepadUsePowerIcon.sprite = GamepadIconManager.obj.GetIcon(_usePowerActionReference.action);
+                    // _gamepadUsePowerIcon.gameObject.SetActive(true);
+                    // _gamepadUsePowerIcon.sprite = GamepadIconManager.obj.GetIcon(_usePowerActionReference.action);
                 }
             } else {
                 _keyboardInstructions.SetActive(true);

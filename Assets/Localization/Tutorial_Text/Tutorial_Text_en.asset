@@ -17,24 +17,32 @@ MonoBehaviour:
   m_SharedData: {fileID: 11400000, guid: 96b6c4d3d6b2c42d6a520530dd800bae, type: 2}
   m_Metadata:
     m_Items:
-    - rid: 3119281878091694084
+    - rid: 1605334471027195906
   m_TableData:
   - m_Id: 687346335866880
-    m_Localized: CAPE OF THE SHADOW-WALKER
+    m_Localized: Cape of the shadow-walker
     m_Metadata:
       m_Items: []
   - m_Id: 687596643540992
-    m_Localized: HOLD {0} TO CHARGE, RELEASE TO UNLEASH AN <color=#A076FF>UMBRAL
-      PULSE</color>
+    m_Localized: An ancient artifact that gives it's bearer telekinetic powers.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8286608645152768
+    m_Localized: Hold {0} to charge, then release
     m_Metadata:
       m_Items:
-      - rid: 3119281878091694084
+      - rid: 1605334471027195906
+  - m_Id: 8286945405820928
+    m_Localized: to unleash a <color=#B18FFF>SHADOW PULSE</color> that will push
+      objects and enemies away. Hold longer for more power.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:
-    - rid: 3119281878091694084
+    - rid: 1605334471027195906
       type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
       data:
         m_Entries: 
         m_SharedEntries:
-        - id: 687596643540992
+        - id: 8286608645152768

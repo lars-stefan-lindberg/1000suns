@@ -68,8 +68,8 @@ public class CreditsScreen : MonoBehaviour
         if(device == InputDeviceListener.Device.Gamepad) {
             _scrollGamepadIcon.gameObject.SetActive(true);
             _scrollKeyboardText.gameObject.SetActive(false);
-            Sprite scrollButtonSprite = GamepadIconManager.obj.GetIcon(scrollButtonActionReference.action);
-            _scrollGamepadIcon.sprite = scrollButtonSprite;
+            // Sprite scrollButtonSprite = GamepadIconManager.obj.GetIcon(scrollButtonActionReference.action);
+            // _scrollGamepadIcon.sprite = scrollButtonSprite;
         } else {
             _scrollGamepadIcon.gameObject.SetActive(false);
             _scrollKeyboardText.gameObject.SetActive(true);
