@@ -9,7 +9,8 @@ using System.Linq;
 public class RoomMgr : MonoBehaviour
 {
     [SerializeField] private List<GameObject> roomObjectsToLoad;
-    [SerializeField] private Color _darknessColor;
+    [SerializeField] private DarknessLevel _darknessLevelService;
+    [SerializeField] private DarknessLevelType _darknessLevelType;
     public UnityEvent OnRoomEnter;
     public UnityEvent OnRoomExit;
     private float _darknessFadeSpeed = 9f;
@@ -17,6 +18,12 @@ public class RoomMgr : MonoBehaviour
     private Coroutine _unloadRoomObjectsCoroutine;
     private float _roomTransitionDelay = 1.1f;  //Need to give time for room transition, but also retry room
     private float _darknessIncreaseDelay = 0.3f;
+    private Color _darknessColor;
+
+    void Start()
+    {
+        _darknessColor = _darknessLevelService.GetColorForLevel(_darknessLevelType);
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
