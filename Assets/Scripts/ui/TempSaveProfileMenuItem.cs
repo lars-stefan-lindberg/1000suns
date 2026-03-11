@@ -3,6 +3,7 @@ using UnityEngine.EventSystems;
 using DG.Tweening;
 using TMPro;
 using UnityEngine.Localization;
+using UnityEngine.UI;
 
 public class TempSaveProfileMenuItem : MonoBehaviour, IMoveHandler, ISelectHandler, IDeselectHandler, ISubmitHandler
 {
@@ -65,6 +66,7 @@ public class TempSaveProfileMenuItem : MonoBehaviour, IMoveHandler, ISelectHandl
 
     public void OnSubmit(BaseEventData eventData)
     {
+        GetComponent<Button>().interactable = false;
         _selectSaveFileScreen.OnSaveProfileSelected(_id);
     }
 

@@ -192,15 +192,15 @@ public class MainMenuManager : MonoBehaviour
     private IEnumerator StartGameCoroutine() {
         UISoundPlayer.obj.PlayPlayGame();
 
-        _selectSaveFileScreen.Hide();
 
         MusicManager.obj.Stop();
 
-        SceneFadeManager.obj.StartFadeOut(1f);
+        SceneFadeManager.obj.StartFadeOut(0.5f);
         while(SceneFadeManager.obj.IsFadingOut)
             yield return null;
 
         yield return new WaitForSeconds(1f);
+        _selectSaveFileScreen.Hide();
 
         AsyncOperation loadPersistentGameplayOperation = SceneManager.LoadSceneAsync(_persistentGameplay, LoadSceneMode.Additive);
         while(!loadPersistentGameplayOperation.isDone) {
@@ -255,9 +255,12 @@ public class MainMenuManager : MonoBehaviour
 
         MusicManager.obj.Stop();
 
-        SceneFadeManager.obj.StartFadeOut(1f);
+        SceneFadeManager.obj.StartFadeOut(0.5f);
         while(SceneFadeManager.obj.IsFadingOut)
             yield return null;
+
+        yield return new WaitForSeconds(1f);
+        _selectSaveFileScreen.Hide();
         
         AsyncOperation loadPersistentGameplayOperation = SceneManager.LoadSceneAsync(_persistentGameplay, LoadSceneMode.Additive);
         while(!loadPersistentGameplayOperation.isDone) {
