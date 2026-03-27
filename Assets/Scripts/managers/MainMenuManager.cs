@@ -28,8 +28,8 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private SceneField _persistentGameplay;
     [SerializeField] private SceneField _introScene;
     [SerializeField] private SceneField _titleScreen;
-    [SerializeField] private SceneField _firstCaveBackground;
-    [SerializeField] private SceneField _firstCaveSurfaces;
+    [SerializeField] private SceneField _firstForestBackground;
+    [SerializeField] private SceneField _firstForestSurfaces;
     [SerializeField] private GameObject _titleScreenCanvas;
     [SerializeField] private GameObject _particlesCanvas;
     [SerializeField] private GameObject _titleTextCanvas;
@@ -233,17 +233,17 @@ public class MainMenuManager : MonoBehaviour
         // CameraManager cameraManager = cameras.GetComponent<CameraManager>();
         // cameraManager.ActivateMainCamera();
 
-        AsyncOperation loadFirstCaveRoomOperation = SceneManager.LoadSceneAsync("Cave-1", LoadSceneMode.Additive);
+        AsyncOperation loadFirstCaveRoomOperation = SceneManager.LoadSceneAsync("Forest-1", LoadSceneMode.Additive);
         while(!loadFirstCaveRoomOperation.isDone) {
             yield return null;
         }
-        Scene firstScene = SceneManager.GetSceneByName("Cave-1");
+        Scene firstScene = SceneManager.GetSceneByName("Forest-1");
         SceneManager.SetActiveScene(firstScene);
 
         //Load background
-        yield return StartCoroutine(BackgroundLoaderManager.obj.LoadAndSetBackground(_firstCaveBackground));
+        yield return StartCoroutine(BackgroundLoaderManager.obj.LoadAndSetBackground(_firstForestBackground));
         //Load surfaces
-        yield return StartCoroutine(WalkableSurfacesManager.obj.AddWalkableSurface(_firstCaveSurfaces));
+        yield return StartCoroutine(WalkableSurfacesManager.obj.AddWalkableSurface(_firstForestSurfaces));
 
         LevelManager.obj.LoadAdjacentRooms(firstScene);
         

@@ -17,6 +17,7 @@ Shader "Custom/WaterReflection2D_pixelArt"
         _PixelSnap ("Pixel Snap Enabled", Range(0,1)) = 1
         _RippleX ("Ripple Horizontal Strength", Range(0,2)) = 0.4
         _RippleY ("Ripple Vertical Strength", Range(0,2)) = 1.0
+        _ReflectionVerticalScale ("Reflection Vertical Scale", Range(0.1, 2.0)) = 1.0
     }
 
     SubShader
@@ -55,6 +56,14 @@ Shader "Custom/WaterReflection2D_pixelArt"
             float _PixelSnap;
             float _RippleX;
             float _RippleY;
+            float _ReflectionVerticalScale;
+            
+            float4x4 _ReflectionCameraVP;
+            float _CameraOrthoSize;
+            float _CameraAspect;
+            float _ReflectionAnchorX;
+            float _CameraPosX;
+            float _CameraPosY;
 
             struct appdata {
                 float4 vertex : POSITION;
@@ -100,14 +109,35 @@ Shader "Custom/WaterReflection2D_pixelArt"
                 float wave2 = n2.b * 2.0 - 1.0;
                 float wave  = (wave1 + wave2) * 0.5;
 
-                // --- Distance from shore ---
-                float shoreMask = saturate(1.0 - i.uv.y);
-
                 // --- Strength ---
-                float ripple = wave * _NormalStrength * shoreMask;
+                float ripple = wave * _NormalStrength;
 
-                // --- Reflection UV ---
-                float2 reflUV = float2(i.uv.x, 1.0 - i.uv.y);
+                // --- Reflection UV from world position ---
+                // Calculate screen-space UV based on world position
+                // The reflection texture shows what the camera sees, so we need to:
+                // 1. Find where this pixel is relative to the camera viewport
+                // 2. Offset by camera movement to keep reflection stationary in world space
+                float2 reflUV;
+                
+                // Horizontal: Calculate offset from anchor point (where reflection should be centered)
+                float offsetFromAnchor = i.worldPos.x - _ReflectionAnchorX;
+                // Calculate camera offset from anchor
+                float cameraOffsetFromAnchor = _CameraPosX - _ReflectionAnchorX;
+                // The UV offset is the difference: how far the pixel is from anchor minus camera offset
+                float uvOffsetX = (offsetFromAnchor - cameraOffsetFromAnchor) / (_CameraOrthoSize * _CameraAspect * 2.0);
+                
+                // Vertical: Calculate based on mirrored position relative to waterline
+                // The reflection camera is mirrored below the waterline
+                // Apply vertical scale to the distance from waterline BEFORE mirroring
+                float distanceFromWater = i.worldPos.y - _WaterY;
+                float scaledDistance = distanceFromWater / _ReflectionVerticalScale;
+                float mirroredY = _WaterY - scaledDistance;
+                
+                // Now calculate UV relative to the reflection camera's viewport
+                float uvOffsetY = (mirroredY - _CameraPosY) / (_CameraOrthoSize * 2.0);
+                
+                reflUV.x = uvOffsetX + 0.5;
+                reflUV.y = uvOffsetY + 0.5;
 
                 // --- Horizontal ripple ONLY (safe) ---
                 reflUV.x += ripple * _RippleX;

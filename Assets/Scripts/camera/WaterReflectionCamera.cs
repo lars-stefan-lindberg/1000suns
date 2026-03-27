@@ -19,6 +19,8 @@ public class WaterReflectionCamera : MonoBehaviour
 
     [Header("Waterline")]
     public float waterY = 0f;
+    [Tooltip("X position where the reflection is anchored (won't scroll horizontally)")]
+    public float reflectionAnchorX = 0f;
 
     [Header("Options")]
     public bool useRealtimeUpdate = true;
@@ -101,10 +103,17 @@ public class WaterReflectionCamera : MonoBehaviour
         reflectionCamera.projectionMatrix = proj;
 
         //
-        // 4. PASS WATERLINE TO SHADER
+        // 4. PASS WATERLINE AND CAMERA PARAMS TO SHADER
         //
         if (waterMaterial != null)
+        {
             waterMaterial.SetFloat("_WaterY", waterY);
+            waterMaterial.SetFloat("_CameraOrthoSize", mainCamera.orthographicSize);
+            waterMaterial.SetFloat("_CameraAspect", mainCamera.aspect);
+            waterMaterial.SetFloat("_ReflectionAnchorX", reflectionAnchorX);
+            waterMaterial.SetFloat("_CameraPosX", mainPos.x);
+            waterMaterial.SetFloat("_CameraPosY", mainPos.y);
+        }
 
         //
         // 5. RENDER
