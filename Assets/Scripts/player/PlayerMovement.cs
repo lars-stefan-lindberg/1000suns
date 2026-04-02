@@ -288,6 +288,17 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _movementInput = new Vector2(0,0);
     }
 
+    public void SetIsBalancing(bool isBalancing) {
+        _animator.SetTrigger("balance");
+        _animator.SetBool("isBalancing", isBalancing);
+        _isBalancing = isBalancing;
+        
+        if (isBalancing) {
+            _balancingTimer = 0f;
+            _balancingInBurst = true;
+        }
+    }
+
     public void UnFreeze() {
         _freezePlayer = false;
         EnablePlayerMovement();
@@ -627,6 +638,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     {
         if (context.performed)
         {
+            if (_isBalancing) return;
+            
             if(jumpThroughPlatform != null &&
                 _movementInput.y < 0) {
                 jumpThroughPlatform.PassThrough();
@@ -835,6 +848,15 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private float _frameLeftGrounded = float.MinValue;
     public bool isGrounded;
+    private bool _isBalancing = false;
+    
+    [Header("Balancing Movement")]
+    [SerializeField] private float _balancingMoveSpeed = 2f;
+    [SerializeField] private float _balancingBurstDuration = 0.3f;
+    [SerializeField] private float _balancingPauseDuration = 0.2f;
+    private float _balancingTimer = 0f;
+    private bool _balancingInBurst = true;
+    
     public bool startingOnGround = true;
     private float _landedSqueezeX = 1.25f;
     private float _landedSqueezeY = 0.65f;
@@ -1024,6 +1046,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private void HandleJump()
     {
+        if (_isBalancing) return;
+        
         if (!_endedJumpEarly && !isGrounded && !_jumpHeldInput && Player.obj.rigidBody.velocity.y > 0) _endedJumpEarly = true;
 
         if (!_jumpToConsume && !CanUseAirJump && !HasBufferedJump) return;
@@ -1137,7 +1161,9 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             if(Player.obj.rigidBody.velocity.x < 0.01 && Player.obj.rigidBody.velocity.x > -0.01)
                 jumpedWhileForcePushJumping = false;
         } else {
-            if(_isDashing) {
+            if (_isBalancing) {
+                HandleBalancingMovement();
+            } else if(_isDashing) {
                 if (_movementInput.x == 0)
                 {
                     _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, dashDecelerationTime * Time.fixedDeltaTime);
@@ -1172,6 +1198,39 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         // {
         //     _frameVelocity.x += _jumpKickHorizontal * _jumpKickDirection;
         // }
+    }
+    
+    private void HandleBalancingMovement()
+    {
+        _balancingTimer += Time.fixedDeltaTime;
+        
+        if (_balancingInBurst)
+        {
+            if (_balancingTimer >= _balancingBurstDuration)
+            {
+                _balancingInBurst = false;
+                _balancingTimer = 0f;
+            }
+            
+            if (_movementInput.x == 0)
+            {
+                _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, _stats.GroundDeceleration * Time.fixedDeltaTime);
+            }
+            else
+            {
+                _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, _movementInput.x * _balancingMoveSpeed, _stats.Acceleration * Time.fixedDeltaTime);
+            }
+        }
+        else
+        {
+            if (_balancingTimer >= _balancingPauseDuration)
+            {
+                _balancingInBurst = true;
+                _balancingTimer = 0f;
+            }
+            
+            _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, _stats.GroundDeceleration * Time.fixedDeltaTime);
+        }
     }
 
     #endregion
