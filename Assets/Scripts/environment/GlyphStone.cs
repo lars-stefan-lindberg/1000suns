@@ -6,6 +6,7 @@ public class GlyphStone : MonoBehaviour
     private LightSprite2D _lightSprite;
     private SpritePulsator _spritePulsator;
 
+    [SerializeField] private bool _activateOnStart = false;
     [SerializeField] private float _activatedScaleMultiplier = 3f;
     [SerializeField] private float _scaleUpDuration = 0.25f;
     [SerializeField] private float _scaleDownDuration = 0.25f;
@@ -19,6 +20,12 @@ public class GlyphStone : MonoBehaviour
         _spritePulsator = GetComponentInChildren<SpritePulsator>();
 
         CacheOriginalLightSpriteScaleIfNeeded();
+    }
+
+    void Start() {
+        if (_activateOnStart) {
+            Activate();
+        }
     }
 
     public void Activate() {

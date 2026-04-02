@@ -25,6 +25,10 @@ public class ForestBird : MonoBehaviour
     [SerializeField] private float _initialOffsetTime = 0f;
     [SerializeField] private int _startingDirection = 1;
     
+    [Header("Idle Animation Settings")]
+    [SerializeField] private float _minIdleAnimationInterval = 2f;
+    [SerializeField] private float _maxIdleAnimationInterval = 5f;
+    
     [Header("Animation")]
     [SerializeField] private Animator _animator;
     [SerializeField] private SpriteRenderer _spriteRenderer;
@@ -34,6 +38,8 @@ public class ForestBird : MonoBehaviour
     private Vector3 _flightDirection;
     private int _currentDirection = 1;
     private Transform _playerTransform;
+    private bool _isInitialized = false;
+    private Coroutine _cycleCoroutine;
     
     void Start()
     {
@@ -45,8 +51,22 @@ public class ForestBird : MonoBehaviour
         
         _currentDirection = _startingDirection >= 0 ? 1 : -1;
         _spriteRenderer.flipX = _currentDirection < 0;
+        _isInitialized = true;
         
-        StartCoroutine(StartCycleWithDelay());
+        _cycleCoroutine = StartCoroutine(StartCycleWithDelay());
+    }
+
+    void OnEnable()
+    {
+        if (_isInitialized && !_isFlyingAway && _cycleCoroutine == null)
+        {
+            _cycleCoroutine = StartCoroutine(StartCycleWithDelay());
+        }
+    }
+
+    void OnDisable()
+    {
+        _cycleCoroutine = null;
     }
 
     void Update()
@@ -116,7 +136,7 @@ public class ForestBird : MonoBehaviour
             yield return new WaitForSeconds(_initialOffsetTime);
         }
         
-        StartCoroutine(BirdCycle());
+        yield return StartCoroutine(BirdCycle());
     }
     
     private IEnumerator BirdCycle()
@@ -127,7 +147,7 @@ public class ForestBird : MonoBehaviour
             
             if (!_enableMovement)
             {
-                yield return null;
+                yield return StartCoroutine(IdleAnimationCycle());
                 continue;
             }
             
@@ -214,6 +234,30 @@ public class ForestBird : MonoBehaviour
                 elapsed += Time.deltaTime;
                 yield return null;
             }
+        }
+    }
+    
+    private IEnumerator IdleAnimationCycle()
+    {
+        float waitTime = Random.Range(_minIdleAnimationInterval, _maxIdleAnimationInterval);
+        float elapsed = 0f;
+        
+        while (elapsed < waitTime && !_isFlyingAway)
+        {
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        
+        if (_isFlyingAway)
+            yield break;
+        
+        if (_animator != null)
+        {
+            bool shouldFlap = Random.value > 0.5f;
+            if (shouldFlap)
+                _animator.SetTrigger("flap");
+            else
+                _animator.SetTrigger("turnHead");
         }
     }
     

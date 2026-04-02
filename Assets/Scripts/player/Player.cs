@@ -101,6 +101,10 @@ public class Player : MonoBehaviour
         _animator.SetTrigger("endPullRoots");
     }
 
+    public void GetOutOfTent() {
+        _animator.SetTrigger("getOutOfTent");
+    }
+
     [ContextMenu("StartAnimator")]
     public void StartAnimator() {
         _animator.speed = 1;
@@ -188,7 +192,7 @@ public class Player : MonoBehaviour
     }
 
     public void SetForestStartingCoordinates() {
-        transform.position = new Vector2(-22.875f, -22.875f);
+        transform.position = new Vector2(-31.125f, -22.875f);
     }
 
     public void SetCaveStartingCoordinatesCoop() {

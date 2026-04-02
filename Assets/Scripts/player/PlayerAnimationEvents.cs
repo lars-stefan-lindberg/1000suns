@@ -1,5 +1,7 @@
+using System.Linq;
 using FMODUnity;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerAnimationEvents : MonoBehaviour
 {
@@ -36,5 +38,13 @@ public class PlayerAnimationEvents : MonoBehaviour
 
     public void PullRoots() {
         SoundFXManager.obj.PlayAtPosition(_rootsPull, Camera.main.transform.position);
+    }
+
+    public void StartGettingOutOfTent() {
+        PlayerMovement.obj.spriteRenderer.enabled = true;
+    }
+
+    public void OnGetOutOfTentFinished() {
+        PlayerEvents.TriggerTentExitComplete();
     }
 }

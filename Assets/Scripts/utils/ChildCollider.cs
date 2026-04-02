@@ -9,7 +9,6 @@ public class ChildCollider : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log("collision detected");
         OnCollisionEnterEvent?.Invoke(collision);
     }
 

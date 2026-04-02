@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Linq;
+using Cinemachine;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -7,6 +8,8 @@ public class FirstForestRoomLoader : MonoBehaviour
 {
     [SerializeField] private GameEventId _eliFirstForestRoomLoaded;
     [SerializeField] private AmbienceTrack _ambience;
+    [SerializeField] private TentCutsceneManager _tentCutsceneManager;
+    [SerializeField] private GameObject _zoomedCamera;
 
     void Start() {
         if(!GameManager.obj.HasEvent(_eliFirstForestRoomLoaded)) {
@@ -22,6 +25,7 @@ public class FirstForestRoomLoader : MonoBehaviour
 
     private IEnumerator LoadRoom() {
         Player.obj.SetForestStartingCoordinates();
+        PlayerMovement.obj.spriteRenderer.enabled = false;
         Player.obj.gameObject.SetActive(true);
         PlayerMovement.obj.SetStartingOnGround();
         PlayerMovement.obj.isGrounded = true;
@@ -30,33 +34,27 @@ public class FirstForestRoomLoader : MonoBehaviour
         Player.obj.SetAnimatorLayerAndHasCape(false);
         PlayerMovement.obj.Freeze();
 
-        GameObject[] sceneGameObjects = gameObject.scene.GetRootGameObjects();
-        GameObject mainCamera = sceneGameObjects.First(gameObject => gameObject.CompareTag("MainVCam"));
-        GameObject room = sceneGameObjects.First(gameObject => gameObject.CompareTag("Room"));
-        Collider2D roomCollider = room.GetComponent<Collider2D>();
-        RoomCameraController cameraController = mainCamera.GetComponent<RoomCameraController>();
-        CameraManager.obj.EnterRoom(cameraController, roomCollider, Player.obj.transform, Player.obj.transform.position);   
-
         CaveAvatar.obj.gameObject.SetActive(false);
 
         AmbienceManager.obj.Play(_ambience);
-        yield return StartCoroutine(FadeInScreen());
+        yield return StartCoroutine(FadeInScreenAndStart());
 
         GameManager.obj.RegisterEvent(_eliFirstForestRoomLoaded);
-
-        PlayerStatsManager.obj.ResumeTimer();
-        PlayerMovement.obj.UnFreeze();
-        GameManager.obj.IsPauseAllowed = true;
-        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
 
         yield return null;
     }
 
-    private IEnumerator FadeInScreen() {
+    private IEnumerator FadeInScreenAndStart() {
         yield return new WaitForSeconds(2f); //Give title screen time to unload
         SceneFadeManager.obj.SetFadedOutState();
         SceneFadeManager.obj.SetFadeInSpeed(0.2f);
         SceneFadeManager.obj.StartFadeIn();
+
+        while(SceneFadeManager.obj.IsFadingIn) {
+            yield return null;
+        }
+        _tentCutsceneManager.PlayTentShaking();
+
         yield return null;
     }
 }

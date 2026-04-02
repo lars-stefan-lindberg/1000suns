@@ -41,6 +41,7 @@ public class ForestButterfly : MonoBehaviour
     private bool _isRecovering = false;
     private bool _isReturningToStart = false;
     private Coroutine _behaviorCycleCoroutine;
+    private bool _isInitialized = false;
 
     private enum ButterflyState
     {
@@ -62,10 +63,25 @@ public class ForestButterfly : MonoBehaviour
     {
         _startPosition = transform.position;
         _currentDirection = _initialDirection.normalized;
+        _isInitialized = true;
 
         _animator.SetTrigger("fly");
 
         _behaviorCycleCoroutine = StartCoroutine(ButterflyBehaviorCycle());
+    }
+
+    void OnEnable()
+    {
+        if (_isInitialized && _behaviorCycleCoroutine == null && !_isReturningToStart)
+        {
+            _animator.SetTrigger("fly");
+            _behaviorCycleCoroutine = StartCoroutine(ButterflyBehaviorCycle());
+        }
+    }
+
+    void OnDisable()
+    {
+        _behaviorCycleCoroutine = null;
     }
 
     void Update()

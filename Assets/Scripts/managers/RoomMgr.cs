@@ -13,6 +13,7 @@ public class RoomMgr : MonoBehaviour
     [SerializeField] private DarknessLevelType _darknessLevelType;
     public UnityEvent OnRoomEnter;
     public UnityEvent OnRoomExit;
+    public UnityEvent CustomCameraHandling;
     private float _darknessFadeSpeed = 9f;
     private Coroutine _fadeDarknessCoroutine;
     private Coroutine _unloadRoomObjectsCoroutine;
@@ -44,7 +45,11 @@ public class RoomMgr : MonoBehaviour
                 }
             }
             OnRoomEnter?.Invoke();
-            StartCoroutine(MaybeActivateMainCamera());
+            if(CustomCameraHandling != null) {
+                CustomCameraHandling.Invoke();
+            } else {
+                StartCoroutine(MaybeActivateMainCamera());
+            }
         }
     }
 
@@ -65,13 +70,17 @@ public class RoomMgr : MonoBehaviour
     private IEnumerator MaybeActivateMainCamera() {
         yield return new WaitForSeconds(_roomTransitionDelay);
         if(!CameraManager.obj.IsRoomCameraActivated()) {
-            GameObject[] sceneGameObjects = gameObject.scene.GetRootGameObjects();
-            GameObject mainCamera = sceneGameObjects.First(gameObject => gameObject.CompareTag("MainCamera"));
-            RoomCameraController cameraController = mainCamera.GetComponent<RoomCameraController>();
-            GameObject room = sceneGameObjects.First(gameObject => gameObject.CompareTag("Room"));
-            Collider2D roomCollider = room.GetComponent<Collider2D>();
-            CameraManager.obj.EnterRoom(cameraController, roomCollider, Player.obj.transform, transform.position);
+            ActivateMainCamera();
         }
+    }
+
+    public void ActivateMainCamera() {
+        GameObject[] sceneGameObjects = gameObject.scene.GetRootGameObjects();
+        GameObject mainCamera = sceneGameObjects.First(gameObject => gameObject.CompareTag("MainCamera"));
+        RoomCameraController cameraController = mainCamera.GetComponent<RoomCameraController>();
+        GameObject room = sceneGameObjects.First(gameObject => gameObject.CompareTag("Room"));
+        Collider2D roomCollider = room.GetComponent<Collider2D>();
+        CameraManager.obj.EnterRoom(cameraController, roomCollider, Player.obj.transform, transform.position);
     }
 
     private IEnumerator UnloadRoomObjects() {

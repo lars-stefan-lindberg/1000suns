@@ -459,7 +459,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 60, y: -15, z: -1.15}
+  m_LocalPosition: {x: -31.875, y: -15, z: -1.15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1823,67 +1823,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1a56f329a4125349aff99112e1cbb4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _layerRenderer:
-    water2D: {fileID: 0}
-    layerTexture: {fileID: 1111513054}
-    rendererType: 2
-    sr: {fileID: 0}
-    format: 0
-    fliterMode: 0
-    bitDepth: 0
-    layerName: Reflections
-    layerMask: -1
-    mainCamera: {fileID: 2045336363}
-    holder: {fileID: 2045336361}
-    res: 1
-    scale: {x: 1, y: 1}
-    reflectionLayerIdx: 13
-    copyMainBackground: 0
-    lastOrtographicSize: 11.25
-    lastAspectRatio: 1.7777778
-  _run: 0
-  startupQF: 1
-  pivotDetectionAlphaTreshold: 0
-  overrideMainCamera:
-    _value: 0
-  reflectionObjectsVisible:
-    _value: 0
-  cameraVisible:
-    _value: 0
-  defaultReflectionSprflipx:
-    _value: 0
-  reflectionCamera: {fileID: 2045336363}
-  reflectorMat: {fileID: 2100000, guid: 0ae8ac8d38b65bd408099e116c252bce, type: 2}
-  reflectionMat: {fileID: 2100000, guid: 075b92eb3f3ea4948a0553b3da251cc5, type: 2}
-  textureResolution:
-    _value: 1
-  layers: 0
-  layersLast: 0
-  topdown: 1
-  raymarch: 0
-  reflectionLayerIdx: 0
-  _reflectionsSettings:
-    layers: []
-    angle:
-      _value: 0
-    tilt:
-      _value: 0
-    length:
-      _value: 0
-    topdownReflections_FalloffStrength:
-      _value: 1
-    topdownReflections_FalloffStart:
-      _value: 0
-    topdownReflections3D_FalloffColor:
-      _value: {r: 0, g: 0, b: 0, a: 1}
-    originalColor:
-      _value: 1
-    color:
-      _value: {r: 1, g: 1, b: 1, a: 1}
-    alpha:
-      _value: 0.717
-    y:
-      _value: 0.356
 --- !u!20 &2045336363
 Camera:
   m_ObjectHideFlags: 0
