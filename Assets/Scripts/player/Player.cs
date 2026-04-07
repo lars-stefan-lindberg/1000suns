@@ -101,6 +101,10 @@ public class Player : MonoBehaviour
         _animator.SetTrigger("touchGlyphStone");
     }
 
+    public void PlayBalanceBeforeCaveIn() {
+        _animator.SetTrigger("balanceBeforeCaveIn");
+    }
+
     public void EndPullRoots() {
         _animator.SetTrigger("endPullRoots");
     }

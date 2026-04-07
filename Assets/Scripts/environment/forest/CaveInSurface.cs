@@ -42,7 +42,8 @@ public class CaveInSurface : MonoBehaviour
         PlayerMovement.obj.Freeze();
         yield return new WaitForSeconds(1f);
         _thunderLight.Flash();
-        yield return new WaitForSeconds(4f);
+        Player.obj.PlayBalanceBeforeCaveIn();
+        yield return new WaitForSeconds(2.8f);
         _breakableSurfaceAnimator.SetTrigger("break");
     }
 
