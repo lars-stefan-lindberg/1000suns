@@ -97,6 +97,10 @@ public class Player : MonoBehaviour
         _animator.SetTrigger("pullRoots");
     }
 
+    public void PlayForestGlyphTouch() {
+        _animator.SetTrigger("touchGlyphStone");
+    }
+
     public void EndPullRoots() {
         _animator.SetTrigger("endPullRoots");
     }

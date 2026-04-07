@@ -3,6 +3,7 @@ using UnityEngine.Events;
 
 public class PlayerTrigger : MonoBehaviour
 {
+    [SerializeField] private bool _deactivateOnTrigger = false;
     public UnityEvent OnPlayerEntered;
     public UnityEvent OnPlayerExited;
 
@@ -11,6 +12,8 @@ public class PlayerTrigger : MonoBehaviour
         if(!collision.CompareTag("Player"))
             return;
         OnPlayerEntered?.Invoke();
+        if(_deactivateOnTrigger)
+            GetComponent<BoxCollider2D>().enabled = false;
     }
 
     void OnTriggerExit2D(Collider2D collision)

@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Linq;
 using FMODUnity;
 using UnityEngine;
@@ -46,5 +47,19 @@ public class PlayerAnimationEvents : MonoBehaviour
 
     public void OnGetOutOfTentFinished() {
         PlayerEvents.TriggerTentExitComplete();
+    }
+
+    public void ForestTouchGlyph() {
+        PlayerEvents.TriggerForestGlyphTouched();
+    }
+
+    public void UnFreeze() {
+        StartCoroutine(DelayedUnFreeze());
+    }
+
+    private IEnumerator DelayedUnFreeze() {
+        yield return new WaitForSeconds(1f);
+
+        PlayerMovement.obj.UnFreeze();
     }
 }
