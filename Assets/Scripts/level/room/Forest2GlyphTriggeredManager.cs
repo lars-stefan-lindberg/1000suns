@@ -6,6 +6,7 @@ public class Forest2GlyphTriggeredManager : MonoBehaviour
     [SerializeField] private GlyphStone _glyphStone;
     [SerializeField] private GameObject _rainSystems;
     [SerializeField] private ThunderLight _thunderLight;
+    [SerializeField] private AmbienceTrack _rain;
 
     void Start() {
         PlayerEvents.OnForestGlyphTouched += Activate;
@@ -22,7 +23,7 @@ public class Forest2GlyphTriggeredManager : MonoBehaviour
 
         _thunderLight.Flash();
         
-        //Play rain ambience
+        AmbienceManager.obj.Play(_rain);
         //Play music
     }
 

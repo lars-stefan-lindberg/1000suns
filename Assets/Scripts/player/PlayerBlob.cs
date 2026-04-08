@@ -6,8 +6,6 @@ public class PlayerBlob : MonoBehaviour
     public Rigidbody2D rigidBody;
     private Animator _animator;
     private BoxCollider2D _collider;
-    private LayerMask _groundLayerMasks;
-    public SurfaceType surface = SurfaceType.Rock;
     private float _spawnFreezeDuration = 0.9f;
     private PlayerChargeFlash _playerChargeFlash;
     private PlayerFlash _playerFlash;
@@ -17,21 +15,10 @@ public class PlayerBlob : MonoBehaviour
     {
         obj = this;
         _collider = GetComponent<BoxCollider2D>();
-        _groundLayerMasks = LayerMask.GetMask("Ground");
         _animator = GetComponentInChildren<Animator>();
         _playerFlash = GetComponentInChildren<PlayerFlash>();
         _playerChargeFlash = GetComponentInChildren<PlayerChargeFlash>();
         _playerLightManager = GetComponentInChildren<PlayerLightManager>();
-    }
-
-    void OnCollisionEnter2D(Collision2D other) {
-        if((_groundLayerMasks.value & (1 << other.gameObject.layer)) != 0) {
-            string surfaceTag = other.gameObject.tag;
-            if(surfaceTag == "Rock")
-                surface = SurfaceType.Rock;
-            else if(surfaceTag == "Roots")
-                surface = SurfaceType.Roots;
-        }
     }
 
     public void PlayGenericDeathAnimation() {

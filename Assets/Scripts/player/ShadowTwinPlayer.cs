@@ -9,13 +9,11 @@ public class ShadowTwinPlayer : MonoBehaviour
     private BoxCollider2D _collider;
     public bool hasPowerUp = false;
     public float spawnFreezeDuration = 1.4f;
-    public SurfaceType surface = SurfaceType.Rock;
     private bool _hasCrown = false;
     public float _forcePushFlashSpeed = 0.17f;
     private float _defaultGravity;
 
     private Animator _animator;
-    private LayerMask _groundLayerMasks;
     private PlayerFlash _playerFlash;
     private PlayerChargeFlash _playerChargeFlash;
     private PlayerLightManager _playerLightManager;
@@ -25,7 +23,6 @@ public class ShadowTwinPlayer : MonoBehaviour
         obj = this;
         _animator = GetComponentInChildren<Animator>();
         _collider = GetComponent<BoxCollider2D>();
-        _groundLayerMasks = LayerMask.GetMask("Ground");
         _playerFlash = GetComponentInChildren<PlayerFlash>();
         _playerChargeFlash = GetComponentInChildren<PlayerChargeFlash>();
         _playerLightManager = GetComponentInChildren<PlayerLightManager>();
@@ -58,16 +55,6 @@ public class ShadowTwinPlayer : MonoBehaviour
 
     public void DisableGravity() {
         rigidBody.gravityScale = 0;
-    }
-
-    void OnCollisionEnter2D(Collision2D other) {
-        if((_groundLayerMasks.value & (1 << other.gameObject.layer)) != 0) {
-            string surfaceTag = other.gameObject.tag;
-            if(surfaceTag == "Rock")
-                surface = SurfaceType.Rock;
-            else if(surfaceTag == "Roots")
-                surface = SurfaceType.Roots;
-        }
     }
 
     public void PlayGenericDeathAnimation() {

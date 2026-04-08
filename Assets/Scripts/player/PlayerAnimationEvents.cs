@@ -16,7 +16,7 @@ public class PlayerAnimationEvents : MonoBehaviour
     }
 
     public void PlayFootstep() {
-        _sharedPlayerAudio.PlayFootstep(Player.obj.surface);
+        _sharedPlayerAudio.PlayFootstep(PlayerMovement.obj.surface);
     }
 
     public void ToBlob() {

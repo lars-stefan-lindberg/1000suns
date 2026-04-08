@@ -20,7 +20,7 @@ public class SharedCharacterAudio : MonoBehaviour
         SoundFXManager.obj.PlayAtPosition(sounds.jump, transform.position);
     }
 
-    public void PlayLand(SurfaceType surface)
+    public void PlayLand(SurfaceTypeManager.SurfaceType surface)
     {
         SoundFXManager.obj.PlayAtGameObject(
             sounds.land,
@@ -32,7 +32,7 @@ public class SharedCharacterAudio : MonoBehaviour
         );
     }
 
-    public void PlayFootstep(SurfaceType surface)
+    public void PlayFootstep(SurfaceTypeManager.SurfaceType surface)
     {
         SoundFXManager.obj.PlayAtGameObject(
             sounds.footstep,

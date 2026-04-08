@@ -13,6 +13,7 @@ public class ShadowTwinMovement : MonoBehaviour
     // public float _jumpKickHorizontal = 4f; // tune as needed
     // private float _jumpKickDirection = 1f;
     // --------------------------------
+    public SurfaceTypeManager.SurfaceType surface = SurfaceTypeManager.SurfaceType.Default;
     public static ShadowTwinMovement obj;
 
     public bool isDevMode = true;
@@ -202,7 +203,7 @@ public class ShadowTwinMovement : MonoBehaviour
         if (_landed)
         {
             DustParticleMgr.obj.CreateDust(PlayerManager.PlayerType.SHADOW_TWIN);
-            _sharedPlayerAudio.PlayLand(ShadowTwinPlayer.obj.surface);
+            _sharedPlayerAudio.PlayLand(surface);
             StartCoroutine(JumpSqueeze(_landedSqueezeX, _landedSqueezeY, _landedSqueezeTime));
             _landed = false;
         }
@@ -791,7 +792,12 @@ public class ShadowTwinMovement : MonoBehaviour
     {
         Physics2D.queriesStartInColliders = false;
 
-        bool groundHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, _groundLayerMasks);
+        RaycastHit2D groundRaycastResult = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, _groundLayerMasks);
+        bool groundHit = groundRaycastResult.collider != null;
+
+        if(groundHit) {
+            surface = SurfaceTypeManager.GetSurfaceType(groundRaycastResult.collider.gameObject.tag);
+        }
         
         //Corner case when spawning
         if(startingOnGround) {
@@ -808,6 +814,7 @@ public class ShadowTwinMovement : MonoBehaviour
         if(moveableHit) {
             groundHit = true;
             isOnMoveable = true;
+            surface = SurfaceTypeManager.GetSurfaceType(moveableHit.collider.gameObject.tag);
             if(moveableRigidBody == null) {
                 moveableRigidBody = moveableHit.collider.gameObject.GetComponentInParent<Rigidbody2D>();
             }

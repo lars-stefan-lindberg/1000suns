@@ -13,6 +13,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     // public float _jumpKickDuration = 0.1f; // seconds
     // public float _jumpKickHorizontal = 4f; // tune as needed
     // private float _jumpKickDirection = 1f;
+    public SurfaceTypeManager.SurfaceType surface = SurfaceTypeManager.SurfaceType.Default;
  
     [Header("Pixel Snap")]
     [SerializeField] private bool _snapHorizontalToPixelGrid = true;
@@ -255,7 +256,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         if (_landed)
         {
             DustParticleMgr.obj.CreateDust(PlayerManager.PlayerType.HUMAN);
-            _sharedPlayerAudio.PlayLand(Player.obj.surface);
+            _sharedPlayerAudio.PlayLand(surface);
             if(_cameFromForcePushJump) {
                 _eliAudio.PlayForcePushLand();
                 _cameFromForcePushJump = false;
@@ -881,7 +882,12 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     {
         Physics2D.queriesStartInColliders = false;
 
-        bool groundHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, _groundLayerMasks);
+        RaycastHit2D groundRaycastResult = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, _groundLayerMasks);
+        bool groundHit = groundRaycastResult.collider != null;
+
+        if(groundHit) {
+            surface = SurfaceTypeManager.GetSurfaceType(groundRaycastResult.collider.gameObject.tag);
+        }
         
         //Corner case when spawning
         if(startingOnGround) {
@@ -898,6 +904,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         if(moveableHit) {
             groundHit = true;
             isOnMoveable = true;
+            surface = SurfaceTypeManager.GetSurfaceType(moveableHit.collider.gameObject.tag);
             if(moveableRigidBody == null) {
                 moveableRigidBody = moveableHit.collider.gameObject.GetComponentInParent<Rigidbody2D>();
                 if(moveableHit.collider.gameObject.CompareTag("FloatingPlatform")) {

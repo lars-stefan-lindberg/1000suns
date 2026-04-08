@@ -10,6 +10,7 @@ public class PlayerBlobMovement : MonoBehaviour
 {
     public static PlayerBlobMovement obj;
 
+    public SurfaceTypeManager.SurfaceType surface = SurfaceTypeManager.SurfaceType.Default;
     [SerializeField] private GameObject _player;
     [SerializeField] private GameObject _playerTwin;
     [SerializeField] private GameObject _soulVfx;
@@ -462,7 +463,12 @@ public class PlayerBlobMovement : MonoBehaviour
     {
         Physics2D.queriesStartInColliders = false;
 
-        bool groundHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, _groundLayerMasks);
+        RaycastHit2D groundRaycastResult = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, _groundLayerMasks);
+        bool groundHit = groundRaycastResult.collider != null;
+
+        if(groundHit) {
+            surface = SurfaceTypeManager.GetSurfaceType(groundRaycastResult.collider.gameObject.tag);
+        }
 
         //Corner case when spawning
         if(startingOnGround) {
@@ -867,7 +873,7 @@ public class PlayerBlobMovement : MonoBehaviour
         if (_landed)
         {
             DustParticleMgr.obj.CreateDust(PlayerManager.PlayerType.BLOB);
-            _sharedPlayerAudio.PlayLand(PlayerBlob.obj.surface);
+            _sharedPlayerAudio.PlayLand(surface);
             StartCoroutine(JumpSqueeze(_landedSqueezeX, _landedSqueezeY, _landedSqueezeTime));
             _landed = false;
         }
