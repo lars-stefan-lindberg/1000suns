@@ -1,20 +1,29 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using FMODUnity;
 
 public class TentCutsceneManager : MonoBehaviour
 {
     [SerializeField] private ForestTent _forestTent;
     [SerializeField] private float _timeUntilCloseTent = 1.5f;
+    [SerializeField] private float _waitTimeUntilTentAnimation = 1f;
     [SerializeField] private Forest1CameraHandler _cameraHandler;
     [SerializeField] private GameEventId _tentCutSceneCompleted;
+    [SerializeField] private EventReference _sleepingBagSfx;
 
     void Start() {
         PlayerEvents.OnTentExitComplete += OnEliAnimationCompleted;
     }
 
-    public void PlayTentShaking() {
-        _forestTent.Shake();
+    public void StartTentSequence() {
+        StartCoroutine(StartTentSequenceCoroutine());
+    }
+
+    private IEnumerator StartTentSequenceCoroutine() {
+        SoundFXManager.obj.PlayAtPosition(_sleepingBagSfx, _forestTent.transform.position);
+        yield return new WaitForSeconds(_waitTimeUntilTentAnimation);
+        _forestTent.Rumble();
     }
 
     public void PlayEliGettingOutOfTent() {

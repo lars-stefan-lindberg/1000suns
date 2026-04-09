@@ -38,4 +38,16 @@ public class EliAudio : MonoBehaviour
     public void PlayForcePushLand() {
         SoundFXManager.obj.PlayAtPosition(_sounds.forcePushLand, transform.position);
     }
+
+    public void PlayHeadMovingOutOfTent() {
+        SoundFXManager.obj.PlayAtPosition(_sounds.headOutOfTent, transform.position);
+    }
+
+    public void PlayGetOutOfTent() {
+        SoundFXManager.obj.PlayAtPosition(_sounds.getOutOfTent, transform.position);
+    }
+
+    public void PlayYawn() {
+        SoundFXManager.obj.PlayAtPosition(_sounds.yawn, transform.position);
+    }
 }

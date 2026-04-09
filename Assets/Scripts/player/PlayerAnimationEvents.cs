@@ -9,14 +9,28 @@ public class PlayerAnimationEvents : MonoBehaviour
     [SerializeField] private EventReference _rootsPull;
     [SerializeField] private EventReference _breakableWallCracklingSfx;
     private SharedCharacterAudio _sharedPlayerAudio;
+    private EliAudio _eliAudio;
 
     void Awake()
     {
         _sharedPlayerAudio = transform.parent.gameObject.GetComponent<SharedCharacterAudio>();
+        _eliAudio = transform.parent.gameObject.GetComponent<EliAudio>();
     }
 
     public void PlayFootstep() {
         _sharedPlayerAudio.PlayFootstep(PlayerMovement.obj.surface);
+    }
+
+    public void PlayHeadOutOfTent() {
+        _eliAudio.PlayHeadMovingOutOfTent();
+    }
+
+    public void PlayGetOutOfTent() {
+        _eliAudio.PlayGetOutOfTent();
+    }
+
+    public void PlayYawn() {
+        _eliAudio.PlayYawn();
     }
 
     public void ToBlob() {
@@ -43,6 +57,7 @@ public class PlayerAnimationEvents : MonoBehaviour
 
     public void StartGettingOutOfTent() {
         PlayerMovement.obj.spriteRenderer.enabled = true;
+        PlayHeadOutOfTent();
     }
 
     public void OnGetOutOfTentFinished() {

@@ -53,7 +53,7 @@ public class FirstForestRoomLoader : MonoBehaviour
         while(SceneFadeManager.obj.IsFadingIn) {
             yield return null;
         }
-        _tentCutsceneManager.PlayTentShaking();
+        _tentCutsceneManager.StartTentSequence();
 
         yield return null;
     }

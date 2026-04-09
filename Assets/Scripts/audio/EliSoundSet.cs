@@ -12,4 +12,7 @@ public class EliSoundSet : ScriptableObject
     public EventReference shapeshiftToHuman;
     public EventReference forcePushJump;
     public EventReference forcePushLand;
+    public EventReference headOutOfTent;
+    public EventReference getOutOfTent;
+    public EventReference yawn;
 }

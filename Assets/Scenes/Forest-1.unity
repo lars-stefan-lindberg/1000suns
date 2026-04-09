@@ -617,7 +617,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &48198653
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -637,7 +637,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 48198652}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 45e653bab7fb20e499bda25e1b646fea, type: 3}
   m_Name: 
@@ -28599,7 +28599,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6825713600872426846, guid: e3fb72079e52e4b05a2374ae0bf5b7ac, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 28.25
+      value: -20
       objectReference: {fileID: 0}
     - target: {fileID: 6825713600872426846, guid: e3fb72079e52e4b05a2374ae0bf5b7ac, type: 3}
       propertyPath: m_LocalPosition.y
@@ -66136,8 +66136,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _forestTent: {fileID: 1947023771}
   _timeUntilCloseTent: 2.5
+  _waitTimeUntilTentAnimation: 1.5
   _cameraHandler: {fileID: 483703118}
   _tentCutSceneCompleted: {fileID: 11400000, guid: bfc961412ed714e8c9a23bc2d005b100, type: 2}
+  _sleepingBagSfx:
+    Guid:
+      Data1: -214949306
+      Data2: 1263303091
+      Data3: 1807297430
+      Data4: -1080216419
+    Path: event:/character/eli/sleeping_bag_movement
 --- !u!4 &1727060177
 Transform:
   m_ObjectHideFlags: 0
@@ -68100,7 +68108,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8af25d9f8ed9e46e384d15e1bb8db7f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _waitTimeAfterShake: 1
+  _waitTimeAfterShake: 0.5
+  _waitTimeAfterRumble: 0.5
+  _tentShakeSfx:
+    Guid:
+      Data1: -1580468869
+      Data2: 1221987930
+      Data3: -398600275
+      Data4: 1157798399
+    Path: event:/character/eli/moving_around_in_tent
+  _tentRumbleSfx:
+    Guid:
+      Data1: 1176726214
+      Data2: 1316545127
+      Data3: -1160133704
+      Data4: 86497714
+    Path: event:/character/eli/tent_rumble
+  _tentOpenSfx:
+    Guid:
+      Data1: 218914587
+      Data2: 1250388543
+      Data3: 407830448
+      Data4: -485576382
+    Path: event:/character/eli/tent_open
   OnOpenedEvent:
     m_PersistentCalls:
       m_Calls:
