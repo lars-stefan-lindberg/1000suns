@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using FMODUnity;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,6 +7,7 @@ public class CaveInSurface : MonoBehaviour
 {
     [SerializeField] private GameObject _breakableSurface;
     [SerializeField] private ParticleSystem _breakParticles;
+    [SerializeField] private ParticleSystem _crackingParticles;
     [SerializeField] private GameObject _ground;
     [SerializeField] private Animator _visibleTilemapAnimator;
     [SerializeField] private int _particleEmitCount = 50;
@@ -43,7 +43,7 @@ public class CaveInSurface : MonoBehaviour
         yield return new WaitForSeconds(1f);
         _thunderLight.Flash();
         Player.obj.PlayBalanceBeforeCaveIn();
-        yield return new WaitForSeconds(2.8f);
+        yield return new WaitForSeconds(3.2f);
         _breakableSurfaceAnimator.SetTrigger("break");
     }
 
@@ -95,5 +95,10 @@ public class CaveInSurface : MonoBehaviour
 
     public void PlayCracklingSfx() {
         SoundFXManager.obj.PlayAtPosition(_cracklingfx, transform.position);
+        _crackingParticles.Emit(10);
+    }
+
+    public void EmitCrackingParticles() {
+        _crackingParticles.Emit(10);
     }
 }
