@@ -57,6 +57,9 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public Rigidbody2D moveableRigidBody;
     public JumpThroughPlatform jumpThroughPlatform;
 
+    private bool _isWalking = false;
+    [SerializeField] private float _walkSpeed = 2f;
+
     #region Interface
     public event Action<bool, float> GroundedChanged;
     public event Action Jumped;
@@ -251,6 +254,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         //isMoving = Mathf.Abs(Player.obj.rigidBody.velocity.x) > _movingVelocityEpsilon || _movementInput.x != 0;
         isMoving = _movementInput.x != 0;
         _animator.SetBool("isMoving", isMoving);
+        _animator.SetBool("isWalking", _isWalking);
         isFalling = _frameVelocity.y < -_stats.MinimumFallAnimationSpeed;
         _animator.SetBool("isFalling", isFalling);
         if (_landed)
@@ -298,6 +302,17 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             _balancingTimer = 0f;
             _balancingInBurst = true;
         }
+    }
+
+    public void StartWalking() {
+        _animator.SetTrigger("walk");
+        _animator.SetBool("isWalking", true);
+        _isWalking = true;
+    }
+
+    public void StopWalking() {
+        _animator.SetBool("isWalking", false);
+        _isWalking = false;
     }
 
     public void UnFreeze() {
@@ -1170,6 +1185,15 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         } else {
             if (_isBalancing) {
                 HandleBalancingMovement();
+            } else if (_isWalking) {
+                if (_movementInput.x == 0)
+                {
+                    _frameVelocity.x = 0;
+                }
+                else
+                {
+                    _frameVelocity.x = _movementInput.x * _walkSpeed;
+                }
             } else if(_isDashing) {
                 if (_movementInput.x == 0)
                 {

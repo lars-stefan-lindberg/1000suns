@@ -14,7 +14,8 @@ public class Forest2GlyphTriggeredManager : MonoBehaviour
 
     public void InitiateEliTouchAnimation() {
         PlayerMovement.obj.Freeze();
-        StartCoroutine(StartEliTouchAnimation());
+        PlayerMovement.obj.SetMovementInput(Vector2.zero);
+        StartCoroutine(StartCutscene());
     }
 
     public void Activate() {
@@ -27,8 +28,15 @@ public class Forest2GlyphTriggeredManager : MonoBehaviour
         //Play music
     }
 
-    private IEnumerator StartEliTouchAnimation() {
-        yield return new WaitForSeconds(1f);
+    private IEnumerator StartCutscene() {
+        yield return new WaitForSeconds(2f);
+
+        PlayerMovement.obj.StartWalking();
+        PlayerMovement.obj.SetMovementInput(new Vector2(1, 0));
+
+        yield return new WaitForSeconds(3f);
+        PlayerMovement.obj.SetMovementInput(Vector2.zero);
+        PlayerMovement.obj.StopWalking();
 
         Player.obj.PlayForestGlyphTouch(); //The animation contains an event trigger for PlayerEvents.OnForestGlyphTouched
     }
