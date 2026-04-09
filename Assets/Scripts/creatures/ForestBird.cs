@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using FMODUnity;
 
 public class ForestBird : MonoBehaviour
 {
@@ -32,6 +33,10 @@ public class ForestBird : MonoBehaviour
     [Header("Animation")]
     [SerializeField] private Animator _animator;
     [SerializeField] private SpriteRenderer _spriteRenderer;
+
+    [Header("Sfx")]
+    [SerializeField] private EventReference _wingFlap;
+    [SerializeField] private EventReference _pick;
     
     private bool _isFlyingAway = false;
     private bool _isInCycle = false;
@@ -79,6 +84,10 @@ public class ForestBird : MonoBehaviour
         
         CheckForPlayer();
     }
+
+    public void PlayPickSfx() {
+        SoundFXManager.obj.PlayAtGameObject(_pick, gameObject);
+    }
     
     private void CheckForPlayer()
     {
@@ -113,6 +122,8 @@ public class ForestBird : MonoBehaviour
         
         if (_animator != null)
             _animator.SetTrigger("fly");
+        
+        SoundFXManager.obj.PlayAtGameObject(_wingFlap, gameObject);
         
         StartCoroutine(DestroyAfterFlightDuration());
     }
