@@ -55,7 +55,6 @@ public class PauseMenuManager : MonoBehaviour
 
     void Start()
     {
-       
     }
     
 
@@ -109,13 +108,26 @@ public class PauseMenuManager : MonoBehaviour
                     _optionsButton.navigation = optionsButtonNavigation;
                 } else {
                     _skipCutsceneMenuItem.SetActive(false);
-                    _retryRoomMenuItem.SetActive(true);
-                    Navigation resumeButtonNav = _resumeButton.navigation;
-                    resumeButtonNav.selectOnDown = _retryButton;
-                    _resumeButton.navigation = resumeButtonNav;
-                    Navigation optionsButtonNavigation = _optionsButton.navigation;
-                    optionsButtonNavigation.selectOnUp = _retryButton;
-                    _optionsButton.navigation = optionsButtonNavigation;
+                    
+                    InitRoom roomData = LevelManager.obj.GetActiveSceneInitRoomData();
+                    bool isRetryable = roomData == null || roomData.IsRetryable();
+                    _retryRoomMenuItem.SetActive(isRetryable);
+                    
+                    if(isRetryable) {
+                        Navigation resumeButtonNav = _resumeButton.navigation;
+                        resumeButtonNav.selectOnDown = _retryButton;
+                        _resumeButton.navigation = resumeButtonNav;
+                        Navigation optionsButtonNavigation = _optionsButton.navigation;
+                        optionsButtonNavigation.selectOnUp = _retryButton;
+                        _optionsButton.navigation = optionsButtonNavigation;
+                    } else {
+                        Navigation resumeButtonNav = _resumeButton.navigation;
+                        resumeButtonNav.selectOnDown = _optionsButton;
+                        _resumeButton.navigation = resumeButtonNav;
+                        Navigation optionsButtonNavigation = _optionsButton.navigation;
+                        optionsButtonNavigation.selectOnUp = _resumeButton;
+                        _optionsButton.navigation = optionsButtonNavigation;
+                    }
                 }
             }
         }
