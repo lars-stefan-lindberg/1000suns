@@ -40,23 +40,32 @@ public class FirstCaveRoomLoader : MonoBehaviour
         CaveAvatar.obj.gameObject.SetActive(false);
 
         AmbienceManager.obj.Play(_ambience);
-        yield return StartCoroutine(FadeInScreen());
+        yield return StartCoroutine(StartScene());
 
-        GameManager.obj.RegisterEvent(_eliFirstCaveRoomLoaded);
-
-        PlayerStatsManager.obj.ResumeTimer();
-        PlayerMovement.obj.UnFreeze();
-        GameManager.obj.IsPauseAllowed = true;
-        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
+        
 
         yield return null;
     }
 
-    private IEnumerator FadeInScreen() {
+    private IEnumerator StartScene() {
+        Player.obj.gameObject.GetComponent<EliAudio>().PlayLongFall();
+        yield return new WaitForSeconds(2.5f);
+        Player.obj.gameObject.GetComponent<EliAudio>().PlayHeavyLand();
         yield return new WaitForSeconds(2f); //Give title screen time to unload
         SceneFadeManager.obj.SetFadedOutState();
         SceneFadeManager.obj.SetFadeInSpeed(0.2f);
         SceneFadeManager.obj.StartFadeIn();
+
+        Player.obj.PlayGetUpAnimation();
+        yield return new WaitForSeconds(4);
+        Player.obj.StartAnimator();
+        yield return new WaitForSeconds(5);
+
+        GameManager.obj.RegisterEvent(_eliFirstCaveRoomLoaded);
+
+        PlayerMovement.obj.UnFreeze();
+        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
+
         yield return null;
     }
 }
