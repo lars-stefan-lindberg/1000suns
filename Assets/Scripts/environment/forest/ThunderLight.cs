@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using FMODUnity;
+using FMOD.Studio;
 using FunkyCode;
 using UnityEngine;
 
@@ -17,6 +18,7 @@ public class ThunderLight : MonoBehaviour
 
     private Transform _playerTransform;
     private Coroutine _flashCoroutine;
+    private EventInstance _thunderSfxInstance;
 
     void Awake() {
         _playerTransform = Player.obj.transform;
@@ -29,7 +31,10 @@ public class ThunderLight : MonoBehaviour
 
     [ContextMenu("Flash")]
     public void Flash() {
-        SoundFXManager.obj.Play2D(_lightningSfx);
+        _thunderSfxInstance = SoundFXManager.obj.CreateAttachedInstance(_lightningSfx, gameObject, null);
+        _thunderSfxInstance.start();
+        _thunderSfxInstance.release();
+
         CameraShakeManager.obj.ShakeCamera(1.94f, 1.84f, 0.5f);
         
         if (_flashCoroutine != null) {
@@ -37,6 +42,16 @@ public class ThunderLight : MonoBehaviour
         }
         
         _flashCoroutine = StartCoroutine(FlashCoroutine());
+    }
+
+    public void Stop()
+    {
+        AudioUtils.SafeStop(ref _thunderSfxInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+        CameraShakeManager.obj.ShakeCamera(0, 0, 0);
+        if(_flashCoroutine != null)
+            StopCoroutine(_flashCoroutine);
+        _light.enabled = false;
+        _light.color = new Color(_light.color.r, _light.color.g, _light.color.b, 0f);
     }
 
     private IEnumerator FlashCoroutine() {

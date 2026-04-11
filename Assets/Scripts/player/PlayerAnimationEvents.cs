@@ -67,14 +67,4 @@ public class PlayerAnimationEvents : MonoBehaviour
     public void ForestTouchGlyph() {
         PlayerEvents.TriggerForestGlyphTouched();
     }
-
-    public void UnFreeze() {
-        StartCoroutine(DelayedUnFreeze());
-    }
-
-    private IEnumerator DelayedUnFreeze() {
-        yield return new WaitForSeconds(1f);
-
-        PlayerMovement.obj.UnFreeze();
-    }
 }
