@@ -40,10 +40,16 @@ public class BackgroundLayersManager : MonoBehaviour
     [SerializeField] private float _parallaxBackY = 0.02f;
     [SerializeField] private float _parallaxFrontX = 0.1f;
     [SerializeField] private float _parallaxFrontY = 0.04f;
+    [SerializeField] private bool _disableYParallax = false;
+    [SerializeField] private bool _lockBackgroundYPosition = false;
 
     private Vector3 _cameraStartPosition;
     private Vector3 _backStartLocalPosition;
     private Vector3 _frontStartLocalPosition;
+    private float _backOriginalLocalY;
+    private float _frontOriginalLocalY;
+    private float _managerOriginalLocalY;
+    private float _managerOriginalWorldY;
 
     private Vector3 _rootVelocity;
     private Vector3 _backVelocity;
@@ -69,6 +75,19 @@ public class BackgroundLayersManager : MonoBehaviour
         }
         _transform = transform;
         _startPosition = transform.position;
+        
+        _managerOriginalLocalY = _transform.localPosition.y;
+        _managerOriginalWorldY = _transform.position.y;
+        
+        if (_backgroundBack != null)
+        {
+            _backOriginalLocalY = _backgroundBack.localPosition.y;
+        }
+        
+        if (_backgroundFront != null)
+        {
+            _frontOriginalLocalY = _backgroundFront.localPosition.y;
+        }
 
         if (!_isChildOfMainCamera && _mainCamera != null)
         {
@@ -136,10 +155,20 @@ public class BackgroundLayersManager : MonoBehaviour
         _startPosition = _transform.position;
         _rootSmoothedPosition = _transform.position;
         _rootLastSnappedPixels = WorldToPixel(_rootSmoothedPosition);
+        
+        if (_managerOriginalLocalY == 0f && _managerOriginalWorldY == 0f)
+        {
+            _managerOriginalLocalY = _transform.localPosition.y;
+            _managerOriginalWorldY = _transform.position.y;
+        }
 
         if (_backgroundBack != null)
         {
             _backStartLocalPosition = _backgroundBack.localPosition;
+            if (_backOriginalLocalY == 0f)
+            {
+                _backOriginalLocalY = _backgroundBack.localPosition.y;
+            }
             _backSmoothedLocalPosition = _backgroundBack.localPosition;
             _backLastSnappedPixels = WorldToPixel(_backSmoothedLocalPosition);
         }
@@ -147,6 +176,10 @@ public class BackgroundLayersManager : MonoBehaviour
         if (_backgroundFront != null)
         {
             _frontStartLocalPosition = _backgroundFront.localPosition;
+            if (_frontOriginalLocalY == 0f)
+            {
+                _frontOriginalLocalY = _backgroundFront.localPosition.y;
+            }
             _frontSmoothedLocalPosition = _backgroundFront.localPosition;
             _frontLastSnappedPixels = WorldToPixel(_frontSmoothedLocalPosition);
         }
@@ -165,7 +198,14 @@ public class BackgroundLayersManager : MonoBehaviour
         {
             Vector3 rootLocal = _transform.localPosition;
             rootLocal.x = 0f;
-            rootLocal.y = 0f;
+            if (_lockBackgroundYPosition)
+            {
+                rootLocal.y = _managerOriginalWorldY - _mainCamera.transform.position.y;
+            }
+            else
+            {
+                rootLocal.y = 0f;
+            }
             _transform.localPosition = rootLocal;
 
             _rootSmoothedPosition = _transform.position;
@@ -182,7 +222,8 @@ public class BackgroundLayersManager : MonoBehaviour
 
         if (!_isChildOfMainCamera)
         {
-            Vector3 rootTarget = new Vector3(cameraPosition.x, cameraPosition.y, _transform.position.z);
+            float targetY = _lockBackgroundYPosition ? _managerOriginalWorldY : cameraPosition.y;
+            Vector3 rootTarget = new Vector3(cameraPosition.x, targetY, _transform.position.z);
             _rootSmoothedPosition = rootTarget;
             if (_useHysteresisSnapping)
             {
@@ -198,7 +239,8 @@ public class BackgroundLayersManager : MonoBehaviour
         {
             Vector3 targetLocal = _backStartLocalPosition;
             targetLocal.x += -cameraDelta.x * _parallaxBackX;
-            targetLocal.y += -cameraDelta.y * _parallaxBackY;
+            if(!_disableYParallax && !_lockBackgroundYPosition)
+                targetLocal.y += -cameraDelta.y * _parallaxBackY;
 
             _backSmoothedLocalPosition = targetLocal;
             if (_useHysteresisSnapping)
@@ -215,7 +257,8 @@ public class BackgroundLayersManager : MonoBehaviour
         {
             Vector3 targetLocal = _frontStartLocalPosition;
             targetLocal.x += -cameraDelta.x * _parallaxFrontX;
-            targetLocal.y += -cameraDelta.y * _parallaxFrontY;
+            if(!_disableYParallax && !_lockBackgroundYPosition)
+                targetLocal.y += -cameraDelta.y * _parallaxFrontY;
 
             _frontSmoothedLocalPosition = targetLocal;
             if (_useHysteresisSnapping)
@@ -338,9 +381,17 @@ public class BackgroundLayersManager : MonoBehaviour
 
         Vector3 cameraDelta = cameraPosition - _cameraStartPosition;
 
+        if (_isChildOfMainCamera && _lockBackgroundYPosition)
+        {
+            Vector3 rootLocal = _transform.localPosition;
+            rootLocal.y = _managerOriginalWorldY - _mainCamera.transform.position.y;
+            _transform.localPosition = rootLocal;
+        }
+
         if (!_isChildOfMainCamera)
         {
-            Vector3 rootTarget = new Vector3(cameraPosition.x, cameraPosition.y, _transform.position.z);
+            float targetY = _lockBackgroundYPosition ? _managerOriginalWorldY : cameraPosition.y;
+            Vector3 rootTarget = new Vector3(cameraPosition.x, targetY, _transform.position.z);
             if (_smoothRootFollow)
             {
                 _rootSmoothedPosition = Vector3.SmoothDamp(
@@ -369,7 +420,8 @@ public class BackgroundLayersManager : MonoBehaviour
         {
             Vector3 targetLocal = _backStartLocalPosition;
             targetLocal.x += -cameraDelta.x * _parallaxBackX;
-            targetLocal.y += -cameraDelta.y * _parallaxBackY;
+            if(!_disableYParallax && !_lockBackgroundYPosition)
+                targetLocal.y += -cameraDelta.y * _parallaxBackY;
 
             _backSmoothedLocalPosition = Vector3.SmoothDamp(
                 _backSmoothedLocalPosition,
@@ -392,7 +444,8 @@ public class BackgroundLayersManager : MonoBehaviour
         {
             Vector3 targetLocal = _frontStartLocalPosition;
             targetLocal.x += -cameraDelta.x * _parallaxFrontX;
-            targetLocal.y += -cameraDelta.y * _parallaxFrontY;
+            if(!_disableYParallax && !_lockBackgroundYPosition)
+                targetLocal.y += -cameraDelta.y * _parallaxFrontY;
 
             _frontSmoothedLocalPosition = Vector3.SmoothDamp(
                 _frontSmoothedLocalPosition,

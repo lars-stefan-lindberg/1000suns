@@ -221,31 +221,12 @@ public class MainMenuManager : MonoBehaviour
         LevelManager.obj.ResetLevels();
         GameManager.obj.SetCaveTimeline(new CaveTimeline(CaveTimelineId.Id.Eli));
 
-        // AsyncOperation loadIntroSceneOperation = SceneManager.LoadSceneAsync(_introScene, LoadSceneMode.Additive);
-        // while(!loadIntroSceneOperation.isDone) {
-        //     yield return null;
-        // }
-        // Scene introScene = SceneManager.GetSceneByName(_introScene.SceneName);
-        // SceneManager.SetActiveScene(introScene);
-
-        // GameObject[] sceneGameObjects = introScene.GetRootGameObjects();
-        // GameObject cameras = sceneGameObjects.First(gameObject => gameObject.CompareTag("Cameras"));
-        // CameraManager cameraManager = cameras.GetComponent<CameraManager>();
-        // cameraManager.ActivateMainCamera();
-
-        AsyncOperation loadFirstCaveRoomOperation = SceneManager.LoadSceneAsync("Forest-1", LoadSceneMode.Additive);
-        while(!loadFirstCaveRoomOperation.isDone) {
+        AsyncOperation loadIntroSceneOperation = SceneManager.LoadSceneAsync(_introScene, LoadSceneMode.Additive);
+        while(!loadIntroSceneOperation.isDone) {
             yield return null;
         }
-        Scene firstScene = SceneManager.GetSceneByName("Forest-1");
-        SceneManager.SetActiveScene(firstScene);
-
-        //Load background
-        yield return StartCoroutine(BackgroundLoaderManager.obj.LoadAndSetBackground(_firstForestBackground));
-        //Load surfaces
-        yield return StartCoroutine(WalkableSurfacesManager.obj.AddWalkableSurface(_firstForestSurfaces));
-
-        LevelManager.obj.LoadAdjacentRooms(firstScene);
+        Scene introScene = SceneManager.GetSceneByName(_introScene.SceneName);
+        SceneManager.SetActiveScene(introScene);
         
         SceneManager.UnloadSceneAsync(_titleScreen.SceneName);
     }

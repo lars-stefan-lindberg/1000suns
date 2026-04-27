@@ -65,6 +65,7 @@ public class FirstCaveRoomLoader : MonoBehaviour
 
         PlayerMovement.obj.UnFreeze();
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
+        GameManager.obj.IsPauseAllowed = true;
 
         yield return null;
     }

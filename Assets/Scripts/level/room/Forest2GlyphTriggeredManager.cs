@@ -1,4 +1,6 @@
 using System.Collections;
+using FMOD.Studio;
+using FMODUnity;
 using UnityEngine;
 
 public class Forest2GlyphTriggeredManager : MonoBehaviour, ISkippable
@@ -9,8 +11,10 @@ public class Forest2GlyphTriggeredManager : MonoBehaviour, ISkippable
     [SerializeField] private AmbienceTrack _rain;
     [SerializeField] private GameEventId _forestGlyphTouchEventId;
     [SerializeField] private GameObject _cutsceneCamera;
+    [SerializeField] private EventReference _stinger;
 
     private Coroutine _cutsceneCoroutine;
+    private EventInstance _stingerInstance;
 
     void Start() {
         PlayerEvents.OnForestGlyphTouched += Activate;
@@ -38,7 +42,9 @@ public class Forest2GlyphTriggeredManager : MonoBehaviour, ISkippable
 
     private IEnumerator StartCutscene() {
         PauseMenuManager.obj.RegisterSkippable(this);
-        yield return new WaitForSeconds(0.5f);
+        _stingerInstance = SoundFXManager.obj.CreateAttachedInstance(_stinger, gameObject);
+        _stingerInstance.start();
+        yield return new WaitForSeconds(0.8f);
         _cutsceneCamera.SetActive(true);
         yield return new WaitForSeconds(2.5f);
 
@@ -62,6 +68,7 @@ public class Forest2GlyphTriggeredManager : MonoBehaviour, ISkippable
     public void RequestSkip() {
         PlayerMovement.obj.SetMovementInput(Vector2.zero);
         StopCoroutine(_cutsceneCoroutine);
+        AudioUtils.SafeStop(ref _stingerInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
         PlayerMovement.obj.StopWalking();
 
         AmbienceManager.obj.Play(_rain);

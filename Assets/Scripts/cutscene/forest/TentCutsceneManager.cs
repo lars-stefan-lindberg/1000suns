@@ -11,6 +11,9 @@ public class TentCutsceneManager : MonoBehaviour
     [SerializeField] private Forest1CameraHandler _cameraHandler;
     [SerializeField] private GameEventId _tentCutSceneCompleted;
     [SerializeField] private EventReference _sleepingBagSfx;
+    [SerializeField] private SceneField _forestBackgroundScene;
+    [SerializeField] private GameObject _zoomedOutBackgroundObjects;
+    [SerializeField] private Forest1LoadObjectsManager _loadObjectsManager;
 
     void Start() {
         PlayerEvents.OnTentExitComplete += OnEliAnimationCompleted;
@@ -22,6 +25,7 @@ public class TentCutsceneManager : MonoBehaviour
 
     private IEnumerator StartTentSequenceCoroutine() {
         SoundFXManager.obj.PlayAtPosition(_sleepingBagSfx, _forestTent.transform.position);
+        _loadObjectsManager.LoadRoomObjects();
         yield return new WaitForSeconds(_waitTimeUntilTentAnimation);
         _forestTent.Rumble();
     }
@@ -36,6 +40,8 @@ public class TentCutsceneManager : MonoBehaviour
         _forestTent.Close();
         yield return new WaitForSeconds(2f);
         _forestTent.StopAnimator();
+        yield return StartCoroutine(BackgroundLoaderManager.obj.LoadAndSetBackground(_forestBackgroundScene));
+        _zoomedOutBackgroundObjects.SetActive(false);
     }
 
     public void OnEliAnimationCompleted() {        

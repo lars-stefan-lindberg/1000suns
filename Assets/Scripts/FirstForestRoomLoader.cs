@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Linq;
 using Cinemachine;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,6 +9,10 @@ public class FirstForestRoomLoader : MonoBehaviour
     [SerializeField] private AmbienceTrack _ambience;
     [SerializeField] private TentCutsceneManager _tentCutsceneManager;
     [SerializeField] private GameObject _zoomedCamera;
+    [SerializeField] private GameObject _zoomedOutCamera;
+    [SerializeField] private GameObject _zoomedOutBackgroundObjects;
+    [SerializeField] private Forest1LoadObjectsManager _loadObjectsManager;
+    [SerializeField] private SceneField _firstForestSurfaces;
 
     void Start() {
         if(!GameManager.obj.HasEvent(_eliFirstForestRoomLoaded)) {
@@ -24,6 +27,30 @@ public class FirstForestRoomLoader : MonoBehaviour
     }
 
     private IEnumerator LoadRoom() {
+        StartCoroutine(WalkableSurfacesManager.obj.AddWalkableSurface(_firstForestSurfaces));
+        LevelManager.obj.LoadAdjacentRooms(gameObject.scene);
+        SceneManager.SetActiveScene(gameObject.scene);
+        _loadObjectsManager.LoadIntroObjects();
+
+        _zoomedOutCamera.SetActive(true);
+        CinemachineVirtualCamera zoomedOutCamera = _zoomedOutCamera.GetComponent<CinemachineVirtualCamera>();
+        zoomedOutCamera.enabled = true;
+        _zoomedOutBackgroundObjects.SetActive(true);
+
+        IntroEvents.InvokeFirstForestRoomReady();
+
+        yield return new WaitForSeconds(0.2f);  //Time to load forest 2 and scene objects
+        SceneFadeManager.obj.StartFadeIn(1f);
+        yield return new WaitForSeconds(0.1f);
+        
+        _zoomedCamera.SetActive(true);
+        CinemachineVirtualCamera zoomedCamera = _zoomedCamera.GetComponent<CinemachineVirtualCamera>();
+        zoomedCamera.enabled = true;
+
+        _zoomedOutCamera.SetActive(false);
+        zoomedOutCamera = _zoomedOutCamera.GetComponent<CinemachineVirtualCamera>();
+        zoomedOutCamera.enabled = false;
+
         Player.obj.SetForestStartingCoordinates();
         PlayerMovement.obj.spriteRenderer.enabled = false;
         Player.obj.gameObject.SetActive(true);
@@ -36,6 +63,8 @@ public class FirstForestRoomLoader : MonoBehaviour
 
         CaveAvatar.obj.gameObject.SetActive(false);
 
+        yield return new WaitForSeconds(6f);
+
         AmbienceManager.obj.Play(_ambience);
         yield return StartCoroutine(FadeInScreenAndStart());
 
@@ -46,13 +75,6 @@ public class FirstForestRoomLoader : MonoBehaviour
 
     private IEnumerator FadeInScreenAndStart() {
         yield return new WaitForSeconds(2f); //Give title screen time to unload
-        SceneFadeManager.obj.SetFadedOutState();
-        SceneFadeManager.obj.SetFadeInSpeed(0.2f);
-        SceneFadeManager.obj.StartFadeIn();
-
-        while(SceneFadeManager.obj.IsFadingIn) {
-            yield return null;
-        }
         _tentCutsceneManager.StartTentSequence();
 
         yield return null;

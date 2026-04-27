@@ -33,8 +33,10 @@ public class RoomMgr : MonoBehaviour
             if(_unloadRoomObjectsCoroutine != null) {
                 StopCoroutine(_unloadRoomObjectsCoroutine);
             }
-            foreach (GameObject roomObject in roomObjectsToLoad) {
-                roomObject.SetActive(true);
+            if(roomObjectsToLoad != null) {
+                foreach (GameObject roomObject in roomObjectsToLoad) {
+                    roomObject.SetActive(true);
+                }
             }
             Color darknessColor = LightingManager2D.Get().profile.DarknessColor;
             if(darknessColor != _darknessColor) {
