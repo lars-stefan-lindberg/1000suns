@@ -61,6 +61,9 @@ public class LowerCapeTrigger : MonoBehaviour, ISkippable
         Player.obj.SetAnimatorLayerAndHasCape(true);
         PlayerPowersManager.obj.EliCanForcePush = true;
         Player.obj.transform.position = _finalPlayerPosition.position;
+        PlayerMovement.obj.SetStartingOnGround();
+        PlayerMovement.obj.isGrounded = true;
+        PlayerMovement.obj.CancelJumping();
         Player.obj.ResetAnimator();
         _beamOfLightLight.gameObject.SetActive(false);
 
@@ -96,6 +99,7 @@ public class LowerCapeTrigger : MonoBehaviour, ISkippable
         zoomedCameraVcam.enabled = true;
         _defaultCamera.enabled = false;
 
+        _cape.GetComponent<Cape>().StopHover();
         yield return new WaitForSeconds(2.5f);
 
         StartSoundEvent(_lightBeamSfx, ref _lightBeamSfxInstance);

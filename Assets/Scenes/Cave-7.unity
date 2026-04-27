@@ -7512,6 +7512,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 883d9c568467a4b518753d55dbc007be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _activateOnStart: 0
   _activatedScaleMultiplier: 2.5
   _scaleUpDuration: 0.5
   _scaleDownDuration: 0.5
@@ -9263,7 +9264,7 @@ GameObject:
   - component: {fileID: 1067692835}
   m_Layer: 3
   m_Name: cave_ruins_pillars_9
-  m_TagString: Untagged
+  m_TagString: Rock
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -15060,7 +15061,7 @@ GameObject:
   - component: {fileID: 1429269932}
   m_Layer: 3
   m_Name: cave_ruins_pillars_10
-  m_TagString: Untagged
+  m_TagString: Rock
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -17380,7 +17381,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6cae5b66990fa44ed9d21a9285ec1c27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _pulseIntensity: 0.25
+  _minContrast: 0
+  _maxContrast: 1
   _increasePulseSpeed: 0.3
   _decreasePulseSpeed: 0.6
   _pauseAtBoundariesDuration: 0.08

@@ -39,6 +39,9 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
         Player.obj.SetAnimatorLayerAndHasCape(true);
         PlayerPowersManager.obj.EliCanForcePush = true;
         Player.obj.transform.position = _finalPlayerPosition.position;
+        PlayerMovement.obj.SetStartingOnGround();
+        PlayerMovement.obj.isGrounded = true;
+        PlayerMovement.obj.CancelJumping();
         Player.obj.ResetAnimator();
 
         AudioUtils.SafeStop(ref _capePickedRoarInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
@@ -97,6 +100,9 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
         Player.obj.SetAnimatorLayerAndHasCape(true);
         PlayerPowersManager.obj.EliCanForcePush = true;
         Player.obj.transform.position = _finalPlayerPosition.position;
+        PlayerMovement.obj.SetStartingOnGround();
+        PlayerMovement.obj.isGrounded = true;
+        PlayerMovement.obj.CancelJumping();
         PlayerMovement.obj.SetNewPower();
         _cape.SetActive(false);
         WhiteFadeManager.obj.StartFadeIn();
