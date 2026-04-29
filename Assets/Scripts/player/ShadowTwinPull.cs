@@ -83,6 +83,7 @@ public class ShadowTwinPull : MonoBehaviour
         obj = this;
         _collider = GetComponent<BoxCollider2D>();
         _anchorPointDetector = GetComponentInChildren<AnchorPointDetector>();
+        _deeAudio = GetComponent<DeeAudio>();
     }
 
     public void OnShoot(InputAction.CallbackContext context)

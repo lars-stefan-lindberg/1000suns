@@ -4,7 +4,13 @@ public class BabyPrisonerAlertTrigger : MonoBehaviour
 {
     public BabyPrisoner babyPrisoner;
     public float playerFreezeTime = 3f;
+    public AlertType alertType = AlertType.Hide;
     private BoxCollider2D _boxCollider;
+
+    public enum AlertType {
+        Hide,
+        Alert
+    }
 
     void Awake() {
         _boxCollider = GetComponent<BoxCollider2D>();
@@ -16,7 +22,11 @@ public class BabyPrisonerAlertTrigger : MonoBehaviour
             if(playerFreezeTime > 0) {
                 PlayerMovement.obj.Freeze(playerFreezeTime);
             }
-            babyPrisoner.Hide(transform.position);
+            if(alertType == AlertType.Hide) {
+                babyPrisoner.Hide(transform.position);
+            } else if(alertType == AlertType.Alert) {
+                babyPrisoner.Alert();
+            }
             _boxCollider.enabled = false;
         }
     }

@@ -51,6 +51,9 @@ public class CaveAvatar : MonoBehaviour
         Vector2 headTargetPosition;
 
         if(IsFollowingPlayer) {
+            //If in debug mode and no Eli, just return
+            if(PlayerMovement.obj == null) 
+                return;
             bool isPlayerFacingLeft = PlayerMovement.obj.isFacingLeft();
             _headSpriteRenderer.flipX = isPlayerFacingLeft;   
             headTargetPosition = isPlayerFacingLeft ? _playerTargetRight.position : _playerTargetLeft.position;
@@ -156,6 +159,9 @@ public class CaveAvatar : MonoBehaviour
     }
 
     public void SetFollowPlayerStartingPosition() {
+        //If in debug mode and no Eli, just return
+        if(PlayerMovement.obj == null) 
+            return;
         Vector2 headTargetPosition = PlayerMovement.obj.isFacingLeft() ? _playerTargetRight.position : _playerTargetLeft.position;
         SetPosition(headTargetPosition);
     }

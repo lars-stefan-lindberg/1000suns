@@ -21,6 +21,7 @@ public class BabyPrisoner : MonoBehaviour
 
     public float timeToTurnAround = 0.5f;
     public float turnAroundTimer = 1.3f;
+    public bool isAlertedFromStart = false;
     private bool isTurning = false;
 
     private bool isAlerted = false;
@@ -55,6 +56,8 @@ public class BabyPrisoner : MonoBehaviour
         _lightSprite2DFadeManager = GetComponentInChildren<LightSprite2DFadeManager>();
         _enemyWidth = _collider.bounds.extents.x;
         originHorizontalPos = transform.position.x;
+        if(isAlertedFromStart)
+            isAlerted = true;
     }
 
     void Update()

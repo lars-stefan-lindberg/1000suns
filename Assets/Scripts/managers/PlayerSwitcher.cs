@@ -7,6 +7,7 @@ public class PlayerSwitcher : MonoBehaviour
     public PlayerInput eliInput;
     public PlayerInput deeInput;
     public PlayerInput blobInput;
+    public bool isDeeDevMode = false;
 
     public string keyboardControlSchemeName;
     public string gamepadControlSchemeName;
@@ -28,7 +29,11 @@ public class PlayerSwitcher : MonoBehaviour
 
     void Start()
     {
-        SwitchToEli();
+        if(isDeeDevMode) {
+            SwitchToDee();
+        } else {
+            SwitchToEli();
+        }
     }
 
     public void SwitchToEli()

@@ -114,8 +114,10 @@ public class LevelManager : MonoBehaviour
             else if(PlayerBlob.obj != null && playerType == PlayerManager.PlayerType.BLOB)
                 PlayerBlob.obj.transform.position = playerSpawnPointCollider.transform.position - new Vector3(0, 0.5f, 0);
         } else if(caveTimelineId == CaveTimelineId.Id.Dee) {
-            Player.obj.gameObject.SetActive(false);
-            PlayerBlob.obj.gameObject.SetActive(true);
+            if(Player.obj != null)
+                Player.obj.gameObject.SetActive(false);
+            if(PlayerBlob.obj != null)
+                PlayerBlob.obj.gameObject.SetActive(false);
             if(ShadowTwinPlayer.obj != null) {
                 ShadowTwinPlayer.obj.transform.position = playerSpawnPointCollider.transform.position;
             }
