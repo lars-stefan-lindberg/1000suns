@@ -143,6 +143,7 @@ public class Block : MonoBehaviour
         if(_pullable.IsPulled)
             _rigidBody.bodyType = RigidbodyType2D.Dynamic;
 
+        // Don't apply deceleration when being pulled/controlled
         if (_rigidBody.velocity.x != 0 && !_pullable.IsPulled)
         {
             _rigidBody.velocity = new Vector2(Mathf.MoveTowards(_rigidBody.velocity.x, 0, deceleration * Time.deltaTime), _rigidBody.velocity.y);

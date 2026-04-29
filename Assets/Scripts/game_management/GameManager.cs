@@ -44,7 +44,7 @@ public class GameManager : MonoBehaviour
         // var testEvent = ScriptableObject.CreateInstance<GameEventId>();
         // testEvent.id = "cave-3.soot-freed";
         // Progress.RegisterEvent(testEvent);
-        _caveTimeline = new CaveTimeline(CaveTimelineId.Id.Eli);
+        _caveTimeline = new CaveTimeline(CaveTimelineId.Id.Dee);
 
         // Hook debugger if present
         if (debugView != null)

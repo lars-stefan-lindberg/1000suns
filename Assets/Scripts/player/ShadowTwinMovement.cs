@@ -93,7 +93,31 @@ public class ShadowTwinMovement : MonoBehaviour
     {
         _time += Time.deltaTime;
         UpdateAnimator();
-        FlipPlayer(_movementInput.x);
+        
+        // Handle player flip based on controlled object or movement input
+        if (ShadowTwinPull.obj != null && ShadowTwinPull.obj.IsControllingObject)
+        {
+            Rigidbody2D controlledObject = ShadowTwinPull.obj.GetControlledObject();
+            if (controlledObject != null)
+            {
+                // Face the controlled object
+                float objectX = controlledObject.position.x;
+                float playerX = transform.position.x;
+                if (objectX < playerX - 0.1f)
+                {
+                    spriteRenderer.flipX = true;
+                }
+                else if (objectX > playerX + 0.1f)
+                {
+                    spriteRenderer.flipX = false;
+                }
+            }
+        }
+        else
+        {
+            FlipPlayer(_movementInput.x);
+        }
+        
         if (_mergeSplitHeld)
         {
             _mergeSplitHoldTimer += Time.deltaTime;
@@ -384,6 +408,10 @@ public class ShadowTwinMovement : MonoBehaviour
     public void SetMovementInput(Vector2 movementInput) {
         _freezePlayer = false;
         _movementInput = movementInput;
+    }
+
+    public Vector2 GetMovementInput() {
+        return _movementInput;
     }
 
     public void OnMovement(InputAction.CallbackContext value)
@@ -1093,6 +1121,12 @@ public class ShadowTwinMovement : MonoBehaviour
     {
         if(_freezePlayer) {
             _frameVelocity.x = 0;
+            return;
+        }
+
+        // When controlling an object, stop player movement
+        if(ShadowTwinPull.obj != null && ShadowTwinPull.obj.IsControllingObject) {
+            _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, _stats.GroundDeceleration * Time.fixedDeltaTime);
             return;
         }
 

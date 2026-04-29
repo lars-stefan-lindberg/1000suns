@@ -54,6 +54,17 @@ public class ShadowTwinPull : MonoBehaviour
     public float raySpacing = 0.2f; // space between the rays
     private DeeAudio _deeAudio;
 
+    [Header("Controllable Object Movement")]
+    public float controlledObjectAcceleration = 15f;
+    public float controlledObjectMaxSpeed = 5f;
+    public float controlledObjectDeceleration = 10f;
+    private Vector2 _controlledObjectVelocity = Vector2.zero;
+    private float _originalGravityScale = 0f;
+    private bool _isControllingObject = false;
+
+    public bool IsControllingObject => _isControllingObject;
+    public Rigidbody2D GetControlledObject() => _targetRb;
+
     public enum PullPowerType {
         Full,
         Powered
@@ -194,9 +205,18 @@ public class ShadowTwinPull : MonoBehaviour
 
     public void CancelPulling() {
         _isPullingObject = false;
+        _isControllingObject = false;
 
         ShadowTwinMovement.obj.EndAnchorPull();
         ShadowTwinPlayer.obj.ResetGravity();
+        
+        // Restore object's gravity
+        if (_targetRb != null)
+        {
+            _targetRb.gravityScale = _originalGravityScale;
+            _controlledObjectVelocity = Vector2.zero;
+        }
+        
         ResetPullableObject();
     }
 
@@ -214,14 +234,20 @@ public class ShadowTwinPull : MonoBehaviour
             _targetRb = _pulledPullable.GetRigidbody();
             _pulledPullable.IsPulled = true;
             _pulledCollider = pullableCollider;
+            
+            // Store original gravity and set to 0 for control
+            _originalGravityScale = _targetRb.gravityScale;
+            _targetRb.gravityScale = 0f;
+            _controlledObjectVelocity = Vector2.zero;
+            _isControllingObject = true;
         }
     }
 
     private void Update()
     {
-        if (_isPullingObject)
+        if (_isPullingObject && !_isControllingObject)
         {
-            // Continuosly detect new/existing pullable
+            // Only detect pullables when not already controlling one
             PullDetectionResult pullable = DetectPullable();
             if(pullable.collider == null) {
                 ResetPullableObject();
@@ -234,94 +260,123 @@ public class ShadowTwinPull : MonoBehaviour
                 }
             } 
         }
+        // When controlling an object, we don't need ray detection - use radius constraint instead
     }
 
     private void FixedUpdate()
     {
-        if (!_isPullingObject)
+        if (!_isPullingObject || !_isControllingObject)
             return;
 
         if (_targetRb == null || _pulledPullable == null || _pulledPullable.IsHeavy())
             return;
 
         Vector2 playerPosition = transform.position;
-        Vector2 closestPoint = _pulledCollider != null ? _pulledCollider.ClosestPoint(playerPosition) : _targetRb.position;
-        Vector2 toPlayer = playerPosition - closestPoint;
-        float distance = toPlayer.magnitude;
+        Vector2 objectPosition = _targetRb.position;
+        Vector2 offsetFromPlayer = objectPosition - playerPosition;
+        float distanceToPlayer = offsetFromPlayer.magnitude;
+        
+        // Safety margin to prevent drifting beyond range
+        float safetyMargin = 0.2f;
+        float effectiveMaxRange = pullRange - safetyMargin;
 
-        // If close enough, bring the object to a halt in front of the player
-        if (distance <= stopDistanceFromPlayer && distance > 0.01f)
+        // Get movement input from ShadowTwinMovement
+        Vector2 movementInput = ShadowTwinMovement.obj.GetMovementInput();
+
+        // Check if object is in valid semicircle (top half)
+        bool isInTopHalf = offsetFromPlayer.y >= 0f;
+        
+        // Apply acceleration or deceleration based on input
+        if (movementInput.magnitude > 0.01f)
         {
-            Vector2 directionToPlayer = toPlayer / distance;
-            float currentSpeedTowardsPlayer = Vector2.Dot(_targetRb.velocity, directionToPlayer);
+            Vector2 targetVelocity = movementInput.normalized * controlledObjectMaxSpeed;
+            Vector2 potentialVelocity = Vector2.MoveTowards(
+                _controlledObjectVelocity,
+                targetVelocity,
+                controlledObjectAcceleration * Time.fixedDeltaTime
+            );
+            
+            // Calculate potential new position
+            Vector2 potentialNewPosition = objectPosition + potentialVelocity * Time.fixedDeltaTime;
+            Vector2 potentialOffset = potentialNewPosition - playerPosition;
+            float potentialDistance = potentialOffset.magnitude;
+            bool potentialInTopHalf = potentialOffset.y >= 0f;
 
-            if (_targetRb.bodyType == RigidbodyType2D.Dynamic)
+            // Check constraints
+            bool exceedsRadius = potentialDistance > effectiveMaxRange;
+            bool leavesTopHalf = isInTopHalf && !potentialInTopHalf;
+            
+            if (exceedsRadius || leavesTopHalf)
             {
-                if (currentSpeedTowardsPlayer > 0f)
+                // Movement would violate constraints
+                if (exceedsRadius && distanceToPlayer >= effectiveMaxRange)
                 {
-                    // Remove the velocity component toward the player so it comes to rest here
-                    _targetRb.velocity -= directionToPlayer * currentSpeedTowardsPlayer;
+                    // At max radius - only allow movement toward player or tangential
+                    Vector2 directionToPlayer = offsetFromPlayer.normalized;
+                    float dotProduct = Vector2.Dot(movementInput.normalized, directionToPlayer);
+                    
+                    if (dotProduct > 0.01f)
+                    {
+                        // Moving toward player - allow it
+                        _controlledObjectVelocity = potentialVelocity;
+                    }
+                    else
+                    {
+                        // Moving away - hard stop
+                        _controlledObjectVelocity = Vector2.zero;
+                    }
+                }
+                else if (leavesTopHalf)
+                {
+                    // Trying to go below player - only allow horizontal/upward movement
+                    if (movementInput.y >= -0.01f)
+                    {
+                        // Allow horizontal or upward movement
+                        _controlledObjectVelocity = potentialVelocity;
+                    }
+                    else
+                    {
+                        // Trying to move down - hard stop
+                        _controlledObjectVelocity = Vector2.zero;
+                    }
+                }
+                else
+                {
+                    // Would exceed radius - hard stop
+                    _controlledObjectVelocity = Vector2.zero;
                 }
             }
-            else if (_targetRb.bodyType == RigidbodyType2D.Kinematic)
+            else
             {
-                // For kinematic bodies, explicitly place them at the stop distance and clear velocity
-                _targetRb.velocity = Vector2.zero;
-            }
-
-            return;
-        }
-
-        if (distance <= stopDistanceFromPlayer)
-            return;
-
-        // Only use horizontal component for direction to ensure purely horizontal pulling
-        Vector2 direction = new Vector2(Mathf.Sign(toPlayer.x), 0f).normalized;
-
-        // Only consider horizontal velocity when calculating speed towards player
-        float currentSpeedTowardsPlayerX = _targetRb.velocity.x * direction.x;
-        float clampedCurrentSpeed = Mathf.Max(0f, currentSpeedTowardsPlayerX);
-        float speedRatio = maxPullSpeed > 0f ? Mathf.Clamp01(clampedCurrentSpeed / maxPullSpeed) : 0f;
-
-        float desiredAcceleration = _pulledPullable.GetPullForce() * (1f - speedRatio);
-        if (desiredAcceleration <= 0f)
-        {
-            // Safety clamp: if we somehow exceeded max speed, bring it back down.
-            if (_targetRb.bodyType == RigidbodyType2D.Dynamic && maxPullSpeed > 0f)
-            {
-                float currentTowards = _targetRb.velocity.x * direction.x;
-                if (currentTowards > maxPullSpeed)
-                {
-                    float excess = currentTowards - maxPullSpeed;
-                    _targetRb.velocity -= new Vector2(direction.x * excess, 0f);
-                }
-            }
-            return;
-        }
-
-        if (_targetRb.bodyType == RigidbodyType2D.Dynamic)
-        {
-            float forceMagnitude = desiredAcceleration * _targetRb.mass;
-            _targetRb.AddForce(direction * forceMagnitude);
-
-            // Clamp after applying force to avoid overshoot from large accumulated forces.
-            if (maxPullSpeed > 0f)
-            {
-                float newTowards = _targetRb.velocity.x * direction.x;
-                if (newTowards > maxPullSpeed)
-                {
-                    float excess = newTowards - maxPullSpeed;
-                    _targetRb.velocity -= new Vector2(direction.x * excess, 0f);
-                }
+                // Normal movement within constraints
+                _controlledObjectVelocity = potentialVelocity;
             }
         }
-        else if (_targetRb.bodyType == RigidbodyType2D.Kinematic)
+        else
         {
-            // For kinematic bodies, simulate acceleration by updating velocity manually
-            float newSpeed = clampedCurrentSpeed + desiredAcceleration * Time.fixedDeltaTime;
-            newSpeed = maxPullSpeed > 0f ? Mathf.Min(newSpeed, maxPullSpeed) : newSpeed;
-            Vector2 newVelocity = direction * newSpeed;
-            _targetRb.velocity = newVelocity;
+            // No input - decelerate
+            bool atConstraintBoundary = distanceToPlayer >= effectiveMaxRange || !isInTopHalf;
+            
+            if (atConstraintBoundary)
+            {
+                // At boundary - hard stop
+                _controlledObjectVelocity = Vector2.zero;
+            }
+            else
+            {
+                // Within valid area - normal deceleration
+                _controlledObjectVelocity = Vector2.MoveTowards(
+                    _controlledObjectVelocity,
+                    Vector2.zero,
+                    controlledObjectDeceleration * Time.fixedDeltaTime
+                );
+            }
+        }
+
+        // Apply velocity to the rigidbody
+        if (_targetRb.bodyType == RigidbodyType2D.Dynamic || _targetRb.bodyType == RigidbodyType2D.Kinematic)
+        {
+            _targetRb.velocity = _controlledObjectVelocity;
         }
     }
 
@@ -378,16 +433,46 @@ public class ShadowTwinPull : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        Vector2 direction = new Vector2(-1, 0f);
+        if (_isControllingObject && _targetRb != null)
+        {
+            // Draw semicircle constraint when controlling an object
+            Gizmos.color = Color.yellow;
+            Vector3 playerPos = transform.position;
+            
+            // Draw the semicircle arc (top half)
+            int segments = 30;
+            for (int i = 0; i < segments; i++)
+            {
+                float angle1 = Mathf.PI * i / segments; // 0 to PI (180 degrees)
+                float angle2 = Mathf.PI * (i + 1) / segments;
+                
+                Vector3 point1 = playerPos + new Vector3(Mathf.Cos(angle1) * pullRange, Mathf.Sin(angle1) * pullRange, 0);
+                Vector3 point2 = playerPos + new Vector3(Mathf.Cos(angle2) * pullRange, Mathf.Sin(angle2) * pullRange, 0);
+                
+                Gizmos.DrawLine(point1, point2);
+            }
+            
+            // Draw the base line (horizontal through player)
+            Gizmos.DrawLine(playerPos + Vector3.left * pullRange, playerPos + Vector3.right * pullRange);
+            
+            // Draw line to controlled object
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(playerPos, _targetRb.position);
+        }
+        else
+        {
+            // Draw detection rays when not controlling
+            Vector2 direction = new Vector2(-1, 0f);
 
-        Vector2 origin1 = (Vector2)transform.position + new Vector2(0,  raySpacing);
-        Vector2 origin2 = (Vector2)transform.position + new Vector2(0, 0);
-        Vector2 origin3 = (Vector2)transform.position + new Vector2(0, -raySpacing);
+            Vector2 origin1 = (Vector2)transform.position + new Vector2(0,  raySpacing);
+            Vector2 origin2 = (Vector2)transform.position + new Vector2(0, 0);
+            Vector2 origin3 = (Vector2)transform.position + new Vector2(0, -raySpacing);
 
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawLine(origin1, origin1 + direction * pullRange);
-        Gizmos.DrawLine(origin2, origin2 + direction * pullRange);
-        Gizmos.DrawLine(origin3, origin3 + direction * pullRange);
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawLine(origin1, origin1 + direction * pullRange);
+            Gizmos.DrawLine(origin2, origin2 + direction * pullRange);
+            Gizmos.DrawLine(origin3, origin3 + direction * pullRange);
+        }
     }
 
 
