@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using FMODUnity;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class BreakableWall : MonoBehaviour
 {
@@ -35,6 +36,7 @@ public class BreakableWall : MonoBehaviour
     private float _originXPosition;
     public bool isSecret = true;
     public bool hasHint = false;
+    public UnityEvent OnWallBreak;
 
     private void Awake() {
         _spriteRenderer = GetComponent<SpriteRenderer>();
@@ -95,6 +97,7 @@ public class BreakableWall : MonoBehaviour
             _fadeSprite = true;
             breakWall = false;
             breakAnimation.Emit(6);
+            OnWallBreak?.Invoke();
         }
         if(_fadeSprite) {
             _spriteRenderer.color = new Color(_spriteRenderer.color.r, _spriteRenderer.color.b, _spriteRenderer.color.g, Mathf.MoveTowards(_spriteRenderer.color.a, 0, fadeMultiplier * Time.deltaTime));

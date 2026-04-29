@@ -38,13 +38,15 @@ public class GameManager : MonoBehaviour
 
     public bool IsPauseAllowed { get; set; }
 
+    public CaveTimelineId.Id startingTimeline = CaveTimelineId.Id.Eli;
+
     void Awake() {
         obj = this;
         Progress = new GameProgress();
         // var testEvent = ScriptableObject.CreateInstance<GameEventId>();
         // testEvent.id = "cave-3.soot-freed";
         // Progress.RegisterEvent(testEvent);
-        _caveTimeline = new CaveTimeline(CaveTimelineId.Id.Dee);
+        _caveTimeline = new CaveTimeline(startingTimeline);
 
         // Hook debugger if present
         if (debugView != null)
