@@ -10,6 +10,7 @@ public class DialogueContent : ScriptableObject
     public enum DialogueActor {
         Player,
         CaveAvatar,
+        Dee,
     }
 
     [System.Serializable]

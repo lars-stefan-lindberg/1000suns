@@ -11,7 +11,10 @@ public class PlayMusicTrigger : MonoBehaviour
 
         if(_stopAmbience)
             AmbienceManager.obj.Stop();
-            
-        MusicManager.obj.Play(_track);
+
+        if(_track == null)
+            MusicManager.obj.Stop();
+        else            
+            MusicManager.obj.Play(_track);
     }
 }
