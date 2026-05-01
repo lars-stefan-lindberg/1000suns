@@ -25,7 +25,7 @@ public class BabyPrisonerAlertTrigger : MonoBehaviour
             if(alertType == AlertType.Hide) {
                 babyPrisoner.Hide(transform.position);
             } else if(alertType == AlertType.Alert) {
-                babyPrisoner.Alert();
+                babyPrisoner.Alert(transform.position);
             }
             _boxCollider.enabled = false;
         }

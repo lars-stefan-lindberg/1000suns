@@ -531,6 +531,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _musicTrack: {fileID: 0}
+  _firstPrisonerFightEnded: {fileID: 0}
+  _firstPrisonerFightStarted: {fileID: 0}
+  _spawnPoint: {fileID: 0}
   babyPrisoner: {fileID: 672886914}
   prisoner: {fileID: 24453388}
   lockedDoor: {fileID: 690113094}
@@ -721,6 +724,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 012ee85d80bd2491fb0a701d561ec41f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _firstPrisonerFightEnded: {fileID: 0}
+  _bossGameObjects: {fileID: 0}
 --- !u!1 &354576019 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 930284411824747446, guid: 7a5ff5d75572f4e97b444f172be977ea, type: 3}
@@ -42057,6 +42062,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 805bf4af261af40099c34210277e1a6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _firstPrisonerFightStarted: {fileID: 0}
 --- !u!4 &832569887 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1811493771940002750, guid: 85681cff689914034886db86c695de5b, type: 3}
@@ -42206,6 +42212,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 123b15f783bfe4b28afe58182c95b1ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _babyPrisonerAlerted: {fileID: 0}
 --- !u!61 &1083931322
 BoxCollider2D:
   m_ObjectHideFlags: 0

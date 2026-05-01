@@ -180,7 +180,18 @@ public class BabyPrisoner : MonoBehaviour
     }
 
     public float alertRunDuration = 1.5f;
-    public void Alert() {
+    public void Alert(Vector2 triggerPosition) {
+        float positionDiff = transform.position.x - triggerPosition.x;
+        if(positionDiff > 0) {
+            Vector3 currentRotation = transform.eulerAngles;
+            currentRotation.y = -180;
+            transform.eulerAngles = currentRotation;
+        } else {
+            Vector3 currentRotation = transform.eulerAngles;
+            currentRotation.y = 0;
+            transform.eulerAngles = currentRotation;
+        }
+
         speed = 0;
         isAlerted = true;
         isTurning = false;
@@ -212,11 +223,6 @@ public class BabyPrisoner : MonoBehaviour
     private IEnumerator AlertRunDelay(float alertRunDelay) {
         yield return new WaitForSeconds(alertRunDelay);
         _animator.SetBool("isAlerted", isAlerted);
-        if(!IsFacingLeft() && alertRunDirection == -1) {
-            FlipHorizontal();
-        } else if(IsFacingLeft() && alertRunDirection == 1) {
-            FlipHorizontal();
-        }
         speed = alertSpeed;
         _babyPrisonerAudio.PlayEscape(ref _escapeAudioInstance);
     }
