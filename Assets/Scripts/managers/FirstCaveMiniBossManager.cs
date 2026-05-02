@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -25,10 +26,15 @@ public class FirstCaveMiniBossManager : MonoBehaviour
         if(!GameManager.obj.HasEvent(_bossCompleted)) {
             if(!_isBossFightStarted) {
                 GameManager.obj.SetCurrentSpawnPointId(_spawnPoint.SpawnPointID);
-                MusicManager.obj.Play(_bossTrack);
+                StartCoroutine(DelayedStartMusic());
                 SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
                 _isBossFightStarted = true;
             } 
         }
+    }
+
+    private IEnumerator DelayedStartMusic() {
+        yield return new WaitForSeconds(1.2f);
+        MusicManager.obj.Play(_bossTrack);
     }
 }
