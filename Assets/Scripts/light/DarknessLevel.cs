@@ -27,9 +27,9 @@ public class DarknessLevel : MonoBehaviour
     {
         new DarknessLevelData { level = DarknessLevelType.PitchBlack, hue = 0f, saturation = 0f, value = 0f },
         new DarknessLevelData { level = DarknessLevelType.VeryDark, hue = 0f, saturation = 0f, value = 0.01f },
-        new DarknessLevelData { level = DarknessLevelType.Dark, hue = 0f, saturation = 0f, value = 0.05f },
-        new DarknessLevelData { level = DarknessLevelType.MediumDark, hue = 0f, saturation = 0f, value = 0.8f },
-        new DarknessLevelData { level = DarknessLevelType.LightDark, hue = 0f, saturation = 0f, value = 0.15f },
+        new DarknessLevelData { level = DarknessLevelType.Dark, hue = 0f, saturation = 0f, value = 0.08f },
+        new DarknessLevelData { level = DarknessLevelType.MediumDark, hue = 0f, saturation = 0f, value = 0.15f },
+        new DarknessLevelData { level = DarknessLevelType.LightDark, hue = 0f, saturation = 0f, value = 0.3f },
         new DarknessLevelData { level = DarknessLevelType.FullyLit, hue = 0f, saturation = 0f, value = 1f }
     };
 
