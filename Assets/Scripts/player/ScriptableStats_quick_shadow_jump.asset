@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6563dd16baeb94de88c8ed32ee411520, type: 3}
-  m_Name: ScriptableStats
+  m_Name: ScriptableStats_quick_shadow_jump
   m_EditorClassIdentifier: 
   PlayerLayer:
     serializedVersion: 2
@@ -37,11 +37,10 @@ MonoBehaviour:
   ShadowJumpPower: 12
   ShadowJumpHorizontalAcceleration: 150
   ShadowJumpHorizontalDeceleration: 20
-  ShadowJumpVerticalAcceleration: 20
-  ShadowJumpVerticalDeceleration: 35
-  ShadowJumpMaxHorizontalSpeed: 15
+  ShadowJumpVerticalAcceleration: 35
+  ShadowJumpVerticalDeceleration: 40
+  ShadowJumpMaxHorizontalSpeed: 18
   ShadowJumpMaxFallSpeed: 20.3
   ShadowJumpEndEarlyGravityModifier: 3
-  ShadowJumpHorizontalDecelerationPower: 5
-  ShadowJumpDecelerationStartDistance: 4
-  ShadowJumpInterruptedDeceleration: 30
+  ShadowJumpHorizontalDecelerationPower: 10
+  ShadowJumpDecelerationStartDistance: 5

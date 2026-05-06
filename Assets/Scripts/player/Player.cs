@@ -11,6 +11,7 @@ public class Player : MonoBehaviour
     public float spawnFreezeDuration = 1.4f;
     private bool _hasCape = false;
     public float _forcePushFlashSpeed = 0.17f;
+    public float _shadowJumpFlashSpeed = 0.1f;
 
     private Animator _animator;
     private PlayerFlash _playerFlash;
@@ -151,6 +152,10 @@ public class Player : MonoBehaviour
     [ContextMenu("Force push flash")]
     public void ForcePushFlash() {
         _playerFlash.FlashFor(0.1f, _forcePushFlashSpeed);
+    }
+
+    public void ShadowJumpFlash() {
+        _playerFlash.FlashFor(0.1f, _shadowJumpFlashSpeed);
     }
 
     [ContextMenu("Flash")]

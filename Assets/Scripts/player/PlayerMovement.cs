@@ -26,6 +26,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     [SerializeField] private GameObject _playerTwin;
     [SerializeField] private GhostTrailManager _ghostTrail;
     [SerializeField] private GameObject _soulVfx;
+    [SerializeField] private ParticleSystem _shadowJumpParticles;
     
     public SpriteRenderer spriteRenderer;
     public GameObject anchor;
@@ -268,7 +269,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             StartCoroutine(JumpSqueeze(_landedSqueezeX, _landedSqueezeY, _landedSqueezeTime));
             _landed = false;
         }
-        _animator.SetBool("isForcePushJumping", isForcePushJumping);
+        _animator.SetBool("isForcePushJumping", _isShadowJumping);
     }
 
     private bool _freezePlayer = false;
@@ -663,6 +664,11 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             }
             if (!PowerJumpMaxCharged)
             {
+                if(PlayerPowersManager.obj.EliCanShadowJump && _movementInput.x != 0 && PlayerPush.obj.IsFullyCharged() && (isGrounded || CanUseCoyote)) {
+                    ExecuteShadowJump();
+                    _jumpHeldInput = true;
+                    return;
+                }
                 if(PlayerPowersManager.obj.EliCanForcePushJump && _movementInput.x != 0 && PlayerPush.obj.IsFullyCharged() && (isGrounded || CanUseCoyote)) {
                     _jumpToConsume = true;
                     _isDashing = false;
@@ -951,6 +957,13 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             jumpedWhileForcePushJumping = false;
             isFalling = false;
 
+            if (_isShadowJumping)
+            {
+                _isShadowJumping = false;
+                _cameFromShadowJump = true;
+                _eliAudio.PlayForcePushLand();
+            }
+
             //To avoid "double grounded". Sometimes when player barely reaches up on edge it gets grounded, but still has upwards velocity, and lands again.
             _frameVelocity.y = 0; 
 
@@ -1053,6 +1066,13 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     private float _powerJumpAirGravityModifer = 0.4f;
     private const float POWER_JUMP_MAX_CHARGED_TIME = 0.5f;
     private const int MAX_NUMBER_OF_AIR_JUMPS = 1;
+    
+    private bool _isShadowJumping = false;
+    private bool _cameFromShadowJump = false;
+    private float _shadowJumpStartY = 0f;
+    private float _shadowJumpStartX = 0f;
+    private float _shadowJumpHorizontalDistanceTraveled = 0f;
+    private bool _shadowJumpOppositeDirectionPressed = false;
 
     private bool PowerJumpMaxCharged => _buildUpPowerJumpTime >= POWER_JUMP_MAX_CHARGED_TIME;
     private bool CanUseJump => (isGrounded || CanUseCoyote) && _jumpToConsume;
@@ -1119,12 +1139,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         }
         
         DustParticleMgr.obj.CreateDust(PlayerManager.PlayerType.HUMAN);
-
-        if(isForcePushJumping) {
-            jumpedWhileForcePushJumping = true;
-            _eliAudio.PlayForcePushJump();
-        } else
-            _sharedPlayerAudio.PlayJump();
+        _sharedPlayerAudio.PlayJump();
 
         StartCoroutine(JumpSqueeze(_jumpSqueezeX, _jumpSqueezeY, _jumpSqueezeTime));
         _jumpToConsume = false;
@@ -1140,6 +1155,33 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _airJumpToConsume = false;
         _numberOfAirJumps++;
         StaminaMgr.obj.ExecutePower(new StaminaMgr.AirJump());
+    }
+
+    private void ExecuteShadowJump()
+    {
+        isOnMoveable = false;
+        _endedJumpEarly = false;
+        _timeJumpWasPressed = 0;
+        _coyoteUsable = false;
+        _frameVelocity.y = _stats.ShadowJumpPower;
+        _isShadowJumping = true;
+        _cameFromShadowJump = false;
+        _jumpToConsume = false;
+        _shadowJumpStartY = transform.position.y;
+        _shadowJumpStartX = transform.position.x;
+        _shadowJumpHorizontalDistanceTraveled = 0f;
+        _shadowJumpOppositeDirectionPressed = false;
+        
+        PlayerPush.obj.ResetBuiltUpPower();
+        
+        _shadowJumpParticles.Play();
+        StartCoroutine(JumpSqueeze(_jumpSqueezeX, _jumpSqueezeY, _jumpSqueezeTime));
+        
+        PlayerPush.obj.ExecuteShadowJumpVfx();
+        _eliAudio.PlayForcePushJump();
+        _ghostTrail.ShowGhosts();
+        Jumped?.Invoke();
+        CancelPowerJumpCharge();
     }
 
     private void ExecuteJump(float jumpPower)
@@ -1182,6 +1224,45 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             //Time to defy physics and keep horizontal velocity, except if you hit a wall
             if(Player.obj.rigidBody.velocity.x < 0.01 && Player.obj.rigidBody.velocity.x > -0.01)
                 jumpedWhileForcePushJumping = false;
+        } else if (_isShadowJumping) {
+            _shadowJumpHorizontalDistanceTraveled = Mathf.Abs(transform.position.x - _shadowJumpStartX);
+            bool shouldApplyDeceleration = _shadowJumpHorizontalDistanceTraveled >= _stats.ShadowJumpDecelerationStartDistance;
+            
+            if (_movementInput.x == 0)
+            {
+                _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, _stats.ShadowJumpHorizontalDeceleration * Time.fixedDeltaTime);
+            }
+            else
+            {
+                if (!_shadowJumpOppositeDirectionPressed)
+                {
+                    bool isPressingOppositeDirection = (_frameVelocity.x > 0 && _movementInput.x < 0) || (_frameVelocity.x < 0 && _movementInput.x > 0);
+                    if (isPressingOppositeDirection)
+                    {
+                        _shadowJumpOppositeDirectionPressed = true;
+                    }
+                }
+                
+                if (_shadowJumpOppositeDirectionPressed)
+                {
+                    if (_movementInput.x == 0)
+                    {
+                        _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, _stats.AirDeceleration * Time.fixedDeltaTime);
+                    }
+                    else
+                    {
+                        _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, _movementInput.x * _stats.MaxSpeed, _stats.ShadowJumpInterruptedDeceleration * Time.fixedDeltaTime);
+                    }
+                }
+                else if (shouldApplyDeceleration)
+                {
+                    _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, _movementInput.x * _stats.MaxSpeed, _stats.ShadowJumpHorizontalDecelerationPower * Time.fixedDeltaTime);
+                }
+                else
+                {
+                    _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, _movementInput.x * _stats.ShadowJumpMaxHorizontalSpeed, _stats.ShadowJumpHorizontalAcceleration * Time.fixedDeltaTime);
+                }
+            }
         } else {
             if (_isBalancing) {
                 HandleBalancingMovement();
@@ -1284,6 +1365,21 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             {
                 //Just keep horizontal movement
                 _frameVelocity.y = 0;
+            }
+            else if (_isShadowJumping)
+            {
+                bool isAboveStartingPosition = transform.position.y >= _shadowJumpStartY;
+                if (isAboveStartingPosition)
+                {
+                    var shadowGravity = _frameVelocity.y > 0 ? _stats.ShadowJumpVerticalDeceleration : _stats.ShadowJumpVerticalAcceleration;
+                    if (_endedJumpEarly && _frameVelocity.y > 0)
+                        shadowGravity *= _stats.ShadowJumpEndEarlyGravityModifier;
+                    _frameVelocity.y = Mathf.MoveTowards(_frameVelocity.y, -_stats.ShadowJumpMaxFallSpeed, shadowGravity * Time.fixedDeltaTime);
+                }
+                else
+                {
+                    _frameVelocity.y = Mathf.MoveTowards(_frameVelocity.y, -_stats.MaxFallSpeed, _stats.FallAcceleration * Time.fixedDeltaTime);
+                }
             }
             else
             {

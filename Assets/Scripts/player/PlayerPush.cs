@@ -211,6 +211,12 @@ public class PlayerPush : MonoBehaviour
         Player.obj.ForcePushFlash();
     }
 
+    public void ExecuteShadowJumpVfx() {
+        ShockWaveManager.obj.CallShockWave(_collider.bounds.center, 0.2f, 0.05f, 0.15f);
+        CameraShakeManager.obj.ForcePushShake();
+        //Player.obj.ShadowJumpFlash();
+    }
+
     private IEnumerator DelayedMovePlatform(float delay, float power) {
         yield return new WaitForSeconds(delay);
         platform.MovePlatform(PlayerMovement.obj.isFacingLeft(), power);

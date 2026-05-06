@@ -10,6 +10,9 @@ public class PlayerPowersManager : MonoBehaviour
     public bool EliCanForcePushJump {get; set;} //Deprecated, but might use in future
     public bool EliBlobCanExtraJump { get; set; } //Deprecated, but might use in future
     public bool EliCanForcePush { get; set; }
+
+    //Shadow jump is 1 unit high, and 11 units wide. Compared to regular jump, 3 units high, 6 units wide
+    public bool EliCanShadowJump { get; set; }
     public bool EliCanTurnFromHumanToBlob { get; set; }
     public bool EliCanTurnFromBlobToHuman { get; set; }
     public bool EliBlobCanJump { get; set; }
@@ -29,6 +32,7 @@ public class PlayerPowersManager : MonoBehaviour
             EliCanTurnFromBlobToHuman = true;
             EliCanTurnFromHumanToBlob = true;
             EliBlobCanJump = true;
+            EliCanShadowJump = true;
             DeeCanForcePull = true;
             CanSwitchBetweenTwinsMerged = true;
             CanSeparate = true;
@@ -42,6 +46,7 @@ public class PlayerPowersManager : MonoBehaviour
             EliCanTurnFromBlobToHuman = true;
             EliCanTurnFromHumanToBlob = true;
             EliBlobCanJump = true;
+            EliCanShadowJump = true;
             DeeCanForcePull = true;
             CanSwitchBetweenTwinsMerged = true;
             CanSeparate = true;
@@ -53,6 +58,7 @@ public class PlayerPowersManager : MonoBehaviour
         EliCanTurnFromHumanToBlob = false;
         EliCanTurnFromBlobToHuman = false;
         EliBlobCanJump = false;
+        EliCanShadowJump = true;
         DeeCanForcePull = false;
         CanSwitchBetweenTwinsMerged = false;
         CanSeparate = false;

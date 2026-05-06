@@ -67,4 +67,38 @@ public class ScriptableStats : ScriptableObject
 
     [Tooltip("The amount of time we buffer a jump. This allows jump input before actually hitting the ground")]
     public float JumpBuffer = .02f;
+
+    [Header("SHADOW JUMP")]
+    [Tooltip("The immediate velocity applied when shadow jumping")]
+    public float ShadowJumpPower = 42;
+
+    [Tooltip("Horizontal acceleration during shadow jump")]
+    public float ShadowJumpHorizontalAcceleration = 60;
+
+    [Tooltip("Horizontal deceleration during shadow jump")]
+    public float ShadowJumpHorizontalDeceleration = 20;
+
+    [Tooltip("Vertical acceleration (gravity) during shadow jump")]
+    public float ShadowJumpVerticalAcceleration = 50;
+
+    [Tooltip("Vertical deceleration when ascending during shadow jump")]
+    public float ShadowJumpVerticalDeceleration = 30;
+
+    [Tooltip("Maximum horizontal speed during shadow jump")]
+    public float ShadowJumpMaxHorizontalSpeed = 16;
+
+    [Tooltip("Maximum fall speed during shadow jump")]
+    public float ShadowJumpMaxFallSpeed = 30;
+
+    [Tooltip("The gravity multiplier added when shadow jump is released early")]
+    public float ShadowJumpEndEarlyGravityModifier = 2;
+
+    [Tooltip("Horizontal deceleration applied during shadow jump after distance threshold")]
+    public float ShadowJumpHorizontalDecelerationPower = 40;
+
+    [Tooltip("Horizontal distance (in world units) before deceleration starts during shadow jump")]
+    public float ShadowJumpDecelerationStartDistance = 2;
+    
+    [Tooltip("Used if player presses opposite direction")]
+    public float ShadowJumpInterruptedDeceleration = 10;
 }
