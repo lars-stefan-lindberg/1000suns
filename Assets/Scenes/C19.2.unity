@@ -9039,7 +9039,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -2027969955
-  m_SortingLayer: -2
+  m_SortingLayer: -4
   m_SortingOrder: -10
   m_Sprite: {fileID: 21300000, guid: 67672bc7e0d3f4c9e93007425c449358, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -9293,6 +9293,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _visibleLayerAnimator: {fileID: 352435743}
   _playRevealSound: 1
+  _revealSecretStinger:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
 --- !u!61 &981266377
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -9803,6 +9810,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isBig: 1
+  _revealSecretStinger:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
   visibleLayer: {fileID: 996218867}
   background: {fileID: 2145611342}
   breakAnimation: {fileID: 604666627}
@@ -9815,11 +9829,35 @@ MonoBehaviour:
   hintWallCooldownTime: 1
   fadeMultiplier: 3.5
   numberOfShakeParticles: 30
+  _breakableWallCracklingSfx:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  _breakableWallBreakSfx:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  _breakableWallHintSfx:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
   shakeDistance: 0.1
   shakeTime: 0.12
   shakeFrameWait: 0.08
   isSecret: 0
   hasHint: 0
+  OnWallBreak:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!61 &1035207360
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -66514,7 +66552,7 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -2027969955
-  m_SortingLayer: -2
+  m_SortingLayer: -4
   m_SortingOrder: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}

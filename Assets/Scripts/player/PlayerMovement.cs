@@ -381,7 +381,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     }
 
     private float _transitionDistanceX = 1;
-    private float _transitionDistanceUp = 2.5f;
+    private float _transitionDistanceUp = 3f;
     private float _transitionDistanceDown = 1.5f;
     [SerializeField] private float _levelTransitionMaxMoveTime = 1.25f; // safety timeout in seconds for move loops
     private IEnumerator TransitionToNextRoomCoroutine(PlayerManager.PlayerDirection direction) {

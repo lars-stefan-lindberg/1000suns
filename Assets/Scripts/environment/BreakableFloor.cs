@@ -1,6 +1,7 @@
 using System.Collections;
 using FMODUnity;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class BreakableFloor : MonoBehaviour
 {
@@ -23,6 +24,7 @@ public class BreakableFloor : MonoBehaviour
     private bool _hintFloor = false;
     public float fadeMultiplier = 0.1f;
     public int numberOfShakeParticles = 50;
+    public UnityEvent OnFloorBreak;
     private bool _fadeSprite = false;
     public float shakeDistance = 0.1f;
     public float shakeTime = 0.12f;
@@ -78,7 +80,7 @@ public class BreakableFloor : MonoBehaviour
             _floorCollider.enabled = false;
             _playerOnTopDetectionCollider.enabled = false;
             _fadeSprite = true;
-            GameManager.obj.PowerUpRoomsFloorBroken = true;
+            OnFloorBreak?.Invoke();
             Destroy(gameObject, 5);
         }
         if(_fadeSprite) {

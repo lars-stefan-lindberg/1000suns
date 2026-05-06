@@ -8,26 +8,22 @@ public class PowerUpRoomCutScene : MonoBehaviour
 {
     private Animator _animator;
 
-    [SerializeField] private CinemachineVirtualCamera _defaultCamera;
     [SerializeField] private GameObject _zoomedCamera;
-    [SerializeField] private GameObject _tutorialCanvas;
     [SerializeField] private EventReference _receivePowerupStinger;
     [SerializeField] private EventReference _powerUpFanfareStinger;
     [SerializeField] private EventReference _pickupPowerupSfx;
-
-    [SerializeField] private float _recoveryTime = 10;
-    private float _recoveryTimer = 0;
+    [SerializeField] private GameEventId _shadowJumpReceived;
 
     private bool _isPicked = false;
     private bool _playerEntered = false;
     private bool _isSpawned = false;
     private bool _cutsceneFinished = false;
-    private bool _recoveryTriggered = false;
 
     void Awake() {
         _animator = GetComponent<Animator>();
-        if(GameManager.obj.FirstPowerUpPicked) {
+        if(GameManager.obj.HasEvent(_shadowJumpReceived)) {
             _cutsceneFinished = true;
+            //TODO: handle if shadow jump has been recevied
         }
     }
     
@@ -37,7 +33,6 @@ public class PowerUpRoomCutScene : MonoBehaviour
                 StartCoroutine(StartCutscene());
             else {
                 _playerEntered = true;
-                _recoveryTriggered = true;
             }
         }
     }
@@ -50,7 +45,6 @@ public class PowerUpRoomCutScene : MonoBehaviour
     }
 
     private IEnumerator StartCutscene() {
-        GameManager.obj.IsPauseAllowed = false;
         PlayerMovement.obj.Freeze();
 
         yield return new WaitForSeconds(1);
@@ -58,22 +52,19 @@ public class PowerUpRoomCutScene : MonoBehaviour
         _zoomedCamera.SetActive(true);
         CinemachineVirtualCamera zoomedCameraVcam = _zoomedCamera.GetComponent<CinemachineVirtualCamera>();
         zoomedCameraVcam.enabled = true;
-        _defaultCamera.enabled = false;
 
-        Player.obj.transform.position = new Vector2(1058.75f, Player.obj.transform.position.y);
+        Player.obj.transform.position = new Vector2(1306.25f, Player.obj.transform.position.y);
         PlayerMovement.obj.SetNewPower();
+        yield return new WaitForSeconds(1.5f);
         SoundFXManager.obj.Play2D(_receivePowerupStinger);
-        yield return new WaitForSeconds(1f);
         _animator.SetTrigger("enableFast");
-        Player.obj.FlashFor(4.5f);
+        Player.obj.FlashFor(5f);
 
         CameraShakeManager.obj.ShakeCamera(1.94f, 1.84f, 4.9f);
 
-        yield return new WaitForSeconds(2.5f);
-        Player.obj.SetBlackCape();
-        yield return new WaitForSeconds(2.5f);
-
-        GameManager.obj.FirstPowerUpPicked = true;
+        yield return new WaitForSeconds(5f);
+        //Player.obj.SetBlackCape();
+        //yield return new WaitForSeconds(2.5f);
         
         _animator.SetTrigger("disableFast");
         SetIsPicked();
@@ -81,31 +72,28 @@ public class PowerUpRoomCutScene : MonoBehaviour
         yield return new WaitForSeconds(1);
 
         //Zoom out
-        _defaultCamera.enabled = true;
         zoomedCameraVcam.enabled = false;
         
         yield return new WaitForSeconds(2f);
 
-        Time.timeScale = 0;
-        _tutorialCanvas.SetActive(true);
-        TutorialDialogManager.obj.StartFadeIn();
-        SoundFXManager.obj.Play2D(_powerUpFanfareStinger);
-        while(!TutorialDialogManager.obj.tutorialCompleted) {
-            yield return null;
-        }
-        _tutorialCanvas.SetActive(false);
-        Time.timeScale = 1;
+        //Time.timeScale = 0;
+        //_tutorialCanvas.SetActive(true);
+        // TutorialDialogManager.obj.StartFadeIn();
+        // SoundFXManager.obj.Play2D(_powerUpFanfareStinger);
+        // while(!TutorialDialogManager.obj.tutorialCompleted) {
+        //     yield return null;
+        // }
+        //_tutorialCanvas.SetActive(false);
+        //Time.timeScale = 1;
 
         PlayerMovement.obj.SetNewPowerRecevied();
 
         yield return new WaitForSeconds(2f);
+        GameManager.obj.RegisterEvent(_shadowJumpReceived);
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         PlayerMovement.obj.UnFreeze();
-        GameManager.obj.IsPauseAllowed = true;
 
         _cutsceneFinished = true;
-
-        _recoveryTriggered = true;
 
         yield return null;
     }
@@ -114,26 +102,11 @@ public class PowerUpRoomCutScene : MonoBehaviour
         if(_isSpawned && _playerEntered && !_isPicked && !Player.obj.hasPowerUp) {
             SetIsPicked();
         }
-        if(_isPicked) {
-            if(_recoveryTriggered) {
-                _recoveryTimer += Time.deltaTime;
-                if(_recoveryTimer >= _recoveryTime) {
-                    _animator.SetBool("isPicked", false);
-                }
-            }
-        }
     }
 
     private void SetIsPicked() {
         SoundFXManager.obj.Play2D(_pickupPowerupSfx);
-        Player.obj.SetHasPowerUp(true);
         _animator.SetBool("isPicked", true);
         _isPicked = true;
-    }
-
-    public void SetRecovered() {
-        _isPicked = false;
-        _isSpawned = true;
-        _recoveryTimer = 0;
     }
 }

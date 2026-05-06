@@ -19,7 +19,7 @@ public static class SurfaceTypeManager {
             return SurfaceType.Grass;
         else if(tag == "Wood")
             return SurfaceType.Wood;
-        return SurfaceType.Default;
+        return SurfaceType.Rock;
     }
 }
 

@@ -45598,6 +45598,20 @@ MonoBehaviour:
       Data4: 0
     Path: 
   _shakeAnimation: {fileID: 1548773516}
+  _breakableWallCracklingSfx:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  _breakableFloorHintSfx:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
   unbreakable: 0
   hasHint: 1
   collisionsBeforeBreak: 3
@@ -45913,6 +45927,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isBig: 1
+  _revealSecretStinger:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
   visibleLayer: {fileID: 671801419}
   background: {fileID: 2055648572}
   breakAnimation: {fileID: 937635542}
@@ -45925,11 +45946,35 @@ MonoBehaviour:
   hintWallCooldownTime: 1
   fadeMultiplier: 3.5
   numberOfShakeParticles: 30
+  _breakableWallCracklingSfx:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  _breakableWallBreakSfx:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  _breakableWallHintSfx:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
   shakeDistance: 0.1
   shakeTime: 0.12
   shakeFrameWait: 0.08
   isSecret: 0
   hasHint: 0
+  OnWallBreak:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!61 &1314548273
 BoxCollider2D:
   m_ObjectHideFlags: 0

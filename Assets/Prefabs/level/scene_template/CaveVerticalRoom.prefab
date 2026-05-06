@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 436134406428809404}
   - component: {fileID: 7807697176597995516}
   - component: {fileID: 8736484691373673258}
+  - component: {fileID: 7709676086961183651}
   m_Layer: 2
   m_Name: CaveVerticalRoom
   m_TagString: Room
@@ -79,8 +80,8 @@ PolygonCollider2D:
     m_Paths:
     - - {x: 20.01, y: 11.25}
       - {x: -20.01, y: 11.25}
-      - {x: -20.01, y: -33.75}
-      - {x: 20.01, y: -33.75}
+      - {x: -20.01, y: -56.25}
+      - {x: 20.01, y: -56.25}
   m_UseDelaunayMesh: 0
 --- !u!114 &8736484691373673258
 MonoBehaviour:
@@ -96,10 +97,51 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roomObjectsToLoad:
   - {fileID: 0}
-  _darknessColor: {r: 0.01, g: 0.01, b: 0.01, a: 1}
+  _darknessLevelService: {fileID: 7709676086961183651}
+  _darknessLevelType: 3
   OnRoomEnter:
     m_PersistentCalls:
       m_Calls: []
   OnRoomExit:
     m_PersistentCalls:
       m_Calls: []
+  CustomCameraHandling:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &7709676086961183651
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1102921586564121106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6ba1a8868a984437a89ae9c9572f35e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _darknessLevels:
+  - level: 0
+    hue: 0
+    saturation: 0
+    value: 0
+  - level: 1
+    hue: 0
+    saturation: 0
+    value: 0.01
+  - level: 2
+    hue: 0
+    saturation: 0
+    value: 0.08
+  - level: 3
+    hue: 0
+    saturation: 0
+    value: 0.15
+  - level: 4
+    hue: 0
+    saturation: 0
+    value: 0.3
+  - level: 5
+    hue: 0
+    saturation: 0
+    value: 1

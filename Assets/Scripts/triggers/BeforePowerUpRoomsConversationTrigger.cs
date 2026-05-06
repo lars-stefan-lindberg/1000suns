@@ -4,12 +4,14 @@ using UnityEngine;
 public class BeforePowerUpRoomsConversationTrigger : MonoBehaviour
 {
     [SerializeField] private Transform _caveAvatarTarget;
+    [SerializeField] private Transform _caveAvatarAfterConversationTarget;
     [SerializeField] private ConversationManager _conversationManager;
+    [SerializeField] private GameEventId _cave33FirstEliSootConversationCompleted;
     private bool _isTriggered = false;
 
     void Start()
     {
-        if(GameManager.obj.PowerUpRoomsFloorBroken)
+        if(GameManager.obj.HasEvent(_cave33FirstEliSootConversationCompleted))
             gameObject.SetActive(false);
         else
             _conversationManager.OnConversationEnd += OnConversationCompleted;
@@ -43,6 +45,7 @@ public class BeforePowerUpRoomsConversationTrigger : MonoBehaviour
 
     public void OnConversationCompleted() {
         PlayerMovement.obj.UnFreeze();
-        CaveAvatar.obj.FollowPlayer();
+        CaveAvatar.obj.SetTarget(_caveAvatarAfterConversationTarget);
+        GameManager.obj.RegisterEvent(_cave33FirstEliSootConversationCompleted);
     }
 }
