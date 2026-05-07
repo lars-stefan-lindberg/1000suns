@@ -212,8 +212,8 @@ public class PlayerPush : MonoBehaviour
     }
 
     public void ExecuteShadowJumpVfx() {
-        ShockWaveManager.obj.CallShockWave(_collider.bounds.center, 0.2f, 0.05f, 0.15f);
-        CameraShakeManager.obj.ForcePushShake();
+        //ShockWaveManager.obj.CallShockWave(_collider.bounds.center, 0.2f, 0.05f, 0.15f);
+        //CameraShakeManager.obj.ForcePushShake();
         //Player.obj.ShadowJumpFlash();
     }
 

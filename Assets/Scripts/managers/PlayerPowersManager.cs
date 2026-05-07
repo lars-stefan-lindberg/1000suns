@@ -11,7 +11,7 @@ public class PlayerPowersManager : MonoBehaviour
     public bool EliBlobCanExtraJump { get; set; } //Deprecated, but might use in future
     public bool EliCanForcePush { get; set; }
 
-    //Shadow jump is 1 unit high, and 11 units wide. Compared to regular jump, 3 units high, 6 units wide
+    //Shadow jump is 2 units high, and 11 units wide. Compared to regular jump, 3 units high, 6 units wide
     public bool EliCanShadowJump { get; set; }
     public bool EliCanTurnFromHumanToBlob { get; set; }
     public bool EliCanTurnFromBlobToHuman { get; set; }

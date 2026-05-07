@@ -27,6 +27,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     [SerializeField] private GhostTrailManager _ghostTrail;
     [SerializeField] private GameObject _soulVfx;
     [SerializeField] private ParticleSystem _shadowJumpParticles;
+    [SerializeField] private ParticleSystem _shadowJumpExplosionParticles;
+    [SerializeField] private int _shadowJumpExplosionParticlesCount;
     
     public SpriteRenderer spriteRenderer;
     public GameObject anchor;
@@ -1175,6 +1177,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         PlayerPush.obj.ResetBuiltUpPower();
         
         _shadowJumpParticles.Play();
+        _shadowJumpExplosionParticles.Emit(_shadowJumpExplosionParticlesCount);
         StartCoroutine(JumpSqueeze(_jumpSqueezeX, _jumpSqueezeY, _jumpSqueezeTime));
         
         PlayerPush.obj.ExecuteShadowJumpVfx();

@@ -5,7 +5,7 @@ public class GhostTrailManager : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer _renderer;
     [SerializeField] private Transform _mainTransform;
-    [SerializeField] private Color _trailColor;
+    [SerializeField] private Color[] _trailColors;
     [SerializeField] private Color _fadeColor;
     [SerializeField] private float _fadeTime;
     [SerializeField] private float _ghostInterval;
@@ -24,7 +24,7 @@ public class GhostTrailManager : MonoBehaviour
             s.AppendCallback(()=> currentGhost.position = _mainTransform.position);
             s.AppendCallback(() => currentGhost.GetComponent<SpriteRenderer>().flipX = _renderer.flipX);
             s.AppendCallback(()=>currentGhost.GetComponent<SpriteRenderer>().sprite = _renderer.sprite);
-            s.Append(currentGhost.GetComponent<SpriteRenderer>().material.DOColor(_trailColor, 0));
+            s.Append(currentGhost.GetComponent<SpriteRenderer>().material.DOColor(_trailColors[i], 0));
             s.AppendCallback(() => FadeGhost(currentGhost.GetComponent<SpriteRenderer>()));
             s.AppendInterval(_ghostInterval);
         }
