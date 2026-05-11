@@ -256,11 +256,6 @@ MonoBehaviour:
   m_AmplitudeGain: 0
   m_FrequencyGain: 1
   mNoiseOffsets: {x: 0, y: 0, z: 0}
---- !u!1 &209236341 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4098783539594868330, guid: 2ef820c0e02e143eb9845882513f0684, type: 3}
-  m_PrefabInstance: {fileID: 2054168910}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &363184166
 GameObject:
   m_ObjectHideFlags: 0
@@ -356,17 +351,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 2310574557134173384, guid: ca5cf7dfab0d74a6da9795de99d8cb45, type: 3}
   m_PrefabInstance: {fileID: 1017899074}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &417125480 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7379251566656821698, guid: ca5cf7dfab0d74a6da9795de99d8cb45, type: 3}
-  m_PrefabInstance: {fileID: 1017899074}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 417125478}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45e653bab7fb20e499bda25e1b646fea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &427816595
 GameObject:
   m_ObjectHideFlags: 0
@@ -719,9 +703,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad2405b230a084447b487eb4ee580f3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _defaultCamera: {fileID: 417125480}
   _zoomedCamera: {fileID: 1323075731}
-  _tutorialCanvas: {fileID: 209236341}
   _receivePowerupStinger:
     Guid:
       Data1: 1293453985
@@ -743,7 +725,7 @@ MonoBehaviour:
       Data3: 1235158926
       Data4: -1399942165
     Path: event:/game/general/power_up
-  _recoveryTime: 3
+  _shadowJumpReceived: {fileID: 0}
 --- !u!114 &604632838
 MonoBehaviour:
   m_ObjectHideFlags: 0

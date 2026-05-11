@@ -58,7 +58,7 @@ public class PlayerPowersManager : MonoBehaviour
         EliCanTurnFromHumanToBlob = false;
         EliCanTurnFromBlobToHuman = false;
         EliBlobCanJump = false;
-        EliCanShadowJump = true;
+        EliCanShadowJump = false;
         DeeCanForcePull = false;
         CanSwitchBetweenTwinsMerged = false;
         CanSeparate = false;

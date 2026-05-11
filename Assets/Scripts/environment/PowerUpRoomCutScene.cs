@@ -10,9 +10,10 @@ public class PowerUpRoomCutScene : MonoBehaviour
 
     [SerializeField] private GameObject _zoomedCamera;
     [SerializeField] private EventReference _receivePowerupStinger;
-    [SerializeField] private EventReference _powerUpFanfareStinger;
+    [SerializeField] private EventReference _powerupFanfareStinger;
     [SerializeField] private EventReference _pickupPowerupSfx;
     [SerializeField] private GameEventId _shadowJumpReceived;
+    [SerializeField] private PowerUpScreen _powerUpScreen;
 
     private bool _isPicked = false;
     private bool _playerEntered = false;
@@ -22,8 +23,7 @@ public class PowerUpRoomCutScene : MonoBehaviour
     void Awake() {
         _animator = GetComponent<Animator>();
         if(GameManager.obj.HasEvent(_shadowJumpReceived)) {
-            _cutsceneFinished = true;
-            //TODO: handle if shadow jump has been recevied
+            Destroy(this);
         }
     }
     
@@ -68,29 +68,29 @@ public class PowerUpRoomCutScene : MonoBehaviour
         
         _animator.SetTrigger("disableFast");
         SetIsPicked();
+        GameManager.obj.RegisterEvent(_shadowJumpReceived);
 
         yield return new WaitForSeconds(1);
 
         //Zoom out
         zoomedCameraVcam.enabled = false;
         
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(2.5f);
 
-        //Time.timeScale = 0;
-        //_tutorialCanvas.SetActive(true);
-        // TutorialDialogManager.obj.StartFadeIn();
-        // SoundFXManager.obj.Play2D(_powerUpFanfareStinger);
-        // while(!TutorialDialogManager.obj.tutorialCompleted) {
-        //     yield return null;
-        // }
-        //_tutorialCanvas.SetActive(false);
-        //Time.timeScale = 1;
+        GameManager.obj.IsPauseAllowed = false;
+        Time.timeScale = 0;
+        _powerUpScreen.Show();
+        SoundFXManager.obj.Play2D(_powerupFanfareStinger);
+        while(!_powerUpScreen.PowerUpScreenCompleted) {
+            yield return null;
+        }
+        Time.timeScale = 1;
+        GameManager.obj.IsPauseAllowed = true;
 
         PlayerMovement.obj.SetNewPowerRecevied();
         PlayerPowersManager.obj.EliCanShadowJump = true;
 
         yield return new WaitForSeconds(2f);
-        GameManager.obj.RegisterEvent(_shadowJumpReceived);
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         PlayerMovement.obj.UnFreeze();
 

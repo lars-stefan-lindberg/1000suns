@@ -192,7 +192,6 @@ public class MainMenuManager : MonoBehaviour
     private IEnumerator StartGameCoroutine() {
         UISoundPlayer.obj.PlayPlayGame();
 
-
         MusicManager.obj.Stop();
 
         SceneFadeManager.obj.StartFadeOut(0.5f);

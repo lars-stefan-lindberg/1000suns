@@ -26,9 +26,13 @@ public class Cave15CutsceneManager : MonoBehaviour, ISkippable
         yield return new WaitForSeconds(0.2f);
         ShadowTwinMovement.obj.gameObject.tag = "Untagged"; //Hack to avoid player triggers to activate like RoomMgr and LevelEntry
         ShadowTwinPlayer.obj.gameObject.SetActive(true);
+        yield return null; //Wait one frame for OnEnable to complete and animator to be ready
+        ShadowTwinPlayer.obj.ForceEnableAnimator();
+        ShadowTwinPlayer.obj.SetAnimatorLayerAndHasCrown(true);
         ShadowTwinMovement.obj.isGrounded = true;
         ShadowTwinMovement.obj.SetStartingOnGround();
         ShadowTwinPlayer.obj.ResetAnimator();
+        ShadowTwinPlayer.obj.StartAnimator();
         ShadowTwinPlayer.obj.transform.position = _deeCutsceneStartingPosition.position;
     }
 
