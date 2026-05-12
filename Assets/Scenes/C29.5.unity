@@ -732,12 +732,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _fadeOutSpeed: 1
   _fadeInSpeed: 1
+  _descriptionText: {fileID: 0}
+  _descriptionString:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   _fadeAlpha: {r: 0, g: 0, b: 0, a: 0}
   _usePowerActionReference: {fileID: -2479364251292776754, guid: c70db65bf712247f2b340e89d0608a8b, type: 3}
   _gamepadConfigInstructionsUsePowerActionKeyIcon: {fileID: 0}
   _continueIcon: {fileID: 2025041645}
   tutorialCompleted: 0
   _keyboardConfigInstructionsUsePowerActionKeyText: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!224 &517919673 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 9033341824678315781, guid: a1a3bd0154ca44dab977bef1b7d720e3, type: 3}
