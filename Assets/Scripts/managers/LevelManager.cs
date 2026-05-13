@@ -397,33 +397,28 @@ public class LevelManager : MonoBehaviour
     private void SetCaveAvatarPosition(Scene scene) {
         GameEventId sootFreed = ScriptableObject.CreateInstance<GameEventId>();
         sootFreed.id = "cave-3.soot-freed";
-        if (scene.name == "C35") {
+        if (scene.name == "Cave-56") {
             CaveAvatar.obj.SetStartingPositionInRoom35();
-        } else if(scene.name == "C34") {
-            if(IsLevelCompleted("C34"))
+        } else if(scene.name == "Cave-55") {
+            if(IsLevelCompleted("Cave-55"))
                 CaveAvatar.obj.SetStartingPositionInRoom35();
             else
                 CaveAvatar.obj.SetStartingPositionInRoom34();
-        } else if(scene.name == "C33") {
-            if(IsLevelCompleted("C33"))
+        } else if(scene.name == "Cave-54") {
+            if(IsLevelCompleted("Cave-54"))
                 CaveAvatar.obj.SetStartingPositionInRoom34();
             else
                 CaveAvatar.obj.SetStartingPositionInRoom33();
-        } else if(scene.name == "C32") {
-            if(IsLevelCompleted("C32"))
+        } else if(scene.name == "Cave-53") {
+            if(IsLevelCompleted("Cave-53"))
                 CaveAvatar.obj.SetStartingPositionInRoom33();
             else
                 CaveAvatar.obj.SetStartingPositionInRoom32();
-        } else if(scene.name == "C31") {
-            if(IsLevelCompleted("C31"))
+        } else if(scene.name == "Cave-52") {
+            if(IsLevelCompleted("Cave-52"))
                 CaveAvatar.obj.SetStartingPositionInRoom32();
             else
                 CaveAvatar.obj.SetStartingPositionInRoom31();
-        } else if(scene.name == "C30") {
-            if(GameManager.obj.C30CutsceneCompleted)
-                CaveAvatar.obj.SetStartingPositionInRoom31();
-            else
-                CaveAvatar.obj.SetStartingPositionInRoom30();
         } else if(GameManager.obj.C27CutsceneCompleted) {
             CaveAvatar.obj.SetStartingPositionInRoom30();
         } else if(GameManager.obj.C26CutsceneCompleted) {

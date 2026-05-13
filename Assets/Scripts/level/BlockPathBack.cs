@@ -25,7 +25,8 @@ public class BlockPathBack : MonoBehaviour
     }
 
     IEnumerator EnableCollider() {
-        yield return new WaitForSeconds(0.2f);
+        //yield return new WaitForSeconds(0.2f);
+        yield return null;
         _blockPathCollider.enabled = true;
     }
 }

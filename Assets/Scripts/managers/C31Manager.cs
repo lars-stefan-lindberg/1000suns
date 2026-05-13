@@ -4,15 +4,16 @@ using UnityEngine;
 public class C31Manager : MonoBehaviour
 {
     [SerializeField] private SpikesManager _spikesManager;
+    [SerializeField] private GameEventId _cave52CutsceneCompleted;
     public float _attackInterval = 2f;
     private bool _startAttackSequence = false;
     private float _timer = 1.5f;
 
     void Start()
     {
-        if(LevelManager.obj.IsLevelCompleted("C31"))
+        if(LevelManager.obj.IsLevelCompleted("Cave-52"))
             return;
-        if(GameManager.obj.C31CutsceneCompleted) {
+        if(GameManager.obj.HasEvent(_cave52CutsceneCompleted)) {
             _startAttackSequence = true;
         }
     }

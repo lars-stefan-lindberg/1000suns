@@ -9,7 +9,7 @@ public class C32CompletedTrigger : MonoBehaviour
 
     void Start()
     {
-        if(LevelManager.obj.IsLevelCompleted("C32")) {
+        if(LevelManager.obj.IsLevelCompleted("Cave-53")) {
             Destroy(gameObject);
         }
         _collider = GetComponent<BoxCollider2D>();
@@ -21,7 +21,7 @@ public class C32CompletedTrigger : MonoBehaviour
             _c32Manager.Stop();
             _collider.enabled = false;
             CaveAvatar.obj.SetTarget(_targetPosition, 10);
-            LevelManager.obj.SetLevelCompleted("C32");
+            LevelManager.obj.SetLevelCompleted("Cave-53");
             SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         }
     }

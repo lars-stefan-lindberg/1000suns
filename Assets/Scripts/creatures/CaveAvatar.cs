@@ -186,7 +186,7 @@ public class CaveAvatar : MonoBehaviour
     }
 
     public void SetStartingPositionInRoom31() {
-        SetPosition(new Vector2(1518f, -5.25f));
+        SetPosition(new Vector2(2056f, -225f));
         IsFollowingPlayer = false;
         _target = null;
         _headSpriteRenderer.flipX = true;
@@ -194,7 +194,7 @@ public class CaveAvatar : MonoBehaviour
     }
 
     public void SetStartingPositionInRoom32() {
-        SetPosition(new Vector2(1598.75f, -16.875f));
+        SetPosition(new Vector2(2136.75f, -236.625f));
         IsFollowingPlayer = false;
         _target = null;
         _headSpriteRenderer.flipX = true;
@@ -202,7 +202,7 @@ public class CaveAvatar : MonoBehaviour
     }
 
     public void SetStartingPositionInRoom33() {
-        SetPosition(new Vector2(1639.875f, -9.125f));
+        SetPosition(new Vector2(2177.5f, -228.75f));
         IsFollowingPlayer = false;
         _target = null;
         _headSpriteRenderer.flipX = true;
@@ -210,7 +210,7 @@ public class CaveAvatar : MonoBehaviour
     }
 
     public void SetStartingPositionInRoom34() {
-        SetPosition(new Vector2(1797f, -14.125f));
+        SetPosition(new Vector2(2314.5f, -233.875f));
         IsFollowingPlayer = false;
         _target = null;
         _headSpriteRenderer.flipX = true;
@@ -218,7 +218,7 @@ public class CaveAvatar : MonoBehaviour
     }
 
     public void SetStartingPositionInRoom35() {
-        SetPosition(new Vector2(1865.75f, -18.75f));
+        SetPosition(new Vector2(2386.625f, -238.375f));
         IsFollowingPlayer = false;
         _target = null;
         _headSpriteRenderer.flipX = false;

@@ -15,7 +15,7 @@ public class C32Manager : MonoBehaviour
     private readonly float _spikesOffset = 3f;
 
     void Start() {
-        if(LevelManager.obj.IsLevelCompleted("C32")) {
+        if(LevelManager.obj.IsLevelCompleted("Cave-53")) {
             Destroy(gameObject);
             return;
         }

@@ -6,18 +6,37 @@ public class C35ConversationTrigger : MonoBehaviour
 {
     [SerializeField] private ConversationManager _conversationManager;
     [SerializeField] private ConversationManager _nextConversationManager;
-    [SerializeField] private DreadbinderEndRoom _dreadBinder;
-    [SerializeField] private BreakableFloor _breakableFloor;
     [SerializeField] private GameObject _fixedCamera;
-    [SerializeField] private GameObject _followCamera;
+    [SerializeField] private BreakableFloor _breakableFloor;
     [SerializeField] private bool _runOnConversationCompleted = true;
     [SerializeField] private bool _flipCaveAvatar = false;
-    [SerializeField] private MusicTrack _musicTrack;
+    [SerializeField] private bool _isFirstConversation = false;
+    [SerializeField] private Transform _deeCutsceneStartingPosition;
     private BoxCollider2D _collider;
 
     void Start() {
         _collider = GetComponent<BoxCollider2D>();
         _conversationManager.OnConversationEnd += OnConversationCompleted;
+
+        if(_deeCutsceneStartingPosition != null) {
+            StartCoroutine(DelayedSetDeeActive());
+        }
+    }
+
+    //Concflict with LevelManager that sets Dee inactive. If reloading room (unlikely scenario)
+    //delay activating Dee as a workaround.
+    private IEnumerator DelayedSetDeeActive() {
+        yield return new WaitForSeconds(0.2f);
+        ShadowTwinMovement.obj.gameObject.tag = "Untagged"; //Hack to avoid player triggers to activate like RoomMgr and LevelEntry
+        ShadowTwinPlayer.obj.gameObject.SetActive(true);
+        yield return null; //Wait one frame for OnEnable to complete and animator to be ready
+        ShadowTwinPlayer.obj.ForceEnableAnimator();
+        ShadowTwinPlayer.obj.SetAnimatorLayerAndHasCrown(true);
+        ShadowTwinMovement.obj.isGrounded = true;
+        ShadowTwinMovement.obj.SetStartingOnGround();
+        ShadowTwinPlayer.obj.ResetAnimator();
+        ShadowTwinPlayer.obj.StartAnimator();
+        ShadowTwinPlayer.obj.transform.position = _deeCutsceneStartingPosition.position;
     }
 
     void OnDestroy() {
@@ -40,14 +59,14 @@ public class C35ConversationTrigger : MonoBehaviour
             PlayerBlobMovement.obj.ToHuman();
         }
 
-        if(_fixedCamera != null) {
-            //If fixed camera is set, this is dialogue part 1
+        if(_isFirstConversation) {
             _fixedCamera.SetActive(true);
-            CinemachineVirtualCamera cinemachineVirtualCamera = _fixedCamera.GetComponent<CinemachineVirtualCamera>();
-            cinemachineVirtualCamera.enabled = true;
-            yield return new WaitForSeconds(1.8f);
-            _dreadBinder.ChangeSpriteThenMoveRight();
             yield return new WaitForSeconds(2.4f);
+            ShadowTwinMovement.obj.SetMovementInput(new Vector2(1, 0));
+            yield return new WaitForSeconds(1f);
+            ShadowTwinMovement.obj.SetMovementInput(new Vector2(0, 0));
+            ShadowTwinPlayer.obj.gameObject.SetActive(false);
+            ShadowTwinMovement.obj.gameObject.tag = "Player";
         } else {
             yield return new WaitForSeconds(0.5f);
         }
@@ -73,22 +92,16 @@ public class C35ConversationTrigger : MonoBehaviour
     }
 
     private IEnumerator BreakFloor() {
-        GameManager.obj.IsPauseAllowed = false;
         PlayerStatsManager.obj.PauseTimer();
-        MusicManager.obj.Play(_musicTrack);
         AmbienceManager.obj.Stop();
-        if(_followCamera != null) {
-            _followCamera.SetActive(true);
-            CinemachineVirtualCamera cinemachineVirtualCamera = _followCamera.GetComponent<CinemachineVirtualCamera>();
-            cinemachineVirtualCamera.Follow = Player.obj.transform;
-            cinemachineVirtualCamera.enabled = true;
-        }
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1.5f);
         CaveAvatar.obj.Attack();
         _breakableFloor.Shake();
         yield return new WaitForSeconds(0.8f);
         _breakableFloor.Break();
 
         yield return new WaitForSeconds(1f);
+
+        //TODO, end chapter and load Dee timeline. Also, don't unload game objects, do custom unloading (or set player tag to Untagged temporarily to not trigger RoomMgr exit)
     }
 }

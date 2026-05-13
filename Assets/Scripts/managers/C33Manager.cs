@@ -24,7 +24,7 @@ public class C33Manager : MonoBehaviour
 
     void Start() {
         _collider = GetComponent<BoxCollider2D>();
-        if(LevelManager.obj.IsLevelCompleted("C33")) {
+        if(LevelManager.obj.IsLevelCompleted("Cave-54")) {
             _collider.enabled = false;
             _blockingWall.SetActive(true);
             _blockingWall.GetComponentInChildren<Tilemap>().color = new Color(1, 1, 1, 1);

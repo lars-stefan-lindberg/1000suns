@@ -7,10 +7,11 @@ public class C31ConversationTrigger : MonoBehaviour
     [SerializeField] private ConversationManager _conversationManager;
     [SerializeField] private C31Manager _c31Manager;
     [SerializeField] private MusicTrack _musicTrack;
+    [SerializeField] private GameEventId _cave52CutsceneCompleted;
     private BoxCollider2D _collider;
 
     void Start() {
-        if(GameManager.obj.C31CutsceneCompleted) {
+        if(GameManager.obj.HasEvent(_cave52CutsceneCompleted)) {
             Destroy(this);
         }
         _collider = GetComponent<BoxCollider2D>();
@@ -46,11 +47,12 @@ public class C31ConversationTrigger : MonoBehaviour
 
     private IEnumerator OnConversationCompletedCoroutine() {
         MusicManager.obj.Play(_musicTrack);
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(2f);
         _c31Manager.StartAttackSequence();
         yield return new WaitForSeconds(1f);
         PlayerMovement.obj.UnFreeze();
-        GameManager.obj.C31CutsceneCompleted = true;
+        GameManager.obj.RegisterEvent(_cave52CutsceneCompleted);
+
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         _conversationManager.OnConversationEnd -= OnConversationCompleted;
         yield return null;

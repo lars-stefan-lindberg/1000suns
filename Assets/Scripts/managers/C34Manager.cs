@@ -14,7 +14,7 @@ public class C34Manager : MonoBehaviour
     private BoxCollider2D _collider;
 
     void Start() {
-        if(LevelManager.obj.IsLevelCompleted("C34")) {
+        if(LevelManager.obj.IsLevelCompleted("Cave-55")) {
             Destroy(gameObject);
             return;
         }
