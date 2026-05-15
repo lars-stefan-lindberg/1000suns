@@ -437,7 +437,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     }
 
     [ContextMenu("New power received")]
-    public void SetNewPowerRecevied() {
+    public void SetNewPowerReceived() {
         _animator.SetTrigger("newPowerReceived");
     }
 
@@ -466,6 +466,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public void SetMovementInput(Vector2 movementInput) {
         _freezePlayer = false;
         _movementInput = movementInput;
+    }
+
+    public Vector2 GetMovementInput() {
+        return _movementInput;
     }
 
     public void SetPlayerInputDevice(PlayerSlot slot) {
@@ -651,6 +655,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     public bool IsHorizontalInput() {
         return _movementInput.x != 0;
+    }
+
+    public bool GetJumpHeldInput() {
+        return _jumpHeldInput;
     }
 
     public void OnJump(InputAction.CallbackContext context)

@@ -87,7 +87,7 @@ public class PowerUpRoomCutScene : MonoBehaviour
         Time.timeScale = 1;
         GameManager.obj.IsPauseAllowed = true;
 
-        PlayerMovement.obj.SetNewPowerRecevied();
+        PlayerMovement.obj.SetNewPowerReceived();
         PlayerPowersManager.obj.EliCanShadowJump = true;
 
         yield return new WaitForSeconds(2f);

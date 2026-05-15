@@ -27,7 +27,7 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
 
         CameraShakeManager.obj.ShakeCamera(0, 0, 0);
 
-        WhiteFadeManager.obj.Reset();
+        SceneFadeManager.obj.Reset();
 
         _cape.SetActive(false);
         _blobsContainer.SetActive(false);
@@ -95,7 +95,7 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
 
         yield return new WaitForSeconds(0.2f);
 
-        WhiteFadeManager.obj.StartFadeOut();
+        SceneFadeManager.obj.StartWhiteFadeOut();
         yield return new WaitForSeconds(2.5f);
         Player.obj.SetAnimatorLayerAndHasCape(true);
         PlayerPowersManager.obj.EliCanForcePush = true;
@@ -105,7 +105,7 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
         PlayerMovement.obj.CancelJumping();
         PlayerMovement.obj.SetNewPower();
         _cape.SetActive(false);
-        WhiteFadeManager.obj.StartFadeIn();
+        SceneFadeManager.obj.StartFadeIn();
         
         yield return new WaitForSeconds(3.3f);
         
@@ -135,7 +135,7 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
         Time.timeScale = 1;
         GameManager.obj.IsPauseAllowed = true;
 
-        PlayerMovement.obj.SetNewPowerRecevied();
+        PlayerMovement.obj.SetNewPowerReceived();
         yield return new WaitForSeconds(2);
         PlayerMovement.obj.UnFreeze();
 

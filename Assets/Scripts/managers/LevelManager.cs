@@ -278,14 +278,14 @@ public class LevelManager : MonoBehaviour
     }
 
     private void SetPlayersStartingState() {
-        if(PlayerBlobMovement.obj != null) {
+        if(PlayerBlobMovement.obj != null && PlayerBlobMovement.obj.gameObject.activeSelf) {
             PlayerBlobMovement.obj.SetStartingOnGround();
             PlayerBlobMovement.obj.isGrounded = true;
             PlayerBlobMovement.obj.CancelJumping();
             PlayerBlob.obj.FadeInPlayerLight();
         }
 
-        if(PlayerMovement.obj != null) {
+        if(PlayerMovement.obj != null && PlayerMovement.obj.gameObject.activeSelf) {
             PlayerMovement.obj.SetStartingOnGround();
             PlayerMovement.obj.isGrounded = true;
             PlayerMovement.obj.isForcePushJumping = false;
@@ -304,7 +304,7 @@ public class LevelManager : MonoBehaviour
             }
         }
 
-        if(ShadowTwinMovement.obj != null) {
+        if(ShadowTwinMovement.obj != null && ShadowTwinMovement.obj.gameObject.activeSelf) {
             ShadowTwinMovement.obj.SetStartingOnGround();
             ShadowTwinMovement.obj.isGrounded = true;
             ShadowTwinMovement.obj.isTransforming = false;

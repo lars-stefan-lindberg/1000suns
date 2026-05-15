@@ -17,6 +17,7 @@ public class Player : MonoBehaviour
     private PlayerFlash _playerFlash;
     private PlayerChargeFlash _playerChargeFlash;
     private PlayerLightManager _playerLightManager;
+    private PlayerContrastFade _playerContrastFade;
 
     void Awake()
     {
@@ -26,6 +27,7 @@ public class Player : MonoBehaviour
         _playerFlash = GetComponentInChildren<PlayerFlash>();
         _playerChargeFlash = GetComponentInChildren<PlayerChargeFlash>();
         _playerLightManager = GetComponentInChildren<PlayerLightManager>();
+        _playerContrastFade = GetComponentInChildren<PlayerContrastFade>();
     }
 
     void OnEnable()
@@ -99,6 +101,15 @@ public class Player : MonoBehaviour
 
     public void GetOutOfTent() {
         _animator.SetTrigger("getOutOfTent");
+    }
+
+    public void StartBeingPulled() {
+        _animator.SetBool("isBeingPulled", true);
+        _animator.SetTrigger("isBeingPulledTrigger");
+    }
+
+    public void StopBeingPulled() {
+        _animator.SetBool("isBeingPulled", false);
     }
 
     [ContextMenu("StartAnimator")]
@@ -226,5 +237,17 @@ public class Player : MonoBehaviour
             return 0f;
             
         return _collider.bounds.size.y;
+    }
+
+    public void StartContrastFade() {
+        if (_playerContrastFade != null) {
+            _playerContrastFade.StartContrastFade();
+        }
+    }
+
+    public void ResetContrast() {
+        if (_playerContrastFade != null) {
+            _playerContrastFade.ResetContrast();
+        }
     }
 }

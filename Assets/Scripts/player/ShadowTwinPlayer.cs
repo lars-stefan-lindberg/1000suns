@@ -17,6 +17,7 @@ public class ShadowTwinPlayer : MonoBehaviour
     private PlayerFlash _playerFlash;
     private PlayerChargeFlash _playerChargeFlash;
     private PlayerLightManager _playerLightManager;
+    private PlayerContrastFade _playerContrastFade;
 
     void Awake()
     {
@@ -26,6 +27,7 @@ public class ShadowTwinPlayer : MonoBehaviour
         _playerFlash = GetComponentInChildren<PlayerFlash>();
         _playerChargeFlash = GetComponentInChildren<PlayerChargeFlash>();
         _playerLightManager = GetComponentInChildren<PlayerLightManager>();
+        _playerContrastFade = GetComponentInChildren<PlayerContrastFade>();
         _defaultGravity = rigidBody.gravityScale;
     }
 
@@ -79,6 +81,15 @@ public class ShadowTwinPlayer : MonoBehaviour
     
     public void PlayToPlayerAnimation() {
         _animator.SetTrigger("toPlayer");
+    }
+
+    public void StartBeingPulled() {
+        _animator.SetBool("isBeingPulled", true);
+        _animator.SetTrigger("isBeingPulledTrigger");
+    }
+
+    public void StopBeingPulled() {
+        _animator.SetBool("isBeingPulled", false);
     }
 
     [ContextMenu("PlayGetUpAnimation")]
@@ -218,5 +229,17 @@ public class ShadowTwinPlayer : MonoBehaviour
             return 0f;
             
         return _collider.bounds.size.y;
+    }
+
+    public void StartContrastFade() {
+        if (_playerContrastFade != null) {
+            _playerContrastFade.StartContrastFade();
+        }
+    }
+
+    public void ResetContrast() {
+        if (_playerContrastFade != null) {
+            _playerContrastFade.ResetContrast();
+        }
     }
 }

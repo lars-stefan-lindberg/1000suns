@@ -12,6 +12,10 @@ public class SceneFadeManager : MonoBehaviour
     [Range(0.1f, 10f), SerializeField] private float _fadeInSpeed = 5f;
 
     [SerializeField] private Color _fadeOutStartColor;
+    [SerializeField] private Color _whiteColor = new Color(0.906f, 0.906f, 0.906f, 1f);
+    
+    private Color _defaultColor;
+    private bool _shouldResetToDefault = false;
 
     public bool IsFadingOut { get; private set; }
     public bool IsFadingIn { get; private set; }
@@ -19,6 +23,7 @@ public class SceneFadeManager : MonoBehaviour
     void Awake() {
         obj = this;
 
+        _defaultColor = _fadeOutStartColor;
         _fadeOutStartColor.a = 0f;
     }
 
@@ -43,6 +48,11 @@ public class SceneFadeManager : MonoBehaviour
                     _fadeInSpeed = _tempFadeInSpeed;
                 _tempFadeInSpeed = 0;
                 IsFadingIn = false;
+                
+                if(_shouldResetToDefault) {
+                    SetColor(_defaultColor);
+                    _shouldResetToDefault = false;
+                }
             }
         }
     }
@@ -80,5 +90,34 @@ public class SceneFadeManager : MonoBehaviour
     }
     public void SetFadeInSpeed(float speed) {
         _fadeInSpeed = speed;
+    }
+    
+    public void SetColor(Color color) {
+        _fadeOutStartColor = color;
+        _fadeOutStartColor.a = 0f;
+    }
+    
+    public void StartWhiteFadeOut() {
+        SetColor(_whiteColor);
+        _shouldResetToDefault = true;
+        _fadeOutImage.color = _fadeOutStartColor;
+        IsFadingOut = true;
+    }
+    
+    public void StartWhiteFadeOut(float fadeOutSpeed) {
+        SetColor(_whiteColor);
+        _shouldResetToDefault = true;
+        _fadeOutImage.color = _fadeOutStartColor;
+        _tempFadeOutSpeed = _fadeOutSpeed;
+        _fadeOutSpeed = fadeOutSpeed;
+        IsFadingOut = true;
+    }
+    
+    public void Reset() {
+        _fadeOutStartColor.a = 0f;
+        _fadeOutImage.color = _fadeOutStartColor;
+        IsFadingOut = false;
+        IsFadingIn = false;
+        _shouldResetToDefault = false;
     }
 }

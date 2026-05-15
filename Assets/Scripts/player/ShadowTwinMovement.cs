@@ -460,6 +460,27 @@ public class ShadowTwinMovement : MonoBehaviour
         return _movementInput.x != 0;
     }
 
+    public void SimulateJumpInput(bool jumpHeld, float currentTime) {
+        _jumpHeldInput = jumpHeld;
+        
+        if (jumpHeld && !_previousJumpHeld) {
+            if(jumpThroughPlatform != null && _movementInput.y < 0) {
+                jumpThroughPlatform.PassThrough();
+            } else if (isGrounded || CanUseCoyote) {
+                _jumpToConsume = true;
+            }
+            else
+            {
+                if(IsPulling && !isGrounded && Vector2.Distance(anchorPosition, GetTopMiddleColliderPosition()) < 0.5f) {
+                    _airJumpToConsume = true;
+                }
+            }
+            _timeJumpWasPressed = currentTime;
+        }
+        
+        _previousJumpHeld = jumpHeld;
+    }
+
     public void OnJump(InputAction.CallbackContext context)
     {
         if (context.performed)
@@ -947,6 +968,7 @@ public class ShadowTwinMovement : MonoBehaviour
     private bool _endedJumpEarly;
     private bool _coyoteUsable;
     private bool _airJumpToConsume = false;
+    private bool _previousJumpHeld = false;
 
     private bool CanUseJump => (isGrounded || CanUseCoyote) && _jumpToConsume;
     private bool HasBufferedJump => _time < _timeJumpWasPressed + _stats.JumpBuffer;

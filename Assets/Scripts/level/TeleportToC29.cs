@@ -32,7 +32,7 @@ public class TeleportToC29 : MonoBehaviour
         AmbienceManager.obj.Stop();
 
         SoundFXManager.obj.Play2D(_teleportSfx);
-        WhiteFadeManager.obj.StartFadeOut();
+        SceneFadeManager.obj.StartWhiteFadeOut();
 
         yield return new WaitForSeconds(1f);
 
@@ -69,7 +69,7 @@ public class TeleportToC29 : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
 
-        WhiteFadeManager.obj.StartFadeIn();
+        SceneFadeManager.obj.StartFadeIn();
 
         yield return new WaitForSeconds(2f);
 
