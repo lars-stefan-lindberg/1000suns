@@ -219,14 +219,14 @@ public class PlayerPush : MonoBehaviour
 
     private IEnumerator DelayedMovePlatform(float delay, float power) {
         yield return new WaitForSeconds(delay);
-        platform.MovePlatform(PlayerMovement.obj.isFacingLeft(), power);
+        platform.MovePlatform(PlayerMovement.obj.IsFacingLeft(), power);
     }
 
     public float playerOffsetY = 0.1f;
     private IEnumerator DelayedProjectile(float delay, float power, ChargePowerType chargePowerType) {
         yield return new WaitForSeconds(delay);
         _eliAudio.PlayForcePushRelease();
-        int playerFacingDirection = PlayerMovement.obj.isFacingLeft() ? -1 : 1;
+        int playerFacingDirection = PlayerMovement.obj.IsFacingLeft() ? -1 : 1;
         ProjectileManager.obj.shootProjectile(
             new Vector3(_collider.bounds.center.x + (_playerOffset * playerFacingDirection) , gameObject.transform.position.y - playerOffsetY, gameObject.transform.position.z),
             playerFacingDirection,

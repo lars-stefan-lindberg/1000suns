@@ -613,6 +613,22 @@ MonoBehaviour:
     Path: event:/game/general/power_up
   _shadowJumpReceived: {fileID: 11400000, guid: 94a90894674b14aee9c3479cd957b900, type: 2}
   _powerUpScreen: {fileID: 1124863670}
+  _teleportSfx:
+    Guid:
+      Data1: 2016255071
+      Data2: 1306818322
+      Data3: 235933584
+      Data4: -895535784
+    Path: event:/game/01_cave/space_room/teleport
+  _dreamRoomScene:
+    _sceneAsset: {fileID: 102900000, guid: 0137833755abe45aba3a94ced78f7330, type: 3}
+    _sceneName: Cave-35-D
+  _secondDreamRoomScene:
+    _sceneAsset: {fileID: 102900000, guid: 8708b1efdb598444c8b100dfd601b758, type: 3}
+    _sceneName: Cave-35-D2
+  _thisScene:
+    _sceneAsset: {fileID: 102900000, guid: b4bbb5683115a4f8aafb71ad2c1774a9, type: 3}
+    _sceneName: Cave-35
 --- !u!4 &697334939 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5349280976128504704, guid: 0e8f500ea200d484bb8ebc74cf7ce55f, type: 3}
@@ -675,6 +691,78 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5587ac0c54b10437bb2184a160543c19, type: 3}
+--- !u!1001 &786049960
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3658160454134421921, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1306.375
+      objectReference: {fileID: 0}
+    - target: {fileID: 3658160454134421921, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -209.125
+      objectReference: {fileID: 0}
+    - target: {fileID: 3658160454134421921, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3658160454134421921, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3658160454134421921, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3658160454134421921, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3658160454134421921, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3658160454134421921, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3658160454134421921, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3658160454134421921, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6921377242360237166, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
+      propertyPath: m_Name
+      value: Back from dream room SpawnPoint
+      objectReference: {fileID: 0}
+    - target: {fileID: 7339979703855284144, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
+      propertyPath: spawnPointID
+      value: Cave-35_ca05d255-1c2a-4267-b4b5-4e1cce977ed3
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
+--- !u!114 &786049961 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7339979703855284144, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
+  m_PrefabInstance: {fileID: 786049960}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d79aa31c8820f42b984ed14fbe6b5120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &796942269
 GameObject:
   m_ObjectHideFlags: 0
@@ -1101,6 +1189,53 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 882baef20c169468e8e0e5087c0d8add, type: 3}
+--- !u!1 &950627448
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 950627450}
+  - component: {fileID: 950627449}
+  m_Layer: 0
+  m_Name: RoomManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &950627449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 950627448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09e7e3e62fa5a468882f554a76eb30d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _hasShadowJump: {fileID: 11400000, guid: 94a90894674b14aee9c3479cd957b900, type: 2}
+  _postDreamSequenceCompleted: {fileID: 11400000, guid: 4a3284033dbd84d5c833d0d466473081, type: 2}
+  _eliReturnFromDreamRoomPosition: {fileID: 786049961}
+--- !u!4 &950627450
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 950627448}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1085578645 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5649949765483365222, guid: 5587ac0c54b10437bb2184a160543c19, type: 3}
@@ -2534,6 +2669,8 @@ SceneRoots:
   - {fileID: 1910901261}
   - {fileID: 1793297305}
   - {fileID: 6849257040688055749}
+  - {fileID: 786049960}
   - {fileID: 1131967903}
   - {fileID: 25647179}
   - {fileID: 1124863669}
+  - {fileID: 950627450}

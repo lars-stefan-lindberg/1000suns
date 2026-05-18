@@ -10,7 +10,7 @@ public class CaveAvatarMirror : MonoBehaviour
 
     void FixedUpdate()
     {
-        bool isPlayerFacingLeft = PlayerMovement.obj.isFacingLeft();
+        bool isPlayerFacingLeft = PlayerMovement.obj.IsFacingLeft();
         _headSpriteRenderer.flipX = isPlayerFacingLeft;   
 
         _head.transform.position = CaveAvatar.obj.GetHeadTransform().position + positionOffset;

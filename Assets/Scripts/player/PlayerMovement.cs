@@ -178,7 +178,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         spriteRenderer.flipX = !spriteRenderer.flipX;
     }
 
-    public bool isFacingLeft()
+    public bool IsFacingLeft()
     {
         return spriteRenderer.flipX;
     }
@@ -202,7 +202,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         } else if(chargePower == PlayerPush.ChargePowerType.Full) {
             speed = initialDashSpeed;
         }
-        _frameVelocity.x = isFacingLeft() ? -speed : speed;
+        _frameVelocity.x = IsFacingLeft() ? -speed : speed;
         _ghostTrail.ShowGhosts();
     }
 
@@ -217,7 +217,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         isForcePushJumping = true;
         forcePushJumpOnGroundTimer = 0;
         _cameFromForcePushJump = true;
-        _frameVelocity.x = isFacingLeft() ? -initialForcePushJumpSpeed : initialForcePushJumpSpeed;
+        _frameVelocity.x = IsFacingLeft() ? -initialForcePushJumpSpeed : initialForcePushJumpSpeed;
         PlayerPush.obj.ResetBuiltUpPower();
         PlayerPush.obj.ExecuteForcePushVfx(PlayerPush.ChargePowerType.Powered);
         _ghostTrail.ShowGhosts();
@@ -226,19 +226,19 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public void ExecuteForcePushWithProjectile(PlayerPush.ChargePowerType chargePowerType) {
         if(!isGrounded) {
             if(chargePowerType == PlayerPush.ChargePowerType.Partial) {
-                _frameVelocity.x = isFacingLeft() ? partialForcePushPushBackSpeed : -partialForcePushPushBackSpeed;
+                _frameVelocity.x = IsFacingLeft() ? partialForcePushPushBackSpeed : -partialForcePushPushBackSpeed;
             } else if(chargePowerType == PlayerPush.ChargePowerType.Full) {
-                _frameVelocity.x = isFacingLeft() ? normalForcePushPushBackSpeed : -normalForcePushPushBackSpeed;
+                _frameVelocity.x = IsFacingLeft() ? normalForcePushPushBackSpeed : -normalForcePushPushBackSpeed;
             } else if(chargePowerType == PlayerPush.ChargePowerType.Powered) {
-                _frameVelocity.x = isFacingLeft() ? fullyPoweredForcePushPushBackSpeed : -fullyPoweredForcePushPushBackSpeed;
+                _frameVelocity.x = IsFacingLeft() ? fullyPoweredForcePushPushBackSpeed : -fullyPoweredForcePushPushBackSpeed;
                 Player.obj.SetHasPowerUp(false);
             }
         } else if(isGrounded) {
             if(chargePowerType == PlayerPush.ChargePowerType.Powered) {
-                _frameVelocity.x = isFacingLeft() ? fullyPoweredForcePushGroundedPushBackSpeed : -fullyPoweredForcePushGroundedPushBackSpeed;
+                _frameVelocity.x = IsFacingLeft() ? fullyPoweredForcePushGroundedPushBackSpeed : -fullyPoweredForcePushGroundedPushBackSpeed;
                 Player.obj.SetHasPowerUp(false);
             } else if(chargePowerType == PlayerPush.ChargePowerType.Full) {
-                _frameVelocity.x = isFacingLeft() ? partialForcePushPushBackSpeed : -partialForcePushPushBackSpeed;
+                _frameVelocity.x = IsFacingLeft() ? partialForcePushPushBackSpeed : -partialForcePushPushBackSpeed;
             }
         }
     }
@@ -578,7 +578,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _frameVelocity = new Vector2(0, 0);
         gameObject.SetActive(false);
         _playerBlob.transform.position = transform.position - new Vector3(0, 0.5f, 0);
-        _playerBlob.GetComponent<PlayerBlobMovement>().spriteRenderer.flipX = isFacingLeft();
+        _playerBlob.GetComponent<PlayerBlobMovement>().spriteRenderer.flipX = IsFacingLeft();
         _playerBlob.SetActive(true);
         PlayerManager.obj.elisLastForm = PlayerManager.PlayerType.BLOB;
         PlayerSwitcher.obj.SwitchToBlob();
@@ -606,7 +606,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _frameVelocity = new Vector2(0, 0);
         gameObject.SetActive(false);
         _playerTwin.transform.position = transform.position;
-        _playerTwin.GetComponent<ShadowTwinMovement>().spriteRenderer.flipX = isFacingLeft();
+        _playerTwin.GetComponent<ShadowTwinMovement>().spriteRenderer.flipX = IsFacingLeft();
         _playerTwin.SetActive(true);
         PlayerSwitcher.obj.SwitchToDee();
         if(isGrounded) {
@@ -634,7 +634,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _frameVelocity = new Vector2(0, 0);
         _playerTwin.transform.position = splitTarget;
         
-        _playerTwin.GetComponent<ShadowTwinMovement>().spriteRenderer.flipX = isFacingLeft();
+        _playerTwin.GetComponent<ShadowTwinMovement>().spriteRenderer.flipX = IsFacingLeft();
         if(isGrounded) {
             _playerTwin.GetComponent<ShadowTwinMovement>().SetStartingOnGround();
             _playerTwin.GetComponent<ShadowTwinMovement>().isGrounded = true;
@@ -807,7 +807,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
                 StartCoroutine(MergeVfx());
             } else {
                 Vector3 splitTarget;
-                if(isFacingLeft()) {
+                if(IsFacingLeft()) {
                     splitTarget = transform.position + new Vector3(-1, 0, 0);
                 } else {
                     splitTarget = transform.position + new Vector3(1, 0, 0);

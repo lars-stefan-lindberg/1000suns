@@ -9,6 +9,7 @@ public class LevelEntry : MonoBehaviour
 {
     [SerializeField] private bool _fireCustomCameraHandlingEvent = false;
     [SerializeField] private bool _enablePlayerTransition = true;
+    [SerializeField] private bool _shouldSaveGame = true;
     public UnityEvent OnCustomCameraHandling;
     private BoxCollider2D _collider;
     private SpawnPoint _spawnPoint;
@@ -44,7 +45,8 @@ public class LevelEntry : MonoBehaviour
 
             GameManager.obj.SetCurrentSpawnPointId(_spawnPoint.SpawnPointID);
 
-            SaveManager.obj.SaveGame(newScene.name);
+            if(_shouldSaveGame)
+                SaveManager.obj.SaveGame(newScene.name);
         }
     }
 

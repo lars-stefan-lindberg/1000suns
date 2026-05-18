@@ -202,12 +202,12 @@ public class CaveCollectibleCreature : MonoBehaviour
     }
 
     public void SetStartingPosition(Vector2 position) {
-        float horizontalPosition = PlayerMovement.obj.isFacingLeft() ? position.x + 1.475f : position.x - 1.475f;
+        float horizontalPosition = PlayerMovement.obj.IsFacingLeft() ? position.x + 1.475f : position.x - 1.475f;
         SetPosition(new Vector2(horizontalPosition, position.y));
     }
 
     public void SetPosition(Vector2 target) {
-        bool isPlayerFacingLeft = PlayerMovement.obj.isFacingLeft();
+        bool isPlayerFacingLeft = PlayerMovement.obj.IsFacingLeft();
         _headSpriteRenderer.flipX = isPlayerFacingLeft;   
 
         transform.position = target;

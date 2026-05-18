@@ -341,7 +341,7 @@ public class PlayerManager : MonoBehaviour
     //Only use in LevelManager!
     public bool IsPlayerFacingLeft() {
         if(Player.obj != null && _lastPlayerType == PlayerType.HUMAN)
-            return PlayerMovement.obj.isFacingLeft();
+            return PlayerMovement.obj.IsFacingLeft();
         else if(PlayerBlob.obj != null && _lastPlayerType == PlayerType.BLOB)
             return PlayerBlobMovement.obj.IsFacingLeft();
         else if(ShadowTwinPlayer.obj != null && _lastPlayerType == PlayerType.SHADOW_TWIN)
@@ -352,7 +352,7 @@ public class PlayerManager : MonoBehaviour
     public bool IsPlayerFacingLeft(PlayerType playerType) {
         if(playerType == PlayerType.HUMAN) {
             if(Player.obj != null && _lastPlayerType == PlayerType.HUMAN)
-                return PlayerMovement.obj.isFacingLeft();
+                return PlayerMovement.obj.IsFacingLeft();
             else if(PlayerBlob.obj != null && _lastPlayerType == PlayerType.BLOB)
                 return PlayerBlobMovement.obj.IsFacingLeft();
         } else if(playerType == PlayerType.SHADOW_TWIN) {

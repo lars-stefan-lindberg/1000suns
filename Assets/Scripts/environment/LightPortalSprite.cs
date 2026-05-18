@@ -15,10 +15,6 @@ public class LightPortalSprite : MonoBehaviour
 
     void Start()
     {
-        if(PlayerPowersManager.obj.EliCanTurnFromBlobToHuman) {
-            Destroy(gameObject.transform.parent.gameObject);
-            return;
-        }
         scaleCoroutine = StartCoroutine(ScaleYLoop());
     }
 

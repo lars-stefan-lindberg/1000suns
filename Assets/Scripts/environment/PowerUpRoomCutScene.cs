@@ -14,16 +14,21 @@ public class PowerUpRoomCutScene : MonoBehaviour
     [SerializeField] private EventReference _pickupPowerupSfx;
     [SerializeField] private GameEventId _shadowJumpReceived;
     [SerializeField] private PowerUpScreen _powerUpScreen;
+    [SerializeField] private EventReference _teleportSfx;
+    [SerializeField] private SceneField _dreamRoomScene;
+    [SerializeField] private SceneField _secondDreamRoomScene;
+    [SerializeField] private SceneField _thisScene;
 
     private bool _isPicked = false;
     private bool _playerEntered = false;
     private bool _isSpawned = false;
     private bool _cutsceneFinished = false;
 
-    void Awake() {
+    void Start() {
         _animator = GetComponent<Animator>();
         if(GameManager.obj.HasEvent(_shadowJumpReceived)) {
-            Destroy(this);
+            Destroy(gameObject);
+            return;
         }
     }
     
@@ -87,16 +92,44 @@ public class PowerUpRoomCutScene : MonoBehaviour
         Time.timeScale = 1;
         GameManager.obj.IsPauseAllowed = true;
 
-        PlayerMovement.obj.SetNewPowerReceived();
+        //PlayerMovement.obj.SetNewPowerReceived();
         PlayerPowersManager.obj.EliCanShadowJump = true;
 
-        yield return new WaitForSeconds(2f);
-        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
-        PlayerMovement.obj.UnFreeze();
+        // yield return new WaitForSeconds(2f);
+        // SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
+        // PlayerMovement.obj.UnFreeze();
+
+        yield return new WaitForSeconds(1f);
+        //Teleport to dream room
+        SoundFXManager.obj.Play2D(_teleportSfx);
+        StartCoroutine(TeleportToDreamRoomRoutine());
 
         _cutsceneFinished = true;
 
         yield return null;
+    }
+
+    private IEnumerator TeleportToDreamRoomRoutine() {
+        SceneFadeManager.obj.StartWhiteFadeOut(0.5f);
+
+        while(SceneFadeManager.obj.IsFadingOut)
+            yield return null;
+
+        //Load dream room
+        AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(_dreamRoomScene, LoadSceneMode.Additive);
+        while(!asyncOperation.isDone) {
+            yield return null;
+        }
+        AsyncOperation asyncOperation2 = SceneManager.LoadSceneAsync(_secondDreamRoomScene, LoadSceneMode.Additive);
+        while(!asyncOperation2.isDone) {
+            yield return null;
+        }
+
+        //Give some time for dream room to load until unloading current room
+        yield return new WaitForSeconds(2f);
+
+        //Unload current room
+        SceneManager.UnloadSceneAsync(_thisScene.SceneName);
     }
 
     void FixedUpdate() {
