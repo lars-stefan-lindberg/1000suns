@@ -1,0 +1,54 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class Cave42RoomManager : MonoBehaviour
+{
+    [SerializeField] private SpawnPoint _eliStartPosition;
+    [SerializeField] private Transform _sootStartPosition;
+    [SerializeField] private Transform _elevatorStopPosition;
+    [SerializeField] private CaveElevator _elevator;
+
+    void Start()
+    {
+        SceneFadeManager.obj.SetFadedOutState();
+        Player.obj.transform.position = _eliStartPosition.transform.position;
+        Player.obj.gameObject.SetActive(true);
+        PlayerMovement.obj.SetStartingOnGround();
+        PlayerMovement.obj.isGrounded = true;
+        PlayerMovement.obj.Freeze();
+
+        CaveAvatar.obj.SetPosition(_sootStartPosition.position);
+        CaveAvatar.obj.IsFollowingPlayer = true;
+
+        GameObject[] sceneGameObjects = gameObject.scene.GetRootGameObjects();
+        GameObject mainCamera = sceneGameObjects.First(gameObject => gameObject.CompareTag("MainCamera"));
+        RoomCameraController cameraController = mainCamera.GetComponent<RoomCameraController>();
+        GameObject room = sceneGameObjects.First(gameObject => gameObject.CompareTag("Room"));
+        Collider2D roomCollider = room.GetComponent<Collider2D>();
+        CameraManager.obj.EnterRoom(cameraController, roomCollider, PlayerManager.obj.GetPlayerTransform(PlayerManager.PlayerType.HUMAN), _eliStartPosition.transform.position);
+
+        SceneManager.SetActiveScene(gameObject.scene);
+
+        StartCoroutine(StartScene());
+    }
+
+    private IEnumerator StartScene() {
+        //Give some time to transition from previous scene
+        yield return new WaitForSeconds(1f);
+        _elevator.SetStopPosition(_elevatorStopPosition.position.y);
+        _elevator.StartMoving();
+
+        SceneFadeManager.obj.StartFadeIn(0.8f);
+        while(SceneFadeManager.obj.IsFadingIn)
+            yield return null;
+
+        while(!_elevator.IsAtStopPosition())
+            yield return null;
+
+        yield return new WaitForSeconds(1f);
+        PlayerMovement.obj.UnFreeze();
+    }
+}

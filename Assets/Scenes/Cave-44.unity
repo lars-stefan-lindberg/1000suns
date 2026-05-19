@@ -812,7 +812,7 @@ PrefabInstance:
       objectReference: {fileID: 712410339}
     - target: {fileID: 5469460401231062988, guid: 550eeccd691734285bd9830178b5b140, type: 3}
       propertyPath: adjacentRooms.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5469460401231062988, guid: 550eeccd691734285bd9830178b5b140, type: 3}
       propertyPath: backgroundScene._sceneName
@@ -835,9 +835,17 @@ PrefabInstance:
       value: Cave-43
       objectReference: {fileID: 0}
     - target: {fileID: 5469460401231062988, guid: 550eeccd691734285bd9830178b5b140, type: 3}
+      propertyPath: adjacentRooms.Array.data[1]._sceneName
+      value: Cave-45
+      objectReference: {fileID: 0}
+    - target: {fileID: 5469460401231062988, guid: 550eeccd691734285bd9830178b5b140, type: 3}
       propertyPath: adjacentRooms.Array.data[0]._sceneAsset
       value: 
       objectReference: {fileID: 102900000, guid: baec4d63c2b6c40ebb074c3da0843a2e, type: 3}
+    - target: {fileID: 5469460401231062988, guid: 550eeccd691734285bd9830178b5b140, type: 3}
+      propertyPath: adjacentRooms.Array.data[1]._sceneAsset
+      value: 
+      objectReference: {fileID: 102900000, guid: 2511de32de5704b2fad25264df58ff26, type: 3}
     - target: {fileID: 7238864598812726562, guid: 550eeccd691734285bd9830178b5b140, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1766.9999
