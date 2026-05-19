@@ -185,6 +185,7 @@ public class C26CutsceneManager : MonoBehaviour, ISkippable
         yield return new WaitForSeconds(2f);
 
         MusicManager.obj.Play(_musicTrack);
+        PlayerPowersManager.obj.EliBlobCanJump = true;
         PlayerBlobMovement.obj.UnFreeze();
         //TODO replace with GameEventId
         GameManager.obj.C26CutsceneCompleted = true;
