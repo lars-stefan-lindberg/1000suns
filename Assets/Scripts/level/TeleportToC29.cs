@@ -1,20 +1,17 @@
 using System.Collections;
-using System.Linq;
-using Cinemachine;
 using FMODUnity;
-using FunkyCode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class TeleportToC29 : MonoBehaviour
 {
-    [SerializeField] private SceneField _sceneToTeleportTo;
-    [SerializeField] private GameObject _cameraToDeactivate;
-    [SerializeField] private GameObject _tutorialCanvas;
     [SerializeField] private GameObject _shockWaveEmitter;
     [SerializeField] private MusicTrack _musicTrack;
     [SerializeField] private EventReference _powerupFanfareStinger;
     [SerializeField] private EventReference _teleportSfx;
+    [SerializeField] private GameEventId _dreamSequenceCompleted;
+    [SerializeField] private SceneField _teleportBackToScene;
+    [SerializeField] private SceneField _thisScene;
     
     void OnTriggerEnter2D(Collider2D other)
     {
@@ -32,69 +29,23 @@ public class TeleportToC29 : MonoBehaviour
         AmbienceManager.obj.Stop();
 
         SoundFXManager.obj.Play2D(_teleportSfx);
-        SceneFadeManager.obj.StartWhiteFadeOut();
+        SceneFadeManager.obj.StartWhiteFadeOut(0.8f);
 
-        yield return new WaitForSeconds(1f);
-
-        LightingManager2D.Get().profile.DarknessColor = new Color(0.005f, 0.005f, 0.005f);
+        while(SceneFadeManager.obj.IsFadingOut)
+            yield return null;
 
         PlayerBlobMovement.obj.ToHuman(false);
         Destroy(_shockWaveEmitter);
-        yield return new WaitForSeconds(1f);
 
-        Scene scene = SceneManager.GetSceneByName(_sceneToTeleportTo.SceneName);
-        SceneManager.SetActiveScene(scene);
-        GameObject[] sceneGameObjects = scene.GetRootGameObjects();
-        
-        _cameraToDeactivate.SetActive(false);
-        CinemachineVirtualCamera cinemachineVirtualCamera = _cameraToDeactivate.GetComponent<CinemachineVirtualCamera>();
-        cinemachineVirtualCamera.enabled = false;
+        GameManager.obj.RegisterEvent(_dreamSequenceCompleted);
 
-        //Skip this for now since we will play the main cave song instead
-        //AmbienceManager.obj.PlayCaveAmbience();
-        //AmbienceManager.obj.FadeInAmbienceSource1(1.5f);
+        AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(_teleportBackToScene, LoadSceneMode.Additive);
 
-        GameObject playerSpawnPoint = sceneGameObjects.First(gameObject => gameObject.CompareTag("AlternatePlayerSpawnPoint"));
-        Collider2D playerSpawningCollider = playerSpawnPoint.GetComponent<Collider2D>();
-        
-        Player.obj.transform.position = playerSpawningCollider.transform.position;
-        PlayerMovement.obj.SetStartingOnGround();
-        PlayerMovement.obj.isGrounded = true;
-        PlayerMovement.obj.isForcePushJumping = false;
-        PlayerMovement.obj.jumpedWhileForcePushJumping = false;
-        PlayerMovement.obj.CancelJumping();
-        Player.obj.SetAnimatorLayerAndHasCape(true);
-
-        Player.obj.PlayGetUpAnimation();
-
-        yield return new WaitForSeconds(1f);
-
-        SceneFadeManager.obj.StartFadeIn();
-
-        yield return new WaitForSeconds(2f);
-
-        Player.obj.StartAnimator();
-
-        yield return new WaitForSeconds(4f);
-
-        //Start tutorial dialogue
-        Time.timeScale = 0;
-        _tutorialCanvas.SetActive(true);
-        TutorialDialogManager.obj.StartFadeIn();
-        SoundFXManager.obj.Play2D(_powerupFanfareStinger);
-        while(!TutorialDialogManager.obj.tutorialCompleted) {
+        while(!asyncOperation.isDone)
             yield return null;
-        }
-        _tutorialCanvas.SetActive(false);
-        Time.timeScale = 1;
-        PlayerPowersManager.obj.EliCanTurnFromBlobToHuman = true;
 
-        PlayerMovement.obj.UnFreeze();
+        SceneManager.UnloadSceneAsync(_thisScene.SceneName);
 
-        GameManager.obj.IsPauseAllowed = true;
-
-        MusicManager.obj.Play(_musicTrack);
-        SaveManager.obj.SaveGame(scene.name);
         yield return null;
     }
 }
