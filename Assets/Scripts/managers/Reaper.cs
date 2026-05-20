@@ -27,6 +27,7 @@ public class Reaper : MonoBehaviour
             playerKilled = true;
             PlayerStatsManager.obj.numberOfDeaths += 1;
             PlayerManager.obj.KillPlayerGeneric(playerType, genericDeathAnimationTime);
+            PlayerManager.obj.SetLastActivePlayerType(playerType);
             _sharedCharacterAudio.PlayGenericDeath(PlayerManager.obj.GetPlayerTransform());
             StartCoroutine(AfterDeathAnimation(genericDeathAnimationTime));
         }
@@ -62,6 +63,7 @@ public class Reaper : MonoBehaviour
             playerKilled = true;
             PlayerStatsManager.obj.numberOfDeaths += 1;
             PlayerManager.obj.KillPlayerShadow(shadowDeathAnimationTime);
+            PlayerManager.obj.SetLastActivePlayerType(playerType);
             _sharedCharacterAudio.PlayShadowDeath(PlayerManager.obj.GetPlayerTransform());
             StartCoroutine(AfterDeathAnimation(shadowDeathAnimationTime));
         }

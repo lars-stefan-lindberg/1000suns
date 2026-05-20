@@ -32,6 +32,7 @@ public class Cave50RoomManager : MonoBehaviour
         Player.obj.SetAnimatorLayerAndHasCape(true);        
         Player.obj.transform.position = _eliReturnFromDreamRoomPosition.transform.position;
         Player.obj.PlayGetUpAnimation();
+        DustParticleMgr.obj.Enabled = true;
 
         GameObject[] sceneGameObjects = gameObject.scene.GetRootGameObjects();
         GameObject mainCamera = sceneGameObjects.First(gameObject => gameObject.CompareTag("MainCamera"));

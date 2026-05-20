@@ -322,6 +322,8 @@ public class PlayerManager : MonoBehaviour
                 return PlayerBlob.obj.transform;
         } else if(playerType == PlayerType.SHADOW_TWIN) {
             return ShadowTwinPlayer.obj.transform;
+        } else if(playerType == PlayerType.BLOB) {
+            return PlayerBlob.obj.transform;
         } else {
             Debug.Log("Unknown player type: " + playerType);
             return null;
