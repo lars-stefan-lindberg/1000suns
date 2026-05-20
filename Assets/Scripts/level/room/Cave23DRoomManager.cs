@@ -30,7 +30,16 @@ public class Cave23DRoomManager : MonoBehaviour
         PlayerMovement.obj.SetStartingOnGround();
         Player.obj.transform.position = _eliSpawnPoint.transform.position;
         PlayerMovement.obj.SetNewPower();
-        StartCoroutine(DelayedSetDeeActive());
+
+        ShadowTwinMovement.obj.gameObject.tag = "Untagged"; //Hack to avoid player triggers to activate like RoomMgr and LevelEntry
+        ShadowTwinPlayer.obj.gameObject.SetActive(true);
+        ShadowTwinPlayer.obj.SetAnimatorLayerAndHasCrown(false);
+        ShadowTwinMovement.obj.isGrounded = true;
+        ShadowTwinMovement.obj.SetStartingOnGround();
+        ShadowTwinPlayer.obj.ResetAnimator();
+        ShadowTwinPlayer.obj.StartAnimator();
+        ShadowTwinPlayer.obj.transform.position = _deeSpawnPoint.transform.position;
+
         Player.obj.SetAnimatorLayerAndHasCape(false);
         PlayerPowersManager.obj.EliCanForcePush = false;        
         DustParticleMgr.obj.Enabled = false;
@@ -67,22 +76,6 @@ public class Cave23DRoomManager : MonoBehaviour
             bool eliJumpHeld = PlayerMovement.obj.GetJumpHeldInput();
             ShadowTwinMovement.obj.SimulateJumpInput(eliJumpHeld, Time.time);
         }
-    }
-
-    //Concflict with LevelManager that sets Dee inactive. If reloading room (unlikely scenario)
-    //delay activating Dee as a workaround.
-    private IEnumerator DelayedSetDeeActive() {
-        yield return new WaitForSeconds(0.2f);
-        ShadowTwinMovement.obj.gameObject.tag = "Untagged"; //Hack to avoid player triggers to activate like RoomMgr and LevelEntry
-        ShadowTwinPlayer.obj.gameObject.SetActive(true);
-        yield return null; //Wait one frame for OnEnable to complete and animator to be ready
-        ShadowTwinPlayer.obj.ForceEnableAnimator();
-        ShadowTwinPlayer.obj.SetAnimatorLayerAndHasCrown(false);
-        ShadowTwinMovement.obj.isGrounded = true;
-        ShadowTwinMovement.obj.SetStartingOnGround();
-        ShadowTwinPlayer.obj.ResetAnimator();
-        ShadowTwinPlayer.obj.StartAnimator();
-        ShadowTwinPlayer.obj.transform.position = _deeSpawnPoint.transform.position;
     }
 
     public void ChangeCamera() {

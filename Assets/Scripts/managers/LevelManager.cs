@@ -106,8 +106,6 @@ public class LevelManager : MonoBehaviour
         //Set correct character active
         CaveTimelineId.Id caveTimelineId = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
         if(caveTimelineId == CaveTimelineId.Id.Eli) {
-            if(ShadowTwinPlayer.obj != null)
-                ShadowTwinPlayer.obj.gameObject.SetActive(false);
             PlayerManager.PlayerType playerType = PlayerManager.obj.GetLastActivePlayerType();
             if(Player.obj != null && playerType == PlayerManager.PlayerType.HUMAN)
                 Player.obj.transform.position = playerSpawnPointCollider.transform.position;

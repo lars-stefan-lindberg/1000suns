@@ -103,16 +103,6 @@ public class ShadowTwinPlayer : MonoBehaviour
         _animator.speed = 1;
     }
 
-    public void ForceEnableAnimator() {
-        if(_animator == null) {
-            _animator = GetComponentInChildren<Animator>();
-        }
-        if(_animator != null) {
-            _animator.enabled = true;
-            _animator.speed = 1;
-        }
-    }
-
     public void SetAnimatorSpeed(float speed) {
         _animator.speed = speed;
     }
