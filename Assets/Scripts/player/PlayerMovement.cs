@@ -844,6 +844,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     public void CancelJumping() {
         _jumpToConsume = false;
+        _isShadowJumping = false;
     }
 
     private void BuildUpPowerJump()
@@ -970,7 +971,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             if (_isShadowJumping)
             {
                 _isShadowJumping = false;
-                _cameFromShadowJump = true;
                 _eliAudio.PlayForcePushLand();
             }
 
@@ -1078,7 +1078,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     private const int MAX_NUMBER_OF_AIR_JUMPS = 1;
     
     private bool _isShadowJumping = false;
-    private bool _cameFromShadowJump = false;
     private float _shadowJumpStartY = 0f;
     private float _shadowJumpStartX = 0f;
     private float _shadowJumpHorizontalDistanceTraveled = 0f;
@@ -1175,7 +1174,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _coyoteUsable = false;
         _frameVelocity.y = _stats.ShadowJumpPower;
         _isShadowJumping = true;
-        _cameFromShadowJump = false;
         _jumpToConsume = false;
         _shadowJumpStartY = transform.position.y;
         _shadowJumpStartX = transform.position.x;
@@ -1362,7 +1360,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private void HandleGravity()
     {
-        if(isOnMoveable && moveableRigidBody != null) {
+        if(isOnMoveable && moveableRigidBody != null && !_isShadowJumping) {
             _frameVelocity.y = moveableRigidBody.velocity.y;
             return;
         }
