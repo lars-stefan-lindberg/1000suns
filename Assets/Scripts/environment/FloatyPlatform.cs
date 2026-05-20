@@ -48,7 +48,7 @@ public class FloatyPlatform : MonoBehaviour
         _collider = GetComponent<BoxCollider2D>();
         _rigidBody = GetComponent<Rigidbody2D>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
-        _blockingCastLayerMask = LayerMask.GetMask(new[] { "Ground", "Default", "JumpThroughs", "Enemies" });
+        _blockingCastLayerMask = LayerMask.GetMask(new[] { "Ground", "Default", "JumpThroughs", "Enemies", "Block" });
         startingVerticalPosition = transform.position.y;
         //_idleVerticalTargetPosition = startingVerticalPosition - idleVerticalDistance;
         _fallingPlatformFlash = GetComponent<FallingPlatformFlash>();
