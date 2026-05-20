@@ -246,13 +246,19 @@ public class PlayerManager : MonoBehaviour
         return _lastPlayerType;
     }
 
-    public void SetTransitioningBetweenLevels() {
-        if(PlayerMovement.obj != null && PlayerMovement.obj.gameObject.activeSelf)
-            PlayerMovement.obj.SetTransitioningBetweenLevels();
-        if(PlayerBlobMovement.obj != null && PlayerBlobMovement.obj.gameObject.activeSelf)
-            PlayerBlobMovement.obj.SetTransitioningBetweenLevels();
-        if(ShadowTwinMovement.obj != null && ShadowTwinMovement.obj.gameObject.activeSelf)
-            ShadowTwinMovement.obj.SetTransitioningBetweenLevels();
+    public void SetTransitioningBetweenLevels(PlayerType playerType) {
+        switch(playerType)
+        {
+            case PlayerType.HUMAN: 
+                PlayerMovement.obj.SetTransitioningBetweenLevels();
+                break;
+            case PlayerType.BLOB:
+                PlayerBlobMovement.obj.SetTransitioningBetweenLevels();
+                break;
+            case PlayerType.SHADOW_TWIN:
+                ShadowTwinMovement.obj.SetTransitioningBetweenLevels();
+                break;
+        }
     }
 
     public void TransitionToNextRoom(PlayerDirection direction) {

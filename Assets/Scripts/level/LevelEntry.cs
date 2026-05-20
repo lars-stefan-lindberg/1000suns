@@ -27,8 +27,9 @@ public class LevelEntry : MonoBehaviour
             if(exitedScene == newScene)
                 return;
 
+            PlayerManager.PlayerType playerType = PlayerManager.obj.GetPlayerTypeFromCollider(other);
             if(_enablePlayerTransition)
-                PlayerManager.obj.SetTransitioningBetweenLevels();
+                PlayerManager.obj.SetTransitioningBetweenLevels(playerType);
 
             LevelManager.obj.LoadAdjacentRooms(newScene);
             LevelManager.obj.UnloadNonAdjacentRooms(newScene);
@@ -37,7 +38,6 @@ public class LevelEntry : MonoBehaviour
             LevelTracker.obj.StopTimeTracking(exitedScene.name);
             SceneManager.SetActiveScene(newScene);
 
-            PlayerManager.PlayerType playerType = PlayerManager.obj.GetPlayerTypeFromCollider(other);
             PlayerManager.PlayerDirection playerDirection = GetPlayerDirection(other);
             CinemachineBrain brain = Camera.main.GetComponent<CinemachineBrain>();
             CinemachineVirtualCamera activeVirtualCamera = (CinemachineVirtualCamera) brain.ActiveVirtualCamera;

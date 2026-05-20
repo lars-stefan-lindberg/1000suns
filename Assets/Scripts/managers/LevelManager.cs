@@ -105,7 +105,7 @@ public class LevelManager : MonoBehaviour
         playerSpawnPointCollider = playerSpawnPoint.GetComponent<Collider2D>();
         //Set correct character active
         CaveTimelineId.Id caveTimelineId = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
-        if(caveTimelineId == CaveTimelineId.Id.Eli || caveTimelineId == CaveTimelineId.Id.Both) {
+        if(caveTimelineId == CaveTimelineId.Id.Eli) {
             if(ShadowTwinPlayer.obj != null)
                 ShadowTwinPlayer.obj.gameObject.SetActive(false);
             PlayerManager.PlayerType playerType = PlayerManager.obj.GetLastActivePlayerType();
@@ -121,6 +121,8 @@ public class LevelManager : MonoBehaviour
             if(ShadowTwinPlayer.obj != null) {
                 ShadowTwinPlayer.obj.transform.position = playerSpawnPointCollider.transform.position;
             }
+        } else if(caveTimelineId == CaveTimelineId.Id.Both) {
+            //TODO
         }
 
         AdjustSpawnFaceDirection(Camera.main.transform.position.x, playerSpawnPoint.transform.position.x);        
