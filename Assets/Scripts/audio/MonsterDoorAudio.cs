@@ -37,6 +37,7 @@ public class MonsterDoorAudio : MonoBehaviour
         if (!sounds.soulAbsorb.IsNull)
         {
             var inst = RuntimeManager.CreateInstance(sounds.soulAbsorb);
+            inst.set3DAttributes(RuntimeUtils.To3DAttributes(transform.position)); //Required by FMOD even though we don't need it here (gives log warning if not set)
             inst.getDescription(out var desc);
             desc.getParameterDescriptionByName(
                 "soulsAbsorbed",
