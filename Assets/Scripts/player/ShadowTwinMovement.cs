@@ -349,8 +349,12 @@ public class ShadowTwinMovement : MonoBehaviour
             transform.position = new Vector2(target, transform.position.y);
             if(timedOut) Debug.LogWarning("TransitionToNextRoom horizontal move timed out; snapping to target.");
         } else if(direction == PlayerManager.PlayerDirection.UP || direction == PlayerManager.PlayerDirection.DOWN) {
-            if(direction == PlayerManager.PlayerDirection.UP)
+            if(direction == PlayerManager.PlayerDirection.UP) {
+                //"Hack" to make sure jump animation is played out while transitioning upwards. Before hack the character was just idle while being pushed upwards, and did not look good
+                _animator.speed = 1;
+                isGrounded = false;
                 target = transform.position.y + _transitionDistanceUp;
+            }
             if(direction == PlayerManager.PlayerDirection.DOWN)
                 target = transform.position.y - _transitionDistanceDown;
             float startTime = Time.time;
