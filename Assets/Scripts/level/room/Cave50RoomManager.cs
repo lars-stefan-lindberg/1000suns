@@ -14,6 +14,7 @@ public class Cave50RoomManager : MonoBehaviour
     [SerializeField] private SpawnPoint _eliReturnFromDreamRoomPosition;
     [SerializeField] private EventReference _powerupFanfareStinger;
     [SerializeField] private PowerUpScreen _powerUpScreen;
+    [SerializeField] private MusicTrack _caveMain;
     
     void Start()
     {
@@ -67,6 +68,7 @@ public class Cave50RoomManager : MonoBehaviour
         PlayerPowersManager.obj.EliCanTurnFromBlobToHuman = true;
         PlayerMovement.obj.UnFreeze();
         GameManager.obj.RegisterEvent(_postDreamSequenceCompleted);
+        MusicManager.obj.Play(_caveMain);
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
     }
 
@@ -75,6 +77,7 @@ public class Cave50RoomManager : MonoBehaviour
             return;
         PlayerBlobMovement.obj.Freeze();
         AmbienceManager.obj.Stop();
+        MusicManager.obj.Stop();
         SoundFXManager.obj.Play2D(_teleportSfx);
         StartCoroutine(TeleportToDreamRoomRoutine());
     }
