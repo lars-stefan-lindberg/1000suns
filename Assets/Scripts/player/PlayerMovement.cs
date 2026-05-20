@@ -927,31 +927,31 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
                 _startingOnGroundFalseCoroutineStarted = true;
                 StartCoroutine(SetStartingOnGroundToFalse());
             }
-        }
-
-        RaycastHit2D moveableHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, _moveableLayerMasks);
-        bool ceilingHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
-
-        if(moveableHit) {
-            groundHit = true;
-            isOnMoveable = true;
-            surface = SurfaceTypeManager.GetSurfaceType(moveableHit.collider.gameObject.tag);
-            if(moveableRigidBody == null) {
-                moveableRigidBody = moveableHit.collider.gameObject.GetComponentInParent<Rigidbody2D>();
-                if(moveableHit.collider.gameObject.CompareTag("FloatingPlatform")) {
-                    PlayerPush.obj.platform = moveableHit.collider.gameObject.GetComponentInParent<FloatyPlatform>();
-                }
-            }
         } else {
-            isOnMoveable = false;
-            moveableRigidBody = null;
-            PlayerPush.obj.platform = null;
-        }
+            RaycastHit2D moveableHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, _moveableLayerMasks);
+            bool ceilingHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
 
-        // Hit a Ceiling
-        if (ceilingHit && !groundHit)
-        {
-            HandleCeilingCollisions();
+            if(moveableHit) {
+                groundHit = true;
+                isOnMoveable = true;
+                surface = SurfaceTypeManager.GetSurfaceType(moveableHit.collider.gameObject.tag);
+                if(moveableRigidBody == null) {
+                    moveableRigidBody = moveableHit.collider.gameObject.GetComponentInParent<Rigidbody2D>();
+                    if(moveableHit.collider.gameObject.CompareTag("FloatingPlatform")) {
+                        PlayerPush.obj.platform = moveableHit.collider.gameObject.GetComponentInParent<FloatyPlatform>();
+                    }
+                }
+            } else {
+                isOnMoveable = false;
+                moveableRigidBody = null;
+                PlayerPush.obj.platform = null;
+            }
+
+            // Hit a Ceiling
+            if (ceilingHit && !groundHit)
+            {
+                HandleCeilingCollisions();
+            }
         }
 
         // Landed on the Ground

@@ -18,6 +18,9 @@ public class PlayerBlobMovement : MonoBehaviour
     public SpriteRenderer spriteRenderer;
     [SerializeField] private ScriptableStats _stats;
     [SerializeField] private LayerMask _groundLayerMasks;
+    public bool isOnMoveable = false;
+    public Rigidbody2D moveableRigidBody;
+    private LayerMask _moveableLayerMasks;
     private LayerMask _ceilingLayerMasks;
 
     private BoxCollider2D _collider;
@@ -52,6 +55,7 @@ public class PlayerBlobMovement : MonoBehaviour
     void Awake() {
         obj = this;
         _collider = GetComponent<BoxCollider2D>();
+        _moveableLayerMasks = LayerMask.GetMask("JumpThroughs", "Block");
         _ceilingLayerMasks = LayerMask.GetMask("Ground");
         _playerInput = GetComponent<PlayerInput>();
         _animator = GetComponentInChildren<Animator>();
@@ -477,15 +481,30 @@ public class PlayerBlobMovement : MonoBehaviour
                 _startingOnGroundFalseCoroutineStarted = true;
                 StartCoroutine(SetStartingOnGroundToFalse());
             }
+        } else {
+            RaycastHit2D moveableHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, _moveableLayerMasks);
+            bool ceilingHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
+
+            if(moveableHit) {
+                groundHit = true;
+                isOnMoveable = true;
+                surface = SurfaceTypeManager.GetSurfaceType(moveableHit.collider.gameObject.tag);
+                if(moveableRigidBody == null) {
+                    moveableRigidBody = moveableHit.collider.gameObject.GetComponentInParent<Rigidbody2D>();
+                }
+            } else {
+                isOnMoveable = false;
+                moveableRigidBody = null;
+                PlayerPush.obj.platform = null;
+            }
+
+            // Hit a Ceiling
+            if (ceilingHit && !groundHit)
+            {
+                HandleCeilingCollisions();
+            }
         }
 
-        bool ceilingHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
-
-        // Hit a Ceiling
-        if (ceilingHit && !groundHit)
-        {
-            HandleCeilingCollisions();
-        }
 
         // Landed on the Ground
         if (!isGrounded && groundHit && PlayerBlob.obj.rigidBody.velocity.y <= 0.05f)
@@ -505,6 +524,7 @@ public class PlayerBlobMovement : MonoBehaviour
         else if (isGrounded && !groundHit)
         {
             isGrounded = false;
+            isOnMoveable = false;
             _frameLeftGrounded = _time;
         }
 
@@ -636,6 +656,7 @@ public class PlayerBlobMovement : MonoBehaviour
 
     private void ExecuteJump(float jumpPower)
     {
+        isOnMoveable = false;
         _endedJumpEarly = false;
         _timeJumpWasPressed = 0;
         _bufferedJumpUsable = false;
@@ -693,16 +714,21 @@ public class PlayerBlobMovement : MonoBehaviour
         if (_movementInput.x == 0)
         {
             var deceleration = isGrounded ? _stats.GroundDeceleration : _stats.AirDeceleration;
-            _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, boost, deceleration * Time.fixedDeltaTime);
+            _frameVelocity.x = isOnMoveable && moveableRigidBody != null ?
+                        moveableRigidBody.velocity.x :Mathf.MoveTowards(_frameVelocity.x, boost, deceleration * Time.fixedDeltaTime);
         }
         else
         {
-            _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, _movementInput.x * _stats.MaxSpeed + boost, _stats.Acceleration * Time.fixedDeltaTime);
+            _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, (_movementInput.x * _stats.MaxSpeed) + + (isOnMoveable && moveableRigidBody != null ? moveableRigidBody.velocity.x : 0) + boost, _stats.Acceleration * Time.fixedDeltaTime);
         }
     }
 
     private void HandleGravity()
     {
+        if(isOnMoveable && moveableRigidBody != null) {
+            _frameVelocity.y = moveableRigidBody.velocity.y;
+            return;
+        }
         if (isGrounded && _frameVelocity.y <= 0f)
         {
             _frameVelocity.y = _stats.GroundingForce;
