@@ -411,6 +411,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
                 //"Hack" to make sure jump animation is played out while transitioning upwards. Before hack the character was just idle while being pushed upwards, and did not look good
                 _animator.speed = 1;
                 isGrounded = false;
+                _isShadowJumping = false;
                 target = transform.position.y + _transitionDistanceUp;
             }
             if(direction == PlayerManager.PlayerDirection.DOWN)
