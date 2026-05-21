@@ -122,6 +122,11 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &38266751 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2576842243526084596, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+  m_PrefabInstance: {fileID: 1574997606}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &114029861
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1849,9 +1854,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: -42822521
+  m_SortingLayer: -3
+  m_SortingOrder: 5
   m_Sprite: {fileID: 21300000, guid: f8352b12667f14663af82ead65b76c43, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -1873,7 +1878,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 821690305994934905, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1100.75
+      value: 1096.25
       objectReference: {fileID: 0}
     - target: {fileID: 821690305994934905, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2828,6 +2833,71 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fe6657d07330a41c8b624b8a5aea0eb6, type: 3}
+--- !u!1001 &1574997606
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 39985905909828514, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1100.125
+      objectReference: {fileID: 0}
+    - target: {fileID: 39985905909828514, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -82.375
+      objectReference: {fileID: 0}
+    - target: {fileID: 39985905909828514, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -1.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 39985905909828514, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 39985905909828514, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 39985905909828514, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 39985905909828514, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 39985905909828514, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 39985905909828514, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 39985905909828514, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2576842243526084596, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+      propertyPath: m_Name
+      value: Fixed cutscene camera (Cave-23)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2576842243526084596, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2576842243526084596, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 681e618cc4d84440da9934c23736f209, type: 3}
 --- !u!4 &1600551658 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8783893257407541811, guid: 20df9f54e53b34f57b3ed91543d32a13, type: 3}
@@ -3212,7 +3282,7 @@ PrefabInstance:
       objectReference: {fileID: 1063922882}
     - target: {fileID: 4634237032660184441, guid: 3c352cd2364a14f3f863e66cdedb5f8a, type: 3}
       propertyPath: m_Name
-      value: CaveHorizontalRoom
+      value: CaveHorizontalRoom (Cave-23)
       objectReference: {fileID: 0}
     - target: {fileID: 5208751481509014722, guid: 3c352cd2364a14f3f863e66cdedb5f8a, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3392,6 +3462,7 @@ MonoBehaviour:
   _sootStartPositionAfterDreamRoom: {fileID: 1055442555}
   _conversationManager: {fileID: 2111454098}
   _caveMain: {fileID: 11400000, guid: f430c39f8a18a4401a474609c2d7a41a, type: 2}
+  _crystalCutsceneCamera: {fileID: 38266751}
 --- !u!4 &2111454097
 Transform:
   m_ObjectHideFlags: 0
@@ -3495,6 +3566,7 @@ SceneRoots:
   - {fileID: 1488391681}
   - {fileID: 2111454097}
   - {fileID: 2090360380}
+  - {fileID: 1574997606}
   - {fileID: 867230799}
   - {fileID: 114029861}
   - {fileID: 7572454801419115704}

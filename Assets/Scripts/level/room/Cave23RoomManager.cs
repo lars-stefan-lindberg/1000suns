@@ -15,6 +15,7 @@ public class Cave23RoomManager : MonoBehaviour
     [SerializeField] private Transform _sootStartPositionAfterDreamRoom;
     [SerializeField] private ConversationManager _conversationManager;
     [SerializeField] private MusicTrack _caveMain;
+    [SerializeField] private GameObject _crystalCutsceneCamera;
 
     void Start() {
         //If coming back from dream room, load room state
@@ -66,18 +67,69 @@ public class Cave23RoomManager : MonoBehaviour
     public void TeleportToDreamRoom() {
         if(GameManager.obj.HasEvent(_dreamSequenceCompleted))
             return;
+        PlayerMovement.obj.SetMovementInput(Vector2.zero);
         PlayerMovement.obj.Freeze();
         CaveAvatar.obj.IsFollowingPlayer = false;
         AmbienceManager.obj.Stop();
-        SoundFXManager.obj.Play2D(_teleportSfx);
+        
         StartCoroutine(TeleportToDreamRoomRoutine());
     }
 
     private IEnumerator TeleportToDreamRoomRoutine() {
+        yield return new WaitForSeconds(1f);
+        _crystalCutsceneCamera.SetActive(true);
+        yield return new WaitForSeconds(2.5f);
+        PlayerMovement.obj.StartWalking();
+        PlayerMovement.obj.SetMovementInput(new Vector2(1, 0));
+
+        yield return new WaitForSeconds(2.2f);
+        PlayerMovement.obj.SetMovementInput(Vector2.zero);
+        PlayerMovement.obj.StopWalking();
+        yield return null;
+        PlayerMovement.obj.SetNewPower();
+        yield return new WaitForSeconds(0.05f);
+        CameraShakeManager.obj.ForcePushShake();
+        yield return new WaitForSeconds(1.5f);
+
+        PlayerMovement.obj.IsControlledProgrammatically = true;
+        Player.obj.rigidBody.gravityScale = 0;
+
+        //Move player up in the air
+        float startY = Player.obj.transform.position.y;
+        float targetY = startY + 3f;
+        float maxSpeed = 2f;
+        float acceleration = 1f;
+        float deceleration = 1f;
+        float currentSpeed = 0f;
+
+        CameraShakeManager.obj.ForcePushShake();
+        while (Player.obj.transform.position.y < targetY) {
+            float distanceRemaining = targetY - Player.obj.transform.position.y;
+            float stoppingDistance = (currentSpeed * currentSpeed) / (2f * deceleration);
+            
+            if (distanceRemaining <= stoppingDistance) {
+                currentSpeed = Mathf.MoveTowards(currentSpeed, 0f, deceleration * Time.deltaTime);
+            } else {
+                currentSpeed = Mathf.MoveTowards(currentSpeed, maxSpeed, acceleration * Time.deltaTime);
+            }
+            
+            Vector3 pos = Player.obj.transform.position;
+            pos.y += currentSpeed * Time.deltaTime;
+            pos.y = Mathf.Min(pos.y, targetY);
+            Player.obj.transform.position = pos;
+            yield return null;
+        }
+        
+        SoundFXManager.obj.Play2D(_teleportSfx);
         SceneFadeManager.obj.StartWhiteFadeOut(0.5f);
 
         while(SceneFadeManager.obj.IsFadingOut)
             yield return null;
+
+        Player.obj.gameObject.SetActive(false);
+        Player.obj.rigidBody.gravityScale = 1;
+        PlayerMovement.obj.IsControlledProgrammatically = false;
+        _crystalCutsceneCamera.SetActive(false);
 
         //Load dream room
         AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(_dreamRoomScene, LoadSceneMode.Additive);

@@ -29,6 +29,7 @@ public class Cave23DRoomManager : MonoBehaviour
         PlayerMovement.obj.isGrounded = true;
         PlayerMovement.obj.SetStartingOnGround();
         Player.obj.transform.position = _eliSpawnPoint.transform.position;
+        Player.obj.gameObject.SetActive(true);
         PlayerMovement.obj.SetNewPower();
 
         ShadowTwinMovement.obj.gameObject.tag = "Untagged"; //Hack to avoid player triggers to activate like RoomMgr and LevelEntry

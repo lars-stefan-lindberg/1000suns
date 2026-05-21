@@ -59,6 +59,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public bool isOnMoveable = false;
     public Rigidbody2D moveableRigidBody;
     public JumpThroughPlatform jumpThroughPlatform;
+    public bool IsControlledProgrammatically = false;
 
     private bool _isWalking = false;
     [SerializeField] private float _walkSpeed = 2f;
@@ -1365,6 +1366,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private void HandleGravity()
     {
+        if(IsControlledProgrammatically) {
+            _frameVelocity.y = 0;
+            return;
+        }
         if(isOnMoveable && moveableRigidBody != null && !_isShadowJumping) {
             _frameVelocity.y = moveableRigidBody.velocity.y;
             return;
