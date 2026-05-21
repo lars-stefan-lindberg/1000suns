@@ -82,7 +82,7 @@ public class Cave23RoomManager : MonoBehaviour
         PlayerMovement.obj.StartWalking();
         PlayerMovement.obj.SetMovementInput(new Vector2(1, 0));
 
-        yield return new WaitForSeconds(2.2f);
+        yield return new WaitForSeconds(2.25f);
         PlayerMovement.obj.SetMovementInput(Vector2.zero);
         PlayerMovement.obj.StopWalking();
         yield return null;
