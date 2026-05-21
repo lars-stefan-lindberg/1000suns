@@ -26,6 +26,7 @@ public class BreakableWall : MonoBehaviour
     private float _hintWallCooldownTimer = 0;
     public float fadeMultiplier = 0.1f;
     public int numberOfShakeParticles = 10;
+    public int numberOfBreakParticles = 6;
     public EventReference _breakableWallCracklingSfx;
     public EventReference _breakableWallBreakSfx;
     public EventReference _breakableWallHintSfx;
@@ -96,7 +97,7 @@ public class BreakableWall : MonoBehaviour
             _collider.enabled = false;
             _fadeSprite = true;
             breakWall = false;
-            breakAnimation.Emit(6);
+            breakAnimation.Emit(numberOfBreakParticles);
             OnWallBreak?.Invoke();
         }
         if(_fadeSprite) {
