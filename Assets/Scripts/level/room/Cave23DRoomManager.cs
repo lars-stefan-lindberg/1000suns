@@ -19,6 +19,8 @@ public class Cave23DRoomManager : MonoBehaviour
     [SerializeField] private SceneField _teleportBackToScene;
     [SerializeField] private SceneField _thisScene;
     [SerializeField] private GameEventId _dreamRoomCompleted;
+    [SerializeField] private LightFlash _lightVfx;
+    [SerializeField] private float _whiteScreenFlashSpeed;
     
     [Header("Pull Movement Settings")]
     [SerializeField] private float _pullAcceleration = 2f;
@@ -100,6 +102,7 @@ public class Cave23DRoomManager : MonoBehaviour
     private IEnumerator StartCutsceneCoroutine() {
         PlayerMovement.obj.Freeze();
         yield return new WaitForSeconds(2f);
+        _lightVfx.Flash();
         CameraShakeManager.obj.ForcePushShake();
         Player.obj.StartBeingPulled();
         ShadowTwinPlayer.obj.StartBeingPulled();
