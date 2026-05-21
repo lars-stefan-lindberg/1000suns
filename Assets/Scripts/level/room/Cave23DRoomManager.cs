@@ -64,8 +64,7 @@ public class Cave23DRoomManager : MonoBehaviour
 
         //All loading should be completed. Start fading in room
         SceneFadeManager.obj.StartFadeIn(0.5f);
-        SoundFXManager.obj.Play2D(_introStinger);
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(2.5f);
         PlayerMovement.obj.SetNewPowerReceived();
         yield return new WaitForSeconds(2);
         PlayerMovement.obj.UnFreeze();
@@ -91,7 +90,9 @@ public class Cave23DRoomManager : MonoBehaviour
         _fixedCamera.SetActive(true);
         _closingWall1.SetActive(true);
         _closingWall2.SetActive(true);
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(1f);
+        SoundFXManager.obj.Play2D(_introStinger);
+        yield return new WaitForSeconds(5f);
         PlayerMovement.obj.UnFreeze();
     }
 
@@ -106,13 +107,14 @@ public class Cave23DRoomManager : MonoBehaviour
         CameraShakeManager.obj.ForcePushShake();
         Player.obj.StartBeingPulled();
         ShadowTwinPlayer.obj.StartBeingPulled();
+        _eliParticles.transform.position = new Vector3(Player.obj.transform.position.x + 0.5f, _eliParticles.transform.position.y, _eliParticles.transform.position.z);
+        _deeParticles.transform.position = new Vector3(ShadowTwinPlayer.obj.transform.position.x - 0.5f, _deeParticles.transform.position.y, _deeParticles.transform.position.z);
         _eliParticles.gameObject.SetActive(true);
         _deeParticles.gameObject.SetActive(true);
         yield return new WaitForSeconds(4f);
         Player.obj.StartContrastFade();
         ShadowTwinPlayer.obj.StartContrastFade();
         
-
         float eliSpeed = 0f;
         float deeSpeed = 0f;
         
