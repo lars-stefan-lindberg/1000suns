@@ -39,6 +39,7 @@ public class Cave23DRoomManager : MonoBehaviour
         ShadowTwinMovement.obj.SetStartingOnGround();
         ShadowTwinPlayer.obj.ResetAnimator();
         ShadowTwinPlayer.obj.StartAnimator();
+        ShadowTwinMovement.obj.DisableSharedCharacterAudio();
         ShadowTwinPlayer.obj.transform.position = _deeSpawnPoint.transform.position;
 
         Player.obj.SetAnimatorLayerAndHasCape(false);
@@ -150,6 +151,7 @@ public class Cave23DRoomManager : MonoBehaviour
         Player.obj.SetAnimatorLayerAndHasCape(true);
         ShadowTwinPlayer.obj.SetAnimatorLayerAndHasCrown(true);
         ShadowTwinPlayer.obj.gameObject.SetActive(false);
+        ShadowTwinMovement.obj.EnableSharedCharacterAudio();
         PlayerPowersManager.obj.EliCanForcePush = true;  
 
         //Before we load the room to teleport back to, make sure state is updated so we don't teleport back

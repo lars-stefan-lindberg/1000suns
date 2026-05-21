@@ -7,6 +7,7 @@ public class SharedCharacterAudio : MonoBehaviour
     [SerializeField] private SharedCharacterSoundSet sounds;
 
     private PARAMETER_ID surfaceParamId;
+    private bool _isSoundEnabled = true;
 
     void Awake()
     {
@@ -15,13 +16,25 @@ public class SharedCharacterAudio : MonoBehaviour
         CacheSurfaceParameter();
     }
 
+    public void EnableSound()
+    {
+        _isSoundEnabled = true;
+    }
+
+    public void DisableSound()
+    {
+        _isSoundEnabled = false;
+    }
+
     public void PlayJump()
     {
+        if (!_isSoundEnabled) return;
         SoundFXManager.obj.PlayAtPosition(sounds.jump, transform.position);
     }
 
     public void PlayLand(SurfaceTypeManager.SurfaceType surface)
     {
+        if (!_isSoundEnabled) return;
         SoundFXManager.obj.PlayAtGameObject(
             sounds.land,
             gameObject,
@@ -34,6 +47,7 @@ public class SharedCharacterAudio : MonoBehaviour
 
     public void PlayFootstep(SurfaceTypeManager.SurfaceType surface)
     {
+        if (!_isSoundEnabled) return;
         SoundFXManager.obj.PlayAtGameObject(
             sounds.footstep,
             gameObject,
@@ -45,22 +59,27 @@ public class SharedCharacterAudio : MonoBehaviour
     }
 
     public void PlayGenericDeath(Transform transform) {
+        if (!_isSoundEnabled) return;
         SoundFXManager.obj.PlayAtPosition(sounds.genericDeath, transform.position);
     }
 
     public void PlayShadowDeath(Transform transform) {
+        if (!_isSoundEnabled) return;
         SoundFXManager.obj.PlayAtPosition(sounds.shadowDeath, transform.position);
     }
 
     public void PlaySpawn(Transform transform) {
+        if (!_isSoundEnabled) return;
         SoundFXManager.obj.PlayAtPosition(sounds.spawn, transform.position);
     }
 
     public void PlayShapeshift() {
+        if (!_isSoundEnabled) return;
         SoundFXManager.obj.PlayAtPosition(sounds.shapeshift, transform.position);
     }
 
     public void PlayMergeSplit(ref EventInstance mergeSplitInstance) {
+        if (!_isSoundEnabled) return;
         mergeSplitInstance = SoundFXManager.obj.CreateAttachedInstance(sounds.mergeSplit, gameObject);
         mergeSplitInstance.start();
         mergeSplitInstance.release();

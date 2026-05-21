@@ -68,6 +68,22 @@ public class ShadowTwinMovement : MonoBehaviour
         obj = null;
     }
 
+    public void EnableSharedCharacterAudio()
+    {
+        if (_sharedPlayerAudio != null)
+        {
+            _sharedPlayerAudio.EnableSound();
+        }
+    }
+
+    public void DisableSharedCharacterAudio()
+    {
+        if (_sharedPlayerAudio != null)
+        {
+            _sharedPlayerAudio.DisableSound();
+        }
+    }
+
     private void OnEnable() {
         //Reset transform from any previous squeeze
         anchor.transform.localScale = Vector3.one;
