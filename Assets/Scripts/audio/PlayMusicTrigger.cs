@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayMusicTrigger : MonoBehaviour
 {
@@ -16,5 +17,7 @@ public class PlayMusicTrigger : MonoBehaviour
             MusicManager.obj.Stop();
         else            
             MusicManager.obj.Play(_track);
+
+        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
     }
 }

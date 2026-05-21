@@ -14,7 +14,7 @@ public class Cave23RoomManager : MonoBehaviour
     [SerializeField] private SpawnPoint _eliReturnFromDreamRoomPosition;
     [SerializeField] private Transform _sootStartPositionAfterDreamRoom;
     [SerializeField] private ConversationManager _conversationManager;
-    [SerializeField] private MusicTrack _caveMain;
+    [SerializeField] private AmbienceTrack _caveMainAmbience;
     [SerializeField] private GameObject _crystalCutsceneCamera;
 
     void Start() {
@@ -32,6 +32,7 @@ public class Cave23RoomManager : MonoBehaviour
 
     private IEnumerator AfterEliDreamRoom() {
         AmbienceManager.obj.Stop();
+        AmbienceManager.obj.Play(_caveMainAmbience);
         PlayerMovement.obj.isGrounded = true;
         PlayerMovement.obj.SetStartingOnGround();
         Player.obj.transform.position = _eliReturnFromDreamRoomPosition.transform.position;
@@ -152,7 +153,6 @@ public class Cave23RoomManager : MonoBehaviour
     private void OnConversationCompleted() {
         PlayerMovement.obj.UnFreeze();
         CaveAvatar.obj.IsFollowingPlayer = true;
-        MusicManager.obj.Play(_caveMain);
         GameManager.obj.RegisterEvent(_postDreamSequenceCompleted);
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         _conversationManager.OnConversationEnd -= OnConversationCompleted;
