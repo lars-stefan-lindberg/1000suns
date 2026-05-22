@@ -13,8 +13,10 @@ public class BeforePowerUpRoomsConversationTrigger : MonoBehaviour
     {
         if(GameManager.obj.HasEvent(_cave33FirstEliSootConversationCompleted))
             gameObject.SetActive(false);
-        else
+        else {
+            _conversationManager.enabled = true;
             _conversationManager.OnConversationEnd += OnConversationCompleted;
+        }
     }
 
     void OnDestroy()
@@ -47,5 +49,7 @@ public class BeforePowerUpRoomsConversationTrigger : MonoBehaviour
         PlayerMovement.obj.UnFreeze();
         CaveAvatar.obj.SetTarget(_caveAvatarAfterConversationTarget);
         GameManager.obj.RegisterEvent(_cave33FirstEliSootConversationCompleted);
+        _conversationManager.OnConversationEnd -= OnConversationCompleted;
+        _conversationManager.enabled = false;
     }
 }

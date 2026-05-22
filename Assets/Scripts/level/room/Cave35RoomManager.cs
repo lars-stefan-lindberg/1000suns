@@ -8,6 +8,7 @@ public class Cave35RoomManager : MonoBehaviour
     [SerializeField] private GameEventId _hasShadowJump;
     [SerializeField] private GameEventId _postDreamSequenceCompleted;
     [SerializeField] private SpawnPoint _eliReturnFromDreamRoomPosition;
+    [SerializeField] private AmbienceTrack _caveMain;
 
     void Start()
     {
@@ -43,6 +44,7 @@ public class Cave35RoomManager : MonoBehaviour
 
 
         PlayerMovement.obj.SetNewPowerReceived();
+        AmbienceManager.obj.Play(_caveMain);
         yield return new WaitForSeconds(2);
 
         GameManager.obj.RegisterEvent(_postDreamSequenceCompleted);

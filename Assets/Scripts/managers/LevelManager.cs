@@ -397,6 +397,10 @@ public class LevelManager : MonoBehaviour
     private void SetCaveAvatarPosition(Scene scene) {
         GameEventId sootFreed = ScriptableObject.CreateInstance<GameEventId>();
         sootFreed.id = "cave-3.soot-freed";
+        GameEventId beforeShadowJumpConversationCompleted = ScriptableObject.CreateInstance<GameEventId>();
+        beforeShadowJumpConversationCompleted.id = "Cave-33.first-eli-soot-conversation-completed";
+        GameEventId afterShadowJumpConversationCompleted = ScriptableObject.CreateInstance<GameEventId>();
+        afterShadowJumpConversationCompleted.id = "Cave-33.after-shadow-jump-conversation-completed";
         if (scene.name == "Cave-56") {
             CaveAvatar.obj.SetStartingPositionInRoom35();
         } else if(scene.name == "Cave-55") {
@@ -419,7 +423,9 @@ public class LevelManager : MonoBehaviour
                 CaveAvatar.obj.SetStartingPositionInRoom32();
             else
                 CaveAvatar.obj.SetStartingPositionInRoom31();
-        } else if(GameManager.obj.C27CutsceneCompleted) {
+        } else if(GameManager.obj.HasEvent(beforeShadowJumpConversationCompleted) && !GameManager.obj.HasEvent(afterShadowJumpConversationCompleted)) {
+            CaveAvatar.obj.SetStartingPositionInCaveRoom33();   
+        }else if(GameManager.obj.C27CutsceneCompleted) {
             CaveAvatar.obj.SetStartingPositionInRoom30();
         } else if(GameManager.obj.C26CutsceneCompleted) {
             CaveAvatar.obj.SetStartingPositionInRoom27();

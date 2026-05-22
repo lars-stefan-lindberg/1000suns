@@ -180,6 +180,13 @@ public class CaveAvatar : MonoBehaviour
         SetRedEyes();
     }
 
+    public void SetStartingPositionInCaveRoom33() {
+        SetPosition(new Vector2(1369.625f, -168.75f));
+        IsFollowingPlayer = false;
+        _target = null;
+        SetFlipX(true);
+    }
+
     private void SetRedEyes() {
         _headSpriteRenderer.color = Color.white;
         _animator.SetLayerWeight(1, 1);

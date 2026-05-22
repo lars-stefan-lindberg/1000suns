@@ -17,6 +17,7 @@ public class Cave35D2RoomManager : MonoBehaviour
     }
 
     private IEnumerator TeleportCoroutine() {
+        AmbienceManager.obj.Stop();
         SoundFXManager.obj.Play2D(_teleport);
         SceneFadeManager.obj.StartWhiteFadeOut(0.8f);
         while(SceneFadeManager.obj.IsFadingOut)
