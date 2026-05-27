@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class C26CutsceneManager : MonoBehaviour, ISkippable
 {
+    [SerializeField] private GameEventId _cutsceneCompleted;
     [SerializeField] private GameObject _backgroundBlobs;
     [SerializeField] private Transform _sootFlyTarget1;
     [SerializeField] private Transform _sootFlyTarget2;
@@ -20,6 +21,9 @@ public class C26CutsceneManager : MonoBehaviour, ISkippable
     [SerializeField] private EventReference _sootEvilEyesStinger;
     [SerializeField] private EventReference _rumblingSfx;
     [SerializeField] private EventReference _blobTransformSfx;
+    [SerializeField] private float _timeBeforeTransformSfx = 0.8f;
+    [SerializeField] private float _timeBeforeTransformStinger = 1f;
+    [SerializeField] private float _timeBeforeTransformVfx = 1f;
     private EventInstance _blobTransformStingerInstance;
     private EventInstance _sootEvilEyesStingerInstance;
     private EventInstance _rumblingInstance;
@@ -28,8 +32,7 @@ public class C26CutsceneManager : MonoBehaviour, ISkippable
 
     private bool _startCutscene = false;
     void OnTriggerEnter2D(Collider2D other) {
-        //TODO add GameEventId
-        if(GameManager.obj.C26CutsceneCompleted) {
+        if(GameManager.obj.HasEvent(_cutsceneCompleted)) {
             return;
         }
         if (other.gameObject.CompareTag("Player")) {
@@ -126,8 +129,6 @@ public class C26CutsceneManager : MonoBehaviour, ISkippable
 
         yield return new WaitForSeconds(1f);
 
-        StartSoundEvent(_blobTransformStinger, ref _blobTransformStingerInstance);
-
         //Loop through all children, get animators, and increase speed of animation
         Animator[] animators = _backgroundBlobs.GetComponentsInChildren<Animator>();
         foreach(Animator animator in animators) {
@@ -138,17 +139,15 @@ public class C26CutsceneManager : MonoBehaviour, ISkippable
         _particleEffect.Play();
         StartCoroutine(GraduallyIncreaseParticleSpeed(_particleEffect, -2, -5, 2.3f, 1f, 7f));
 
-        yield return new WaitForSeconds(0.8f);
-        StartSoundEvent(_blobTransformSfx, ref _blobTransformSfxInstance);
-        yield return new WaitForSeconds(1.2f);
+        StartCoroutine(StartSoundEvents());
 
-        StartSoundEvent(_rumblingSfx, ref _rumblingInstance);
+        yield return new WaitForSeconds(_timeBeforeTransformVfx);
 
         //Turn player into blob, slowly
         //Shake screen
         CameraShakeManager.obj.ShakeCamera(1.94f, 1.84f, 6.5f);
         Player.obj.FlashFor(6.5f);
-        Player.obj.SetAnimatorSpeed(0.03f);
+        Player.obj.SetAnimatorSpeed(0.035f);
         Player.obj.PlayToBlobAnimation();
 
         yield return new WaitForSeconds(11f);
@@ -186,16 +185,24 @@ public class C26CutsceneManager : MonoBehaviour, ISkippable
 
         MusicManager.obj.Play(_musicTrack);
         PlayerPowersManager.obj.EliBlobCanJump = true;
-        PlayerBlobMovement.obj.UnFreeze();
-        //TODO replace with GameEventId
-        GameManager.obj.C26CutsceneCompleted = true;
+        GameManager.obj.RegisterEvent(_cutsceneCompleted);
         PlayerPowersManager.obj.EliCanTurnFromHumanToBlob = true;
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
+        PlayerBlobMovement.obj.UnFreeze();
         yield return null;
     }
 
     public void FadeInBlobs() {
         StartCoroutine(FadeInBlobSprites());
+    }
+
+    private IEnumerator StartSoundEvents() {
+        yield return new WaitForSeconds(_timeBeforeTransformSfx);
+        StartSoundEvent(_blobTransformSfx, ref _blobTransformSfxInstance);
+        yield return new WaitForSeconds(_timeBeforeTransformStinger);
+        StartSoundEvent(_blobTransformStinger, ref _blobTransformStingerInstance);
+
+        StartSoundEvent(_rumblingSfx, ref _rumblingInstance);
     }
 
     private IEnumerator FadeInBlobSprites() {

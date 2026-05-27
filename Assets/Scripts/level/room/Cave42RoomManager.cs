@@ -10,9 +10,14 @@ public class Cave42RoomManager : MonoBehaviour
     [SerializeField] private Transform _sootStartPosition;
     [SerializeField] private Transform _elevatorStopPosition;
     [SerializeField] private CaveElevator _elevator;
+    [SerializeField] private GameEventId _elevatorCompleted;
 
     void Start()
     {
+        if(GameManager.obj.HasEvent(_elevatorCompleted)) {
+            _elevator.transform.position = new Vector2(_elevator.transform.position.x, _elevatorStopPosition.position.y);
+            return;
+        }
         SceneFadeManager.obj.SetFadedOutState();
         Player.obj.transform.position = _eliStartPosition.transform.position;
         Player.obj.gameObject.SetActive(true);
@@ -41,6 +46,8 @@ public class Cave42RoomManager : MonoBehaviour
         _elevator.SetStopPosition(_elevatorStopPosition.position.y);
         _elevator.StartMoving();
 
+        yield return new WaitForSeconds(2f);
+
         SceneFadeManager.obj.StartFadeIn(0.8f);
         while(SceneFadeManager.obj.IsFadingIn)
             yield return null;
@@ -49,6 +56,8 @@ public class Cave42RoomManager : MonoBehaviour
             yield return null;
 
         yield return new WaitForSeconds(1f);
+        GameManager.obj.RegisterEvent(_elevatorCompleted);
+        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         PlayerMovement.obj.UnFreeze();
     }
 }

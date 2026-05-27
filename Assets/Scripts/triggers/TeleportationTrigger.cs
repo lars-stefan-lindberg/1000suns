@@ -20,6 +20,7 @@ public class TeleportationTrigger : MonoBehaviour
     private IEnumerator TeleportPlayer() {
         PlayerMovement.obj.Freeze();
         PlayerMovement.obj.spriteRenderer.enabled = false;
+        PlayerMovement.obj.DisableCollider();
         DustParticleMgr.obj.Enabled = false;  //Prevent any dust from spawning
 
         GameObject soul = Instantiate(_soul, Player.obj.transform.position, Player.obj.transform.rotation);
@@ -33,6 +34,7 @@ public class TeleportationTrigger : MonoBehaviour
         SoundFXManager.obj.PlayAtGameObject(_teleportationEndSfx, PlayerManager.obj.GetPlayerTransform().gameObject);
         Destroy(prisonerSoul.gameObject);
 
+        PlayerMovement.obj.EnableCollider();
         PlayerMovement.obj.spriteRenderer.enabled = true;
         PlayerMovement.obj.UnFreeze();
         DustParticleMgr.obj.Enabled = true;

@@ -236,6 +236,33 @@ public class PlayerPush : MonoBehaviour
         PlayerMovement.obj.ExecuteForcePushWithProjectile(chargePowerType);
     }
 
+    public void SimulateShootHold() {
+        if (defaultPower < StaminaMgr.obj.GetCurrentStamina()) {
+            pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().HardCancel();
+            _eliAudio.PlayForcePushStart(ref _forcePushStartSfxInstance);
+            _buildUpPower = defaultPower;
+            _buildingUpPower = true;
+            _buildUpPowerTime = 0;
+            Player.obj.StartChargeFlash();
+            Player.obj.PlayerPushLight();
+        }
+    }
+
+    public void SimulateShootRelease() {
+
+            if(_buildingUpPower && _buildUpPowerTime >= minBuildUpPowerTime)
+            {
+                if(platform != null) {
+                    float power = Player.obj.hasPowerUp && IsFullyCharged() ? powerUpMaxForce : _buildUpPower;
+                    StartCoroutine(DelayedMovePlatform(projectileDelay, power));
+                }
+
+                ForcePush(_buildUpPower);
+            }
+            
+            ResetBuiltUpPower();
+    }
+
     private void OnDestroy()
     {
         obj = null;

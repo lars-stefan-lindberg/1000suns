@@ -214,6 +214,16 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             _animator.SetTrigger("forcePush");
     }
 
+    public void TriggerFallToKnees() {
+        _animator.SetTrigger("fallToKnees");
+    }
+
+    private bool _isBreathingOnKnees = false;
+    public void SetBreathingOnKnees(bool isBreathingOnKnees) {
+        _animator.SetBool("isBreathingOnKnees", isBreathingOnKnees);
+        _isBreathingOnKnees = isBreathingOnKnees;
+    }
+
     public void ExecuteForcePushJump() {
         isForcePushJumping = true;
         forcePushJumpOnGroundTimer = 0;
@@ -914,6 +924,14 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public void SetStartingOnGround() {
         startingOnGround = true;
         _startingOnGroundFalseCoroutineStarted = false;
+    }
+
+    public void DisableCollider() {
+        _collider.enabled = false;
+    }
+
+    public void EnableCollider() {
+        _collider.enabled = true;
     }
 
     private void CheckCollisions()
