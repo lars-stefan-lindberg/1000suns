@@ -79,7 +79,7 @@ public class FloatyPlatform : MonoBehaviour
             PlayerIdentity player = collider.GetComponent<PlayerIdentity>();
             if (player != null)
             {
-                if (player.id == 1)
+                if (player.id == 1 || player.id == 3) //Eli or blob
                     _isPlayer1CollisionTriggered = true;
                 else if (player.id == 2)
                     _isPlayer2CollisionTriggered = true;
@@ -101,7 +101,7 @@ public class FloatyPlatform : MonoBehaviour
             PlayerIdentity player = collider.GetComponent<PlayerIdentity>();
             if (player != null)
             {
-                if (player.id == 1)
+                if (player.id == 1 || player.id == 3) //Eli or blob
                 {
                     isPlayer1OnPlatform = false;
                     _isPlayer1CollisionTriggered = false;

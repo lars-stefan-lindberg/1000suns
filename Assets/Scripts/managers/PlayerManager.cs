@@ -30,6 +30,8 @@ public class PlayerManager : MonoBehaviour
             return PlayerType.HUMAN;
         } else if(playerIdentity.id == 2) {
             return PlayerType.SHADOW_TWIN;
+        } else if(playerIdentity.id == 3) {
+            return PlayerType.BLOB;
         } else {
             Debug.Log("Unknown player identity id: " + playerIdentity.id);
             return PlayerType.HUMAN;
@@ -42,6 +44,8 @@ public class PlayerManager : MonoBehaviour
             return PlayerType.HUMAN;
         } else if(playerIdentity.id == 2) {
             return PlayerType.SHADOW_TWIN;
+        } else if(playerIdentity.id == 3) {
+            return PlayerType.BLOB;
         } else {
             Debug.Log("Unknown player identity id: " + playerIdentity.id);
             return PlayerType.HUMAN;
@@ -272,13 +276,11 @@ public class PlayerManager : MonoBehaviour
 
     public void TransitionToNextRoom(PlayerDirection direction, PlayerType playerType) {
         if(playerType == PlayerType.HUMAN) {
-            if(PlayerMovement.obj != null && PlayerMovement.obj.gameObject.activeSelf)
-                PlayerMovement.obj.TransitionToNextRoom(direction);
-            else if(PlayerBlobMovement.obj != null && PlayerBlobMovement.obj.gameObject.activeSelf)
-                PlayerBlobMovement.obj.TransitionToNextRoom(direction);
+            PlayerMovement.obj.TransitionToNextRoom(direction);
         } else if(playerType == PlayerType.SHADOW_TWIN) {
             ShadowTwinMovement.obj.TransitionToNextRoom(direction);
-        }
+        } else if(playerType == PlayerType.BLOB)
+            PlayerBlobMovement.obj.TransitionToNextRoom(direction);
     }
 
     public void TeleportSecondPlayerToTarget(PlayerType playerType, Collider2D target) {
