@@ -9,8 +9,11 @@ public class AnchorPointDetector : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.gameObject.CompareTag("AnchorPoint")) {
-            _anchorPoints.Add(collision.GetComponent<CircleCollider2D>());
-            isAnchorPointDetected = true;
+            var circleCollider = collision.GetComponent<CircleCollider2D>();
+            if (circleCollider != null) {
+                _anchorPoints.Add(circleCollider);
+                isAnchorPointDetected = true;
+            }
         }
     }
 
@@ -26,16 +29,20 @@ public class AnchorPointDetector : MonoBehaviour
         if(_anchorPoints.Count == 0) return null;
         
         CircleCollider2D closestAnchorPoint = null;
-        float closestDistance = float.MaxValue;
+        float closestDistanceSqr = float.MaxValue;
         foreach (CircleCollider2D anchorPoint in _anchorPoints) {
-            //First check if the anchorPoint is in front of the object
+            if (anchorPoint == null) continue;
+            
             Vector2 directionToAnchor = anchorPoint.transform.position - obj.position;
+            
+            // Early out: Check if the anchorPoint is in front of the object
             bool isAnchorInFront = Vector2.Dot(directionToAnchor, isFacingLeft ? Vector2.left : Vector2.right) >= 0;
             if (!isAnchorInFront) continue;
             
-            float distance = Vector3.Distance(obj.position, anchorPoint.transform.position);
-            if (distance < closestDistance) {
-                closestDistance = distance;
+            // Use squared distance to avoid expensive sqrt
+            float distanceSqr = directionToAnchor.sqrMagnitude;
+            if (distanceSqr < closestDistanceSqr) {
+                closestDistanceSqr = distanceSqr;
                 closestAnchorPoint = anchorPoint;
             }
         }

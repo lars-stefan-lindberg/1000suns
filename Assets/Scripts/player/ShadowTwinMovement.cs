@@ -1020,6 +1020,12 @@ public class ShadowTwinMovement : MonoBehaviour
 
     private void ExecuteRegularJump()
     {
+        if(IsPulling) {
+            ShadowTwinPull.obj.CancelPulling();
+            ShadowTwinPull.obj.OnShootButtonCanceled();
+            _animator.SetTrigger("jumpedWhilePulling"); //Special case where you need to go to jump animation from pulling animation while grounded. If you start pulling in the air we should not go to jump animation
+        }
+        
         ExecuteJump(_stats.JumpPower);
         
         // Activate jump kick start
@@ -1177,7 +1183,8 @@ public class ShadowTwinMovement : MonoBehaviour
             return;
         }
 
-        if(IsPulling && isGrounded) {
+        //Apply ground deceleration even no matter if player is grounded or not, since ground deceleration "feels" better in the air
+        if(IsPulling) {
             _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, _stats.GroundDeceleration * Time.fixedDeltaTime);
             return;
         }

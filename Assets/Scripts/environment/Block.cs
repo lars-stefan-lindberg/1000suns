@@ -53,7 +53,7 @@ public class Block : MonoBehaviour
             if(_isGrounded && !_pullable.IsPulled)
                 _rigidBody.bodyType = RigidbodyType2D.Static;
 
-            if(HitUnderneath(collision) && _rigidBody.velocity.y < -0.05f) {
+            if(HitUnderneath(collision) && _rigidBody.velocity.y < -0.05f && !_pullable.IsPulled) {
                 PlayerManager.PlayerType playerType = PlayerManager.obj.GetPlayerTypeFromCollider(collision);
                 if(PlayerManager.obj.IsPlayerGrounded(playerType)) {
                     _rigidBody.bodyType = RigidbodyType2D.Static;
@@ -135,6 +135,7 @@ public class Block : MonoBehaviour
 
         if(!_isBeingPulled && _pullable.IsPulled) {
             _isBeingPulled = true;
+            _isPlayerBeneath = false;
             PlaySlideSound();
         } else if(_isBeingPulled && !_pullable.IsPulled) {
             _isBeingPulled = false;
@@ -193,7 +194,7 @@ public class Block : MonoBehaviour
     }
 
     private void FixedUpdate() {
-        if(_isPlayerBeneath) {
+        if(_isPlayerBeneath && !_pullable.IsPulled) {
             if(PlayerManager.obj.IsPlayerGrounded(_playerType))
                 Reaper.obj.KillPlayerGeneric(_playerType);
         }

@@ -4,12 +4,14 @@ using UnityEngine.SceneManagement;
 
 public class PrisonerAnimationEvents : MonoBehaviour
 {
-    private Prisoner prisoner;
+    private LightSprite2DFadeManager _lightSprite2DFadeManager;
+    private Prisoner _prisoner;
     private PrisonerAudio _prisonerAudio;
 
     void Awake() {
-        prisoner = GetComponent<Prisoner>();
-        _prisonerAudio = GetComponent<PrisonerAudio>();
+        _prisoner = GetComponentInParent<Prisoner>();
+        _prisonerAudio = GetComponentInParent<PrisonerAudio>();
+        _lightSprite2DFadeManager = GetComponentInParent<LightSprite2DFadeManager>();
     }
 
     public void PlayDefaultCrawl() {
@@ -24,7 +26,19 @@ public class PrisonerAnimationEvents : MonoBehaviour
     }
 
     public void PlayDeath() {
-        if(!prisoner.muteDeathSoundFX)
+        if(!_prisoner.muteDeathSoundFX)
             _prisonerAudio.PlayDeath();
+    }
+
+    public void SpawnStarted() {
+        _lightSprite2DFadeManager.StartFadeIn();
+    }
+
+    public void SpawningComplete() {
+        _prisoner.IsSpawning = false;
+    }
+
+    public void Kill() {
+        _prisoner.Kill();
     }
 }

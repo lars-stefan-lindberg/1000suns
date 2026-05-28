@@ -6,8 +6,9 @@ public class FloatyPlatform : MonoBehaviour
 {
     private BoxCollider2D _collider;
     [SerializeField] private BoxCollider2D _childCollider;
+    [SerializeField] private SpriteRenderer _spriteRenderer;
+    [SerializeField] private PlatformEffector2D _platformEffector;
     private Rigidbody2D _rigidBody;
-    private SpriteRenderer _spriteRenderer;
     private Pullable _pullable;
 
     public float idleMoveSpeed;
@@ -47,11 +48,10 @@ public class FloatyPlatform : MonoBehaviour
     {
         _collider = GetComponent<BoxCollider2D>();
         _rigidBody = GetComponent<Rigidbody2D>();
-        _spriteRenderer = GetComponent<SpriteRenderer>();
         _blockingCastLayerMask = LayerMask.GetMask(new[] { "Ground", "Default", "JumpThroughs", "Enemies", "Block" });
         startingVerticalPosition = transform.position.y;
         //_idleVerticalTargetPosition = startingVerticalPosition - idleVerticalDistance;
-        _fallingPlatformFlash = GetComponent<FallingPlatformFlash>();
+        _fallingPlatformFlash = GetComponentInChildren<FallingPlatformFlash>();
         _startingPosition = transform.position;
         _fadeStartColor = new Color(_spriteRenderer.color.r, _spriteRenderer.color.g, _spriteRenderer.color.b, 0);
         _pullable = GetComponentInChildren<Pullable>();
@@ -165,6 +165,15 @@ public class FloatyPlatform : MonoBehaviour
             movePlatform = true;
         } else if(wasJustReleased) {
             _isBeingPulled = false;
+        }
+
+        if(wasJustPulled) {
+            _rigidBody.bodyType = RigidbodyType2D.Dynamic;
+            _platformEffector.enabled = false;
+        }
+        else if(wasJustReleased) {
+            _rigidBody.bodyType = RigidbodyType2D.Kinematic;
+            _platformEffector.enabled = true;
         }
 
         if(!_isBeingPulled) {

@@ -60,7 +60,7 @@ public class Prisoner : MonoBehaviour
     public bool isImmuneToForcePush = false;
     public bool isSpawningFast = false;
     public float spawnAnimationSpeed = 3;
-    private bool _isSpawning = true;
+    public bool IsSpawning = true;
     private bool _isFalling = false;
 
     public float playerCastDistance = 0;
@@ -244,7 +244,7 @@ public class Prisoner : MonoBehaviour
             _isFalling = false;
             isRecovering = true;
             recoveryTimeCount = recoveryDuration;
-        } else if(isGrounded && !groundHit && !hasBeenHit && !_isBeingPulled && !isRecovering && !_isSpawning) {
+        } else if(isGrounded && !groundHit && !hasBeenHit && !_isBeingPulled && !isRecovering && !IsSpawning) {
             _isFalling = true;
             _animator.SetTrigger("fall");
         }
@@ -388,7 +388,7 @@ public class Prisoner : MonoBehaviour
         _animator.SetBool("isHit", hasBeenHit || _isBeingPulled);
         _animator.SetBool("isRecovering", isRecovering);
         _animator.SetBool("isMoving", Mathf.Abs(_rigidBody.velocity.x) > 0.01);
-        _animator.SetBool("isSpawning", _isSpawning);
+        _animator.SetBool("isSpawning", IsSpawning);
         _animator.SetBool("isFalling", _isFalling);
         _animator.SetBool("isStuck", isStuck);
         //_animator.SetBool("isMoving", isMoving);
@@ -502,12 +502,6 @@ public class Prisoner : MonoBehaviour
         }
     }
 
-    public void SpawnStarted() {
-        _lightSprite2DFadeManager.StartFadeIn();
-    }
-    public void SpawningComplete() {
-        _isSpawning = false;
-    }
     //private void OnDrawGizmos()
     //{
     //    Gizmos.color = Color.cyan;

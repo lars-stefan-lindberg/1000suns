@@ -1,12 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class FallingPlatformFlash : MonoBehaviour
 {
-    [ColorUsage(true, true)]
-    [SerializeField] private Color _flashColor = Color.white;
-    [SerializeField] private float _flashIntensity = 0.5f;
+    [SerializeField] private float _flashIntensity = 0.25f;
     [SerializeField] private float _defaultFlashSpeed = 0.25f;
     private float _mediumFlashSpeed;
     private float _fastFlashSpeed;
@@ -17,7 +13,7 @@ public class FallingPlatformFlash : MonoBehaviour
     private bool _startFlashing = false;
     private float _elapsedTime = 0f; //Elapsed time between a blend and non-blend
     private float _totalElapsedTime = 0f;
-    private float _currentFlashAmount = 0f;
+    private float _currentFlashAmount = 1f;
     private float _mediumFlashTime;
     private float _fastFlashTime;
     private bool _isConstantFlashSpeed = false;
@@ -52,11 +48,11 @@ public class FallingPlatformFlash : MonoBehaviour
     private bool blended = false;
     void Update() {
         if (_startFlashing) {
-            if(_currentFlashAmount == 0f) {
+            if(_currentFlashAmount == _flashIntensity) {
                 _elapsedTime = 0f;
                 blended = false;
             }
-            else if(_currentFlashAmount == _flashIntensity) {
+            else if(_currentFlashAmount == 1f) {
                 _elapsedTime = 0f;
                 blended = true;
             }
@@ -66,17 +62,17 @@ public class FallingPlatformFlash : MonoBehaviour
 
             float flashTime = _isConstantFlashSpeed ? _defaultFlashSpeed : CalculateFlashTime();
             if(blended)
-                _currentFlashAmount = Mathf.Lerp(_flashIntensity, 0f, _elapsedTime / flashTime);
+                _currentFlashAmount = Mathf.Lerp(_flashIntensity, 1f, _elapsedTime / flashTime);
             else
-                _currentFlashAmount = Mathf.Lerp(0f, _flashIntensity, _elapsedTime / flashTime);
+                _currentFlashAmount = Mathf.Lerp(1f, _flashIntensity, _elapsedTime / flashTime);
 
-            _material.SetFloat("_FlashAmount", _currentFlashAmount);
+            _material.SetFloat("_Contrast", _currentFlashAmount);
         } 
         else {
-            if(_currentFlashAmount > 0f) {
+            if(_currentFlashAmount < 1f) {
                 _elapsedTime += Time.deltaTime;
-                _currentFlashAmount = Mathf.Lerp(_flashIntensity, 0f, (_elapsedTime / _defaultFlashSpeed));
-                _material.SetFloat("_FlashAmount", _currentFlashAmount);
+                _currentFlashAmount = Mathf.Lerp(_flashIntensity, 1f, (_elapsedTime / _defaultFlashSpeed));
+                _material.SetFloat("_Contrast", _currentFlashAmount);
             }
         }
     }
