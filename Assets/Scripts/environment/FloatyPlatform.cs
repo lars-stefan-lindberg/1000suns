@@ -137,6 +137,8 @@ public class FloatyPlatform : MonoBehaviour
 
     public bool somethingToTheRight = false;
     public bool somethingToTheLeft = false;
+    public bool somethingAbove = false;
+    public bool somethingBelow = false;
     private bool _startFlashing = true;
 
     private bool _isPlayer1CollisionTriggered = false;
@@ -163,8 +165,14 @@ public class FloatyPlatform : MonoBehaviour
         if(wasJustPulled) {
             _isBeingPulled = true;
             movePlatform = true;
+            if(_startFallCountDown || isFallingOnMovePlatform) {
+                _fallingPlatformFlash.PauseFlashing();
+            }
         } else if(wasJustReleased) {
             _isBeingPulled = false;
+            if(_startFallCountDown || isFallingOnMovePlatform) {
+                _fallingPlatformFlash.ResumeFlashing();
+            }
         }
 
         if(wasJustPulled) {
@@ -201,8 +209,11 @@ public class FloatyPlatform : MonoBehaviour
                 return;
             }
             
+            // Only check for walls when not being pulled
             somethingToTheRight = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.right, blockingCastDistance, _blockingCastLayerMask);
             somethingToTheLeft = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.left, blockingCastDistance, _blockingCastLayerMask);
+            somethingAbove = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.up, blockingCastDistance, _blockingCastLayerMask);
+            somethingBelow = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, blockingCastDistance, _blockingCastLayerMask);
 
             if (somethingToTheRight && _rigidBody.velocity.x > 0) {
                 movePlatform = false;
@@ -214,6 +225,21 @@ public class FloatyPlatform : MonoBehaviour
                 //TODO: wall hit sfx
                 //SoundFXManager.obj.PlayFloatingPlatformWallHit(transform);
             }
+            if (somethingAbove && _rigidBody.velocity.y > 0) {
+                movePlatform = false;
+                //TODO: wall hit sfx
+                //SoundFXManager.obj.PlayFloatingPlatformWallHit(transform);
+            }
+            if (somethingBelow && _rigidBody.velocity.y < 0) {
+                movePlatform = false;
+                //TODO: wall hit sfx
+                //SoundFXManager.obj.PlayFloatingPlatformWallHit(transform);
+            }
+        }
+        else
+        {
+            // When being pulled, ensure movePlatform is true so velocity isn't zeroed
+            movePlatform = true;
         }
 
         if (movePlatform)
@@ -221,9 +247,7 @@ public class FloatyPlatform : MonoBehaviour
             // If the platform is being pulled, let the external pull logic control velocity.
             if (!_isBeingPulled)
             {
-                _rigidBody.velocity = new Vector2(
-                    Mathf.MoveTowards(_rigidBody.velocity.x, 0, deceleration * Time.deltaTime),
-                    _rigidBody.velocity.y);
+                _rigidBody.velocity = Vector2.MoveTowards(_rigidBody.velocity, Vector2.zero, deceleration * Time.deltaTime);
 
                 if(isFallingOnMovePlatform && !_isFallingOnMovePlatformFallStarted && !_respawning) {
                     _fallingPlatformFlash.StopFlashing();
@@ -238,7 +262,7 @@ public class FloatyPlatform : MonoBehaviour
             _rigidBody.velocity = new Vector2(0, 0);
         }
 
-        if(!_isBeingPulled && Mathf.Approximately(_rigidBody.velocity.x, 0f))
+        if(!_isBeingPulled && Mathf.Approximately(_rigidBody.velocity.sqrMagnitude, 0f))
         {
             movePlatform = false;
         }
@@ -304,8 +328,7 @@ public class FloatyPlatform : MonoBehaviour
         _rigidBody.velocity = new Vector3(0,0,0);
         _rigidBody.gravityScale = 0;
         _rigidBody.bodyType = RigidbodyType2D.Kinematic;
-        _fadeStartColor.a = 0;
-        _spriteRenderer.color = _fadeStartColor;
+        StartCoroutine(FadeOutSprite());
         isPlayer1OnPlatform = false;
         isPlayer2OnPlatform = false;
         _fallingPlatformFlash.StopFlashing();
@@ -317,6 +340,15 @@ public class FloatyPlatform : MonoBehaviour
         while(_spriteRenderer.color.a < 1f) {
             _fadeStartColor.a += Time.deltaTime * _fadeSpeed;
             _spriteRenderer.color = _fadeStartColor;
+            yield return null;
+        }
+    }
+
+    private IEnumerator FadeOutSprite() {
+        Color currentColor = _spriteRenderer.color;
+        while(currentColor.a > 0f) {
+            currentColor.a -= Time.deltaTime * _fadeSpeed;
+            _spriteRenderer.color = currentColor;
             yield return null;
         }
     }

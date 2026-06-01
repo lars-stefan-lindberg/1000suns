@@ -45,6 +45,15 @@ public class FallingPlatformFlash : MonoBehaviour
         _isConstantFlashSpeed = false;
     }
 
+    public void PauseFlashing() {
+        _startFlashing = false;
+        _material.SetFloat("_Contrast", 1f);
+    }
+
+    public void ResumeFlashing() {
+        _startFlashing = true;
+    }
+
     private bool blended = false;
     void Update() {
         if (_startFlashing) {

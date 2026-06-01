@@ -15,8 +15,7 @@ public class ShadowTwinPlayer : MonoBehaviour
 
     private Animator _animator;
     private PlayerFlash _playerFlash;
-    private PlayerChargeFlash _playerChargeFlash;
-    private PlayerLightManager _playerLightManager;
+    private DeeLightManager _deeLightManager;
     private PlayerContrastFade _playerContrastFade;
 
     void Awake()
@@ -25,8 +24,7 @@ public class ShadowTwinPlayer : MonoBehaviour
         _animator = GetComponentInChildren<Animator>();
         _collider = GetComponent<BoxCollider2D>();
         _playerFlash = GetComponentInChildren<PlayerFlash>();
-        _playerChargeFlash = GetComponentInChildren<PlayerChargeFlash>();
-        _playerLightManager = GetComponentInChildren<PlayerLightManager>();
+        _deeLightManager = GetComponentInChildren<DeeLightManager>();
         _playerContrastFade = GetComponentInChildren<PlayerContrastFade>();
         _defaultGravity = rigidBody.gravityScale;
     }
@@ -154,7 +152,6 @@ public class ShadowTwinPlayer : MonoBehaviour
     [ContextMenu("Flash")]
     public void FlashFor() {
         FlashFor(5);
-        //_playerFlash.StartFlashing();
     }
     public void FlashFor(float duration) {
         _playerFlash.FlashFor(duration, 0.05f);
@@ -178,10 +175,6 @@ public class ShadowTwinPlayer : MonoBehaviour
     //Not sure about this flashing effect when charging, so leaving it out for now
     public void StartChargeFlash() {
         _playerFlash.ChargeFlash();
-        //_playerChargeFlash.StartFlashing();
-    }
-    public void EndChargeFlash() {
-       // _playerChargeFlash.EndFlashing();
     }
 
     public void SetCaveStartingCoordinates() {
@@ -193,19 +186,19 @@ public class ShadowTwinPlayer : MonoBehaviour
     }
 
     public void PlayerPullLight() {
-        _playerLightManager.IncreaseLightSize();
+        _deeLightManager.IncreaseLightSize();
     }
 
     public void RestorePlayerPullLight() {
-        _playerLightManager.RestoreLightSize();
+        _deeLightManager.RestoreLightSize();
     }
 
     public void FadeOutPlayerLight() {
-        _playerLightManager.FadeOut();
+        _deeLightManager.FadeOut();
     }
 
     public void FadeInPlayerLight() {
-        _playerLightManager.FadeIn();
+        _deeLightManager.FadeIn();
     }
 
     void OnDestroy()

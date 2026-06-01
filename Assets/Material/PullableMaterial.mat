@@ -12,6 +12,7 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
+  - _ENABLEBRIGHTNESS_ON
   - _ENABLECONTRAST_ON
   - _ENABLEPIXELOUTLINE_ON
   - _ENABLESINEGLOW_ON
@@ -197,7 +198,7 @@ Material:
     - _EnableAddHue: 0
     - _EnableAlphaTint: 0
     - _EnableBlackTint: 0
-    - _EnableBrightness: 0
+    - _EnableBrightness: 1
     - _EnableBurn: 0
     - _EnableCamouflage: 0
     - _EnableCheckerboard: 0
@@ -343,7 +344,7 @@ Material:
     - _PixelateFade: 1
     - _PixelatePixelDensity: 16
     - _PixelatePixelsPerUnit: 100
-    - _PixelsPerUnit: 100
+    - _PixelsPerUnit: 8
     - _PoisonDensity: 3
     - _PoisonFade: 1
     - _PoisonNoiseBrightness: 2
@@ -390,7 +391,7 @@ Material:
     - _ShineWidth: 0.1
     - _SineGlowContrast: 1
     - _SineGlowFade: 0
-    - _SineGlowFrequency: 4
+    - _SineGlowFrequency: 8
     - _SineGlowMaskToggle: 0
     - _SineGlowMax: 1
     - _SineGlowMin: 0
@@ -571,7 +572,7 @@ Material:
     - _OuterOutlineTextureSpeed: {r: 0.5, g: 0, b: 0, a: 0}
     - _PingPongGlowFrom: {r: 5.992157, g: 0.1882353, b: 0.1882353, a: 0}
     - _PingPongGlowTo: {r: 0.1882353, g: 0.1882353, b: 5.992157, a: 0}
-    - _PixelOutlineColor: {r: 1, g: 1, b: 1, a: 1}
+    - _PixelOutlineColor: {r: 0.83, g: 0.97504586, b: 1, a: 1}
     - _PixelOutlineTextureSpeed: {r: 0.5, g: 0, b: 0, a: 0}
     - _PoisonColor: {r: 0.80308807, g: 1.8984683, b: 3.432, a: 0}
     - _PoisonNoiseScale: {r: 0.2, g: 0.2, b: 0, a: 0}

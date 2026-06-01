@@ -41,13 +41,15 @@ public class ShadowTwinPull : MonoBehaviour
 
     private bool _isPullDisabled = false;
 
-    [Header("Pull Range Configuration")]
-    [SerializeField] private float _pullControlRange = 6f;
+    [Header("Pull Box Configuration")]
+    [SerializeField] private Vector2 _pullBoxSize = new Vector2(12f, 8f);
+    [SerializeField] private Vector2 _pullBoxOffset = Vector2.zero;
     [SerializeField] private float _detectionMargin = 0.5f;
     
     public float pullForce = 10f;
     public float maxPullSpeed = 7f;
-    public float stopDistanceFromPlayer = 1f;
+    [SerializeField] private float _minColliderGap = 0.05f;
+    private float _proximityCheckRadiusSqr = 0f;
     public bool HoldPull = false;  //Used in single-player co-op scenarios where we need to hold pull while switching character
     private Rigidbody2D _targetRb;
     private Pullable _pulledPullable;
@@ -60,6 +62,13 @@ public class ShadowTwinPull : MonoBehaviour
     private float _lastDetectionTime = 0f;
     private Pullable _cachedClosestPullable;
 
+    [Header("Pull Range Guide")]
+    [SerializeField] private SpriteRenderer _pullRangeGuide;
+    [SerializeField] private float _pullRangeGuideMaxAlpha = 1f;
+    [SerializeField] private float _pullRangeGuideFadeSpeed = 4f;
+    [SerializeField] private float _pullRangeGuideMinScale = 0.5f;
+    private Coroutine _pullRangeGuideFadeCoroutine;
+
     [Header("Controllable Object Movement")]
     public float controlledObjectAcceleration = 15f;
     public float controlledObjectMaxSpeed = 5f;
@@ -67,12 +76,14 @@ public class ShadowTwinPull : MonoBehaviour
     private Vector2 _controlledObjectVelocity = Vector2.zero;
     private float _originalGravityScale = 0f;
     private bool _isControllingObject = false;
+    private bool _isOutOfRange = false;
 
     public bool IsControllingObject => _isControllingObject;
     public Rigidbody2D GetControlledObject() => _targetRb;
     
-    public float GetHighlightRange() => Mathf.Max(0, _pullControlRange - _detectionMargin);
-    public float GetControlRange() => _pullControlRange;
+    public Vector2 GetControlBoxSize() => _pullBoxSize;
+    public Vector2 GetHighlightBoxSize() => Vector2.Max(Vector2.zero, _pullBoxSize - Vector2.one * _detectionMargin * 2f);
+    public Vector2 GetBoxOffset() => _pullBoxOffset;
 
     public enum PullPowerType {
         Full,
@@ -105,12 +116,21 @@ public class ShadowTwinPull : MonoBehaviour
         _anchorPointDetector = GetComponentInChildren<AnchorPointDetector>();
         _pullableDetector = GetComponentInChildren<PullableDetector>();
         _deeAudio = GetComponent<DeeAudio>();
+
+        if (_pullRangeGuide != null)
+        {
+            Color c = _pullRangeGuide.color;
+            c.a = 0f;
+            _pullRangeGuide.color = c;
+            _pullRangeGuide.transform.localScale = new Vector3(_pullRangeGuideMinScale, _pullRangeGuideMinScale, 1f);
+        }
     }
     
     private void OnValidate()
     {
         // Clamp detection margin to valid range
-        _detectionMargin = Mathf.Clamp(_detectionMargin, 0f, _pullControlRange);
+        float minBoxDimension = Mathf.Min(_pullBoxSize.x, _pullBoxSize.y);
+        _detectionMargin = Mathf.Clamp(_detectionMargin, 0f, minBoxDimension * 0.5f);
     }
 
     public void OnShoot(InputAction.CallbackContext context)
@@ -129,10 +149,9 @@ public class ShadowTwinPull : MonoBehaviour
     public void OnShootButtonCanceled() {
         if(HoldPull)
             return;
-        if(_isPullingObject)
-            ShadowTwinMovement.obj.TriggerEndForcePullAnimation();
         CancelPulling();
         ShadowTwinPlayer.obj.RestorePlayerPullLight();
+        ShadowTwinPlayer.obj.EndFullyChargedVfx();
     }
 
     private void Update()
@@ -143,8 +162,8 @@ public class ShadowTwinPull : MonoBehaviour
             _isControllingObject = true;
         }
         
-        // Only skip detection if actively controlling an object
-        if (_isPullingObject && _isControllingObject)
+        // Skip detection if we have a grabbed pullable (whether controlling it or not)
+        if (_isPullingObject && _pulledPullable != null)
             return;
         
         // Throttle detection to reduce CPU overhead
@@ -160,6 +179,15 @@ public class ShadowTwinPull : MonoBehaviour
         // Auto-grab: If player is pulling without a grabbed object and a pullable enters range, grab it
         if (_isPullingObject && !_isControllingObject && closestPullable != null && _pulledPullable == null)
         {
+            // Ensure the pullable is highlighted before grabbing
+            if (closestPullable != _highlightedPullable)
+            {
+                if (_highlightedPullable != null)
+                    _highlightedPullable.StopHighlight();
+                closestPullable.StartHighlight();
+                _highlightedPullable = closestPullable;
+            }
+            
             CameraShakeManager.obj.ForcePushShake();
             SetPullable(closestPullable);
             return;
@@ -214,8 +242,10 @@ public class ShadowTwinPull : MonoBehaviour
     public void CancelPulling() {
         _isPullingObject = false;
         _isControllingObject = false;
+        _isOutOfRange = false;
 
         ShadowTwinMovement.obj.IsPulling = false;
+        ShadowTwinMovement.obj.UpdateAnimatorIsPulling(false);
         ShadowTwinMovement.obj.EndAnchorPull();
         ShadowTwinPlayer.obj.ResetGravity();
         
@@ -227,6 +257,8 @@ public class ShadowTwinPull : MonoBehaviour
         }
         
         ResetPullableObject();
+
+        HidePullRangeGuide();
     }
 
     private void ResetPullableObject() {
@@ -234,6 +266,16 @@ public class ShadowTwinPull : MonoBehaviour
         if(_pulledPullable != null) {
             _pulledPullable.IsPulled = false;
             _pulledPullable.StopGrabbed();
+            
+            // Check if the released pullable is still the closest one
+            bool isFacingLeft = ShadowTwinMovement.obj.isFacingLeft();
+            Pullable closestPullable = _pullableDetector.GetClosestPullable(isFacingLeft);
+            
+            // Only fade out outline if it's not the closest pullable anymore
+            if (closestPullable != _pulledPullable)
+            {
+                _pulledPullable.StopHighlight();
+            }
         }
         _pulledPullable = null;
         _pulledCollider = null;
@@ -247,8 +289,20 @@ public class ShadowTwinPull : MonoBehaviour
             _pulledPullable.StartGrabbed();
             _pulledCollider = pullable.GetComponent<Collider2D>();
             
-            // Clear highlighted reference since this pullable is now grabbed, not highlighted
-            _highlightedPullable = null;
+            // Cache a conservative broad-phase radius so we can skip the precise collider
+            // Distance check when the pullable is clearly far from the player. Using each
+            // collider's bounding diagonal (extents.magnitude) overestimates reach, so the
+            // gate never skips a genuinely-close case.
+            if (_pulledCollider != null && _collider != null)
+            {
+                float combinedReach = _collider.bounds.extents.magnitude
+                                     + _pulledCollider.bounds.extents.magnitude
+                                     + _minColliderGap;
+                _proximityCheckRadiusSqr = combinedReach * combinedReach;
+            }
+            
+            // Keep the grabbed pullable as highlighted (outline stays visible)
+            _highlightedPullable = pullable;
             
             // Store original gravity and set to 0 for control
             _originalGravityScale = _targetRb.gravityScale;
@@ -257,7 +311,62 @@ public class ShadowTwinPull : MonoBehaviour
             
             // Only enable control if player is grounded
             _isControllingObject = ShadowTwinMovement.obj.isGrounded;
+
+            ShowPullRangeGuide();
         }
+    }
+
+    private void ShowPullRangeGuide()
+    {
+        if (_pullRangeGuide == null)
+            return;
+
+        if (_pullRangeGuideFadeCoroutine != null)
+            StopCoroutine(_pullRangeGuideFadeCoroutine);
+        _pullRangeGuideFadeCoroutine = StartCoroutine(FadePullRangeGuide(_pullRangeGuideMaxAlpha));
+    }
+
+    private void HidePullRangeGuide()
+    {
+        if (_pullRangeGuide == null)
+            return;
+
+        if (_pullRangeGuideFadeCoroutine != null)
+            StopCoroutine(_pullRangeGuideFadeCoroutine);
+        _pullRangeGuideFadeCoroutine = StartCoroutine(FadePullRangeGuide(0f));
+    }
+
+    private IEnumerator FadePullRangeGuide(float targetAlpha)
+    {
+        Color color = _pullRangeGuide.color;
+        Transform guideTransform = _pullRangeGuide.transform;
+        bool fadingIn = targetAlpha > 0f;
+        while (!Mathf.Approximately(color.a, targetAlpha))
+        {
+            color.a = Mathf.MoveTowards(color.a, targetAlpha, _pullRangeGuideFadeSpeed * Time.deltaTime);
+            _pullRangeGuide.color = color;
+            // Only scale up while fading in; leave scale untouched while fading out
+            if (fadingIn)
+                ApplyPullRangeGuideScale(guideTransform, color.a);
+            yield return null;
+        }
+        color.a = targetAlpha;
+        _pullRangeGuide.color = color;
+
+        if (fadingIn)
+            ApplyPullRangeGuideScale(guideTransform, color.a);
+        else
+            // After fully fading out, reset scale to minimum (hidden, so no pop visible)
+            guideTransform.localScale = new Vector3(_pullRangeGuideMinScale, _pullRangeGuideMinScale, 1f);
+
+        _pullRangeGuideFadeCoroutine = null;
+    }
+
+    private void ApplyPullRangeGuideScale(Transform guideTransform, float alpha)
+    {
+        float t = _pullRangeGuideMaxAlpha > 0f ? Mathf.Clamp01(alpha / _pullRangeGuideMaxAlpha) : 1f;
+        float scale = Mathf.Lerp(_pullRangeGuideMinScale, 1f, t);
+        guideTransform.localScale = new Vector3(scale, scale, 1f);
     }
 
     private void FixedUpdate()
@@ -274,31 +383,57 @@ public class ShadowTwinPull : MonoBehaviour
 
         Vector2 playerPosition = transform.position;
         Vector2 objectPosition = _targetRb.position;
-        Vector2 offsetFromPlayer = objectPosition - playerPosition;
-        float distanceToPlayer = offsetFromPlayer.magnitude;
+        Vector2 boxCenter = playerPosition + _pullBoxOffset;
+        Vector2 offsetFromPlayer = objectPosition - boxCenter;
         
-        // Check if pullable is out of range - release it but keep player in pulling state
-        if (distanceToPlayer > _pullControlRange)
-        {
-            _isControllingObject = false;
-            
-            // Restore object's gravity
-            if (_targetRb != null)
-            {
-                _targetRb.gravityScale = _originalGravityScale;
-                _controlledObjectVelocity = Vector2.zero;
-            }
-            
-            ResetPullableObject();
-            return;
-        }
-        
-        // Safety margin to prevent drifting beyond range
+        // Safety margin to prevent jitter at the boundary
         float safetyMargin = 0.2f;
-        float effectiveMaxRange = _pullControlRange - safetyMargin;
+        Vector2 effectiveBoxHalfSize = (_pullBoxSize - Vector2.one * safetyMargin * 2f) * 0.5f;
+        
+        // Track if pullable is out of range (outside box bounds), but keep it grabbed
+        _isOutOfRange = Mathf.Abs(offsetFromPlayer.x) > effectiveBoxHalfSize.x || 
+                        Mathf.Abs(offsetFromPlayer.y) > effectiveBoxHalfSize.y;
 
         // Get movement input from ShadowTwinMovement
         Vector2 movementInput = ShadowTwinMovement.obj.GetMovementInput();
+        
+        // If out of range, only allow movement that brings pullable back into box
+        if (_isOutOfRange && movementInput.magnitude > 0.01f)
+        {
+            Vector2 correctionDirection = Vector2.zero;
+            
+            if (offsetFromPlayer.x < -effectiveBoxHalfSize.x) correctionDirection.x = 1;  // too far left
+            if (offsetFromPlayer.x > effectiveBoxHalfSize.x) correctionDirection.x = -1;  // too far right
+            if (offsetFromPlayer.y < -effectiveBoxHalfSize.y) correctionDirection.y = 1;  // too far down
+            if (offsetFromPlayer.y > effectiveBoxHalfSize.y) correctionDirection.y = -1;  // too far up
+            
+            // Only allow input aligned with correction direction
+            if (correctionDirection.sqrMagnitude > 0.01f && 
+                Vector2.Dot(movementInput.normalized, correctionDirection.normalized) <= 0.01f)
+            {
+                movementInput = Vector2.zero;
+            }
+        }
+        
+        // Check proximity using actual collider geometry so it adapts to each pullable's size.
+        // This lets pullables pass tightly around the player without their colliders touching.
+        // Broad-phase gate: skip the precise (costlier) Distance call unless the centers are
+        // close enough that the colliders could possibly be within the gap. Computed regardless
+        // of input so the no-input deceleration branch can also respect the dead zone.
+        Vector2 separationOutward = Vector2.zero;
+        bool tooCloseToPlayer = false;
+        if (_pulledCollider != null && _collider != null &&
+            (objectPosition - playerPosition).sqrMagnitude <= _proximityCheckRadiusSqr)
+        {
+            ColliderDistance2D sep = _collider.Distance(_pulledCollider);
+            tooCloseToPlayer = sep.distance <= _minColliderGap;
+            
+            // Resolve outward normal (player -> pullable); fix sign using center direction
+            separationOutward = sep.normal;
+            Vector2 centerDir = (objectPosition - playerPosition).normalized;
+            if (Vector2.Dot(separationOutward, centerDir) < 0f)
+                separationOutward = -separationOutward;
+        }
         
         // Apply acceleration or deceleration based on input
         if (movementInput.magnitude > 0.01f)
@@ -312,54 +447,54 @@ public class ShadowTwinPull : MonoBehaviour
             
             // Calculate potential new position
             Vector2 potentialNewPosition = objectPosition + potentialVelocity * Time.fixedDeltaTime;
-            Vector2 potentialOffset = potentialNewPosition - playerPosition;
-            float potentialDistance = potentialOffset.magnitude;
+            Vector2 potentialOffset = potentialNewPosition - boxCenter;
 
-            // Check constraints
-            bool exceedsRadius = potentialDistance > effectiveMaxRange;
-            bool tooCloseToPlayer = potentialDistance < stopDistanceFromPlayer;
+            // Check box constraints (only enforce when NOT out of range, to allow recovery)
+            bool exceedsLeft = !_isOutOfRange && potentialOffset.x < -effectiveBoxHalfSize.x;
+            bool exceedsRight = !_isOutOfRange && potentialOffset.x > effectiveBoxHalfSize.x;
+            bool exceedsTop = !_isOutOfRange && potentialOffset.y > effectiveBoxHalfSize.y;
+            bool exceedsBottom = !_isOutOfRange && potentialOffset.y < -effectiveBoxHalfSize.y;
+            bool exceedsBox = exceedsLeft || exceedsRight || exceedsTop || exceedsBottom;
             
-            if (exceedsRadius || tooCloseToPlayer)
+            if (exceedsBox || tooCloseToPlayer)
             {
                 // Movement would violate constraints
-                if (exceedsRadius && distanceToPlayer >= effectiveMaxRange)
+                if (exceedsBox)
                 {
-                    // At max radius - only allow movement toward player or tangential
-                    Vector2 directionToPlayer = offsetFromPlayer.normalized;
-                    float dotProduct = Vector2.Dot(movementInput.normalized, directionToPlayer);
+                    // At box edge - only allow movement that doesn't push further out
+                    Vector2 allowedVelocity = potentialVelocity;
                     
-                    if (dotProduct > 0.01f)
-                    {
-                        // Moving toward player - allow it
-                        _controlledObjectVelocity = potentialVelocity;
-                    }
-                    else
-                    {
-                        // Moving away - hard stop
-                        _controlledObjectVelocity = Vector2.zero;
-                    }
+                    // Clamp X velocity if at horizontal edges
+                    if (exceedsLeft && potentialVelocity.x < 0)
+                        allowedVelocity.x = 0;
+                    else if (exceedsRight && potentialVelocity.x > 0)
+                        allowedVelocity.x = 0;
+                    
+                    // Clamp Y velocity if at vertical edges
+                    if (exceedsBottom && potentialVelocity.y < 0)
+                        allowedVelocity.y = 0;
+                    else if (exceedsTop && potentialVelocity.y > 0)
+                        allowedVelocity.y = 0;
+                    
+                    _controlledObjectVelocity = allowedVelocity;
                 }
                 else if (tooCloseToPlayer)
                 {
-                    // Too close to player - only allow movement away from player
-                    Vector2 directionAwayFromPlayer = offsetFromPlayer.normalized;
-                    float dotProduct = Vector2.Dot(movementInput.normalized, directionAwayFromPlayer);
+                    // Too close to player - strip only the velocity component pushing the colliders together,
+                    // measured along the actual surface separation normal. Tangential movement is preserved,
+                    // so the pullable can slide tightly around the player without the colliders touching.
+                    float inwardComponent = Vector2.Dot(potentialVelocity, -separationOutward);
                     
-                    if (dotProduct > 0.01f)
+                    if (inwardComponent > 0f)
                     {
-                        // Moving away from player - allow it
-                        _controlledObjectVelocity = potentialVelocity;
+                        // Remove the inward (toward-player) component, keep tangential motion
+                        _controlledObjectVelocity = potentialVelocity + inwardComponent * separationOutward;
                     }
                     else
                     {
-                        // Moving toward or tangential to player - hard stop
-                        _controlledObjectVelocity = Vector2.zero;
+                        // Already moving apart or tangential - allow full movement
+                        _controlledObjectVelocity = potentialVelocity;
                     }
-                }
-                else
-                {
-                    // Would exceed radius - hard stop
-                    _controlledObjectVelocity = Vector2.zero;
                 }
             }
             else
@@ -371,21 +506,43 @@ public class ShadowTwinPull : MonoBehaviour
         else
         {
             // No input - decelerate
-            bool atConstraintBoundary = distanceToPlayer >= effectiveMaxRange;
-            
-            if (atConstraintBoundary)
+            if (_isOutOfRange)
             {
-                // At boundary - hard stop
+                // Out of range - force stop to prevent drifting further
                 _controlledObjectVelocity = Vector2.zero;
             }
             else
             {
-                // Within valid area - normal deceleration
-                _controlledObjectVelocity = Vector2.MoveTowards(
-                    _controlledObjectVelocity,
-                    Vector2.zero,
-                    controlledObjectDeceleration * Time.fixedDeltaTime
-                );
+                // Check if at box boundary
+                bool atBoundary = Mathf.Abs(offsetFromPlayer.x) >= effectiveBoxHalfSize.x || 
+                                  Mathf.Abs(offsetFromPlayer.y) >= effectiveBoxHalfSize.y;
+                
+                if (atBoundary)
+                {
+                    // At boundary - hard stop
+                    _controlledObjectVelocity = Vector2.zero;
+                }
+                else
+                {
+                    // Within valid area - normal deceleration
+                    Vector2 deceleratedVelocity = Vector2.MoveTowards(
+                        _controlledObjectVelocity,
+                        Vector2.zero,
+                        controlledObjectDeceleration * Time.fixedDeltaTime
+                    );
+                    
+                    // If too close to the player, strip any residual inward component so the
+                    // graceful stop can't carry the pullable into the player. Tangential drift
+                    // is preserved so it still decelerates naturally along the surface.
+                    if (tooCloseToPlayer)
+                    {
+                        float inwardComponent = Vector2.Dot(deceleratedVelocity, -separationOutward);
+                        if (inwardComponent > 0f)
+                            deceleratedVelocity += inwardComponent * separationOutward;
+                    }
+                    
+                    _controlledObjectVelocity = deceleratedVelocity;
+                }
             }
         }
 
@@ -393,6 +550,32 @@ public class ShadowTwinPull : MonoBehaviour
         if (_targetRb.bodyType == RigidbodyType2D.Dynamic || _targetRb.bodyType == RigidbodyType2D.Kinematic)
         {
             _targetRb.velocity = _controlledObjectVelocity;
+            
+            // Sync our internal velocity with actual rigidbody velocity after physics resolution
+            // This prevents desync when the rigidbody is blocked by walls/collisions
+            // We check this on the next frame by comparing what we set vs what actually happened
+            StartCoroutine(SyncVelocityAfterPhysics());
+        }
+    }
+    
+    private IEnumerator SyncVelocityAfterPhysics()
+    {
+        // Wait for physics to resolve
+        yield return new WaitForFixedUpdate();
+        
+        if (_targetRb != null && _isControllingObject)
+        {
+            // If actual velocity is significantly different from our intended velocity,
+            // it means physics blocked the movement (wall collision, etc.)
+            Vector2 actualVelocity = _targetRb.velocity;
+            float velocityDifference = (_controlledObjectVelocity - actualVelocity).sqrMagnitude;
+            float threshold = 0.1f; // Small threshold to account for minor physics variations
+            
+            if (velocityDifference > threshold)
+            {
+                // Sync our internal state to match reality
+                _controlledObjectVelocity = actualVelocity;
+            }
         }
     }
 
@@ -417,11 +600,15 @@ public class ShadowTwinPull : MonoBehaviour
                 CameraShakeManager.obj.ForcePushShake();
                 SetPullable(_highlightedPullable);
             }
+            // Show the range guide whenever pull starts, even with no pullable grabbed
+            ShowPullRangeGuide();
             pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().HardCancel();
             _deeAudio.PlayForcePullStart(ref _forcePullStartSfxInstance);
             ShadowTwinPlayer.obj.StartChargeFlash();
             ShadowTwinPlayer.obj.PlayerPullLight();
+            ShadowTwinPlayer.obj.StartFullyChargedVfx();
             ShadowTwinMovement.obj.IsPulling = true;
+            ShadowTwinMovement.obj.UpdateAnimatorIsPulling(true);
             ShadowTwinMovement.obj.TriggerForcePullAnimation();
             PullPowerType chargePowerType = GetChargePowerType();
             ExecuteForcePushVfx(chargePowerType);
@@ -447,26 +634,31 @@ public class ShadowTwinPull : MonoBehaviour
         ShadowTwinPlayer.obj.ForcePushFlash();
     }
 
+    private void DrawBoxGizmo(Vector3 center, Vector2 size, Vector2 offset, Color color)
+    {
+        Gizmos.color = color;
+        Vector2 halfSize = size * 0.5f;
+        Vector3 actualCenter = center + (Vector3)offset;
+        
+        Vector3 topLeft = actualCenter + new Vector3(-halfSize.x, halfSize.y, 0);
+        Vector3 topRight = actualCenter + new Vector3(halfSize.x, halfSize.y, 0);
+        Vector3 bottomRight = actualCenter + new Vector3(halfSize.x, -halfSize.y, 0);
+        Vector3 bottomLeft = actualCenter + new Vector3(-halfSize.x, -halfSize.y, 0);
+        
+        Gizmos.DrawLine(topLeft, topRight);
+        Gizmos.DrawLine(topRight, bottomRight);
+        Gizmos.DrawLine(bottomRight, bottomLeft);
+        Gizmos.DrawLine(bottomLeft, topLeft);
+    }
+    
     private void OnDrawGizmosSelected()
     {
+        Vector3 playerPos = transform.position;
+        
         if (_isControllingObject && _targetRb != null)
         {
-            // Draw circle constraint when controlling an object
-            Gizmos.color = Color.yellow;
-            Vector3 playerPos = transform.position;
-            
-            // Draw the full circle
-            int segments = 50;
-            for (int i = 0; i < segments; i++)
-            {
-                float angle1 = 2 * Mathf.PI * i / segments; // 0 to 2*PI (360 degrees)
-                float angle2 = 2 * Mathf.PI * (i + 1) / segments;
-                
-                Vector3 point1 = playerPos + new Vector3(Mathf.Cos(angle1) * _pullControlRange, Mathf.Sin(angle1) * _pullControlRange, 0);
-                Vector3 point2 = playerPos + new Vector3(Mathf.Cos(angle2) * _pullControlRange, Mathf.Sin(angle2) * _pullControlRange, 0);
-                
-                Gizmos.DrawLine(point1, point2);
-            }
+            // Draw box constraint when controlling an object
+            DrawBoxGizmo(playerPos, _pullBoxSize, _pullBoxOffset, Color.yellow);
             
             // Draw line to controlled object
             Gizmos.color = Color.green;
@@ -474,35 +666,12 @@ public class ShadowTwinPull : MonoBehaviour
         }
         else
         {
-            Vector3 playerPos = transform.position;
-            int segments = 50;
+            // Draw control range box (yellow)
+            DrawBoxGizmo(playerPos, _pullBoxSize, _pullBoxOffset, Color.yellow);
             
-            // Draw control range circle (yellow)
-            Gizmos.color = Color.yellow;
-            for (int i = 0; i < segments; i++)
-            {
-                float angle1 = 2 * Mathf.PI * i / segments;
-                float angle2 = 2 * Mathf.PI * (i + 1) / segments;
-                
-                Vector3 point1 = playerPos + new Vector3(Mathf.Cos(angle1) * _pullControlRange, Mathf.Sin(angle1) * _pullControlRange, 0);
-                Vector3 point2 = playerPos + new Vector3(Mathf.Cos(angle2) * _pullControlRange, Mathf.Sin(angle2) * _pullControlRange, 0);
-                
-                Gizmos.DrawLine(point1, point2);
-            }
-            
-            // Draw highlight range circle (cyan)
-            Gizmos.color = Color.cyan;
-            float highlightRange = GetHighlightRange();
-            for (int i = 0; i < segments; i++)
-            {
-                float angle1 = 2 * Mathf.PI * i / segments;
-                float angle2 = 2 * Mathf.PI * (i + 1) / segments;
-                
-                Vector3 point1 = playerPos + new Vector3(Mathf.Cos(angle1) * highlightRange, Mathf.Sin(angle1) * highlightRange, 0);
-                Vector3 point2 = playerPos + new Vector3(Mathf.Cos(angle2) * highlightRange, Mathf.Sin(angle2) * highlightRange, 0);
-                
-                Gizmos.DrawLine(point1, point2);
-            }
+            // Draw highlight range box (cyan)
+            Vector2 highlightBoxSize = GetHighlightBoxSize();
+            DrawBoxGizmo(playerPos, highlightBoxSize, _pullBoxOffset, Color.cyan);
             
             // Draw line to highlighted pullable
             if (_highlightedPullable != null)

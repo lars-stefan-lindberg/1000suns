@@ -5,27 +5,27 @@ public class PullableDetector : MonoBehaviour
 {
     private HashSet<Pullable> _detectedPullables = new HashSet<Pullable>();
     private Transform _playerTransform;
-    private CircleCollider2D _circleCollider;
+    private BoxCollider2D _boxCollider;
     
     [SerializeField] private LayerMask _blockingMask;
     [SerializeField] private float _beneathExclusionDistance = 1.5f;
-    [SerializeField] private float _triggerRadiusBuffer = 1f;
+    [SerializeField] private float _triggerBoxBuffer = 1f;
     
-    private float _cachedHighlightRange;
-    private float _highlightRangeSqr;
+    private Vector2 _cachedHighlightBoxSize;
+    private Vector2 _cachedBoxOffset;
     
     private void Awake()
     {
         _playerTransform = transform.parent;
-        _circleCollider = GetComponent<CircleCollider2D>();
+        _boxCollider = GetComponent<BoxCollider2D>();
         
-        if (_circleCollider == null)
+        if (_boxCollider == null)
         {
-            Debug.LogWarning("PullableDetector: CircleCollider2D not found! Trigger detection will not work.");
+            Debug.LogWarning("PullableDetector: BoxCollider2D not found! Trigger detection will not work.");
         }
         else
         {
-            UpdateCircleColliderRadius();
+            UpdateBoxColliderSize();
         }
     }
     
@@ -38,26 +38,28 @@ public class PullableDetector : MonoBehaviour
     {
         if (ShadowTwinPull.obj != null)
         {
-            _cachedHighlightRange = ShadowTwinPull.obj.GetHighlightRange();
-            _highlightRangeSqr = _cachedHighlightRange * _cachedHighlightRange;
+            _cachedHighlightBoxSize = ShadowTwinPull.obj.GetHighlightBoxSize();
+            _cachedBoxOffset = ShadowTwinPull.obj.GetBoxOffset();
         }
     }
     
-    private void UpdateCircleColliderRadius()
+    private void UpdateBoxColliderSize()
     {
-        if (_circleCollider != null && ShadowTwinPull.obj != null)
+        if (_boxCollider != null && ShadowTwinPull.obj != null)
         {
-            _circleCollider.radius = ShadowTwinPull.obj.GetControlRange() + _triggerRadiusBuffer;
+            Vector2 controlBoxSize = ShadowTwinPull.obj.GetControlBoxSize();
+            _boxCollider.size = controlBoxSize + Vector2.one * _triggerBoxBuffer * 2f;
+            _boxCollider.offset = ShadowTwinPull.obj.GetBoxOffset();
         }
     }
     
     private void OnValidate()
     {
-        // Update collider radius when values change in editor
-        if (_circleCollider == null)
-            _circleCollider = GetComponent<CircleCollider2D>();
+        // Update collider size when values change in editor
+        if (_boxCollider == null)
+            _boxCollider = GetComponent<BoxCollider2D>();
             
-        UpdateCircleColliderRadius();
+        UpdateBoxColliderSize();
     }
     
     private void OnTriggerEnter2D(Collider2D collision)
@@ -102,12 +104,12 @@ public class PullableDetector : MonoBehaviour
             if (IsBeneathPlayer(pullable))
                 continue;
             
-            // Use squared distance to avoid expensive sqrt
-            float distanceSqr = directionToPullable.sqrMagnitude;
-            
-            // Early out: Range check before expensive raycast
-            if (distanceSqr > _highlightRangeSqr)
+            // Early out: Box containment check before expensive raycast
+            if (!IsWithinHighlightBox(pullable))
                 continue;
+            
+            // Use squared distance for sorting (cheaper than actual distance)
+            float distanceSqr = directionToPullable.sqrMagnitude;
             
             // Only raycast if all other checks pass
             if (distanceSqr < closestDistanceSqr && !IsBlocked(pullable))
@@ -118,6 +120,18 @@ public class PullableDetector : MonoBehaviour
         }
         
         return closestPullable;
+    }
+    
+    private bool IsWithinHighlightBox(Pullable pullable)
+    {
+        Vector2 playerPos = _playerTransform.position;
+        Vector2 pullablePos = pullable.transform.position;
+        Vector2 boxCenter = playerPos + _cachedBoxOffset;
+        Vector2 halfSize = _cachedHighlightBoxSize * 0.5f;
+        Vector2 localPos = pullablePos - boxCenter;
+        
+        return Mathf.Abs(localPos.x) <= halfSize.x && 
+               Mathf.Abs(localPos.y) <= halfSize.y;
     }
     
     private bool IsBeneathPlayer(Pullable pullable)

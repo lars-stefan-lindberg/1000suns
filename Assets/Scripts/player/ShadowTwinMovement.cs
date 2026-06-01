@@ -220,10 +220,6 @@ public class ShadowTwinMovement : MonoBehaviour
         _animator.SetTrigger("forcePush");
     }
 
-    public void TriggerEndForcePullAnimation() {
-        _animator.SetTrigger("endPull");
-    }
-
     public bool isFalling = false;
     public bool isMoving = false;
     public bool IsPulling = false;
@@ -1023,7 +1019,6 @@ public class ShadowTwinMovement : MonoBehaviour
         if(IsPulling) {
             ShadowTwinPull.obj.CancelPulling();
             ShadowTwinPull.obj.OnShootButtonCanceled();
-            _animator.SetTrigger("jumpedWhilePulling"); //Special case where you need to go to jump animation from pulling animation while grounded. If you start pulling in the air we should not go to jump animation
         }
         
         ExecuteJump(_stats.JumpPower);
@@ -1098,18 +1093,22 @@ public class ShadowTwinMovement : MonoBehaviour
     public void StartAnchorPull()
     {
         IsPulling = true;
-        _animator.SetBool("isPulling", true);
+        UpdateAnimatorIsPulling(true);
         _anchorPullStartTime = Time.time;
         _currentAnchorSpeed = 0f;
         _anchorReachedThisPull = false;
         _animator.SetTrigger("anchorPull");
     }
 
+    public void UpdateAnimatorIsPulling(bool value) {
+        _animator.SetBool("isPulling", value);
+    }
+
     public void EndAnchorPull() {
         IsPulling = false;
         anchorPosition = Vector2.zero;
         SetIsAnchorReached(false);
-        _animator.SetBool("isPulling", false);
+        UpdateAnimatorIsPulling(false);
     }
 
     public void OnAnchorReached()

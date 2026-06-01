@@ -9,11 +9,25 @@ public class Pullable : MonoBehaviour
     [SerializeField] private SpriteRenderer _renderer;
     [SerializeField] private float _outlineFadeSpeed = 0.5f;
     [SerializeField] private float _glowFadeSpeed = 0.5f;
+    [SerializeField] private bool _useSineGlowFade = false;
+    [SerializeField] private ParticleSystem _heldParticles;
+    // [SerializeField] private ParticleSystem _trailingParticles;
+    //[SerializeField] private ParticleSystem _grabbedParticles;
+    // [SerializeField] private int _grabbedNumberOfParticles = 20;
+    // [SerializeField] private int _grabbedParticlesRadius = 1;
+    // [SerializeField] private int _grabbedParticlesSpeed = 5;
     
     [Header("Grab Shake")]
     [SerializeField] private float _shakeDistance = 0.1f;
     [SerializeField] private float _shakeDuration = 0.2f;
     [SerializeField] private int _shakeVibrato = 10;
+    
+    [Header("Brightness Pulse")]
+    [SerializeField] private float _maxBrightness = 2f;
+    [SerializeField] private float _pulseFrequency = 1f;
+    
+    [Header("Held Particles")]
+    [SerializeField] private float _velocityThreshold = 0.1f;
     
     public bool IsPulled {get; set;}
     
@@ -30,14 +44,27 @@ public class Pullable : MonoBehaviour
     private bool _isGlowFadingOut = false;
     private float _currentGlowFade = 0f;
     private float _glowElapsedTime = 0f;
+    
+    private bool _isBrightnessPulsing = false;
+    private float _currentBrightness = 1f;
+    private float _brightnessElapsedTime = 0f;
+    
+    //private bool _ghostTrailArmed = false;
+    private float _previousVelocityMagnitude = 0f;
+    private bool _heldParticlesPlaying = false;
 
     private void Awake() {
         IsPulled = false;
         _material = _renderer.material;
         _material.SetFloat("_SineGlowFade", 0f);
         _material.SetFloat("_PixelOutlineFade", 0f);
+        _material.SetFloat("_Brightness", 1f);
         _spriteTransform = _renderer.transform;
         _originalSpritePosition = _spriteTransform.localPosition;
+        
+        if (_heldParticles != null) {
+            _heldParticles.Stop();
+        }
     }
 
     public Rigidbody2D GetRigidbody() {
@@ -67,19 +94,71 @@ public class Pullable : MonoBehaviour
     }
     
     public void StartGrabbed() {
-        StopHighlight();
-        _isGlowFadingIn = true;
-        _isGlowFadingOut = false;
-        // Start from current fade value to avoid jumps
-        _glowElapsedTime = _currentGlowFade * _glowFadeSpeed;
+        if (_useSineGlowFade) {
+            _isGlowFadingIn = true;
+            _isGlowFadingOut = false;
+            // Start from current fade value to avoid jumps
+            _glowElapsedTime = _currentGlowFade * _glowFadeSpeed;
+        } else {
+            // Start brightness pulse
+            _isBrightnessPulsing = true;
+            _brightnessElapsedTime = 0f;
+        }
+
+        //VFX
         TriggerGrabShake();
+        ShockWaveManager.obj.CallShockWave(transform.position, 0.2f, 0.05f, 0.15f);
+        //EmitEvenCircle(_grabbedParticles, _grabbedNumberOfParticles, _grabbedParticlesRadius, _grabbedParticlesSpeed);
+        // _trailingParticles.Play();
+        
+        // if (PullableGhostTrailManager.obj != null) {
+        //     PullableGhostTrailManager.obj.SetupGhostTrail(_renderer, transform);
+        // }
+        // _ghostTrailArmed = true;
+        
+        if (_heldParticles != null) {
+            _heldParticles.Play();
+            _heldParticlesPlaying = true;
+        }
     }
+
+    // private void EmitEvenCircle(ParticleSystem ps, int count, float radius, float speed)
+    // {
+    //     var emitParams = new ParticleSystem.EmitParams();
+    //     float angleStep = 360f / count;
+
+    //     for (int i = 0; i < count; i++)
+    //     {
+    //         float angle = i * angleStep * Mathf.Deg2Rad;
+    //         Vector3 direction = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f);
+
+    //         emitParams.position = ps.transform.position + direction * radius;
+    //         emitParams.velocity = direction * speed;
+
+    //         ps.Emit(emitParams, 1);
+    //     }
+    // }
     
     public void StopGrabbed() {
-        _isGlowFadingIn = false;
-        _isGlowFadingOut = true;
-        // Start from current fade value to avoid jumps
-        _glowElapsedTime = (1f - _currentGlowFade) * _glowFadeSpeed;
+        if (_useSineGlowFade) {
+            _isGlowFadingIn = false;
+            _isGlowFadingOut = true;
+            // Start from current fade value to avoid jumps
+            _glowElapsedTime = (1f - _currentGlowFade) * _glowFadeSpeed;
+        } else {
+            _isBrightnessPulsing = false;
+            _currentBrightness = 1f;
+            _material.SetFloat("_Brightness", 1f);
+        }
+        
+        //_ghostTrailArmed = false;
+        _previousVelocityMagnitude = 0f;
+        // _trailingParticles.Stop();
+        
+        if (_heldParticles != null) {
+            _heldParticles.Stop();
+            _heldParticlesPlaying = false;
+        }
     }
     
     private void TriggerGrabShake() {
@@ -93,8 +172,15 @@ public class Pullable : MonoBehaviour
         if (_isOutlineFadingIn || _isOutlineFadingOut)
             UpdateOutlineFade();
         
-        if (_isGlowFadingIn || _isGlowFadingOut)
+        if (_useSineGlowFade && (_isGlowFadingIn || _isGlowFadingOut))
             UpdateGlowFade();
+        
+        if (_isBrightnessPulsing)
+            UpdateBrightnessPulse();
+        
+        // if (IsPulled) {
+        //     UpdateGhostTrail();
+        // }
     }
     
     private void UpdateOutlineFade() {
@@ -142,4 +228,34 @@ public class Pullable : MonoBehaviour
             }
         }
     }
+    
+    private void UpdateBrightnessPulse() {
+        _brightnessElapsedTime += Time.deltaTime;
+        
+        // Calculate brightness using sine wave for smooth pulsing
+        // Frequency determines how many pulses per second
+        float sineValue = Mathf.Sin(_brightnessElapsedTime * _pulseFrequency * 2f * Mathf.PI);
+        // Map sine wave from [-1, 1] to [0, 1]
+        float normalizedSine = (sineValue + 1f) / 2f;
+        // Lerp between default (1) and max brightness
+        _currentBrightness = Mathf.Lerp(1f, _maxBrightness, normalizedSine);
+        _material.SetFloat("_Brightness", _currentBrightness);
+    }
+    
+    // private void UpdateGhostTrail() {
+    //     float currentVelocityMagnitude = _rigidBody.velocity.magnitude;
+        
+    //     if (currentVelocityMagnitude > _previousVelocityMagnitude && _ghostTrailArmed) {
+    //         if (PullableGhostTrailManager.obj != null) {
+    //             PullableGhostTrailManager.obj.ShowGhosts();
+    //         }
+    //         _ghostTrailArmed = false;
+    //     }
+    //     else if (currentVelocityMagnitude < _previousVelocityMagnitude) {
+    //         _ghostTrailArmed = true;
+    //     }
+        
+    //     _previousVelocityMagnitude = currentVelocityMagnitude;
+    // }
+    
 }
