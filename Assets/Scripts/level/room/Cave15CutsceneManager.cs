@@ -11,8 +11,10 @@ public class Cave15CutsceneManager : MonoBehaviour, ISkippable
     private Coroutine _onConversationCompletedCoroutine;
 
     void Start() {
-        if(GameManager.obj.HasEvent(_firstConfrontationCompleted)) {
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(GameManager.obj.HasEvent(_firstConfrontationCompleted) || caveTimeline != CaveTimelineId.Id.Eli) {
             Destroy(this);
+            return;
         }
 
         _collider = GetComponent<BoxCollider2D>();
