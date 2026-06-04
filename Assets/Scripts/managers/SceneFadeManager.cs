@@ -25,6 +25,10 @@ public class SceneFadeManager : MonoBehaviour
 
         _defaultColor = _fadeOutStartColor;
         _fadeOutStartColor.a = 0f;
+
+        Canvas canvas = GetComponent<Canvas>();
+        canvas.worldCamera = Camera.main;
+        canvas.sortingLayerName = "UI";
     }
 
     void Update() {
