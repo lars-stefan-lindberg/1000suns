@@ -26,6 +26,11 @@ public class DialogueController : MonoBehaviour
     [SerializeField] private GameObject _audioAnchorPrefab;
 
     [SerializeField] private RectTransform _background;
+    
+    [Header("Blinking Settings")]
+    [SerializeField] private float _blinkMinDelay = 2f;
+    [SerializeField] private float _blinkMaxDelay = 6f;
+    [SerializeField] [Range(0f, 1f)] private float _doubleBlinkChance = 0.15f;
     private string _tableCollectionName = "Dialogue_Text";
 
     private Queue<DialogueContent.ParagraphEntry> _paragraphs = new();
@@ -47,6 +52,7 @@ public class DialogueController : MonoBehaviour
     private GameObject _audioAnchorInstance;
     private DialogueAudioAnchor _audioAnchor;
     private bool _isDialogueLeft;
+    private Coroutine _blinkCoroutine;
 
     void Awake() {
         _typeWriter.onTextShowed.AddListener(() => {
@@ -136,6 +142,7 @@ public class DialogueController : MonoBehaviour
                     _isFirstParagraph = true;
                     DisplayNextParagraph();
                     EventSystem.current.SetSelectedGameObject(_continueButton);
+                    StartBlinking();
                 });
     }
 
@@ -151,6 +158,9 @@ public class DialogueController : MonoBehaviour
             try {
                 DialogueContent.ParagraphEntry paragraphEntry = _paragraphs.Dequeue();
                 p = paragraphEntry.text;
+                
+                ResetToIdleState();
+                StartBlinking();
                 
                 DialogueContent.Emotion emotion = paragraphEntry.emotion;
                 _portraitInterface.SwitchEmotion(emotion.ToString());
@@ -229,11 +239,7 @@ public class DialogueController : MonoBehaviour
             _dialogueAudio.PlayClose();
         }
         _continueIcon.SetActive(false);
-        
-        // Hide portrait but keep it for reuse
-        if(_currentPortrait != null) {
-            _currentPortrait.SetActive(false);
-        }
+        StopBlinking();
         
         _background.DOLocalRotate(new Vector3(90f, 0f, 0f), 0.5f, RotateMode.FastBeyond360)
               .SetEase(Ease.Linear).OnComplete(() => {
@@ -241,6 +247,10 @@ public class DialogueController : MonoBehaviour
                 _typeWriter.ShowText("");
                 EventSystem.current.SetSelectedGameObject(null);
                 OnDialogueClosed?.Invoke();
+                // Hide portrait but keep it for reuse
+                if(_currentPortrait != null) {
+                    _currentPortrait.SetActive(false);
+                }
               });
         _loadAndPlayCoroutine = null;
     }
@@ -252,6 +262,7 @@ public class DialogueController : MonoBehaviour
         _paragraphs.Clear();
         _conversationEnded = false;
         _continueIcon.SetActive(false);
+        StopBlinking();
         _background.localRotation = Quaternion.Euler(90f, 0f, 0f);
         _isDisplayed = false;
         _typeWriter.ShowText("");
@@ -297,6 +308,7 @@ public class DialogueController : MonoBehaviour
             StopCoroutine(_loadAndPlayCoroutine);
             _loadAndPlayCoroutine = null;
         }
+        StopBlinking();
         
         // Clear state
         _paragraphs.Clear();
@@ -352,6 +364,45 @@ public class DialogueController : MonoBehaviour
         _typeWriter.onTextShowed.RemoveAllListeners();
         if(_audioAnchorInstance != null) {
             Destroy(_audioAnchorInstance);
+        }
+    }
+    
+    private IEnumerator BlinkRoutine() {
+        while(true) {
+            float delay = UnityEngine.Random.Range(_blinkMinDelay, _blinkMaxDelay);
+            yield return new WaitForSeconds(delay);
+            
+            if(_portraitInterface != null) {
+                float roll = UnityEngine.Random.value;
+                if(roll < _doubleBlinkChance) {
+                    _portraitInterface.DoubleBlink();
+                } else {
+                    _portraitInterface.Blink();
+                }
+            }
+        }
+    }
+    
+    private void StartBlinking() {
+        StopBlinking();
+        if(_portraitInterface != null) {
+            _blinkCoroutine = StartCoroutine(BlinkRoutine());
+        }
+    }
+    
+    private void StopBlinking() {
+        if(_blinkCoroutine != null) {
+            StopCoroutine(_blinkCoroutine);
+            _blinkCoroutine = null;
+        }
+    }
+    
+    private void ResetToIdleState() {
+        if(_currentPortrait != null) {
+            Animator animator = _currentPortrait.GetComponentInChildren<Animator>();
+            if(animator != null) {
+                animator.Play("idle", -1, 0f);
+            }
         }
     }
 }

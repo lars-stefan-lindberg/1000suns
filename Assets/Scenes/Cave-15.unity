@@ -6232,6 +6232,9 @@ MonoBehaviour:
   _eliPortrait: {fileID: 7200094231315757207, guid: eda252489702b4930a40cbde57e4a5ef, type: 3}
   _audioAnchorPrefab: {fileID: 4305177689023368492, guid: 91358d7bd001b465d84017fbe8d7d1e2, type: 3}
   _background: {fileID: 40779660}
+  _blinkMinDelay: 3
+  _blinkMaxDelay: 7
+  _doubleBlinkChance: 0.19
 --- !u!114 &2088315107
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7009,6 +7012,9 @@ MonoBehaviour:
   _eliPortrait: {fileID: 0}
   _audioAnchorPrefab: {fileID: 0}
   _background: {fileID: 5245409500471953353}
+  _blinkMinDelay: 2
+  _blinkMaxDelay: 6
+  _doubleBlinkChance: 0.15
 --- !u!224 &5245409500471953353
 RectTransform:
   m_ObjectHideFlags: 0
