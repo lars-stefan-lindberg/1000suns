@@ -42,7 +42,7 @@ public class DialogueController : MonoBehaviour
     private Coroutine _loadAndPlayCoroutine;
     private readonly int SPACER_MARGIN_SMALL = 56;
     private readonly int SPACER_MARGIN_BIG = 96;
-    private GameObject _portrait;
+    private GameObject _currentPortrait;
     private IPortrait _portraitInterface;
     private GameObject _audioAnchorInstance;
     private DialogueAudioAnchor _audioAnchor;
@@ -67,24 +67,49 @@ public class DialogueController : MonoBehaviour
             _audioAnchor = _audioAnchorInstance.GetComponent<DialogueAudioAnchor>();
         }
         
-        if(dialogueContent.actor == DialogueContent.DialogueActor.Player) {
-            _portrait = Instantiate(_eliPortrait);
-            _portrait.transform.SetParent(_portraitContainer.transform);
-            _portrait.transform.localPosition = new Vector3(-5.875f, -45.625f, 0);
-            _portrait.transform.localScale = _portraitContainer.transform.localScale;
-            _portrait.transform.localRotation = _portraitContainer.transform.localRotation;
-            _portraitInterface = _portrait.GetComponent<EliPortrait>();
-            _currentSoundEffectPlayer = _portrait.GetComponent<EliDialogueSoundEffectPlayer>();
-        } else if(dialogueContent.actor == DialogueContent.DialogueActor.CaveAvatar) {
-            _currentSoundEffectPlayer = _portrait.GetComponent<SootDialogueSoundEffectPlayer>();
-        } else if(dialogueContent.actor == DialogueContent.DialogueActor.Dee) {
-            _currentSoundEffectPlayer = _portrait.GetComponent<DeeDialogueSoundEffectPlayer>();
+        // Hide current portrait if one is active
+        if(_currentPortrait != null && _currentPortrait.activeSelf) {
+            _currentPortrait.SetActive(false);
         }
+        
+        // Try to find an existing inactive portrait for this actor
+        _currentPortrait = FindInactivePortraitForActor(dialogueContent.actor);
+        
+        if(_currentPortrait == null) {
+            // No existing portrait found, instantiate a new one
+            if(dialogueContent.actor == DialogueContent.DialogueActor.Player) {
+                _currentPortrait = Instantiate(_eliPortrait);
+                _currentPortrait.transform.SetParent(_portraitContainer.transform);
+                _currentPortrait.transform.localPosition = new Vector3(-5.875f, -45.625f, 0);
+                _currentPortrait.transform.localScale = _portraitContainer.transform.localScale;
+                _currentPortrait.transform.localRotation = _portraitContainer.transform.localRotation;
+                _portraitInterface = _currentPortrait.GetComponent<EliPortrait>();
+                _currentSoundEffectPlayer = _currentPortrait.GetComponent<EliDialogueSoundEffectPlayer>();
+            } else if(dialogueContent.actor == DialogueContent.DialogueActor.CaveAvatar) {
+                _currentSoundEffectPlayer = _currentPortrait.GetComponent<SootDialogueSoundEffectPlayer>();
+            } else if(dialogueContent.actor == DialogueContent.DialogueActor.Dee) {
+                _currentSoundEffectPlayer = _currentPortrait.GetComponent<DeeDialogueSoundEffectPlayer>();
+            }
+        } else {
+            // Reusing existing portrait - get components
+            _portraitInterface = _currentPortrait.GetComponent<IPortrait>();
+            if(dialogueContent.actor == DialogueContent.DialogueActor.Player) {
+                _currentSoundEffectPlayer = _currentPortrait.GetComponent<EliDialogueSoundEffectPlayer>();
+            } else if(dialogueContent.actor == DialogueContent.DialogueActor.CaveAvatar) {
+                _currentSoundEffectPlayer = _currentPortrait.GetComponent<SootDialogueSoundEffectPlayer>();
+            } else if(dialogueContent.actor == DialogueContent.DialogueActor.Dee) {
+                _currentSoundEffectPlayer = _currentPortrait.GetComponent<DeeDialogueSoundEffectPlayer>();
+            }
+        }
+        
+        // Activate the portrait
+        _currentPortrait.SetActive(true);
         
         DialogueContent.Emotion firstEmotion = dialogueContent.paragraphEntries[0].emotion;
         _portraitInterface.SwitchEmotion(firstEmotion.ToString());
         
         _isDialogueLeft = dialogueContent.IsLeft;
+        _portraitInterface.IsLeft = dialogueContent.IsLeft;
         
         if(dialogueContent.IsLeft) {
             _portraitContainer.transform.SetSiblingIndex(1);
@@ -97,7 +122,7 @@ public class DialogueController : MonoBehaviour
         }
 
         // Optionally flip the portrait texture horizontally
-        _portrait.transform.localScale = new Vector3(dialogueContent.IsFlipped ? -1 : 1, 1, 1);
+        _currentPortrait.transform.localScale = new Vector3(dialogueContent.IsFlipped ? -1 : 1, 1, 1);
         
         InitializeConversation(dialogueContent);
 
@@ -129,6 +154,8 @@ public class DialogueController : MonoBehaviour
                 
                 DialogueContent.Emotion emotion = paragraphEntry.emotion;
                 _portraitInterface.SwitchEmotion(emotion.ToString());
+                
+                _portraitInterface.PlayVFX(paragraphEntry.vfx);
                 
                 if(_currentSoundEffectPlayer != null && _audioAnchor != null) {
                     GameObject audioAnchor = _isDialogueLeft ? _audioAnchor.GetLeftAnchor() : _audioAnchor.GetRightAnchor();
@@ -202,6 +229,12 @@ public class DialogueController : MonoBehaviour
             _dialogueAudio.PlayClose();
         }
         _continueIcon.SetActive(false);
+        
+        // Hide portrait but keep it for reuse
+        if(_currentPortrait != null) {
+            _currentPortrait.SetActive(false);
+        }
+        
         _background.DOLocalRotate(new Vector3(90f, 0f, 0f), 0.5f, RotateMode.FastBeyond360)
               .SetEase(Ease.Linear).OnComplete(() => {
                 _isDisplayed = false;
@@ -223,6 +256,82 @@ public class DialogueController : MonoBehaviour
         _isDisplayed = false;
         _typeWriter.ShowText("");
         EventSystem.current.SetSelectedGameObject(null);
+        
+        // Hide portrait
+        if(_currentPortrait != null) {
+            _currentPortrait.SetActive(false);
+        }
+    }
+    
+    /// <summary>
+    /// Finds an inactive portrait in the container for the specified actor.
+    /// </summary>
+    private GameObject FindInactivePortraitForActor(DialogueContent.DialogueActor actor) {
+        if(_portraitContainer == null) return null;
+        
+        // Search through children of portrait container for inactive portraits
+        for(int i = 0; i < _portraitContainer.transform.childCount; i++) {
+            GameObject child = _portraitContainer.transform.GetChild(i).gameObject;
+            if(!child.activeSelf) {
+                // Check if this portrait matches the actor type
+                if(actor == DialogueContent.DialogueActor.Player && child.GetComponent<EliPortrait>() != null) {
+                    return child;
+                } else if(actor == DialogueContent.DialogueActor.CaveAvatar && child.GetComponent<SootDialogueSoundEffectPlayer>() != null) {
+                    return child;
+                } else if(actor == DialogueContent.DialogueActor.Dee && child.GetComponent<DeeDialogueSoundEffectPlayer>() != null) {
+                    return child;
+                }
+            }
+        }
+        
+        return null;
+    }
+    
+    /// <summary>
+    /// Call this method when the entire conversation has ended to clean up all resources.
+    /// This destroys portraits and audio anchors that were kept for reuse.
+    /// </summary>
+    public void CleanUp() {
+        // Stop any running coroutines
+        if(_loadAndPlayCoroutine != null) {
+            StopCoroutine(_loadAndPlayCoroutine);
+            _loadAndPlayCoroutine = null;
+        }
+        
+        // Clear state
+        _paragraphs.Clear();
+        _conversationEnded = false;
+        _isDisplayed = false;
+        _isFirstParagraph = true;
+        _isLastDialogue = false;
+        _isTyping = false;
+        
+        // Clean up UI
+        _continueIcon.SetActive(false);
+        _typeWriter.ShowText("");
+        EventSystem.current.SetSelectedGameObject(null);
+        
+        // Reset background rotation
+        _background.localRotation = Quaternion.Euler(90f, 0f, 0f);
+        
+        // Destroy all portraits in the container
+        if(_portraitContainer != null) {
+            for(int i = _portraitContainer.transform.childCount - 1; i >= 0; i--) {
+                Destroy(_portraitContainer.transform.GetChild(i).gameObject);
+            }
+        }
+        
+        _currentPortrait = null;
+        _portraitInterface = null;
+        _currentSoundEffectPlayer = null;
+        
+        // Destroy audio anchor
+        if(_audioAnchorInstance != null) {
+            Destroy(_audioAnchorInstance);
+            _audioAnchorInstance = null;
+            _audioAnchor = null;
+        }
+        
     }
 
     private void FinishParagraphEarly() {

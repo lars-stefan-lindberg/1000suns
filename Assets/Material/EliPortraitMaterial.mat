@@ -12,6 +12,7 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
+  - _ENABLEPOISON_ON
   - _SHADERFADING_NONE
   - _SHADERSPACE_UI_GRAPHIC
   - _TEXTURELAYER1SHEETTOGGLE_ON
@@ -208,7 +209,7 @@ Material:
     - _EnablePingPongGlow: 0
     - _EnablePixelOutline: 0
     - _EnablePixelate: 0
-    - _EnablePoison: 0
+    - _EnablePoison: 1
     - _EnableRainbow: 0
     - _EnableRecolorRGB: 0
     - _EnableRecolorRGBYCP: 0
@@ -325,7 +326,7 @@ Material:
     - _PixelatePixelsPerUnit: 150
     - _PixelsPerUnit: 100
     - _PoisonDensity: 1.58
-    - _PoisonFade: 1
+    - _PoisonFade: 0
     - _PoisonNoiseBrightness: 2
     - _PoisonRecolorFactor: 0.45
     - _PoisonShiftSpeed: 1.86
@@ -449,7 +450,7 @@ Material:
     - _VibrateRotation: 4
     - _WiggleFade: 1
     - _WiggleFixedGroundToggle: 0
-    - _WiggleFrequency: 2.6
+    - _WiggleFrequency: 1.26
     - _WiggleOffset: 0.02
     - _WiggleSpeed: 3
     - _WindFlip: 0

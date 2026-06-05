@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8768047620563951951}
   - component: {fileID: 1268523252921527717}
   - component: {fileID: 8968407438862995412}
+  - component: {fileID: 3531967771539389574}
   m_Layer: 5
   m_Name: EliFace
   m_TagString: Untagged
@@ -57,7 +58,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 586b648dc15b44c9cae60460d55fe7fe, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -75,6 +76,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3531967771539389574
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 730087187959280958}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 810387798b61a1f41bb4fc933ad1fb98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  runtimeMaterial: {fileID: 0}
+  updateChanges: 0
 --- !u!1 &1152011045444966930
 GameObject:
   m_ObjectHideFlags: 0
@@ -86,6 +101,7 @@ GameObject:
   - component: {fileID: 6869870736744434303}
   - component: {fileID: 2092604092389779372}
   - component: {fileID: 6066130512228827719}
+  - component: {fileID: 8401573941878179041}
   m_Layer: 5
   m_Name: EliHair
   m_TagString: Untagged
@@ -132,7 +148,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 586b648dc15b44c9cae60460d55fe7fe, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -150,6 +166,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &8401573941878179041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1152011045444966930}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 810387798b61a1f41bb4fc933ad1fb98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  runtimeMaterial: {fileID: 0}
+  updateChanges: 0
 --- !u!1 &3695224389031372941
 GameObject:
   m_ObjectHideFlags: 0
@@ -161,6 +191,7 @@ GameObject:
   - component: {fileID: 5781148605041001701}
   - component: {fileID: 3933084281763176015}
   - component: {fileID: 6392414884974599527}
+  - component: {fileID: 8183754549174752351}
   m_Layer: 5
   m_Name: EliCape
   m_TagString: Untagged
@@ -207,7 +238,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 586b648dc15b44c9cae60460d55fe7fe, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -225,6 +256,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &8183754549174752351
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3695224389031372941}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 810387798b61a1f41bb4fc933ad1fb98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  runtimeMaterial: {fileID: 0}
+  updateChanges: 0
 --- !u!1 &3865611109540516047
 GameObject:
   m_ObjectHideFlags: 0
@@ -236,6 +281,7 @@ GameObject:
   - component: {fileID: 6120675442425958846}
   - component: {fileID: 5025051798990803116}
   - component: {fileID: 2083520962635073796}
+  - component: {fileID: 449434140126240798}
   m_Layer: 5
   m_Name: EliBraid
   m_TagString: Untagged
@@ -282,7 +328,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 586b648dc15b44c9cae60460d55fe7fe, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -300,6 +346,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &449434140126240798
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3865611109540516047}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 810387798b61a1f41bb4fc933ad1fb98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  runtimeMaterial: {fileID: 0}
+  updateChanges: 0
 --- !u!1 &5629928816565650122
 GameObject:
   m_ObjectHideFlags: 0
@@ -311,6 +371,7 @@ GameObject:
   - component: {fileID: 6585038145446886682}
   - component: {fileID: 2383184831358903488}
   - component: {fileID: 8510363225487977335}
+  - component: {fileID: 6110357028399007574}
   m_Layer: 5
   m_Name: EliShoulders
   m_TagString: Untagged
@@ -357,7 +418,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 586b648dc15b44c9cae60460d55fe7fe, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -375,6 +436,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6110357028399007574
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5629928816565650122}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 810387798b61a1f41bb4fc933ad1fb98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  runtimeMaterial: {fileID: 0}
+  updateChanges: 0
 --- !u!1 &7200094231315757207
 GameObject:
   m_ObjectHideFlags: 0
@@ -439,6 +514,16 @@ MonoBehaviour:
   - emotion: 1
     faceSprite: {fileID: 21300000, guid: 721cd25926f0c4692a81f15224c9a8ab, type: 3}
     animatorLayerName: Surprised
+  _poisonEffectDuration: 1
+  _surpriseScaleTarget: 1.2
+  _surpriseScaleUpDuration: 0.15
+  _surpriseScaleDownDuration: 0.2
+  _angryShakeStrength: 10
+  _angryShakeDuration: 0.4
+  _angryShakeVibrato: 20
+  _veryAngryShakeStrength: 20
+  _veryAngryShakeDuration: 0.6
+  _veryAngryShakeVibrato: 20
 --- !u!114 &8067595738140713876
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -470,6 +555,7 @@ GameObject:
   - component: {fileID: 1354456130853264328}
   - component: {fileID: 3576802172449741888}
   - component: {fileID: 4991674370710698911}
+  - component: {fileID: 4977617565299283612}
   m_Layer: 5
   m_Name: EliEyes
   m_TagString: Untagged
@@ -516,7 +602,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 586b648dc15b44c9cae60460d55fe7fe, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -555,3 +641,17 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &4977617565299283612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7702231747847008951}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 810387798b61a1f41bb4fc933ad1fb98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  runtimeMaterial: {fileID: 0}
+  updateChanges: 0

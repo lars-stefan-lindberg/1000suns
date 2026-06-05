@@ -28,5 +28,6 @@ public class DialogueContent : ScriptableObject
         public Sprite portrait;
         public Emotion emotion;
         public DialogueSoundEffect soundEffect;
+        public PortraitVFX vfx;
     }
 }
