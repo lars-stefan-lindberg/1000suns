@@ -12,9 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d48b65a529ee4a04a2baf7d1e5f809d, type: 3}
   m_Name: TestContent
   m_EditorClassIdentifier: 
-  paragraphs:
-  - Wow, I can't believe I'm still in one piece after that <bounce>fall</>...
-  - 'What is this <wave>place</>??
-
-    It''s so dark I can barely see <incr>anything</>...'
-  - I have a <shake>bad feeling</> about this...
+  actor: 0
+  paragraphEntries:
+  - text: What are you doing here? What am I doing here? What is this place? I need
+      some answer right now goddammit. And who is this flying thing?
+    portrait: {fileID: 0}
+    emotion: 0
+  - text: Huh? What was that thing over there?
+    portrait: {fileID: 0}
+    emotion: 1
+  - text: I'm just gonna pretend that it was the wind. Moving on.
+    portrait: {fileID: 0}
+    emotion: 0
+  IsLeft: 1
+  IsFlipped: 0

@@ -6,6 +6,8 @@ public class DialogueContent : ScriptableObject
 {
     public DialogueActor actor;
     public List<ParagraphEntry> paragraphEntries;
+    public bool IsLeft = true;
+    public bool IsFlipped = false;
 
     public enum DialogueActor {
         Player,
@@ -13,10 +15,17 @@ public class DialogueContent : ScriptableObject
         Dee,
     }
 
+    public enum Emotion {
+        Idle,
+        Surprised,
+        Angry
+    }
+
     [System.Serializable]
     public struct ParagraphEntry {
         [TextArea(5, 10)]
         public string text;
         public Sprite portrait;
+        public Emotion emotion;
     }
 }
