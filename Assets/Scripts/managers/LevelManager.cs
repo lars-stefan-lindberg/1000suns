@@ -86,6 +86,16 @@ public class LevelManager : MonoBehaviour
     private IEnumerator LoadScene(Scene scene) {
         InitRoom initRoom = GetInitRoomData(scene);
         yield return StartCoroutine(LoadWalkableSurface(scene));
+        
+        if(AudioStateManager.obj != null) {
+            ReverbZone reverbZone = ReverbZone.Forest;
+            if(scene.name.StartsWith("Cave")) {
+                reverbZone = ReverbZone.Cave;
+            } else if(scene.name.StartsWith("Forest")) {
+                reverbZone = ReverbZone.Forest;
+            }
+            AudioStateManager.obj.SetReverbZone(reverbZone);
+        }
         if(!BackgroundLoaderManager.obj.IsBackgroundLayersLoaded(initRoom.backgroundScene)) {
             yield return StartCoroutine(BackgroundLoaderManager.obj.LoadAndSetBackground(initRoom.backgroundScene));
         }

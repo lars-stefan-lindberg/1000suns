@@ -23,12 +23,14 @@ public class DialogueController : MonoBehaviour
     [SerializeField] private GameObject _continueButton;
     [SerializeField] private GameObject _continueIcon;
     [SerializeField] private GameObject _eliPortrait;
+    [SerializeField] private GameObject _audioAnchorPrefab;
 
     [SerializeField] private RectTransform _background;
     private string _tableCollectionName = "Dialogue_Text";
 
     private Queue<DialogueContent.ParagraphEntry> _paragraphs = new();
     private DialogueAudio _dialogueAudio;
+    private DialogueSoundEffectPlayer _currentSoundEffectPlayer;
 
     private bool _conversationEnded;
     private string p;
@@ -42,6 +44,9 @@ public class DialogueController : MonoBehaviour
     private readonly int SPACER_MARGIN_BIG = 96;
     private GameObject _portrait;
     private IPortrait _portraitInterface;
+    private GameObject _audioAnchorInstance;
+    private DialogueAudioAnchor _audioAnchor;
+    private bool _isDialogueLeft;
 
     void Awake() {
         _typeWriter.onTextShowed.AddListener(() => {
@@ -57,6 +62,11 @@ public class DialogueController : MonoBehaviour
 
     //In longer conversations we only want to play open sfx at the start of the conversation. Use playOpenSfx to control this.
     public void ShowDialogue(DialogueContent dialogueContent, bool isFirstDialogue = false, bool isLastDialogue = false) {
+        if(_audioAnchorInstance == null && _audioAnchorPrefab != null) {
+            _audioAnchorInstance = Instantiate(_audioAnchorPrefab);
+            _audioAnchor = _audioAnchorInstance.GetComponent<DialogueAudioAnchor>();
+        }
+        
         if(dialogueContent.actor == DialogueContent.DialogueActor.Player) {
             _portrait = Instantiate(_eliPortrait);
             _portrait.transform.SetParent(_portraitContainer.transform);
@@ -64,11 +74,17 @@ public class DialogueController : MonoBehaviour
             _portrait.transform.localScale = _portraitContainer.transform.localScale;
             _portrait.transform.localRotation = _portraitContainer.transform.localRotation;
             _portraitInterface = _portrait.GetComponent<EliPortrait>();
+            _currentSoundEffectPlayer = _portrait.GetComponent<EliDialogueSoundEffectPlayer>();
+        } else if(dialogueContent.actor == DialogueContent.DialogueActor.CaveAvatar) {
+            _currentSoundEffectPlayer = _portrait.GetComponent<SootDialogueSoundEffectPlayer>();
+        } else if(dialogueContent.actor == DialogueContent.DialogueActor.Dee) {
+            _currentSoundEffectPlayer = _portrait.GetComponent<DeeDialogueSoundEffectPlayer>();
         }
         
         DialogueContent.Emotion firstEmotion = dialogueContent.paragraphEntries[0].emotion;
         _portraitInterface.SwitchEmotion(firstEmotion.ToString());
         
+        _isDialogueLeft = dialogueContent.IsLeft;
         
         if(dialogueContent.IsLeft) {
             _portraitContainer.transform.SetSiblingIndex(1);
@@ -114,10 +130,17 @@ public class DialogueController : MonoBehaviour
                 DialogueContent.Emotion emotion = paragraphEntry.emotion;
                 _portraitInterface.SwitchEmotion(emotion.ToString());
                 
+                if(_currentSoundEffectPlayer != null && _audioAnchor != null) {
+                    GameObject audioAnchor = _isDialogueLeft ? _audioAnchor.GetLeftAnchor() : _audioAnchor.GetRightAnchor();
+                    _currentSoundEffectPlayer.Play(paragraphEntry.soundEffect, audioAnchor);
+                }
+                
                 if(_isFirstParagraph) {
                     _isFirstParagraph = false;
                 } else {
-                    _dialogueAudio.PlayConfirm();
+                    if(paragraphEntry.soundEffect == DialogueSoundEffect.None) {
+                        _dialogueAudio.PlayConfirm();
+                    }
                 }
                 _loadAndPlayCoroutine = StartCoroutine(LoadAndPlay(p));
             }catch (InvalidOperationException)
@@ -218,5 +241,8 @@ public class DialogueController : MonoBehaviour
 
     void OnDestroy() {
         _typeWriter.onTextShowed.RemoveAllListeners();
+        if(_audioAnchorInstance != null) {
+            Destroy(_audioAnchorInstance);
+        }
     }
 }

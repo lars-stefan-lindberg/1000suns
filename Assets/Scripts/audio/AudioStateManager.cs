@@ -3,6 +3,12 @@ using FMOD.Studio;
 using UnityEngine;
 using System.Collections;
 
+public enum ReverbZone
+{
+    Forest = 0,
+    Cave = 1
+}
+
 public class AudioStateManager : MonoBehaviour
 {
     public static AudioStateManager obj;
@@ -10,6 +16,7 @@ public class AudioStateManager : MonoBehaviour
 
     private Bus gameplaySfxBus;
     private PARAMETER_ID pauseParamId;
+    private PARAMETER_ID reverbZoneParamId;
     private Coroutine fadeRoutine;
 
     void Awake()
@@ -23,6 +30,13 @@ public class AudioStateManager : MonoBehaviour
         );
 
         pauseParamId = pauseDesc.id;
+
+        RuntimeManager.StudioSystem.getParameterDescriptionByName(
+            "reverb_zone",
+            out PARAMETER_DESCRIPTION reverbZoneDesc
+        );
+
+        reverbZoneParamId = reverbZoneDesc.id;
     }
 
     public void SetPaused(bool paused)
@@ -47,6 +61,11 @@ public class AudioStateManager : MonoBehaviour
 
     public void RestoreSfx() {
         gameplaySfxBus.setPaused(false);
+    }
+
+    public void SetReverbZone(ReverbZone zone)
+    {
+        RuntimeManager.StudioSystem.setParameterByID(reverbZoneParamId, (float)zone);
     }
 
     public void StopSfxEvents() {
