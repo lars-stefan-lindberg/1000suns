@@ -44,6 +44,7 @@ public class EliPortrait : MonoBehaviour, IPortrait
     private Material[] _instancedMaterials;
     private Coroutine _currentEffectCoroutine;
     private Tween _currentScaleTween;
+    private Vector3 _originalLocalPosition;
 
     void Awake()
     {
@@ -53,6 +54,7 @@ public class EliPortrait : MonoBehaviour, IPortrait
             _emotionCache[emotionData.emotion] = emotionData;
         }
         
+        _originalLocalPosition = transform.localPosition;
         InitializeMaterials();
     }
     
@@ -235,8 +237,33 @@ public class EliPortrait : MonoBehaviour, IPortrait
             });
     }
     
+    private void ResetVFXState()
+    {
+        // Stop and clean up active tweens
+        if (_currentScaleTween != null && _currentScaleTween.IsActive())
+        {
+            _currentScaleTween.Kill();
+        }
+        
+        if (_currentEffectCoroutine != null)
+        {
+            StopCoroutine(_currentEffectCoroutine);
+            _currentEffectCoroutine = null;
+        }
+        
+        // Reset transform properties
+        transform.localScale = Vector3.one;
+        transform.localRotation = Quaternion.identity;
+        transform.localPosition = _originalLocalPosition;
+        
+        // Reset material shader properties
+        SetPoisonFadeValue(0f);
+    }
+    
     public void PlayVFX(PortraitVFX vfx)
     {
+        ResetVFXState();
+        
         switch (vfx)
         {
             case PortraitVFX.None:

@@ -23,6 +23,7 @@ public class DialogueController : MonoBehaviour
     [SerializeField] private GameObject _continueButton;
     [SerializeField] private GameObject _continueIcon;
     [SerializeField] private GameObject _eliPortrait;
+    [SerializeField] private GameObject _sootPortrait;
     [SerializeField] private GameObject _audioAnchorPrefab;
 
     [SerializeField] private RectTransform _background;
@@ -92,6 +93,12 @@ public class DialogueController : MonoBehaviour
                 _portraitInterface = _currentPortrait.GetComponent<EliPortrait>();
                 _currentSoundEffectPlayer = _currentPortrait.GetComponent<EliDialogueSoundEffectPlayer>();
             } else if(dialogueContent.actor == DialogueContent.DialogueActor.CaveAvatar) {
+                _currentPortrait = Instantiate(_sootPortrait);
+                _currentPortrait.transform.SetParent(_portraitContainer.transform);
+                _currentPortrait.transform.localPosition = new Vector3(0, -12f, 0);
+                _currentPortrait.transform.localScale = _portraitContainer.transform.localScale;
+                _currentPortrait.transform.localRotation = _portraitContainer.transform.localRotation;
+                _portraitInterface = _currentPortrait.GetComponent<SootPortrait>();
                 _currentSoundEffectPlayer = _currentPortrait.GetComponent<SootDialogueSoundEffectPlayer>();
             } else if(dialogueContent.actor == DialogueContent.DialogueActor.Dee) {
                 _currentSoundEffectPlayer = _currentPortrait.GetComponent<DeeDialogueSoundEffectPlayer>();
@@ -166,6 +173,12 @@ public class DialogueController : MonoBehaviour
                 _portraitInterface.SwitchEmotion(emotion.ToString());
                 
                 _portraitInterface.PlayVFX(paragraphEntry.vfx);
+                
+                // Set hover speed for SootPortrait
+                if (_portraitInterface is SootPortrait sootPortrait)
+                {
+                    sootPortrait.SetHoverSpeed(paragraphEntry.hoverSpeed);
+                }
                 
                 if(_currentSoundEffectPlayer != null && _audioAnchor != null) {
                     GameObject audioAnchor = _isDialogueLeft ? _audioAnchor.GetLeftAnchor() : _audioAnchor.GetRightAnchor();
@@ -246,11 +259,11 @@ public class DialogueController : MonoBehaviour
                 _isDisplayed = false;
                 _typeWriter.ShowText("");
                 EventSystem.current.SetSelectedGameObject(null);
-                OnDialogueClosed?.Invoke();
                 // Hide portrait but keep it for reuse
                 if(_currentPortrait != null) {
                     _currentPortrait.SetActive(false);
                 }
+                OnDialogueClosed?.Invoke();
               });
         _loadAndPlayCoroutine = null;
     }
@@ -287,7 +300,7 @@ public class DialogueController : MonoBehaviour
                 // Check if this portrait matches the actor type
                 if(actor == DialogueContent.DialogueActor.Player && child.GetComponent<EliPortrait>() != null) {
                     return child;
-                } else if(actor == DialogueContent.DialogueActor.CaveAvatar && child.GetComponent<SootDialogueSoundEffectPlayer>() != null) {
+                } else if(actor == DialogueContent.DialogueActor.CaveAvatar && child.GetComponent<SootPortrait>() != null) {
                     return child;
                 } else if(actor == DialogueContent.DialogueActor.Dee && child.GetComponent<DeeDialogueSoundEffectPlayer>() != null) {
                     return child;

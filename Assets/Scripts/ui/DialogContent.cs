@@ -18,7 +18,9 @@ public class DialogueContent : ScriptableObject
     public enum Emotion {
         Idle,
         Surprised,
-        Angry
+        Angry,
+        Annoyed,
+        Eh
     }
 
     [System.Serializable]
@@ -29,5 +31,6 @@ public class DialogueContent : ScriptableObject
         public Emotion emotion;
         public DialogueSoundEffect soundEffect;
         public PortraitVFX vfx;
+        public HoverSpeed hoverSpeed;  //Soot specific
     }
 }
