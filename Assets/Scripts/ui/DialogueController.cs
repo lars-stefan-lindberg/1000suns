@@ -24,6 +24,7 @@ public class DialogueController : MonoBehaviour
     [SerializeField] private GameObject _continueIcon;
     [SerializeField] private GameObject _eliPortrait;
     [SerializeField] private GameObject _sootPortrait;
+    [SerializeField] private GameObject _deePortrait;
     [SerializeField] private GameObject _audioAnchorPrefab;
 
     [SerializeField] private RectTransform _background;
@@ -101,6 +102,12 @@ public class DialogueController : MonoBehaviour
                 _portraitInterface = _currentPortrait.GetComponent<SootPortrait>();
                 _currentSoundEffectPlayer = _currentPortrait.GetComponent<SootDialogueSoundEffectPlayer>();
             } else if(dialogueContent.actor == DialogueContent.DialogueActor.Dee) {
+                _currentPortrait = Instantiate(_deePortrait);
+                _currentPortrait.transform.SetParent(_portraitContainer.transform);
+                _currentPortrait.transform.localPosition = new Vector3(0, -56.0625f, 0);
+                _currentPortrait.transform.localScale = _portraitContainer.transform.localScale;
+                _currentPortrait.transform.localRotation = _portraitContainer.transform.localRotation;
+                _portraitInterface = _currentPortrait.GetComponent<DeePortrait>();
                 _currentSoundEffectPlayer = _currentPortrait.GetComponent<DeeDialogueSoundEffectPlayer>();
             }
         } else {
@@ -136,6 +143,20 @@ public class DialogueController : MonoBehaviour
 
         // Optionally flip the portrait texture horizontally
         _currentPortrait.transform.localScale = new Vector3(dialogueContent.IsFlipped ? -1 : 1, 1, 1);
+        
+        // Capture the scale after flipping so VFX reset uses the correct scale
+        if (_portraitInterface is SootPortrait sootPortrait)
+        {
+            sootPortrait.CaptureOriginalScale();
+        }
+        else if (_portraitInterface is EliPortrait eliPortrait)
+        {
+            eliPortrait.CaptureOriginalScale();
+        }
+        else if (_portraitInterface is DeePortrait deePortrait)
+        {
+            deePortrait.CaptureOriginalScale();
+        }
         
         InitializeConversation(dialogueContent);
 
@@ -302,7 +323,7 @@ public class DialogueController : MonoBehaviour
                     return child;
                 } else if(actor == DialogueContent.DialogueActor.CaveAvatar && child.GetComponent<SootPortrait>() != null) {
                     return child;
-                } else if(actor == DialogueContent.DialogueActor.Dee && child.GetComponent<DeeDialogueSoundEffectPlayer>() != null) {
+                } else if(actor == DialogueContent.DialogueActor.Dee && child.GetComponent<DeePortrait>() != null) {
                     return child;
                 }
             }

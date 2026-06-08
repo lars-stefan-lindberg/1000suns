@@ -79,6 +79,7 @@ public class SootPortrait : MonoBehaviour, IPortrait
     private Tween _currentScaleTween;
     private Tween _horizontalShiftTween;
     private Vector3 _originalLocalPosition;
+    private Vector3 _originalLocalScale;
     
     // Manual hover state
     private bool _isHovering = false;
@@ -95,8 +96,14 @@ public class SootPortrait : MonoBehaviour, IPortrait
         }
         
         _originalLocalPosition = transform.localPosition;
+        _originalLocalScale = transform.localScale;
         InitializeMaterials();
         StartHovering();
+    }
+    
+    public void CaptureOriginalScale()
+    {
+        _originalLocalScale = transform.localScale;
     }
     
     private void InitializeMaterials()
@@ -171,7 +178,7 @@ public class SootPortrait : MonoBehaviour, IPortrait
         }
         
         // Reset transform properties
-        transform.localScale = Vector3.one;
+        transform.localScale = _originalLocalScale;
         transform.localRotation = Quaternion.identity;
         
         // Reset X position, preserve Y for hover

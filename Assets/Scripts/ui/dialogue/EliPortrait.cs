@@ -45,6 +45,7 @@ public class EliPortrait : MonoBehaviour, IPortrait
     private Coroutine _currentEffectCoroutine;
     private Tween _currentScaleTween;
     private Vector3 _originalLocalPosition;
+    private Vector3 _originalLocalScale;
 
     void Awake()
     {
@@ -55,7 +56,13 @@ public class EliPortrait : MonoBehaviour, IPortrait
         }
         
         _originalLocalPosition = transform.localPosition;
+        _originalLocalScale = transform.localScale;
         InitializeMaterials();
+    }
+    
+    public void CaptureOriginalScale()
+    {
+        _originalLocalScale = transform.localScale;
     }
     
     private void InitializeMaterials()
@@ -252,7 +259,7 @@ public class EliPortrait : MonoBehaviour, IPortrait
         }
         
         // Reset transform properties
-        transform.localScale = Vector3.one;
+        transform.localScale = _originalLocalScale;
         transform.localRotation = Quaternion.identity;
         transform.localPosition = _originalLocalPosition;
         
