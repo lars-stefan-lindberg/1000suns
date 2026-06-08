@@ -12,8 +12,9 @@ public class EliPortrait : MonoBehaviour, IPortrait
         public Sprite faceSprite;
         public string animatorLayerName;
     }
-    [SerializeField] private Animator _eyesAnimator;
     [SerializeField] private Image _face;
+    [SerializeField] private GameObject _cape;
+    [SerializeField] private Animator _eyesAnimator;
     [SerializeField] private List<EmotionData> _emotionMappings;
     
     [Header("Visual Effects")]
@@ -55,6 +56,12 @@ public class EliPortrait : MonoBehaviour, IPortrait
             _emotionCache[emotionData.emotion] = emotionData;
         }
         
+        if(Player.obj.GetHasCape()) {
+            _cape.SetActive(true);
+        } else {
+            _cape.SetActive(false);
+        }
+
         _originalLocalPosition = transform.localPosition;
         _originalLocalScale = transform.localScale;
         InitializeMaterials();
@@ -297,5 +304,9 @@ public class EliPortrait : MonoBehaviour, IPortrait
                 Debug.LogWarning($"VFX {vfx} not implemented for EliPortrait");
                 break;
         }
+    }
+
+    public Animator GetEyesAnimator() {
+        return _eyesAnimator;
     }
 }

@@ -141,4 +141,8 @@ public class DeePortrait : MonoBehaviour, IPortrait
                 break;
         }
     }
+    
+    public Animator GetEyesAnimator() {
+        return _eyesAnimator;
+    }
 }

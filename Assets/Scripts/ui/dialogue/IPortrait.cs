@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public interface IPortrait
 {
     void SwitchEmotion(string emotion);
@@ -5,4 +7,5 @@ public interface IPortrait
     void DoubleBlink();
     void PlayVFX(PortraitVFX vfx);
     bool IsLeft { get; set; }
+    Animator GetEyesAnimator();
 }

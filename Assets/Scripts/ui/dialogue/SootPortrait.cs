@@ -536,4 +536,8 @@ public class SootPortrait : MonoBehaviour, IPortrait
         
         _currentHoverSpeed = speed;
     }
+
+    public Animator GetEyesAnimator() {
+        return _eyesAnimator;
+    }
 }

@@ -432,8 +432,8 @@ public class DialogueController : MonoBehaviour
     }
     
     private void ResetToIdleState() {
-        if(_currentPortrait != null) {
-            Animator animator = _currentPortrait.GetComponentInChildren<Animator>();
+        if(_portraitInterface != null) {
+            Animator animator = _portraitInterface.GetEyesAnimator();
             if(animator != null) {
                 animator.Play("idle", -1, 0f);
             }
