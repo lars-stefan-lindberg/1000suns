@@ -49,7 +49,6 @@ public class DialogueController : MonoBehaviour
     private bool _isDisplayed = false;
     private bool _isFirstParagraph = true;
     private bool _isLastDialogue = false;
-    private Coroutine _loadAndPlayCoroutine;
     private readonly int SPACER_MARGIN_SMALL = 56;
     private readonly int SPACER_MARGIN_BIG = 96;
     private GameObject _currentPortrait;
@@ -188,7 +187,6 @@ public class DialogueController : MonoBehaviour
         if(!_isTyping) {
             try {
                 DialogueContent.ParagraphEntry paragraphEntry = _paragraphs.Dequeue();
-                p = paragraphEntry.text;
                 
                 ResetToIdleState();
                 StartBlinking();
@@ -216,7 +214,13 @@ public class DialogueController : MonoBehaviour
                         _dialogueAudio.PlayConfirm();
                     }
                 }
-                _loadAndPlayCoroutine = StartCoroutine(LoadAndPlay(p));
+                // Use LocalizedString if set, otherwise fallback to text field
+                if(paragraphEntry.localizedString != null && !paragraphEntry.localizedString.IsEmpty) {
+                    _typeWriter.ShowText(paragraphEntry.localizedString.GetLocalizedString());
+                } else {
+                    _typeWriter.ShowText(paragraphEntry.text);
+                }
+                
             }catch (InvalidOperationException)
             {
                 return;
@@ -228,37 +232,6 @@ public class DialogueController : MonoBehaviour
         if(_paragraphs.Count == 0) {
             _conversationEnded = true;
         }
-    }
-
-    private IEnumerator LoadAndPlay(string key)
-    {
-        yield return LocalizationSettings.InitializationOperation;
-
-        var tableHandle = LocalizationSettings.StringDatabase
-            .GetTableAsync(_tableCollectionName);
-
-        yield return tableHandle;
-
-        if (!tableHandle.IsDone || tableHandle.Result == null)
-        {
-            Debug.LogError($"Localization table not found: {_tableCollectionName}");
-            yield break;
-        }
-
-        StringTable table = tableHandle.Result;
-
-        var entry = table.GetEntry(key);
-
-        if (entry == null)
-        {
-            //Debug.LogError($"Localization key not found: {key}");
-            _typeWriter.ShowText(key);
-            yield break;
-        }
-
-        string translatedText = entry.GetLocalizedString();
-
-        _typeWriter.ShowText(translatedText);
     }
 
     private void InitializeConversation(DialogueContent dialogueContent) {
@@ -289,13 +262,9 @@ public class DialogueController : MonoBehaviour
                 }
                 OnDialogueClosed?.Invoke();
               });
-        _loadAndPlayCoroutine = null;
     }
 
     public void HardStopConversation() {
-        if(_loadAndPlayCoroutine != null) {
-            StopCoroutine(_loadAndPlayCoroutine);
-        }
         _paragraphs.Clear();
         _conversationEnded = false;
         _continueIcon.SetActive(false);
@@ -341,10 +310,6 @@ public class DialogueController : MonoBehaviour
     /// </summary>
     public void CleanUp() {
         // Stop any running coroutines
-        if(_loadAndPlayCoroutine != null) {
-            StopCoroutine(_loadAndPlayCoroutine);
-            _loadAndPlayCoroutine = null;
-        }
         StopBlinking();
         
         // Clear state

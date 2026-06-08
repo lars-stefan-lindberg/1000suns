@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Localization;
 
 [CreateAssetMenu(menuName = "Dialogue/ New Dialogue Content")]
 public class DialogueContent : ScriptableObject
@@ -25,6 +26,7 @@ public class DialogueContent : ScriptableObject
 
     [System.Serializable]
     public struct ParagraphEntry {
+        public LocalizedString localizedString;
         [TextArea(5, 10)]
         public string text;
         public Sprite portrait;
