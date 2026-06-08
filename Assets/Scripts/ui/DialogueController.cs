@@ -33,6 +33,9 @@ public class DialogueController : MonoBehaviour
     [SerializeField] private float _blinkMinDelay = 2f;
     [SerializeField] private float _blinkMaxDelay = 6f;
     [SerializeField] [Range(0f, 1f)] private float _doubleBlinkChance = 0.15f;
+    
+    [Header("Dialogue Timing")]
+    [SerializeField] private float _firstParagraphDelay = 0.3f;
     private string _tableCollectionName = "Dialogue_Text";
 
     private Queue<DialogueContent.ParagraphEntry> _paragraphs = new();
@@ -168,7 +171,7 @@ public class DialogueController : MonoBehaviour
               .SetEase(Ease.Linear).OnComplete(() => {
                     _isDisplayed = true;
                     _isFirstParagraph = true;
-                    DisplayNextParagraph();
+                    StartCoroutine(ShowFirstParagraphAfterDelay());
                     EventSystem.current.SetSelectedGameObject(_continueButton);
                     StartBlinking();
                 });
@@ -438,5 +441,10 @@ public class DialogueController : MonoBehaviour
                 animator.Play("idle", -1, 0f);
             }
         }
+    }
+    
+    private IEnumerator ShowFirstParagraphAfterDelay() {
+        yield return new WaitForSeconds(_firstParagraphDelay);
+        DisplayNextParagraph();
     }
 }
