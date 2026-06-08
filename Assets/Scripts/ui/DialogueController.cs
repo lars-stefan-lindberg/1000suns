@@ -412,4 +412,12 @@ public class DialogueController : MonoBehaviour
         yield return new WaitForSeconds(_firstParagraphDelay);
         DisplayNextParagraph();
     }
+
+    public void HideOnPause() {
+        _background.transform.localRotation = Quaternion.Euler(90, 0, 0);
+    }
+
+    public void ShowAfterPause() {
+        _background.transform.localRotation = Quaternion.Euler(0, 0, 0);
+    }
 }

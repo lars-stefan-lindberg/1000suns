@@ -33,6 +33,7 @@ public class ConversationManager : MonoBehaviour
 
     public void StartConversation()
     {
+        _dialogueController.gameObject.SetActive(true);
         if (conversationList.Count > 0)
         {
             currentDialogueIndex = 0;
@@ -78,6 +79,7 @@ public class ConversationManager : MonoBehaviour
 
     private void EndConversation()
     {
+        _dialogueController.gameObject.SetActive(false);
         OnConversationEnd?.Invoke();
     }
 }

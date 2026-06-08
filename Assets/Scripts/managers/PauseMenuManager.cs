@@ -41,6 +41,7 @@ public class PauseMenuManager : MonoBehaviour
     private Sequence _menuTransitionSequence;
     private bool _isTransitioning = false;
     private Stack<UIScreen> screenStack = new();
+    private DialogueController _activeDialogueController;
 
     void Awake() {
         obj = this;
@@ -84,6 +85,10 @@ public class PauseMenuManager : MonoBehaviour
                 UISoundPlayer.obj.PlayBack();
                 PlayerManager.obj.DisablePlayerMovement();
                 PlayerStatsManager.obj.PauseTimer();
+                _activeDialogueController = FindActiveDialogueController();
+                if(_activeDialogueController != null) {
+                    _activeDialogueController.HideOnPause();
+                }
                 
                 AudioStateManager.obj.SetPaused(true);
                 
@@ -264,9 +269,10 @@ public class PauseMenuManager : MonoBehaviour
 
             AudioStateManager.obj.SetPaused(false);
             
-            DialogueController dialogueController = FindActiveDialogueController();
-            if(dialogueController != null && dialogueController.IsDisplayed()) {
-                dialogueController.FocusDialogue();
+            if(_activeDialogueController != null) {
+                _activeDialogueController.ShowAfterPause();
+                _activeDialogueController.FocusDialogue();
+                _activeDialogueController = null;
             } else if(!PlayerManager.obj.IsFrozen()) {
                 PlayerManager.obj.EnablePlayerMovement();
             }
@@ -303,7 +309,7 @@ public class PauseMenuManager : MonoBehaviour
         if(dialogueObject == null) {
             return null;
         }
-        return dialogueObject.GetComponentInChildren<DialogueController>();
+        return dialogueObject.GetComponent<DialogueController>();
     }
 
     public void Quit() {
