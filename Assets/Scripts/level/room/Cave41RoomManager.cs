@@ -145,6 +145,7 @@ public class Cave41RoomManager : MonoBehaviour
     private void OnConversation4Completed() {
         _conversation3Manager.OnConversationEnd -= OnConversation4Completed;
         _conversation3Manager.enabled = false;
+        _conversation4Manager.CleanUp();
 
         StartCoroutine(OnConversation4CompletedCoroutine());
     }

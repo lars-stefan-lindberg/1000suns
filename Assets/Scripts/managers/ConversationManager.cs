@@ -11,6 +11,7 @@ public class ConversationManager : MonoBehaviour
     }
     [SerializeField] private DialogueController _dialogueController;
     [SerializeField] private List<ConversationEntry> conversationList;
+    [SerializeField] private bool _isLastConversationOfRoom = true;
     private int currentDialogueIndex = 0;
 
     void OnEnable()
@@ -46,6 +47,13 @@ public class ConversationManager : MonoBehaviour
         if(_dialogueController.IsDisplayed()) {
             _dialogueController.HardStopConversation();
         }
+        _dialogueController.CleanUp();
+        _dialogueController.gameObject.SetActive(false);
+    }
+
+    public void CleanUp() {
+        _dialogueController.CleanUp();
+        _dialogueController.gameObject.SetActive(false);
     }
 
     private void ShowNextDialogue()
@@ -79,7 +87,8 @@ public class ConversationManager : MonoBehaviour
 
     private void EndConversation()
     {
-        _dialogueController.gameObject.SetActive(false);
+        if(_isLastConversationOfRoom)
+            _dialogueController.gameObject.SetActive(false);
         OnConversationEnd?.Invoke();
     }
 }

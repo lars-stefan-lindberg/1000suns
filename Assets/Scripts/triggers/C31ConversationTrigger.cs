@@ -54,6 +54,7 @@ public class C31ConversationTrigger : MonoBehaviour
         GameManager.obj.RegisterEvent(_cave52CutsceneCompleted);
 
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
+        _conversationManager.CleanUp();
         _conversationManager.OnConversationEnd -= OnConversationCompleted;
         yield return null;
     }

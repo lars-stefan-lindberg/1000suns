@@ -7,6 +7,7 @@ public class Cave15CutsceneManager : MonoBehaviour, ISkippable
     [SerializeField] private GameEventId _firstConfrontationCompleted;
     [SerializeField] private MusicTrack _tenseBassTrack;
     [SerializeField] private Transform _deeCutsceneStartingPosition;
+    [SerializeField] private GameObject _cutsceneCamera;
     private BoxCollider2D _collider;
     private Coroutine _onConversationCompletedCoroutine;
 
@@ -35,7 +36,7 @@ public class Cave15CutsceneManager : MonoBehaviour, ISkippable
         _conversationManager.OnConversationEnd -= OnConversationCompleted;
     }
 
-        void OnTriggerEnter2D(Collider2D other) {
+    void OnTriggerEnter2D(Collider2D other) {
         if(other.CompareTag("Player")) {
             _collider.enabled = false;
             StartCoroutine(SetupDialogue());
@@ -43,6 +44,7 @@ public class Cave15CutsceneManager : MonoBehaviour, ISkippable
     }
 
     public void RequestSkip() {
+        _cutsceneCamera.SetActive(false);
         if(_onConversationCompletedCoroutine != null) {
             StopCoroutine(_onConversationCompletedCoroutine);
         }
@@ -71,7 +73,8 @@ public class Cave15CutsceneManager : MonoBehaviour, ISkippable
     private IEnumerator SetupDialogue() {
         PauseMenuManager.obj.RegisterSkippable(this);
         PlayerMovement.obj.Freeze();
-        yield return new WaitForSeconds(0.5f);
+        _cutsceneCamera.SetActive(true);
+        yield return new WaitForSeconds(2f);
         _conversationManager.StartConversation();
         yield return new WaitForSeconds(0.8f);
         MusicManager.obj.Play(_tenseBassTrack);
@@ -89,8 +92,11 @@ public class Cave15CutsceneManager : MonoBehaviour, ISkippable
         ShadowTwinPlayer.obj.gameObject.SetActive(false);
         ShadowTwinMovement.obj.gameObject.tag = "Player";
 
+        _cutsceneCamera.SetActive(false);
+        yield return new WaitForSeconds(1.5f);
         PlayerMovement.obj.UnFreeze();
         GameManager.obj.RegisterEvent(_firstConfrontationCompleted);
+        _conversationManager.CleanUp();
         _conversationManager.OnConversationEnd -= OnConversationCompleted;
         PauseMenuManager.obj.UnregisterSkippable();
     }

@@ -8,7 +8,6 @@ public class C35OverhearConversationTrigger : MonoBehaviour
     [SerializeField] private DialogueController _dialogueController;
     [SerializeField] private DialogueContent _dialogueContent;
     [SerializeField] private ConversationManager _nextConversationManager;
-    [SerializeField] private RectTransform _rightPortrait;
     [SerializeField] private TextMeshProUGUI _dialogueText;
     private BoxCollider2D _boxCollider2D;
 
@@ -44,10 +43,8 @@ public class C35OverhearConversationTrigger : MonoBehaviour
         PlayerMovement.obj.UnFreeze();
         _dialogueController.OnDialogueClosed -= OnDialogueCompleted;
         _nextConversationManager.enabled = true;
-        //Reset Soot portrait
-        _rightPortrait.localScale = new Vector3(1, 1, 1);
         //Reset text size
-        _dialogueText.fontSize += 15;
+        _dialogueText.fontSize += 10;
     }
 
     private IEnumerator HandleDialogue() {
@@ -58,12 +55,11 @@ public class C35OverhearConversationTrigger : MonoBehaviour
             PlayerBlobMovement.obj.ToHuman();
         }
 
-        //Show Soot facing right
-        _rightPortrait.localScale = new Vector3(-1, 1, 1);
         //Decrease text size to make it look like you are overhearing
-        _dialogueText.fontSize -= 15;
+        _dialogueText.fontSize -= 10;
         yield return new WaitForSeconds(2f);
         
+        _dialogueController.gameObject.SetActive(true);
         _dialogueController.ShowDialogue(_dialogueContent, true, true);
         
         yield return null;

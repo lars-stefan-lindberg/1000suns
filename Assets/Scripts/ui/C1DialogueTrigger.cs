@@ -9,6 +9,7 @@ public class C1DialogueTrigger : MonoBehaviour, ISkippable
     [SerializeField] private GameObject _caveRootsTrap;
     [SerializeField] private GameObject _nextDialogueTrigger;
     [SerializeField] private Transform _finalCaveAvatarFlyPosition;
+    [SerializeField] private GameObject _cutsceneCamera;
     private BoxCollider2D _collider;
 
     void Start() {
@@ -36,6 +37,7 @@ public class C1DialogueTrigger : MonoBehaviour, ISkippable
         _caveRootsTrap.SetActive(false);
         _nextDialogueTrigger.SetActive(false);
         _caveAvatarRootsManager.gameObject.SetActive(false);
+        _cutsceneCamera.SetActive(false);
 
         CaveAvatar.obj.SetFloatingEnabled(true);
         CaveAvatar.obj.SetPosition(_finalCaveAvatarFlyPosition.position);
@@ -59,11 +61,13 @@ public class C1DialogueTrigger : MonoBehaviour, ISkippable
     private IEnumerator SetupDialogue() {
         PauseMenuManager.obj.RegisterSkippable(this);
         PlayerMovement.obj.Freeze();
-        yield return new WaitForSeconds(0.5f);
+        _cutsceneCamera.SetActive(true);
+        yield return new WaitForSeconds(2f);
         _conversationManager.StartConversation();
     }
 
     private void OnConversationCompleted() {
+        _cutsceneCamera.SetActive(false);
         PlayerMovement.obj.UnFreeze();
         _conversationManager.OnConversationEnd -= OnConversationCompleted;
         _nextConversationManager.enabled = true;

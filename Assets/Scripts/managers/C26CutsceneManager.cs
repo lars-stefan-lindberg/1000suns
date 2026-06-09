@@ -121,6 +121,7 @@ public class C26CutsceneManager : MonoBehaviour, ISkippable
 
         yield return new WaitForSeconds(1f);
 
+        _dialogueController.gameObject.SetActive(true);
         _dialogueController.ShowDialogue(_dialogueContent1, true, true);
 
         while(_dialogueIndex == 0) {
@@ -166,6 +167,9 @@ public class C26CutsceneManager : MonoBehaviour, ISkippable
         }
 
         yield return new WaitForSeconds(2f);
+
+        _dialogueController.CleanUp();
+        _dialogueController.gameObject.SetActive(false);
 
         //Soot flies off
         CaveAvatar.obj.SetTarget(_sootFlyOffTarget, 5f);

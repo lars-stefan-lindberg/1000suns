@@ -90,6 +90,7 @@ public class Cave33RoomManager : MonoBehaviour
     }
 
     private void OnAfterShadowJumpConversationCompleted() {
+        _afterShadowJumpConversation.CleanUp();
         PlayerMovement.obj.UnFreeze();
         CaveAvatar.obj.IsFollowingPlayer = true;
         GameManager.obj.RegisterEvent(_afterShadowJumpConversationCompleted);

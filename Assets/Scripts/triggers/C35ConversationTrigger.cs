@@ -78,6 +78,7 @@ public class C35ConversationTrigger : MonoBehaviour
             _nextConversationManager.enabled = true;
         }
         if(_breakableFloor != null) {
+            _conversationManager.CleanUp();
             StartCoroutine(BreakFloor());
         }
     }

@@ -46,6 +46,7 @@ public class BeforePowerUpRoomsConversationTrigger : MonoBehaviour
     }
 
     public void OnConversationCompleted() {
+        _conversationManager.CleanUp();
         PlayerMovement.obj.UnFreeze();
         CaveAvatar.obj.SetTarget(_caveAvatarAfterConversationTarget);
         GameManager.obj.RegisterEvent(_cave33FirstEliSootConversationCompleted);

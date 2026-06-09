@@ -151,6 +151,7 @@ public class Cave23RoomManager : MonoBehaviour
     }
 
     private void OnConversationCompleted() {
+        _conversationManager.CleanUp();
         PlayerMovement.obj.UnFreeze();
         CaveAvatar.obj.IsFollowingPlayer = true;
         GameManager.obj.RegisterEvent(_postDreamSequenceCompleted);

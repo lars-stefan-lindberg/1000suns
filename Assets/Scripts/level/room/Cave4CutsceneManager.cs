@@ -7,6 +7,7 @@ public class Cave4CutsceneManager : MonoBehaviour, ISkippable
     [SerializeField] private GameEventId _isCutsceneCompleted;
     [SerializeField] private ConversationManager _conversationManager;
     [SerializeField] private Cave4SlabTrigger _slabTrigger;
+    [SerializeField] private GameObject _cutsceneCamera;
     private Coroutine _cutsceneCoroutine;
 
     void Start() {
@@ -29,7 +30,8 @@ public class Cave4CutsceneManager : MonoBehaviour, ISkippable
     private IEnumerator StartCutscene() {
         PauseMenuManager.obj.RegisterSkippable(this);
         PlayerMovement.obj.Freeze();
-        yield return new WaitForSeconds(1f);
+        _cutsceneCamera.SetActive(true);
+        yield return new WaitForSeconds(2f);
 
         yield return StartCoroutine(_slabTrigger.StartVfx());
         yield return new WaitForSeconds(1f);
@@ -40,6 +42,7 @@ public class Cave4CutsceneManager : MonoBehaviour, ISkippable
     }
 
     public void RequestSkip() {
+        _cutsceneCamera.SetActive(false);
         StopCoroutine(_cutsceneCoroutine);
         _conversationManager.HardStopConversation();
         _conversationManager.OnConversationEnd -= OnConversationCompleted;
@@ -61,6 +64,8 @@ public class Cave4CutsceneManager : MonoBehaviour, ISkippable
     }
 
     private void OnConversationCompleted() {
+        _conversationManager.CleanUp();
+        _cutsceneCamera.SetActive(false);
         PlayerMovement.obj.UnFreeze();
         _conversationManager.OnConversationEnd -= OnConversationCompleted;
         GameManager.obj.RegisterEvent(_isCutsceneCompleted);

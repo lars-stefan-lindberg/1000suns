@@ -254,7 +254,7 @@ public class PauseMenuManager : MonoBehaviour
         _skippable = null;
     }
 
-    public void ResumeGame() {
+    public void ResumeGame(bool skippedCutscene = false) {
         // Only resume if we're actually paused
         if (_isPaused) {
              _cancelActionReference.action.performed -= OnCancel;
@@ -269,7 +269,7 @@ public class PauseMenuManager : MonoBehaviour
 
             AudioStateManager.obj.SetPaused(false);
             
-            if(_activeDialogueController != null) {
+            if(_activeDialogueController != null && !skippedCutscene) {
                 _activeDialogueController.ShowAfterPause();
                 _activeDialogueController.FocusDialogue();
                 _activeDialogueController = null;
@@ -294,7 +294,7 @@ public class PauseMenuManager : MonoBehaviour
         yield return new WaitForSeconds(0.3f);
         _skippable.RequestSkip();
         UnregisterSkippable();
-        ResumeGame();
+        ResumeGame(true);
         yield return null;
     }
 

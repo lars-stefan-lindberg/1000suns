@@ -14,8 +14,10 @@ public class DialogueController : MonoBehaviour
 {
     public event System.Action OnDialogueClosed;
     public event System.Action OnDialogueClosing;
-    [SerializeField] private float _openDialogueDuration = 0.8f;
-    [SerializeField] private float _closeDialogueDuration = 0.8f;
+    [SerializeField] private float _firstOpenDialogueDuration = 0.8f;
+    [SerializeField] private float _lastCloseDialogueDuration = 0.8f;
+    [SerializeField] private float _openDialogueDuration = 0.5f;
+    [SerializeField] private float _closeDialogueDuration = 0.5f;
     [SerializeField] private GameObject _portraitContainer;
     [SerializeField] private GameObject _textBox;
     [SerializeField] private LayoutElement _leftSpacer;
@@ -170,7 +172,7 @@ public class DialogueController : MonoBehaviour
             _dialogueAudio.PlayOpen();
         _isLastDialogue = isLastDialogue;
 
-        _background.DOLocalRotate(new Vector3(0f, 0f, 0f), _openDialogueDuration, RotateMode.FastBeyond360)
+        _background.DOLocalRotate(new Vector3(0f, 0f, 0f), isFirstDialogue ? _firstOpenDialogueDuration : _openDialogueDuration, RotateMode.FastBeyond360)
               .SetEase(Ease.Linear).OnComplete(() => {
                     _isDisplayed = true;
                     _isFirstParagraph = true;
@@ -257,7 +259,7 @@ public class DialogueController : MonoBehaviour
         _continueIcon.SetActive(false);
         StopBlinking();
         
-        _background.DOLocalRotate(new Vector3(90f, 0f, 0f), _closeDialogueDuration, RotateMode.FastBeyond360)
+        _background.DOLocalRotate(new Vector3(90f, 0f, 0f), _isLastDialogue ? _lastCloseDialogueDuration : _closeDialogueDuration, RotateMode.FastBeyond360)
               .SetEase(Ease.Linear).OnComplete(() => {
                 _isDisplayed = false;
                 _typeWriter.ShowText("");
@@ -321,14 +323,16 @@ public class DialogueController : MonoBehaviour
         // Clear state
         _paragraphs.Clear();
         _conversationEnded = false;
-        _isDisplayed = false;
         _isFirstParagraph = true;
         _isLastDialogue = false;
         _isTyping = false;
         
         // Clean up UI
         _continueIcon.SetActive(false);
-        _typeWriter.ShowText("");
+        //If dialogue hasn't shown yet, avoid typewriter exception
+        if(_isDisplayed)
+            _typeWriter.ShowText("");
+        _isDisplayed = false;
         EventSystem.current.SetSelectedGameObject(null);
         
         // Reset background rotation
@@ -415,8 +419,9 @@ public class DialogueController : MonoBehaviour
     }
     
     private IEnumerator ShowFirstParagraphAfterDelay() {
-        yield return new WaitForSeconds(_firstParagraphDelay);
+        //yield return new WaitForSeconds(_firstParagraphDelay);
         DisplayNextParagraph();
+        yield return null;
     }
 
     public void HideOnPause() {
