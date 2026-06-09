@@ -14,6 +14,8 @@ public class DialogueController : MonoBehaviour
 {
     public event System.Action OnDialogueClosed;
     public event System.Action OnDialogueClosing;
+    [SerializeField] private float _openDialogueDuration = 0.8f;
+    [SerializeField] private float _closeDialogueDuration = 0.8f;
     [SerializeField] private GameObject _portraitContainer;
     [SerializeField] private GameObject _textBox;
     [SerializeField] private LayoutElement _leftSpacer;
@@ -168,7 +170,7 @@ public class DialogueController : MonoBehaviour
             _dialogueAudio.PlayOpen();
         _isLastDialogue = isLastDialogue;
 
-        _background.DOLocalRotate(new Vector3(0f, 0f, 0f), 0.5f, RotateMode.FastBeyond360)
+        _background.DOLocalRotate(new Vector3(0f, 0f, 0f), _openDialogueDuration, RotateMode.FastBeyond360)
               .SetEase(Ease.Linear).OnComplete(() => {
                     _isDisplayed = true;
                     _isFirstParagraph = true;
@@ -255,7 +257,7 @@ public class DialogueController : MonoBehaviour
         _continueIcon.SetActive(false);
         StopBlinking();
         
-        _background.DOLocalRotate(new Vector3(90f, 0f, 0f), 0.5f, RotateMode.FastBeyond360)
+        _background.DOLocalRotate(new Vector3(90f, 0f, 0f), _closeDialogueDuration, RotateMode.FastBeyond360)
               .SetEase(Ease.Linear).OnComplete(() => {
                 _isDisplayed = false;
                 _typeWriter.ShowText("");
