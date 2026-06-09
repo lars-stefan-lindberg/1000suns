@@ -34,6 +34,7 @@ public class TeleportationTrigger : MonoBehaviour
         SoundFXManager.obj.PlayAtGameObject(_teleportationEndSfx, PlayerManager.obj.GetPlayerTransform().gameObject);
         Destroy(prisonerSoul.gameObject);
 
+        Player.obj.transform.position = _spawnPoint.transform.position;
         PlayerMovement.obj.EnableCollider();
         PlayerMovement.obj.spriteRenderer.enabled = true;
         PlayerMovement.obj.UnFreeze();

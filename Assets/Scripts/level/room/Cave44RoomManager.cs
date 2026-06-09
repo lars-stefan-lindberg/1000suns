@@ -11,6 +11,7 @@ public class Cave44RoomManager : MonoBehaviour
     [SerializeField] private Prisoner _prisoner1;
     [SerializeField] private Prisoner _prisoner2;
     [SerializeField] private MusicTrack _bossMusic;
+    [SerializeField] private AmbienceTrack _caveMainAmbience;
     [SerializeField] private SpawnPoint _bossSpawnPoint;
 
     void Start()
@@ -49,7 +50,7 @@ public class Cave44RoomManager : MonoBehaviour
         MusicManager.obj.Play(_bossMusic);
         yield return new WaitForSeconds(2f);
         PlayerMovement.obj.UnFreeze();
-        yield return new WaitForSeconds(0.8f);
+        yield return new WaitForSeconds(1.5f);
         _prisoner1.isStatic = false;
         _prisoner2.isStatic = false;
         GameManager.obj.RegisterEvent(_bossStarted);
@@ -59,6 +60,7 @@ public class Cave44RoomManager : MonoBehaviour
 
     public void EndFight() {
         MusicManager.obj.EndCurrentTrack();
+        AmbienceManager.obj.Play(_caveMainAmbience);
         GameManager.obj.RegisterEvent(_bossCompleted);
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
     }

@@ -18,8 +18,7 @@ public class PrisonerAnimationEvents : MonoBehaviour
         _prisonerAudio.PlayCrawl();
     }
     public void PlaySpawn() {
-        if(SceneManager.GetActiveScene().GetRootGameObjects().Contains(gameObject))
-            _prisonerAudio.PlaySpawn();
+        _prisonerAudio.PlaySpawn();
     }
     public void PlaySlide() {
         _prisonerAudio.PlaySlide();
