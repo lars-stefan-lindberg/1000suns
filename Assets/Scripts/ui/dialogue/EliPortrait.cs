@@ -101,7 +101,13 @@ public class EliPortrait : MonoBehaviour, IPortrait
 
     public void SwitchEmotion(string emotion)
     {
-        if (!System.Enum.TryParse(emotion, out DialogueContent.Emotion emotionEnum))
+        SwitchFaceExpression(emotion);
+        SwitchEyesExpression(emotion);
+    }
+
+    public void SwitchFaceExpression(string expression)
+    {
+        if (!System.Enum.TryParse(expression, out DialogueContent.Emotion emotionEnum))
         {
             return;
         }
@@ -112,7 +118,21 @@ public class EliPortrait : MonoBehaviour, IPortrait
         }
 
         _face.sprite = emotionData.faceSprite;
-        
+        _currentEmotion = emotionEnum;
+    }
+
+    public void SwitchEyesExpression(string expression)
+    {
+        if (!System.Enum.TryParse(expression, out DialogueContent.Emotion emotionEnum))
+        {
+            return;
+        }
+
+        if (!_emotionCache.TryGetValue(emotionEnum, out EmotionData emotionData))
+        {
+            return;
+        }
+
         int newLayer = _eyesAnimator.GetLayerIndex(emotionData.animatorLayerName);
         if (newLayer != -1)
         {
@@ -120,8 +140,6 @@ public class EliPortrait : MonoBehaviour, IPortrait
             _eyesAnimator.SetLayerWeight(newLayer, 1);
             _currentEyesLayer = newLayer;
         }
-
-        _currentEmotion = emotionEnum;
     }
     
     [ContextMenu("Test Poison Effect")]

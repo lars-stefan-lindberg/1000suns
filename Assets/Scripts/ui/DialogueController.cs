@@ -127,8 +127,10 @@ public class DialogueController : MonoBehaviour
         // Activate the portrait
         _currentPortrait.SetActive(true);
         
-        DialogueContent.Emotion firstEmotion = dialogueContent.paragraphEntries[0].emotion;
-        _portraitInterface.SwitchEmotion(firstEmotion.ToString());
+        DialogueContent.Emotion firstFaceExpression = dialogueContent.paragraphEntries[0].faceExpression;
+        DialogueContent.Emotion firstEyesExpression = dialogueContent.paragraphEntries[0].eyesExpression;
+        _portraitInterface.SwitchFaceExpression(firstFaceExpression.ToString());
+        _portraitInterface.SwitchEyesExpression(firstEyesExpression.ToString());
         
         _isDialogueLeft = dialogueContent.IsLeft;
         _portraitInterface.IsLeft = dialogueContent.IsLeft;
@@ -191,8 +193,10 @@ public class DialogueController : MonoBehaviour
                 ResetToIdleState();
                 StartBlinking();
                 
-                DialogueContent.Emotion emotion = paragraphEntry.emotion;
-                _portraitInterface.SwitchEmotion(emotion.ToString());
+                DialogueContent.Emotion faceExpression = paragraphEntry.faceExpression;
+                DialogueContent.Emotion eyesExpression = paragraphEntry.eyesExpression;
+                _portraitInterface.SwitchFaceExpression(faceExpression.ToString());
+                _portraitInterface.SwitchEyesExpression(eyesExpression.ToString());
                 
                 _portraitInterface.PlayVFX(paragraphEntry.vfx);
                 

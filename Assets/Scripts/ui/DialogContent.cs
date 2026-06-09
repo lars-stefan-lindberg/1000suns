@@ -30,7 +30,8 @@ public class DialogueContent : ScriptableObject
         [TextArea(5, 10)]
         public string text;
         public Sprite portrait;
-        public Emotion emotion;
+        public Emotion faceExpression;
+        public Emotion eyesExpression;
         public DialogueSoundEffect soundEffect;
         public PortraitVFX vfx;
         public HoverSpeed hoverSpeed;  //Soot specific
