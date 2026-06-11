@@ -14,12 +14,17 @@ public class Cave50RoomManager : MonoBehaviour
     [SerializeField] private SpawnPoint _eliReturnFromDreamRoomPosition;
     [SerializeField] private EventReference _powerupFanfareStinger;
     [SerializeField] private PowerUpScreen _powerUpScreen;
-    [SerializeField] private MusicTrack _caveMain;
+    [SerializeField] private AmbienceTrack _caveMain;
+    [SerializeField] private GameObject _powerUpPortal;
+    [SerializeField] private GameObject _playerTeleportPosition;
     
     void Start()
     {
         if(GameManager.obj.HasEvent(_dreamSequenceCompleted) && !GameManager.obj.HasEvent(_postDreamSequenceCompleted)) {
             StartCoroutine(AfterDreamRoom());
+        }
+        if(GameManager.obj.HasEvent(_dreamSequenceCompleted)) {
+            _powerUpPortal.SetActive(false);
         }
     }
 
@@ -47,6 +52,8 @@ public class Cave50RoomManager : MonoBehaviour
         //Give things some time to properly load
         yield return new WaitForSeconds(1f);
 
+        AmbienceManager.obj.Play(_caveMain);
+
         SceneFadeManager.obj.StartFadeIn(0.5f);
         while(SceneFadeManager.obj.IsFadingIn)
             yield return null;
@@ -68,7 +75,6 @@ public class Cave50RoomManager : MonoBehaviour
         PlayerPowersManager.obj.EliCanTurnFromBlobToHuman = true;
         PlayerMovement.obj.UnFreeze();
         GameManager.obj.RegisterEvent(_postDreamSequenceCompleted);
-        MusicManager.obj.Play(_caveMain);
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
     }
 
@@ -78,11 +84,20 @@ public class Cave50RoomManager : MonoBehaviour
         PlayerBlobMovement.obj.Freeze();
         AmbienceManager.obj.Stop();
         MusicManager.obj.Stop();
-        SoundFXManager.obj.Play2D(_teleportSfx);
         StartCoroutine(TeleportToDreamRoomRoutine());
     }
 
     private IEnumerator TeleportToDreamRoomRoutine() {
+        yield return new WaitForSeconds(1f);
+        PlayerBlobMovement.obj.isGrounded = true;
+        PlayerBlobMovement.obj.SetStartingOnGround();
+        PlayerBlob.obj.transform.position = _playerTeleportPosition.transform.position;
+        PlayerBlob.obj.SetNewPower();
+        PlayerBlob.obj.FlashFor(2f);
+        _powerUpPortal.GetComponent<Animator>().SetTrigger("enableFast");
+        yield return new WaitForSeconds(1.5f);
+
+        SoundFXManager.obj.Play2D(_teleportSfx);
         SceneFadeManager.obj.StartWhiteFadeOut(0.5f);
 
         while(SceneFadeManager.obj.IsFadingOut)

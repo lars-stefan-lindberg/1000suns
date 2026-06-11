@@ -11,6 +11,7 @@ public class RoomMgr : MonoBehaviour
     [SerializeField] private List<GameObject> roomObjectsToLoad;
     [SerializeField] private DarknessLevel _darknessLevelService;
     [SerializeField] private DarknessLevelType _darknessLevelType;
+    [SerializeField] private bool _disableUnloadRoomObjects = false;  //Can be used when player exits room, but camera is still active in previous room, like Cave-56
     public UnityEvent OnRoomEnter;
     public UnityEvent OnRoomExit;
     public UnityEvent CustomCameraHandling;
@@ -62,8 +63,9 @@ public class RoomMgr : MonoBehaviour
             if(_fadeDarknessCoroutine != null) {
                 StopCoroutine(_fadeDarknessCoroutine);
             }
-            if(gameObject.activeSelf)
+            if(gameObject.activeSelf && !_disableUnloadRoomObjects) {
                 _unloadRoomObjectsCoroutine = StartCoroutine(UnloadRoomObjects());
+            }
             OnRoomExit?.Invoke();
         }
     }

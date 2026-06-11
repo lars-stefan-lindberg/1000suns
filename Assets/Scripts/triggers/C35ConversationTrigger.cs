@@ -92,8 +92,9 @@ public class C35ConversationTrigger : MonoBehaviour
         yield return new WaitForSeconds(0.8f);
         _breakableFloor.Break();
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(3f);
 
-        //TODO, end chapter and load Dee timeline. Also, don't unload game objects, do custom unloading (or set player tag to Untagged temporarily to not trigger RoomMgr exit)
+        SceneFadeManager.obj.StartFadeOut(0.3f);
+        //TODO, end chapter and load Dee timeline.
     }
 }

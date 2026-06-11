@@ -404,6 +404,7 @@ public class LevelManager : MonoBehaviour
         }
     }
 
+    //TODO: optimize
     private void SetCaveAvatarPosition(Scene scene) {
         GameEventId sootFreed = ScriptableObject.CreateInstance<GameEventId>();
         sootFreed.id = "cave-3.soot-freed";
@@ -411,6 +412,8 @@ public class LevelManager : MonoBehaviour
         beforeShadowJumpConversationCompleted.id = "Cave-33.first-eli-soot-conversation-completed";
         GameEventId afterShadowJumpConversationCompleted = ScriptableObject.CreateInstance<GameEventId>();
         afterShadowJumpConversationCompleted.id = "Cave-33.after-shadow-jump-conversation-completed";
+        GameEventId sootBetrayalCutsceneCompleted = ScriptableObject.CreateInstance<GameEventId>();
+        sootBetrayalCutsceneCompleted.id = "Cave-47.cutscene-completed";
         if (scene.name == "Cave-56") {
             CaveAvatar.obj.SetStartingPositionInRoom35();
         } else if(scene.name == "Cave-55") {
@@ -432,14 +435,12 @@ public class LevelManager : MonoBehaviour
             if(IsLevelCompleted("Cave-52"))
                 CaveAvatar.obj.SetStartingPositionInRoom32();
             else
-                CaveAvatar.obj.SetStartingPositionInRoom31();
+                CaveAvatar.obj.SetStartingPositionInRoom52();
+        } else if(GameManager.obj.HasEvent(sootBetrayalCutsceneCompleted)) {
+            //Let room managers handle Soot's position
         } else if(GameManager.obj.HasEvent(beforeShadowJumpConversationCompleted) && !GameManager.obj.HasEvent(afterShadowJumpConversationCompleted)) {
             CaveAvatar.obj.SetStartingPositionInCaveRoom33();   
-        }else if(GameManager.obj.C27CutsceneCompleted) {
-            CaveAvatar.obj.SetStartingPositionInRoom30();
-        } else if(GameManager.obj.C26CutsceneCompleted) {
-            CaveAvatar.obj.SetStartingPositionInRoom27();
-        } else if(!GameManager.obj.Progress.HasEvent(sootFreed) && !GameManager.obj.isDevMode) {
+        } else if(!GameManager.obj.HasEvent(sootFreed) && !GameManager.obj.isDevMode) {
             CaveAvatar.obj.SetStartingPositionInRoom1();
         } else {
             CaveAvatar.obj.SetFollowPlayerStartingPosition();

@@ -470,6 +470,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80cd6d423efac4a858d5b60189699f44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _shadowJumpReceived: {fileID: 0}
 --- !u!1 &503471677
 GameObject:
   m_ObjectHideFlags: 0
@@ -589,6 +590,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80cd6d423efac4a858d5b60189699f44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _shadowJumpReceived: {fileID: 0}
 --- !u!1 &537529795
 GameObject:
   m_ObjectHideFlags: 0
@@ -711,13 +713,13 @@ MonoBehaviour:
       Data3: 1694345906
       Data4: -1536924873
     Path: event:/game/01_cave/stingers/power_up_room_receive
-  _powerUpFanfareStinger:
+  _powerupFanfareStinger:
     Guid:
-      Data1: -2028024399
-      Data2: 1251664245
-      Data3: -66005605
-      Data4: 1624465437
-    Path: event:/game/general/stingers/power_up_fanfare
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
   _pickupPowerupSfx:
     Guid:
       Data1: 584789043
@@ -726,6 +728,23 @@ MonoBehaviour:
       Data4: -1399942165
     Path: event:/game/general/power_up
   _shadowJumpReceived: {fileID: 0}
+  _powerUpScreen: {fileID: 0}
+  _teleportSfx:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  _dreamRoomScene:
+    _sceneAsset: {fileID: 0}
+    _sceneName: 
+  _secondDreamRoomScene:
+    _sceneAsset: {fileID: 0}
+    _sceneName: 
+  _thisScene:
+    _sceneAsset: {fileID: 0}
+    _sceneName: 
 --- !u!114 &604632838
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1380,6 +1399,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80cd6d423efac4a858d5b60189699f44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _shadowJumpReceived: {fileID: 0}
 --- !u!1 &877634579
 GameObject:
   m_ObjectHideFlags: 0
@@ -1952,6 +1972,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80cd6d423efac4a858d5b60189699f44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _shadowJumpReceived: {fileID: 0}
 --- !u!1 &1322483201
 GameObject:
   m_ObjectHideFlags: 0
@@ -2071,6 +2092,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80cd6d423efac4a858d5b60189699f44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _shadowJumpReceived: {fileID: 0}
 --- !u!1 &1323075731
 GameObject:
   m_ObjectHideFlags: 0
@@ -56073,6 +56095,7 @@ MonoBehaviour:
   hintWallCooldownTime: 1
   fadeMultiplier: 3.5
   numberOfShakeParticles: 30
+  numberOfBreakParticles: 6
   _breakableWallCracklingSfx:
     Guid:
       Data1: 0
@@ -56503,6 +56526,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80cd6d423efac4a858d5b60189699f44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _shadowJumpReceived: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

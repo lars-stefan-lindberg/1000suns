@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
@@ -10,6 +11,15 @@ using UnityEngine.UI;
 
 public class PowerUpScreen : MonoBehaviour
 {
+    public enum Direction
+    {
+        None,
+        Up,
+        Down,
+        Left,
+        Right
+    }
+
     [SerializeField] private TMP_Text _headingText;
     [SerializeField] private LocalizedString _headingString;
     [SerializeField] private TMP_Text _descriptionText;
@@ -21,6 +31,7 @@ public class PowerUpScreen : MonoBehaviour
     [SerializeField] private Image _continueIcon;
     [SerializeField] private GameObject _confirmButton;
     [SerializeField] private List<InputActionReference> _inputActions = new List<InputActionReference>();
+    [SerializeField] private List<Direction> _inputDirections = new List<Direction>();
     [SerializeField] private float _blinkVisibleDuration = 0.8f;
     [SerializeField] private float _blinkInvisibleDuration = 0.3f;
     public bool PowerUpScreenCompleted = false;
@@ -135,15 +146,19 @@ public class PowerUpScreen : MonoBehaviour
         
         var spriteArguments = new List<object>();
         
-        foreach (var actionReference in _inputActions)
+        for (int i = 0; i < _inputActions.Count; i++)
         {
+            var actionReference = _inputActions[i];
             if (actionReference == null || actionReference.action == null)
             {
                 Debug.LogWarning("PowerUpScreen: InputActionReference is null or has no action");
                 continue;
             }
             
-            string spriteName = InputIconManager.obj.GetSpriteNameForAction(actionReference);
+            // Get direction if available, otherwise use None
+            Direction direction = i < _inputDirections.Count ? _inputDirections[i] : Direction.None;
+            
+            string spriteName = InputIconManager.obj.GetSpriteNameForAction(actionReference, direction);
             spriteArguments.Add($"<voffset=-4px><sprite name=\"{spriteName}\" tint=1></voffset>");
         }
         

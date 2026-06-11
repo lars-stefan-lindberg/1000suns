@@ -12,6 +12,7 @@ public class TeleportToC29 : MonoBehaviour
     [SerializeField] private GameEventId _dreamSequenceCompleted;
     [SerializeField] private SceneField _teleportBackToScene;
     [SerializeField] private SceneField _thisScene;
+    [SerializeField] private C295LoopManager2 _musicLoopManager;
     
     void OnTriggerEnter2D(Collider2D other)
     {
@@ -23,8 +24,8 @@ public class TeleportToC29 : MonoBehaviour
 
     private IEnumerator TeleportToC29Routine() {
         PlayerBlobMovement.obj.Freeze();
-        //TODO: Set up the space room "music", including ending, in FMOD
-        //MusicManager.obj.ScheduleClipOnNextBar(MusicManager.obj.caveIntense1Outro, 140, false);
+        MusicManager.obj.EndCurrentTrack();
+        _musicLoopManager.CleanUp();
 
         AmbienceManager.obj.Stop();
 

@@ -166,15 +166,23 @@ public class CaveAvatar : MonoBehaviour
         SetPosition(headTargetPosition);
     }
 
-    public void SetStartingPositionInRoom27() {
-        SetPosition(new Vector2(1390.125f, -16f));
+    public void SetStartingPositionInRoom30() {
+        SetPosition(new Vector2(1475.125f, -14.875f));
         IsFollowingPlayer = false;
         _target = null;
         SetRedEyes();
     }
 
-    public void SetStartingPositionInRoom30() {
-        SetPosition(new Vector2(1475.125f, -14.875f));
+    public void SetStartingPositionInRoom52() {
+        SetPosition(new Vector2(2056f, -225f));
+        IsFollowingPlayer = false;
+        _target = null;
+        _headSpriteRenderer.flipX = true;
+        SetRedEyes();
+    }
+
+    public void SetStartingPositionInRoom48() {
+        SetPosition(new Vector2(1999.875f, -230.75f));
         IsFollowingPlayer = false;
         _target = null;
         SetRedEyes();
@@ -190,14 +198,6 @@ public class CaveAvatar : MonoBehaviour
     private void SetRedEyes() {
         _headSpriteRenderer.color = Color.white;
         _animator.SetLayerWeight(1, 1);
-    }
-
-    public void SetStartingPositionInRoom31() {
-        SetPosition(new Vector2(2056f, -225f));
-        IsFollowingPlayer = false;
-        _target = null;
-        _headSpriteRenderer.flipX = true;
-        SetRedEyes();
     }
 
     public void SetStartingPositionInRoom32() {

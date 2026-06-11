@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 public class C26CutsceneManager : MonoBehaviour, ISkippable
 {
     [SerializeField] private GameEventId _cutsceneCompleted;
+    [SerializeField] private GameEventId _sootFliedOffInCave48;
     [SerializeField] private GameObject _backgroundBlobs;
     [SerializeField] private Transform _sootFlyTarget1;
     [SerializeField] private Transform _sootFlyTarget2;
@@ -52,6 +53,11 @@ public class C26CutsceneManager : MonoBehaviour, ISkippable
 
     void Start()
     {
+        if(GameManager.obj.HasEvent(_cutsceneCompleted)) {
+            if(!CaveAvatar.obj.IsFollowingPlayer && !GameManager.obj.HasEvent(_sootFliedOffInCave48))
+                CaveAvatar.obj.SetStartingPositionInRoom48();
+            return;
+        }
         if (_dialogueController != null)
         {
             _dialogueController.OnDialogueClosed += OnDialogueCompleted;

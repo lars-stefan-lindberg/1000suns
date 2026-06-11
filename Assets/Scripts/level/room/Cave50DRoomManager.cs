@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using FMODUnity;
 using UnityEngine;
@@ -38,6 +37,8 @@ public class Cave50DRoomManager : MonoBehaviour
         //All loading should be completed. Start fading in room
         SceneFadeManager.obj.StartFadeIn(0.5f);
         SoundFXManager.obj.Play2D(_introStinger);
+        yield return new WaitForSeconds(2.5f);
+        PlayerBlob.obj.SetNewPowerRecevied();
         yield return new WaitForSeconds(2f);
         PlayerBlobMovement.obj.UnFreeze();
     }

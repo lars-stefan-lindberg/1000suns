@@ -57,6 +57,12 @@ public class InputIconManager : MonoBehaviour
     //Assumes there's a current input device set
     public string GetSpriteNameForAction(InputActionReference actionReference)
     {
+        return GetSpriteNameForAction(actionReference, PowerUpScreen.Direction.None);
+    }
+    
+    //Assumes there's a current input device set
+    public string GetSpriteNameForAction(InputActionReference actionReference, PowerUpScreen.Direction direction)
+    {
         var action = actionReference.action;
         var currentDevice = InputDeviceListener.obj.GetCurrentInputDevice();
         
@@ -87,7 +93,41 @@ public class InputIconManager : MonoBehaviour
         }
         
         string iconName = GetIconName(controlPath);
+        
+        // If a direction is specified, append it to the icon name
+        if (direction != PowerUpScreen.Direction.None)
+        {
+            iconName = GetDirectionalIconName(iconName, direction);
+        }
+        
         return iconName;
+    }
+    
+    private string GetDirectionalIconName(string baseIconName, PowerUpScreen.Direction direction)
+    {
+        // Map direction to common icon naming conventions
+        string directionSuffix = direction switch
+        {
+            PowerUpScreen.Direction.Up => "up",
+            PowerUpScreen.Direction.Down => "down",
+            PowerUpScreen.Direction.Left => "left",
+            PowerUpScreen.Direction.Right => "right",
+            _ => ""
+        };
+        
+        // Handle common directional input naming patterns
+        // For D-pad: dpad -> dpadUp, dpadDown, etc.
+        // For arrow keys: might already be specific (upArrow) or generic (arrow)
+        if (baseIconName.ToLower().Contains("dpad"))
+        {
+            return $"{directionSuffix}Dpad";
+        }
+        else //Assuming keyboard
+        {
+            // If it's already a specific arrow (upArrow), return as-is
+            // Otherwise append direction
+            return $"{directionSuffix}Arrow";
+        }
     }
 
     void OnDestroy() {

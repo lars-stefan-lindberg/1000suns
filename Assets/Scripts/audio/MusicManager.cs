@@ -71,6 +71,7 @@ public class MusicManager : MonoBehaviour
     }
 
     public MusicTrack CurrentTrack => currentTrack;
+    public EventInstance CurrentInstance => currentInstance;
 
     public void PlayById(string trackId)
     {

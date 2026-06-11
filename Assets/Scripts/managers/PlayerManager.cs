@@ -101,19 +101,15 @@ public class PlayerManager : MonoBehaviour
 
     public void KillPlayerGeneric(PlayerType playerType, float genericDeathAnimationTime) {
         if(playerType == PlayerType.HUMAN) {
-            if(PlayerMovement.obj != null && PlayerMovement.obj.gameObject.activeSelf) {
-                PlayerPush.obj.ResetBuiltUpPower();
-                PlayerMovement.obj.Freeze(genericDeathAnimationTime);
-                Player.obj.FadeOutPlayerLight();
-                Player.obj.PlayGenericDeathAnimation();
-            }
-            else if(PlayerBlobMovement.obj != null && PlayerBlobMovement.obj.gameObject.activeSelf) {
-                PlayerBlobMovement.obj.Freeze(genericDeathAnimationTime);
-                PlayerBlob.obj.FadeOutPlayerLight();
-                PlayerBlob.obj.PlayGenericDeathAnimation();
-            }
-        }
-        else {
+            PlayerPush.obj.ResetBuiltUpPower();
+            PlayerMovement.obj.Freeze(genericDeathAnimationTime);
+            Player.obj.FadeOutPlayerLight();
+            Player.obj.PlayGenericDeathAnimation();
+        } else if(playerType == PlayerType.BLOB) {
+            PlayerBlobMovement.obj.Freeze(genericDeathAnimationTime);
+            PlayerBlob.obj.FadeOutPlayerLight();
+            PlayerBlob.obj.PlayGenericDeathAnimation();
+        } else if(playerType == PlayerType.SHADOW_TWIN) {
             ShadowTwinPull.obj.CancelPulling();
             ShadowTwinMovement.obj.Freeze(genericDeathAnimationTime);
             ShadowTwinPlayer.obj.FadeOutPlayerLight();
