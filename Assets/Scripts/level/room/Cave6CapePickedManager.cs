@@ -17,6 +17,8 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
     [SerializeField] private MusicTrack _musicTrack;
     [SerializeField] private EventReference _powerupFanfareStinger;
     [SerializeField] private EventReference _capePickedRoarSfx;
+    [SerializeField] private float _lightFadeInSpeed = 1.5f;
+    [SerializeField] private float _lightFadeOutSpeed = 2f;
     
     private EventInstance _capePickedRoarInstance;
     private Coroutine _cutsceneCoroutine;
@@ -79,9 +81,12 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
         PauseMenuManager.obj.RegisterSkippable(this);
 
         PlayerMovement.obj.Freeze();
+        Player.obj.SetAnimatorSpeed(0);
         FadeOutAndStopAmbience();
 
         StartSoundEvent(_capePickedRoarSfx, ref _capePickedRoarInstance);
+        SceneFadeManager.obj.SetSortingLayer("Player", 6);
+        SceneFadeManager.obj.StartWhiteFadeOut(_lightFadeOutSpeed);
 
         List<Animator> animators = new List<Animator>();
         foreach(var blob in _blobs) {
@@ -95,8 +100,10 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
 
         yield return new WaitForSeconds(0.2f);
 
-        SceneFadeManager.obj.StartWhiteFadeOut();
-        yield return new WaitForSeconds(2.5f);
+        
+        yield return new WaitForSeconds(1.5f);
+        Player.obj.StartAnimator();
+        yield return new WaitForSeconds(1f);
         Player.obj.SetAnimatorLayerAndHasCape(true);
         PlayerPowersManager.obj.EliCanForcePush = true;
         Player.obj.transform.position = _finalPlayerPosition.position;
@@ -105,9 +112,11 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
         PlayerMovement.obj.CancelJumping();
         PlayerMovement.obj.SetNewPower();
         _cape.SetActive(false);
-        SceneFadeManager.obj.StartFadeIn();
+        SceneFadeManager.obj.StartFadeIn(_lightFadeInSpeed);
         
         yield return new WaitForSeconds(3.3f);
+
+        SceneFadeManager.obj.RestoreLayer();
         
         List<SpriteRenderer> blobSprites = new();
         foreach(var blob in _blobs) {

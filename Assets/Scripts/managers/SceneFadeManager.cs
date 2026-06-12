@@ -13,6 +13,7 @@ public class SceneFadeManager : MonoBehaviour
 
     [SerializeField] private Color _fadeOutStartColor;
     [SerializeField] private Color _whiteColor = new Color(0.906f, 0.906f, 0.906f, 1f);
+    [SerializeField] private Canvas _canvas;
     
     private Color _defaultColor;
     private bool _shouldResetToDefault = false;
@@ -20,15 +21,17 @@ public class SceneFadeManager : MonoBehaviour
     public bool IsFadingOut { get; private set; }
     public bool IsFadingIn { get; private set; }
 
+    private string _canvasSortingLayerName;
+    private int _canvasSortingOrder;
+
     void Awake() {
         obj = this;
 
         _defaultColor = _fadeOutStartColor;
         _fadeOutStartColor.a = 0f;
 
-        Canvas canvas = GetComponent<Canvas>();
-        canvas.worldCamera = Camera.main;
-        canvas.sortingLayerName = "UI";
+        _canvasSortingLayerName = _canvas.sortingLayerName;
+        _canvasSortingOrder = _canvas.sortingOrder;
     }
 
     void Update() {
@@ -123,5 +126,16 @@ public class SceneFadeManager : MonoBehaviour
         IsFadingOut = false;
         IsFadingIn = false;
         _shouldResetToDefault = false;
+        RestoreLayer();
+    }
+
+    public void SetSortingLayer(string layerName, int sortingOrder) {
+        _canvas.sortingLayerName = layerName;
+        _canvas.sortingOrder = sortingOrder;
+    }
+
+    public void RestoreLayer() {
+        _canvas.sortingLayerName = _canvasSortingLayerName;
+        _canvas.sortingOrder = _canvasSortingOrder;
     }
 }

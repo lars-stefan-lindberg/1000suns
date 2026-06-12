@@ -37,6 +37,7 @@ public class DialogueController : MonoBehaviour
     [SerializeField] private float _blinkMinDelay = 2f;
     [SerializeField] private float _blinkMaxDelay = 6f;
     [SerializeField] [Range(0f, 1f)] private float _doubleBlinkChance = 0.15f;
+    [SerializeField] private float _emotionChangeCooldown = 1.5f;
     
     [Header("Dialogue Timing")]
     [SerializeField] private float _firstParagraphDelay = 0.3f;
@@ -61,6 +62,8 @@ public class DialogueController : MonoBehaviour
     private DialogueAudioAnchor _audioAnchor;
     private bool _isDialogueLeft;
     private Coroutine _blinkCoroutine;
+    private DialogueContent.Emotion _previousEyesEmotion;
+    private float _blinkCooldownTimer = 0f;
 
     void Awake() {
         _typeWriter.onTextShowed.AddListener(() => {
@@ -72,6 +75,12 @@ public class DialogueController : MonoBehaviour
             _continueIcon.SetActive(false);
         });
         _dialogueAudio = GetComponent<DialogueAudio>();
+    }
+    
+    void Update() {
+        if(_blinkCooldownTimer > 0f) {
+            _blinkCooldownTimer -= Time.deltaTime;
+        }
     }
 
     //In longer conversations we only want to play open sfx at the start of the conversation. Use playOpenSfx to control this.
@@ -135,6 +144,8 @@ public class DialogueController : MonoBehaviour
         DialogueContent.Emotion firstEyesExpression = dialogueContent.paragraphEntries[0].eyesExpression;
         _portraitInterface.SwitchFaceExpression(firstFaceExpression.ToString());
         _portraitInterface.SwitchEyesExpression(firstEyesExpression.ToString());
+        _previousEyesEmotion = firstEyesExpression;
+        _blinkCooldownTimer = 0f;
         
         _isDialogueLeft = dialogueContent.IsLeft;
         _portraitInterface.IsLeft = dialogueContent.IsLeft;
@@ -194,11 +205,17 @@ public class DialogueController : MonoBehaviour
             try {
                 DialogueContent.ParagraphEntry paragraphEntry = _paragraphs.Dequeue();
                 
-                ResetToIdleState();
-                StartBlinking();
-                
                 DialogueContent.Emotion faceExpression = paragraphEntry.faceExpression;
                 DialogueContent.Emotion eyesExpression = paragraphEntry.eyesExpression;
+                
+                bool eyesEmotionChanged = _previousEyesEmotion != eyesExpression;
+                
+                if(eyesEmotionChanged) {
+                    ResetToIdleState();
+                    _blinkCooldownTimer = _emotionChangeCooldown;
+                    _previousEyesEmotion = eyesExpression;
+                }
+                
                 _portraitInterface.SwitchFaceExpression(faceExpression.ToString());
                 _portraitInterface.SwitchEyesExpression(eyesExpression.ToString());
                 
@@ -385,6 +402,10 @@ public class DialogueController : MonoBehaviour
             yield return new WaitForSeconds(delay);
             
             if(_portraitInterface != null) {
+                while(_blinkCooldownTimer > 0f) {
+                    yield return null;
+                }
+                
                 float roll = UnityEngine.Random.value;
                 if(roll < _doubleBlinkChance) {
                     _portraitInterface.DoubleBlink();
