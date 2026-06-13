@@ -920,11 +920,13 @@ public class ShadowTwinMovement : MonoBehaviour
         Physics2D.queriesStartInColliders = _cachedQueryStartInColliders;
     }
 
-    private float stepHeight = 0.02f;
-    private float stepSmooth = 0.02f;
-    private float feetCastOffset = 0.05f; //Sometimes player collider hovers slightly above ground. If casting from feet we need to do it lower down than expected
-    private float microLedgeForwardCastDistance = 0.1f;
+    public float stepHeight = 0.02f;
+    public float stepSmooth = 0.02f;
+    public float feetCastOffset = 0.05f; //Sometimes player collider hovers slightly above ground. If casting from feet we need to do it lower down than expected
+    public float microLedgeForwardCastDistance = 0.1f;
     private void HandleMicroLedges() {
+        if(!isGrounded) return;
+        
         if(_movementInput.x > 0) {
             bool wallHit = Physics2D.Raycast(_collider.bounds.center + new Vector3(_collider.size.x / 2, -_collider.size.y / 2 - feetCastOffset), Vector2.right, microLedgeForwardCastDistance, _groundLayerMasks);
             if(wallHit) {
@@ -1263,6 +1265,23 @@ public class ShadowTwinMovement : MonoBehaviour
         Gizmos.DrawLine(transform.position, transform.position + Vector3.down * _stats.GrounderDistance);
         Gizmos.color = Color.yellow;
         Gizmos.DrawLine(transform.position, transform.position + Vector3.up * _stats.RoofDistance);
+        
+        if(_collider != null) {
+            Vector3 rightFootRayStart = _collider.bounds.center + new Vector3(_collider.size.x / 2, -_collider.size.y / 2 - feetCastOffset);
+            Vector3 rightStepRayStart = _collider.bounds.center + new Vector3(_collider.size.x / 2, -_collider.size.y / 2 + stepHeight);
+            Vector3 leftFootRayStart = _collider.bounds.center + new Vector3(-_collider.size.x / 2, -_collider.size.y / 2 - feetCastOffset);
+            Vector3 leftStepRayStart = _collider.bounds.center + new Vector3(-_collider.size.x / 2, -_collider.size.y / 2 + stepHeight);
+            
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawLine(rightFootRayStart, rightFootRayStart + Vector3.right * microLedgeForwardCastDistance);
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawLine(rightStepRayStart, rightStepRayStart + Vector3.right * microLedgeForwardCastDistance);
+            
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawLine(leftFootRayStart, leftFootRayStart + Vector3.left * microLedgeForwardCastDistance);
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawLine(leftStepRayStart, leftStepRayStart + Vector3.left * microLedgeForwardCastDistance);
+        }
     }
 
 #if UNITY_EDITOR
