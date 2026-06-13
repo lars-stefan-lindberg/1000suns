@@ -19,6 +19,7 @@ public class Spike : MonoBehaviour
     private float _respawnTimer = 0f;
     public float spawnTime = 3f;
     private Color _fadeStartColor;
+    [SerializeField] private bool _playerDetectionEnabled = true;
     [Range(0.1f, 10f), SerializeField] private float _fadeSpeed = 5f;
     [SerializeField] private GameObject _dustParticles;
     [SerializeField] private EventReference _fallStartSfx;
@@ -53,7 +54,7 @@ public class Spike : MonoBehaviour
         // Debug.DrawRay(new Vector2(transform.position.x - _raycastOffsetX, transform.position.y + _raycastOffsetY), Vector3.down * (castDistance + _raycastOffsetY), Color.red);
         // Debug.DrawRay(new Vector2(transform.position.x + _raycastOffsetX, transform.position.y + _raycastOffsetY), Vector3.down * (castDistance + _raycastOffsetY), Color.red);
         Debug.DrawRay(new Vector2(transform.position.x, transform.position.y + _raycastOffsetY), Vector3.down * (castDistance + _raycastOffsetY), Color.red);
-        if (!_isFalling && !_hasDetectedPlayer) {
+        if (_playerDetectionEnabled && !_isFalling && !_hasDetectedPlayer) {
             //RaycastHit2D hitLeft = Physics2D.Raycast(new Vector2(transform.position.x - _raycastOffsetX, transform.position.y + _raycastOffsetY), Vector3.down, castDistance + _raycastOffsetY);
             //RaycastHit2D hitRight = Physics2D.Raycast(new Vector2(transform.position.x + _raycastOffsetX, transform.position.y + _raycastOffsetY), Vector3.down, castDistance + _raycastOffsetY);
             RaycastHit2D hitRight = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + _raycastOffsetY), Vector3.down, castDistance + _raycastOffsetY);
@@ -179,5 +180,13 @@ public class Spike : MonoBehaviour
         _collider.enabled = true;
         _hasDetectedPlayer = false;
         hitLiquid = false;
+    }
+
+    public void EnablePlayerDetection() {
+        _playerDetectionEnabled = true;
+    }
+
+    public void DisablePlayerDetection() {
+        _playerDetectionEnabled = false;
     }
 }

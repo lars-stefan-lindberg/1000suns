@@ -8,8 +8,10 @@ public class FirstCaveMiniBossManager : MonoBehaviour
     [SerializeField] private SpawnPoint _spawnPoint;
     [SerializeField] private MusicTrack _bossTrack;
     [SerializeField] private GameEventId _bossCompleted;
+    [SerializeField] private GameEventId _bossFightStarted;
     [SerializeField] private GameObject _bossGameObjects;
-    private bool _isBossFightStarted = false;
+    [SerializeField] private Prisoner[] _prisoners;
+    [SerializeField] private Spike[] _fallingSpikes;
 
     void Start() {
         if(!GameManager.obj.HasEvent(_bossCompleted))
@@ -24,17 +26,29 @@ public class FirstCaveMiniBossManager : MonoBehaviour
 
     public void StartBossFight() {
         if(!GameManager.obj.HasEvent(_bossCompleted)) {
-            if(!_isBossFightStarted) {
-                GameManager.obj.SetCurrentSpawnPointId(_spawnPoint.SpawnPointID);
-                StartCoroutine(DelayedStartMusic());
-                SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
-                _isBossFightStarted = true;
-            } 
+            foreach(Spike spike in _fallingSpikes) {
+                spike.EnablePlayerDetection();
+            }
+            if(!GameManager.obj.HasEvent(_bossFightStarted)) {
+                foreach(Prisoner prisoner in _prisoners) {
+                    prisoner.isStatic = true;
+                    prisoner.gameObject.SetActive(true);
+                }
+                StartCoroutine(DelayedStart());
+            } else {
+                foreach(Prisoner prisoner in _prisoners)
+                    prisoner.gameObject.SetActive(true);
+            }
         }
     }
 
-    private IEnumerator DelayedStartMusic() {
-        yield return new WaitForSeconds(1.2f);
+    private IEnumerator DelayedStart() {
+        yield return new WaitForSeconds(1.7f);
+        foreach(Prisoner prisoner in _prisoners)
+            prisoner.isStatic = false;
         MusicManager.obj.Play(_bossTrack);
+        GameManager.obj.SetCurrentSpawnPointId(_spawnPoint.SpawnPointID);
+        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
+        GameManager.obj.RegisterEvent(_bossFightStarted);
     }
 }
