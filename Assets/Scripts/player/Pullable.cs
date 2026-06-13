@@ -53,7 +53,7 @@ public class Pullable : MonoBehaviour
     private float _previousVelocityMagnitude = 0f;
     private bool _heldParticlesPlaying = false;
 
-    private void Awake() {
+    private void Start() {
         IsPulled = false;
         _material = _renderer.material;
         _material.SetFloat("_SineGlowFade", 0f);
