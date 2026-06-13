@@ -54,7 +54,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 2
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: adaf2fe0281eb491281a7cffd2c8734c, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -97,7 +97,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.03126967, y: -0.008024216}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -108,7 +108,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 3.0559084, y: 1.9839516}
+  m_Size: {x: 3, y: 1.875}
   m_EdgeRadius: 0
 --- !u!114 &439911554970688327
 MonoBehaviour:
@@ -124,10 +124,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   groundLayer:
     serializedVersion: 2
-    m_Bits: 392
+    m_Bits: 456
   _wallCheckCastDistance: 1.05
+  _minVelocityForWallHit: 5
+  _wallDetectionDistance: 0.15
+  _wallDetectionBoxWidthMultiplier: 0.7
+  _showWallDetectionGizmo: 1
   basePushPower: 7.2
   deceleration: 20
+  _blockSizeOffSet: 1.3
 --- !u!114 &2268186556828748273
 MonoBehaviour:
   m_ObjectHideFlags: 0
