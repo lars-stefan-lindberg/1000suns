@@ -44,8 +44,9 @@ public class ShadowTwinMovement : MonoBehaviour
     public float dashDecelerationTime = 160f;
     public float initialDashSpeed = 40f;
 
+    //Moveables are used to move the player along with the moveable. Like if a floating platform or block is moving and the player is on top
     public bool isOnMoveable = false;
-    public Rigidbody2D moveableRigidBody;
+    public Rigidbody2D moveableRigidbody;
     public JumpThroughPlatform jumpThroughPlatform;
     private SharedCharacterAudio _sharedPlayerAudio;
     private DeeAudio _deeAudio;
@@ -56,7 +57,6 @@ public class ShadowTwinMovement : MonoBehaviour
         _collider = GetComponent<BoxCollider2D>();
         _animator = GetComponentInChildren<Animator>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        _moveableLayerMasks = LayerMask.GetMask("JumpThroughs", "Block");
         _ceilingLayerMasks = LayerMask.GetMask("Ground");
         _playerInput = GetComponent<PlayerInput>();
         _sharedPlayerAudio = GetComponent<SharedCharacterAudio>();
@@ -163,9 +163,9 @@ public class ShadowTwinMovement : MonoBehaviour
             Projectile projectile = collision.gameObject.GetComponent<Projectile>();
             bool hitFromTheLeft = PlayerManager.obj.GetPlayerTransform().position.x < ShadowTwinPlayer.obj.rigidBody.position.x;
 
-            if(isOnMoveable && moveableRigidBody.CompareTag("FloatingPlatform")) {
-                if(PlayerMovement.obj.moveableRigidBody != moveableRigidBody) {
-                    FloatyPlatform floatyPlatform = moveableRigidBody.GetComponent<FloatyPlatform>();
+            if(isOnMoveable && moveableRigidbody.CompareTag("FloatingPlatform")) {
+                if(PlayerMovement.obj.moveableRigidbody != moveableRigidbody) {
+                    FloatyPlatform floatyPlatform = moveableRigidbody.GetComponent<FloatyPlatform>();
                     floatyPlatform.MovePlatform(hitFromTheLeft, projectile.power);
                 }
                 //else, if both players on same platform, don't apply any force to shadow twin, or the platform. Let PlayerPush handle it
@@ -862,6 +862,13 @@ public class ShadowTwinMovement : MonoBehaviour
 
         if(groundHit) {
             surface = SurfaceTypeManager.GetSurfaceType(groundRaycastResult.collider.gameObject.tag);
+            if(!isOnMoveable) {
+                Moveable moveable = groundRaycastResult.collider.GetComponent<Moveable>();
+                if(moveable != null) {
+                    isOnMoveable = true;
+                    moveableRigidbody = moveable.GetRigidbody();
+                }
+            }
         }
         
         //Corner case when spawning
@@ -872,26 +879,14 @@ public class ShadowTwinMovement : MonoBehaviour
                 StartCoroutine(SetStartingOnGroundToFalse());
             }
         }
- 
-        RaycastHit2D moveableHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, _moveableLayerMasks);
-        bool ceilingHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
 
-        if(moveableHit) {
-            groundHit = true;
-            isOnMoveable = true;
-            surface = SurfaceTypeManager.GetSurfaceType(moveableHit.collider.gameObject.tag);
-            if(moveableRigidBody == null) {
-                moveableRigidBody = moveableHit.collider.gameObject.GetComponentInParent<Rigidbody2D>();
+        if(!isGrounded) {
+            bool ceilingHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
+            // Hit a Ceiling
+            if (ceilingHit && !groundHit)
+            {
+                HandleCeilingCollisions();
             }
-        } else {
-            isOnMoveable = false;
-            moveableRigidBody = null;
-        }
-
-        // Hit a Ceiling
-        if (ceilingHit && !groundHit)
-        {
-            HandleCeilingCollisions();
         }
 
         // Landed on the Ground
@@ -912,6 +907,7 @@ public class ShadowTwinMovement : MonoBehaviour
         {
             isGrounded = false;
             isOnMoveable = false;
+            moveableRigidbody = null;
             _frameLeftGrounded = _time;
         }
 
@@ -1196,13 +1192,13 @@ public class ShadowTwinMovement : MonoBehaviour
             if (_movementInput.x == 0)
             {
                 var deceleration = isGrounded ? _stats.GroundDeceleration : _stats.AirDeceleration;
-                _frameVelocity.x = isOnMoveable && moveableRigidBody != null ?
-                    moveableRigidBody.velocity.x :
+                _frameVelocity.x = isOnMoveable && moveableRigidbody != null ?
+                    moveableRigidbody.velocity.x :
                     Mathf.MoveTowards(_frameVelocity.x, 0, deceleration * Time.fixedDeltaTime);
             }
             else
             {
-                _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, (_movementInput.x * _stats.MaxSpeed) + (isOnMoveable && moveableRigidBody != null ? moveableRigidBody.velocity.x : 0), _stats.Acceleration * Time.fixedDeltaTime);
+                _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, (_movementInput.x * _stats.MaxSpeed) + (isOnMoveable && moveableRigidbody != null ? moveableRigidbody.velocity.x : 0), _stats.Acceleration * Time.fixedDeltaTime);
             }
         }
 
@@ -1219,8 +1215,8 @@ public class ShadowTwinMovement : MonoBehaviour
 
     private void HandleGravity()
     {
-        if(isOnMoveable && moveableRigidBody != null) {
-            _frameVelocity.y = moveableRigidBody.velocity.y;
+        if(isOnMoveable && moveableRigidbody != null) {
+            _frameVelocity.y = moveableRigidbody.velocity.y;
             return;
         }
         if (isGrounded && _frameVelocity.y <= 0f)

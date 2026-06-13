@@ -19,7 +19,7 @@ public class PlayerBlobMovement : MonoBehaviour
     [SerializeField] private ScriptableStats _stats;
     [SerializeField] private LayerMask _groundLayerMasks;
     public bool isOnMoveable = false;
-    public Rigidbody2D moveableRigidBody;
+    public Rigidbody2D moveableRigidbody;
     private LayerMask _moveableLayerMasks;
     private LayerMask _ceilingLayerMasks;
 
@@ -472,6 +472,16 @@ public class PlayerBlobMovement : MonoBehaviour
 
         if(groundHit) {
             surface = SurfaceTypeManager.GetSurfaceType(groundRaycastResult.collider.gameObject.tag);
+            if(!isOnMoveable) {
+                Moveable moveable = groundRaycastResult.collider.GetComponent<Moveable>();
+                if(moveable != null) {
+                    isOnMoveable = true;
+                    moveableRigidbody = moveable.GetRigidbody();
+                    if(groundRaycastResult.collider.gameObject.CompareTag("FloatingPlatform")) {
+                        PlayerPush.obj.platform = groundRaycastResult.collider.gameObject.GetComponentInParent<FloatyPlatform>();
+                    }
+                }
+            }
         }
 
         //Corner case when spawning
@@ -481,30 +491,16 @@ public class PlayerBlobMovement : MonoBehaviour
                 _startingOnGroundFalseCoroutineStarted = true;
                 StartCoroutine(SetStartingOnGroundToFalse());
             }
-        } else {
-            RaycastHit2D moveableHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, _moveableLayerMasks);
+        }
+
+        if(!isGrounded) {
             bool ceilingHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
-
-            if(moveableHit) {
-                groundHit = true;
-                isOnMoveable = true;
-                surface = SurfaceTypeManager.GetSurfaceType(moveableHit.collider.gameObject.tag);
-                if(moveableRigidBody == null) {
-                    moveableRigidBody = moveableHit.collider.gameObject.GetComponentInParent<Rigidbody2D>();
-                }
-            } else {
-                isOnMoveable = false;
-                moveableRigidBody = null;
-                PlayerPush.obj.platform = null;
-            }
-
             // Hit a Ceiling
             if (ceilingHit && !groundHit)
             {
                 HandleCeilingCollisions();
             }
         }
-
 
         // Landed on the Ground
         if (!isGrounded && groundHit && PlayerBlob.obj.rigidBody.velocity.y <= 0.05f)
@@ -525,6 +521,8 @@ public class PlayerBlobMovement : MonoBehaviour
         {
             isGrounded = false;
             isOnMoveable = false;
+            moveableRigidbody = null;
+            PlayerPush.obj.platform = null;
             _frameLeftGrounded = _time;
         }
 
@@ -714,19 +712,19 @@ public class PlayerBlobMovement : MonoBehaviour
         if (_movementInput.x == 0)
         {
             var deceleration = isGrounded ? _stats.GroundDeceleration : _stats.AirDeceleration;
-            _frameVelocity.x = isOnMoveable && moveableRigidBody != null ?
-                        moveableRigidBody.velocity.x :Mathf.MoveTowards(_frameVelocity.x, boost, deceleration * Time.fixedDeltaTime);
+            _frameVelocity.x = isOnMoveable && moveableRigidbody != null ?
+                        moveableRigidbody.velocity.x :Mathf.MoveTowards(_frameVelocity.x, boost, deceleration * Time.fixedDeltaTime);
         }
         else
         {
-            _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, (_movementInput.x * _stats.MaxSpeed) + + (isOnMoveable && moveableRigidBody != null ? moveableRigidBody.velocity.x : 0) + boost, _stats.Acceleration * Time.fixedDeltaTime);
+            _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, (_movementInput.x * _stats.MaxSpeed) + + (isOnMoveable && moveableRigidbody != null ? moveableRigidbody.velocity.x : 0) + boost, _stats.Acceleration * Time.fixedDeltaTime);
         }
     }
 
     private void HandleGravity()
     {
-        if(isOnMoveable && moveableRigidBody != null) {
-            _frameVelocity.y = moveableRigidBody.velocity.y;
+        if(isOnMoveable && moveableRigidbody != null) {
+            _frameVelocity.y = moveableRigidbody.velocity.y;
             return;
         }
         if (isGrounded && _frameVelocity.y <= 0f)

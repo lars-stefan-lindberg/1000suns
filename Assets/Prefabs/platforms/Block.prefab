@@ -157,6 +157,7 @@ GameObject:
   - component: {fileID: 6394235449312190256}
   - component: {fileID: 6963575288791899999}
   - component: {fileID: 7849084632063855787}
+  - component: {fileID: 9073241685110087293}
   m_Layer: 7
   m_Name: Collider
   m_TagString: Rock
@@ -250,6 +251,19 @@ MonoBehaviour:
   _maxBrightness: 3
   _pulseFrequency: 1
   _velocityThreshold: 0.1
+--- !u!114 &9073241685110087293
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1974178393461014631}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: deafed9a41429455fb9a4c359eac0443, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rigidbody: {fileID: 9124832465662887608}
 --- !u!1 &3178276720509740779
 GameObject:
   m_ObjectHideFlags: 0

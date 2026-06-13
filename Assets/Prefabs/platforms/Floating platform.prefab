@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6122612801539513113}
   - component: {fileID: 3978126990223079411}
   - component: {fileID: 1870900645774479740}
+  - component: {fileID: 1506334872095624355}
   m_Layer: 6
   m_Name: SolidCollider
   m_TagString: FloatingPlatform
@@ -124,6 +125,19 @@ MonoBehaviour:
   _maxBrightness: 3
   _pulseFrequency: 1
   _velocityThreshold: 0.1
+--- !u!114 &1506334872095624355
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 254091738711683545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: deafed9a41429455fb9a4c359eac0443, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rigidbody: {fileID: 9018766785960175851}
 --- !u!1 &839326592168092777
 GameObject:
   m_ObjectHideFlags: 0
@@ -457,6 +471,8 @@ MonoBehaviour:
   _playerOffset: 0.1
   somethingToTheRight: 0
   somethingToTheLeft: 0
+  somethingAbove: 0
+  somethingBelow: 0
 --- !u!61 &5273635399918544522
 BoxCollider2D:
   m_ObjectHideFlags: 0

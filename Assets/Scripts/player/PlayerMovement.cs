@@ -5,7 +5,7 @@ using FMOD.Studio;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerMovement : MonoBehaviour, IPlayerController
+public class PlayerMovement : MonoBehaviour
 {
     // --- Jump Kick Start fields ---
     // private bool _isJumpKickActive = false;
@@ -56,18 +56,14 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public float dashDecelerationTime = 160f;
     public float initialDashSpeed = 40f;
 
+    //Moveables are used to move the player along with the moveable. Like if a floating platform or block is moving and the player is on top
     public bool isOnMoveable = false;
-    public Rigidbody2D moveableRigidBody;
+    public Rigidbody2D moveableRigidbody;
     public JumpThroughPlatform jumpThroughPlatform;
     public bool IsControlledProgrammatically = false;
 
     private bool _isWalking = false;
     [SerializeField] private float _walkSpeed = 2f;
-
-    #region Interface
-    public event Action<bool, float> GroundedChanged;
-    public event Action Jumped;
-    #endregion
 
     private void Awake()
     {
@@ -76,7 +72,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _animator = GetComponentInChildren<Animator>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         _powerJumpForce = _stats.JumpPower * 2f;
-        _moveableLayerMasks = LayerMask.GetMask("JumpThroughs", "Block");
         _ceilingLayerMasks = LayerMask.GetMask("Ground");
         _playerInput = GetComponent<PlayerInput>();
         _sharedPlayerAudio = GetComponent<SharedCharacterAudio>();
@@ -943,6 +938,16 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
         if(groundHit) {
             surface = SurfaceTypeManager.GetSurfaceType(groundRaycastResult.collider.gameObject.tag);
+            if(!isOnMoveable) {
+                Moveable moveable = groundRaycastResult.collider.GetComponent<Moveable>();
+                if(moveable != null) {
+                    isOnMoveable = true;
+                    moveableRigidbody = moveable.GetRigidbody();
+                    if(groundRaycastResult.collider.gameObject.CompareTag("FloatingPlatform")) {
+                        PlayerPush.obj.platform = groundRaycastResult.collider.gameObject.GetComponentInParent<FloatyPlatform>();
+                    }
+                }
+            }
         }
         
         //Corner case when spawning
@@ -952,26 +957,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
                 _startingOnGroundFalseCoroutineStarted = true;
                 StartCoroutine(SetStartingOnGroundToFalse());
             }
-        } else {
-            RaycastHit2D moveableHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, _moveableLayerMasks);
+        }
+
+        if(!isGrounded) {
             bool ceilingHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
-
-            if(moveableHit) {
-                groundHit = true;
-                isOnMoveable = true;
-                surface = SurfaceTypeManager.GetSurfaceType(moveableHit.collider.gameObject.tag);
-                if(moveableRigidBody == null) {
-                    moveableRigidBody = moveableHit.collider.gameObject.GetComponentInParent<Rigidbody2D>();
-                    if(moveableHit.collider.gameObject.CompareTag("FloatingPlatform")) {
-                        PlayerPush.obj.platform = moveableHit.collider.gameObject.GetComponentInParent<FloatyPlatform>();
-                    }
-                }
-            } else {
-                isOnMoveable = false;
-                moveableRigidBody = null;
-                PlayerPush.obj.platform = null;
-            }
-
             // Hit a Ceiling
             if (ceilingHit && !groundHit)
             {
@@ -1000,16 +989,15 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
             //To avoid "double grounded". Sometimes when player barely reaches up on edge it gets grounded, but still has upwards velocity, and lands again.
             _frameVelocity.y = 0; 
-
-            GroundedChanged?.Invoke(true, Mathf.Abs(_frameVelocity.y));            
         }
         // Left the Ground
         else if (isGrounded && !groundHit)
         {
             isGrounded = false;
             isOnMoveable = false;
+            moveableRigidbody = null;
+            PlayerPush.obj.platform = null;
             _frameLeftGrounded = _time;
-            GroundedChanged?.Invoke(false, 0);
         }
 
         HandleMicroLedges();
@@ -1213,7 +1201,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         PlayerPush.obj.ExecuteShadowJumpVfx();
         _eliAudio.PlayForcePushJump();
         _ghostTrail.ShowGhosts();
-        Jumped?.Invoke();
         CancelPowerJumpCharge();
     }
 
@@ -1224,7 +1211,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         _timeJumpWasPressed = 0;
         _coyoteUsable = false;
         _frameVelocity.y = jumpPower;
-        Jumped?.Invoke();
         CancelPowerJumpCharge();
     }
 
@@ -1325,13 +1311,13 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
                 if (_movementInput.x == 0)
                 {
                     var deceleration = isGrounded ? _stats.GroundDeceleration : _stats.AirDeceleration;
-                    _frameVelocity.x = isOnMoveable && moveableRigidBody != null ?
-                        moveableRigidBody.velocity.x :
+                    _frameVelocity.x = isOnMoveable && moveableRigidbody != null ?
+                        moveableRigidbody.velocity.x :
                         Mathf.MoveTowards(_frameVelocity.x, 0, deceleration * Time.fixedDeltaTime);
                 }
                 else
                 {
-                    _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, (_movementInput.x * _stats.MaxSpeed) + (isOnMoveable && moveableRigidBody != null ? moveableRigidBody.velocity.x : 0), _stats.Acceleration * Time.fixedDeltaTime);
+                    _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, (_movementInput.x * _stats.MaxSpeed) + (isOnMoveable && moveableRigidbody != null ? moveableRigidbody.velocity.x : 0), _stats.Acceleration * Time.fixedDeltaTime);
                 }
             }
             
@@ -1388,8 +1374,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             _frameVelocity.y = 0;
             return;
         }
-        if(isOnMoveable && moveableRigidBody != null && !_isShadowJumping) {
-            _frameVelocity.y = moveableRigidBody.velocity.y;
+        if(isOnMoveable && moveableRigidbody != null && !_isShadowJumping) {
+            _frameVelocity.y = moveableRigidbody.velocity.y;
             return;
         }
         if (isGrounded && _frameVelocity.y <= 0f)
@@ -1455,11 +1441,4 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         if (_stats == null) Debug.LogWarning("Please assign a ScriptableStats asset to the Player Controller's Stats slot", this);
     }
 #endif
-}
-
-public interface IPlayerController
-{
-    public event Action<bool, float> GroundedChanged;
-
-    public event Action Jumped;
 }

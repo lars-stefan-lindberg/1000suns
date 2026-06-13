@@ -35,7 +35,7 @@ public class FallingPlatform : MonoBehaviour
         {
             isPlayerOnPlatform = true;
             _startFallCountDown = true;
-            PlayerMovement.obj.moveableRigidBody = _rigidBody;
+            PlayerMovement.obj.moveableRigidbody = _rigidBody;
         }
     }
 
@@ -44,7 +44,7 @@ public class FallingPlatform : MonoBehaviour
         if (collision.transform.CompareTag("Player"))
         {
             isPlayerOnPlatform = false;
-            PlayerMovement.obj.moveableRigidBody = null;
+            PlayerMovement.obj.moveableRigidbody = null;
         }
     }
 
