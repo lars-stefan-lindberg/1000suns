@@ -117,13 +117,13 @@ public class ShadowTwinPull : MonoBehaviour
         _pullableDetector = GetComponentInChildren<PullableDetector>();
         _deeAudio = GetComponent<DeeAudio>();
 
-        if (_pullRangeGuide != null)
-        {
-            Color c = _pullRangeGuide.color;
-            c.a = 0f;
-            _pullRangeGuide.color = c;
-            _pullRangeGuide.transform.localScale = new Vector3(_pullRangeGuideMinScale, _pullRangeGuideMinScale, 1f);
-        }
+        // if (_pullRangeGuide != null)
+        // {
+        //     Color c = _pullRangeGuide.color;
+        //     c.a = 0f;
+        //     _pullRangeGuide.color = c;
+        //     _pullRangeGuide.transform.localScale = new Vector3(_pullRangeGuideMinScale, _pullRangeGuideMinScale, 1f);
+        // }
     }
     
     private void OnValidate()
@@ -258,7 +258,7 @@ public class ShadowTwinPull : MonoBehaviour
         
         ResetPullableObject();
 
-        HidePullRangeGuide();
+        //HidePullRangeGuide();
     }
 
     private void ResetPullableObject() {
@@ -312,28 +312,28 @@ public class ShadowTwinPull : MonoBehaviour
             // Only enable control if player is grounded
             _isControllingObject = ShadowTwinMovement.obj.isGrounded;
 
-            ShowPullRangeGuide();
+            //ShowPullRangeGuide();
         }
     }
 
     private void ShowPullRangeGuide()
     {
-        if (_pullRangeGuide == null)
-            return;
+        // if (_pullRangeGuide == null)
+        //     return;
 
-        if (_pullRangeGuideFadeCoroutine != null)
-            StopCoroutine(_pullRangeGuideFadeCoroutine);
-        _pullRangeGuideFadeCoroutine = StartCoroutine(FadePullRangeGuide(_pullRangeGuideMaxAlpha));
+        // if (_pullRangeGuideFadeCoroutine != null)
+        //     StopCoroutine(_pullRangeGuideFadeCoroutine);
+        // _pullRangeGuideFadeCoroutine = StartCoroutine(FadePullRangeGuide(_pullRangeGuideMaxAlpha));
     }
 
     private void HidePullRangeGuide()
     {
-        if (_pullRangeGuide == null)
-            return;
+        // if (_pullRangeGuide == null)
+        //     return;
 
-        if (_pullRangeGuideFadeCoroutine != null)
-            StopCoroutine(_pullRangeGuideFadeCoroutine);
-        _pullRangeGuideFadeCoroutine = StartCoroutine(FadePullRangeGuide(0f));
+        // if (_pullRangeGuideFadeCoroutine != null)
+        //     StopCoroutine(_pullRangeGuideFadeCoroutine);
+        // _pullRangeGuideFadeCoroutine = StartCoroutine(FadePullRangeGuide(0f));
     }
 
     private IEnumerator FadePullRangeGuide(float targetAlpha)
@@ -364,9 +364,9 @@ public class ShadowTwinPull : MonoBehaviour
 
     private void ApplyPullRangeGuideScale(Transform guideTransform, float alpha)
     {
-        float t = _pullRangeGuideMaxAlpha > 0f ? Mathf.Clamp01(alpha / _pullRangeGuideMaxAlpha) : 1f;
-        float scale = Mathf.Lerp(_pullRangeGuideMinScale, 1f, t);
-        guideTransform.localScale = new Vector3(scale, scale, 1f);
+        // float t = _pullRangeGuideMaxAlpha > 0f ? Mathf.Clamp01(alpha / _pullRangeGuideMaxAlpha) : 1f;
+        // float scale = Mathf.Lerp(_pullRangeGuideMinScale, 1f, t);
+        // guideTransform.localScale = new Vector3(scale, scale, 1f);
     }
 
     private void FixedUpdate()
@@ -397,24 +397,6 @@ public class ShadowTwinPull : MonoBehaviour
         // Get movement input from ShadowTwinMovement
         Vector2 movementInput = ShadowTwinMovement.obj.GetMovementInput();
         
-        // If out of range, only allow movement that brings pullable back into box
-        if (_isOutOfRange && movementInput.magnitude > 0.01f)
-        {
-            Vector2 correctionDirection = Vector2.zero;
-            
-            if (offsetFromPlayer.x < -effectiveBoxHalfSize.x) correctionDirection.x = 1;  // too far left
-            if (offsetFromPlayer.x > effectiveBoxHalfSize.x) correctionDirection.x = -1;  // too far right
-            if (offsetFromPlayer.y < -effectiveBoxHalfSize.y) correctionDirection.y = 1;  // too far down
-            if (offsetFromPlayer.y > effectiveBoxHalfSize.y) correctionDirection.y = -1;  // too far up
-            
-            // Only allow input aligned with correction direction
-            if (correctionDirection.sqrMagnitude > 0.01f && 
-                Vector2.Dot(movementInput.normalized, correctionDirection.normalized) <= 0.01f)
-            {
-                movementInput = Vector2.zero;
-            }
-        }
-        
         // Check proximity using actual collider geometry so it adapts to each pullable's size.
         // This lets pullables pass tightly around the player without their colliders touching.
         // Broad-phase gate: skip the precise (costlier) Distance call unless the centers are
@@ -439,6 +421,24 @@ public class ShadowTwinPull : MonoBehaviour
         if (movementInput.magnitude > 0.01f)
         {
             Vector2 targetVelocity = movementInput.normalized * controlledObjectMaxSpeed;
+            
+            // If out of range, restrict target velocity to prevent moving further away
+            if (_isOutOfRange)
+            {
+                Vector2 restrictedVelocity = targetVelocity;
+                
+                // Block velocity that would increase distance from box on each axis independently
+                if (offsetFromPlayer.x < -effectiveBoxHalfSize.x && targetVelocity.x < 0)
+                    restrictedVelocity.x = 0;  // too far left, don't allow further left movement
+                if (offsetFromPlayer.x > effectiveBoxHalfSize.x && targetVelocity.x > 0)
+                    restrictedVelocity.x = 0;  // too far right, don't allow further right movement
+                if (offsetFromPlayer.y < -effectiveBoxHalfSize.y && targetVelocity.y < 0)
+                    restrictedVelocity.y = 0;  // too far down, don't allow further down movement
+                if (offsetFromPlayer.y > effectiveBoxHalfSize.y && targetVelocity.y > 0)
+                    restrictedVelocity.y = 0;  // too far up, don't allow further up movement
+                
+                targetVelocity = restrictedVelocity;
+            }
             Vector2 potentialVelocity = Vector2.MoveTowards(
                 _controlledObjectVelocity,
                 targetVelocity,
@@ -508,8 +508,24 @@ public class ShadowTwinPull : MonoBehaviour
             // No input - decelerate
             if (_isOutOfRange)
             {
-                // Out of range - force stop to prevent drifting further
-                _controlledObjectVelocity = Vector2.zero;
+                // Out of range - apply smooth deceleration but immediately stop movement that would go further away
+                Vector2 deceleratedVelocity = Vector2.MoveTowards(
+                    _controlledObjectVelocity,
+                    Vector2.zero,
+                    controlledObjectDeceleration * Time.fixedDeltaTime
+                );
+                
+                // Block any velocity that would increase distance from box on each axis
+                if (offsetFromPlayer.x < -effectiveBoxHalfSize.x && deceleratedVelocity.x < 0)
+                    deceleratedVelocity.x = 0;  // too far left, stop leftward drift
+                if (offsetFromPlayer.x > effectiveBoxHalfSize.x && deceleratedVelocity.x > 0)
+                    deceleratedVelocity.x = 0;  // too far right, stop rightward drift
+                if (offsetFromPlayer.y < -effectiveBoxHalfSize.y && deceleratedVelocity.y < 0)
+                    deceleratedVelocity.y = 0;  // too far down, stop downward drift
+                if (offsetFromPlayer.y > effectiveBoxHalfSize.y && deceleratedVelocity.y > 0)
+                    deceleratedVelocity.y = 0;  // too far up, stop upward drift
+                
+                _controlledObjectVelocity = deceleratedVelocity;
             }
             else
             {
@@ -601,7 +617,7 @@ public class ShadowTwinPull : MonoBehaviour
                 SetPullable(_highlightedPullable);
             }
             // Show the range guide whenever pull starts, even with no pullable grabbed
-            ShowPullRangeGuide();
+            //ShowPullRangeGuide();
             pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().HardCancel();
             _deeAudio.PlayForcePullStart(ref _forcePullStartSfxInstance);
             ShadowTwinPlayer.obj.StartChargeFlash();
