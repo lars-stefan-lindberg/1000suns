@@ -198,8 +198,10 @@ public class LevelManager : MonoBehaviour
                 if (!string.IsNullOrEmpty(data.currentMusicId) && MusicManager.obj != null) {
                     MusicManager.obj.PlayById(data.currentMusicId);
                 }
-                if (!string.IsNullOrEmpty(data.currentAmbienceId) && AmbienceManager.obj != null) {
-                    AmbienceManager.obj.PlayById(data.currentAmbienceId);
+                if (data.currentAmbienceIds != null && data.currentAmbienceIds.Count > 0 && AmbienceManager.obj != null) {
+                    foreach (string ambienceId in data.currentAmbienceIds) {
+                        AmbienceManager.obj.PlayById(ambienceId);
+                    }
                 }
             }
             SaveManager.obj.ConsumeRestoreAudioFlag();

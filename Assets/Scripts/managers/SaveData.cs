@@ -24,5 +24,5 @@ public class SaveData
     // Audio state at save time
     // If null or empty, no music/ambience was playing
     public string currentMusicId;
-    public string currentAmbienceId;
+    public List<string> currentAmbienceIds = new();
 }

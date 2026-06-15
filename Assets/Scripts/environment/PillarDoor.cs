@@ -9,6 +9,7 @@ public class PillarDoor : MonoBehaviour
     [SerializeField] private ParticleSystem _doorCaveDust;
     [SerializeField] private ParticleSystem _doorFloorDust;
     [SerializeField] private EventReference _earthquakeStinger;
+    [SerializeField] private EventReference _pillarDoorImpact;
     private EventInstance _earthQuakeStingerInstance;
     private SpriteRenderer _doorSprite;
     private BoxCollider2D _doorCollider;
@@ -257,6 +258,8 @@ public class PillarDoor : MonoBehaviour
         }
 
         _doorMovingTransform.position = targetPos;
+
+        SoundFXManager.obj.PlayAtPosition(_pillarDoorImpact, transform.position);
 
         if (_doorFloorDust != null)
         {

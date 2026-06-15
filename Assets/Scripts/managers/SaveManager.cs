@@ -198,10 +198,11 @@ public class SaveManager : MonoBehaviour
             else
                 data.currentMusicId = "";
         if (AmbienceManager.obj != null)
-            if(AmbienceManager.obj.CurrentAmbience != null)
-                data.currentAmbienceId = AmbienceManager.obj.CurrentAmbience.ambienceId;
-            else
-                data.currentAmbienceId = "";
+        {
+            data.currentAmbienceIds = AmbienceManager.obj.ActiveInstances.Keys
+                .Select(track => track.ambienceId)
+                .ToList();
+        }
 
         return data;
     }

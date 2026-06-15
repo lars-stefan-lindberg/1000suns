@@ -73,6 +73,11 @@ public class MusicManager : MonoBehaviour
     public MusicTrack CurrentTrack => currentTrack;
     public EventInstance CurrentInstance => currentInstance;
 
+    public bool IsPlaying()
+    {
+        return _musicLogicalState == MusicLogicalState.Playing;
+    }
+
     public void PlayById(string trackId)
     {
         if (musicLibrary == null)

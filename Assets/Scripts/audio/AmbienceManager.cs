@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using FMOD.Studio;
 using FMODUnity;
 using UnityEngine;
@@ -8,8 +9,7 @@ public class AmbienceManager : MonoBehaviour
 
     [SerializeField] private AmbienceLibrary ambienceLibrary;
 
-    private EventInstance currentInstance;
-    private AmbienceTrack currentAmbience;
+    private Dictionary<AmbienceTrack, EventInstance> activeInstances = new Dictionary<AmbienceTrack, EventInstance>();
 
     void Awake() {
         obj = this;
@@ -20,29 +20,50 @@ public class AmbienceManager : MonoBehaviour
         if (track == null)
             return;
 
-        if (currentAmbience == track)
+        if (activeInstances.ContainsKey(track))
             return;
 
-        Stop();
-
-        currentAmbience = track;
-        currentInstance = RuntimeManager.CreateInstance(track.eventRef);
-        currentInstance.start();
+        EventInstance instance = RuntimeManager.CreateInstance(track.eventRef);
+        instance.start();
+        activeInstances[track] = instance;
     }
 
-    public void Stop()
+    public void Stop(AmbienceTrack track)
     {
-        if (!currentInstance.isValid())
+        if (track == null || !activeInstances.ContainsKey(track))
             return;
 
-        currentInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-        currentInstance.release();
-        currentInstance.clearHandle();
+        EventInstance instance = activeInstances[track];
+        if (instance.isValid())
+        {
+            instance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+            instance.release();
+            instance.clearHandle();
+        }
 
-        currentAmbience = null;
+        activeInstances.Remove(track);
     }
 
-    public AmbienceTrack CurrentAmbience => currentAmbience;
+    public void Stop() {
+        StopAll();
+    }
+
+    public void StopAll()
+    {
+        foreach (var kvp in activeInstances)
+        {
+            if (kvp.Value.isValid())
+            {
+                kvp.Value.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+                kvp.Value.release();
+                kvp.Value.clearHandle();
+            }
+        }
+
+        activeInstances.Clear();
+    }
+
+    public IReadOnlyDictionary<AmbienceTrack, EventInstance> ActiveInstances => activeInstances;
 
     public void PlayById(string trackId)
     {
@@ -55,11 +76,15 @@ public class AmbienceManager : MonoBehaviour
     }
 
     void OnDestroy() {
-        if (currentInstance.isValid())
+        foreach (var kvp in activeInstances)
         {
-            currentInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
-            currentInstance.release();
+            if (kvp.Value.isValid())
+            {
+                kvp.Value.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+                kvp.Value.release();
+            }
         }
+        activeInstances.Clear();
         obj = null;
     }
 }

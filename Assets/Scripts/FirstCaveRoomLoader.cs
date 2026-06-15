@@ -6,7 +6,8 @@ using UnityEngine.SceneManagement;
 public class FirstCaveRoomLoader : MonoBehaviour
 {
     [SerializeField] private GameEventId _eliFirstCaveRoomLoaded;
-    [SerializeField] private AmbienceTrack _ambience;
+    [SerializeField] private AmbienceTrack _caveMainAmbience;
+    [SerializeField] private AmbienceTrack _caveMainWaterDripping;
 
     void Start() {
         if(!GameManager.obj.HasEvent(_eliFirstCaveRoomLoaded)) {
@@ -39,7 +40,8 @@ public class FirstCaveRoomLoader : MonoBehaviour
 
         CaveAvatar.obj.gameObject.SetActive(false);
 
-        AmbienceManager.obj.Play(_ambience);
+        AmbienceManager.obj.Play(_caveMainAmbience);
+        AmbienceManager.obj.Play(_caveMainWaterDripping);
         yield return StartCoroutine(StartScene());
 
         
