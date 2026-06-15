@@ -6891,6 +6891,13 @@ MonoBehaviour:
   _conversationManager: {fileID: 1217601490}
   _slabTrigger: {fileID: 1505084818}
   _cutsceneCamera: {fileID: 517178713}
+  _stinger:
+    Guid:
+      Data1: 947453945
+      Data2: 1333554211
+      Data3: 1020757168
+      Data4: -468236088
+    Path: event:/game/01_cave/stingers/hovering_stones_slab_stinger
 --- !u!61 &1217601492
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -8312,8 +8319,23 @@ MonoBehaviour:
   - {fileID: 430877890}
   - {fileID: 951755771}
   - {fileID: 33637138}
+  _stonesStart:
+    Guid:
+      Data1: -921230172
+      Data2: 1231146839
+      Data3: 23320500
+      Data4: -1214534169
+    Path: event:/env/01_cave/hovering_stones_start
+  _stonesImpact:
+    Guid:
+      Data1: -2031432107
+      Data2: 1079804919
+      Data3: 698067588
+      Data4: 1648291909
+    Path: event:/env/01_cave/hovering_stones_impact
   _stoneStartFloatDelay: 0.2
   _stoneFloatingTime: 5
+  _waitBeforeStoneImpact: 0.3
   _coolDownTime: 12
 --- !u!61 &1505084819
 BoxCollider2D:
