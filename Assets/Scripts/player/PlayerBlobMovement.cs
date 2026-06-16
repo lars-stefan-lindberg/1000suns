@@ -50,7 +50,7 @@ public class PlayerBlobMovement : MonoBehaviour
     [SerializeField] private float _hitBoostRiseTime = 0.12f;
     [SerializeField] private float _hitBoostFallTime = 0.3f;
     private SharedCharacterAudio _sharedPlayerAudio;
-    private EliAudio _eliAudio;
+    private BlobAudio _blobAudio;
 
     void Awake() {
         obj = this;
@@ -61,7 +61,7 @@ public class PlayerBlobMovement : MonoBehaviour
         _animator = GetComponentInChildren<Animator>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         _sharedPlayerAudio = GetComponent<SharedCharacterAudio>();
-        _eliAudio = GetComponent<EliAudio>();
+        _blobAudio = GetComponent<BlobAudio>();
     }
 
     void OnDestroy() {
@@ -114,7 +114,7 @@ public class PlayerBlobMovement : MonoBehaviour
         if(PlayerPowersManager.obj.CanSwitchBetweenTwinsMerged && !PlayerManager.obj.IsSeparated)
         {    
             //Switch to shadow twin
-            _eliAudio.PlayShapeshiftToHuman();
+            _blobAudio.PlayShapeshift();
             isTransformingToTwin = true;
             //Player.obj.PlaySwitchToTwinAnimation();
             ToTwin();
@@ -336,7 +336,7 @@ public class PlayerBlobMovement : MonoBehaviour
         _player.GetComponent<Player>().PlayToPlayerAnimation();
 
         if(playSfx) {
-            _eliAudio.PlayShapeshiftToHuman();
+            _blobAudio.PlayShapeshift();
         }
     }
 
@@ -615,7 +615,7 @@ public class PlayerBlobMovement : MonoBehaviour
         _airJumpToConsume = false;
         _airJumpPerformed = true;
         PlayerBlobCharge.obj.ExecuteForcePushVfx();
-        _sharedPlayerAudio.PlayJump();
+        _blobAudio.PlayJump();
         StartCoroutine(JumpSqueeze(_jumpSqueezeX, _jumpSqueezeY, _jumpSqueezeTime));
         ExecuteJump(_stats.JumpPower);
     }
@@ -623,15 +623,14 @@ public class PlayerBlobMovement : MonoBehaviour
     private void ExecuteRegularJump()
     {
         ExecuteJump(_stats.JumpPower);
-        DustParticleMgr.obj.CreateDust(PlayerManager.PlayerType.BLOB);
-        _sharedPlayerAudio.PlayJump();
+        _blobAudio.PlayJump();
         StartCoroutine(JumpSqueeze(_jumpSqueezeX, _jumpSqueezeY, _jumpSqueezeTime));
         _jumpToConsume = false;
     }
 
-    private float _jumpSqueezeX = 0.8f;
-    private float _jumpSqueezeY = 1.2f;
-    private float _jumpSqueezeTime = 0.08f;
+    private float _jumpSqueezeX = 0.7f;
+    private float _jumpSqueezeY = 1.3f;
+    private float _jumpSqueezeTime = 0.09f;
     private IEnumerator JumpSqueeze(float xSqueeze, float ySqueeze, float seconds)
     {
         Vector3 originalSize = Vector3.one;
@@ -884,9 +883,9 @@ public class PlayerBlobMovement : MonoBehaviour
 
     public bool isFalling = false;
     public bool isMoving = false;
-    private float _landedSqueezeX = 1.25f;
-    private float _landedSqueezeY = 0.65f;
-    private float _landedSqueezeTime = 0.08f;
+    private float _landedSqueezeX = 1.4f;
+    private float _landedSqueezeY = 0.6f;
+    private float _landedSqueezeTime = 0.09f;
     private void UpdateAnimator()
     {
         _animator.SetBool("isGrounded", isGrounded);
@@ -897,7 +896,7 @@ public class PlayerBlobMovement : MonoBehaviour
         if (_landed)
         {
             DustParticleMgr.obj.CreateDust(PlayerManager.PlayerType.BLOB);
-            _sharedPlayerAudio.PlayLand(surface);
+            _blobAudio.PlayLand();
             StartCoroutine(JumpSqueeze(_landedSqueezeX, _landedSqueezeY, _landedSqueezeTime));
             _landed = false;
         }

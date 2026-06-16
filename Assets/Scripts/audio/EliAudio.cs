@@ -27,10 +27,6 @@ public class EliAudio : MonoBehaviour
         SoundFXManager.obj.PlayAtPosition(_sounds.shapeshiftToBlob, transform.position);
     }
     
-    public void PlayShapeshiftToHuman() {
-        SoundFXManager.obj.PlayAtPosition(_sounds.shapeshiftToHuman, transform.position);
-    }
-    
     public void PlayForcePushJump() {
         SoundFXManager.obj.PlayAtPosition(_sounds.forcePushJump, transform.position);
     }

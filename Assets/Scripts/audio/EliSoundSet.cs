@@ -9,7 +9,6 @@ public class EliSoundSet : ScriptableObject
     public EventReference heavyLand;
     public EventReference longFall;
     public EventReference shapeshiftToBlob;
-    public EventReference shapeshiftToHuman;
     public EventReference forcePushJump;
     public EventReference forcePushLand;
     public EventReference headOutOfTent;

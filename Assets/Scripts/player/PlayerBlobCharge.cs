@@ -17,13 +17,13 @@ public static PlayerBlobCharge obj;
     private bool _buildingUpPower = false;
     
     private EventInstance _chargeStartSfxInstance;
-    private EliBlobAudio _eliBlobAudio;
+    private BlobAudio _blobAudio;
 
     private void Awake()
     {
         obj = this;
         _collider = GetComponent<BoxCollider2D>();
-        _eliBlobAudio = GetComponent<EliBlobAudio>();
+        _blobAudio = GetComponent<BlobAudio>();
     }
 
     public void OnShoot(InputAction.CallbackContext context)
@@ -88,7 +88,7 @@ public static PlayerBlobCharge obj;
     void Push()
     {
         ExecuteForcePushVfx();
-        _eliBlobAudio.PlayChargeRelease();
+        _blobAudio.PlayChargeRelease();
         //PlayerBlobMovement.obj.ExecuteChargedJump();
     }
 
