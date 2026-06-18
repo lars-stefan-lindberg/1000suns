@@ -5193,6 +5193,7 @@ MonoBehaviour:
   _deeSpawnPoint: {fileID: 873190141}
   _eliSpawnPoint: {fileID: 1864973762}
   _fixedCamera: {fileID: 789775229}
+  _fixedZoomedInCamera: {fileID: 2095654131}
   _closingWall1: {fileID: 1918635306}
   _closingWall2: {fileID: 38271957}
   _eliParticles: {fileID: 256189303}
@@ -5200,11 +5201,11 @@ MonoBehaviour:
   _capeRoomAmbience: {fileID: 11400000, guid: 4fd050b56e23c476f8a35efcd5e34344, type: 2}
   _introStinger:
     Guid:
-      Data1: 127878281
-      Data2: 1329930095
-      Data3: -437925970
-      Data4: 1276768744
-    Path: event:/game/01_cave/space_room/intro_stinger
+      Data1: 2107138088
+      Data2: 1142843448
+      Data3: -2088733042
+      Data4: -1555758206
+    Path: event:/game/01_cave/stingers/power_up_room_intro
   _teleport:
     Guid:
       Data1: 2016255071
@@ -5212,6 +5213,27 @@ MonoBehaviour:
       Data3: 235933584
       Data4: -895535784
     Path: event:/game/01_cave/space_room/teleport
+  _invisbleGrab:
+    Guid:
+      Data1: -496435570
+      Data2: 1287062451
+      Data3: -845742956
+      Data4: 818944128
+    Path: event:/game/general/invisible_grab
+  _heartbeat:
+    Guid:
+      Data1: 1016685495
+      Data2: 1113482757
+      Data3: 701561503
+      Data4: 711753118
+    Path: event:/game/01_cave/crystal_dream_room/heartbeat
+  _pulledTogether:
+    Guid:
+      Data1: -156318790
+      Data2: 1125671843
+      Data3: -1453851979
+      Data4: 1613481272
+    Path: event:/game/01_cave/crystal_dream_room/pulled_together
   _teleportBackToScene:
     _sceneAsset: {fileID: 102900000, guid: 4c48512810050414ba01301ed0705329, type: 3}
     _sceneName: Cave-23
@@ -5304,6 +5326,79 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3c352cd2364a14f3f863e66cdedb5f8a, type: 3}
+--- !u!1001 &774446578
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 32287694096923361, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 32287694096923361, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+      propertyPath: m_Lens.OrthographicSize
+      value: 8.4375
+      objectReference: {fileID: 0}
+    - target: {fileID: 39985905909828514, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1100
+      objectReference: {fileID: 0}
+    - target: {fileID: 39985905909828514, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 63.875
+      objectReference: {fileID: 0}
+    - target: {fileID: 39985905909828514, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -1.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 39985905909828514, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 39985905909828514, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 39985905909828514, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 39985905909828514, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 39985905909828514, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 39985905909828514, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 39985905909828514, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2576842243526084596, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+      propertyPath: m_Name
+      value: Fixed zoomed in camera (Cave-23-D)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2576842243526084596, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2576842243526084596, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 681e618cc4d84440da9934c23736f209, type: 3}
 --- !u!1001 &775544314
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -39438,6 +39533,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 26dbe2b199ebc4b329ff0e423a771c52, type: 3}
+--- !u!1 &2095654131 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2576842243526084596, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+  m_PrefabInstance: {fileID: 774446578}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5960604461096999645
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -39508,6 +39608,7 @@ SceneRoots:
   - {fileID: 732323625}
   - {fileID: 393630896}
   - {fileID: 946736584}
+  - {fileID: 774446578}
   - {fileID: 742962367}
   - {fileID: 1922373155}
   - {fileID: 1703631734}

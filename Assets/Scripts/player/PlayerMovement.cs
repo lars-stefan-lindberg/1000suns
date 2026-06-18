@@ -589,20 +589,21 @@ public class PlayerMovement : MonoBehaviour
         _frameVelocity = new Vector2(0, 0);
         gameObject.SetActive(false);
         _playerBlob.transform.position = transform.position - new Vector3(0, 0.5f, 0);
-        _playerBlob.GetComponent<PlayerBlobMovement>().spriteRenderer.flipX = IsFacingLeft();
+        PlayerBlobMovement playerBlobMovement = _playerBlob.GetComponent<PlayerBlobMovement>();
+        playerBlobMovement.spriteRenderer.flipX = IsFacingLeft();
         _playerBlob.SetActive(true);
         PlayerManager.obj.elisLastForm = PlayerManager.PlayerType.BLOB;
         PlayerSwitcher.obj.SwitchToBlob();
         if(isGrounded) {
-            _playerBlob.GetComponent<PlayerBlobMovement>().SetStartingOnGround();
-            _playerBlob.GetComponent<PlayerBlobMovement>().isGrounded = true;
+            playerBlobMovement.SetStartingOnGround();
+            playerBlobMovement.isGrounded = true;
         } else {
-            _playerBlob.GetComponent<PlayerBlobMovement>().isGrounded = false;
+            playerBlobMovement.isGrounded = false;
         }
         if(IsFrozen()) {
-            _playerBlob.GetComponent<PlayerBlobMovement>().Freeze();
+            playerBlobMovement.Freeze();
         } else {
-            _playerBlob.GetComponent<PlayerBlobMovement>().UnFreeze();
+            playerBlobMovement.UnFreeze();
         }
         isTransformingToBlob = false;
     }

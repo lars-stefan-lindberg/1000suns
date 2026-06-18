@@ -531,6 +531,37 @@ MonoBehaviour:
   glowMode:
     enable: 0
     glowRadius: 1
+--- !u!1 &258076378
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 258076379}
+  m_Layer: 2
+  m_Name: Play voices start position
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &258076379
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 258076378}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1061.625, y: -89.125, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &271876618
 GameObject:
   m_ObjectHideFlags: 0
@@ -921,6 +952,7 @@ GameObject:
   - component: {fileID: 608739035}
   - component: {fileID: 608739034}
   - component: {fileID: 608739036}
+  - component: {fileID: 608739037}
   m_Layer: 0
   m_Name: Big crystal
   m_TagString: Untagged
@@ -948,7 +980,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 8717aec04351f4ffa88baa95363b7619, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1068,6 +1100,21 @@ MonoBehaviour:
   _bighLightMaxSize: 3
   _bighLightMinSize: 2
   _playerMinDistance: 20
+--- !u!114 &608739037
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 608739031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6661ac003ca14770bddd996b428a4fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _flashIntensity: 0.25
+  _increaseFlashSpeed: 0.2
+  _decreaseFlashSpeed: 0.4
 --- !u!4 &629207842 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1161433752606496109, guid: 9902e0a70f615475c92d72f2b6554fd2, type: 3}
@@ -2691,6 +2738,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1231365298}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1411072623
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1411072624}
+  m_Layer: 2
+  m_Name: Play voices end position
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1411072624
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1411072623}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1102.375, y: -89.125, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1420253144
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4012,12 +4090,43 @@ MonoBehaviour:
       Data3: 235933584
       Data4: -895535784
     Path: event:/game/01_cave/space_room/teleport
+  _voices:
+    Guid:
+      Data1: 1891926454
+      Data2: 1102303496
+      Data3: -726597732
+      Data4: 671875471
+    Path: event:/env/01_cave/crystal_room/voices
+  _invisibleGrabWithBuildUp:
+    Guid:
+      Data1: 174843762
+      Data2: 1147112075
+      Data3: 1857573800
+      Data4: 657361702
+    Path: event:/game/general/invisible_grab_with_build_up
+  _invisibleGrabWithDelay:
+    Guid:
+      Data1: 1806243846
+      Data2: 1249593516
+      Data3: 493203618
+      Data4: 766049082
+    Path: event:/game/general/invisible_grab_with_delay
+  _stinger:
+    Guid:
+      Data1: -944051317
+      Data2: 1207984844
+      Data3: -535476321
+      Data4: 41194221
+    Path: event:/game/01_cave/crystal_room/crystal_stinger
+  _voicesStartPosition: {fileID: 258076379}
+  _voicesEndPosition: {fileID: 1411072624}
   _dreamRoomScene:
     _sceneAsset: {fileID: 102900000, guid: 84bb2e9e4c4ef486d9ed105f25b2566e, type: 3}
     _sceneName: Cave-23-D
   _thisScene:
     _sceneAsset: {fileID: 102900000, guid: 4c48512810050414ba01301ed0705329, type: 3}
     _sceneName: Cave-23
+  _teleportInitiated: {fileID: 11400000, guid: 92733f888451a4eb9958b7a24274a454, type: 2}
   _dreamSequenceCompleted: {fileID: 11400000, guid: e5d1bf7dc52344ed2b4df212b6bdcdb9, type: 2}
   _postDreamSequenceCompleted: {fileID: 11400000, guid: 2cd800d2540114bff9f973bcd04d3736, type: 2}
   _eliReturnFromDreamRoomPosition: {fileID: 1922373155}
@@ -4025,6 +4134,9 @@ MonoBehaviour:
   _conversationManager: {fileID: 2111454098}
   _caveMainAmbience: {fileID: 11400000, guid: 6475a932dfa8b47c89b448fbfee74692, type: 2}
   _crystalCutsceneCamera: {fileID: 38266751}
+  _crystalFlash: {fileID: 608739037}
+  _initialVolumeFadeSpeed: 2
+  _initialVolumeTarget: 0.5
 --- !u!4 &2111454097
 Transform:
   m_ObjectHideFlags: 0
@@ -4253,4 +4365,6 @@ SceneRoots:
   - {fileID: 987474589}
   - {fileID: 1922373154}
   - {fileID: 1055442555}
+  - {fileID: 258076379}
+  - {fileID: 1411072624}
   - {fileID: 1968431579}

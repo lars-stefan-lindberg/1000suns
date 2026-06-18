@@ -3,12 +3,20 @@ using System.Linq;
 using FMODUnity;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using FMOD.Studio;
 
 public class Cave23RoomManager : MonoBehaviour
 {
     [SerializeField] private EventReference _teleportSfx;
+    [SerializeField] private EventReference _voices;
+    [SerializeField] private EventReference _invisibleGrabWithBuildUp;
+    [SerializeField] private EventReference _invisibleGrabWithDelay;
+    [SerializeField] private EventReference _stinger;
+    [SerializeField] private Transform _voicesStartPosition;
+    [SerializeField] private Transform _voicesEndPosition;
     [SerializeField] private SceneField _dreamRoomScene;
     [SerializeField] private SceneField _thisScene;
+    [SerializeField] private GameEventId _teleportInitiated;
     [SerializeField] private GameEventId _dreamSequenceCompleted;
     [SerializeField] private GameEventId _postDreamSequenceCompleted;
     [SerializeField] private SpawnPoint _eliReturnFromDreamRoomPosition;
@@ -16,6 +24,19 @@ public class Cave23RoomManager : MonoBehaviour
     [SerializeField] private ConversationManager _conversationManager;
     [SerializeField] private AmbienceTrack _caveMainAmbience;
     [SerializeField] private GameObject _crystalCutsceneCamera;
+    [SerializeField] private SpriteFlash _crystalFlash;
+    
+    [Header("Voice Audio Settings")]
+    [SerializeField] private float _initialVolumeFadeSpeed = 2f;
+    [SerializeField] private float _initialVolumeTarget = 0.5f;
+    
+    private EventInstance _voicesInstance;
+    private bool _voicesPlaying = false;
+    private PARAMETER_ID _fadeParamId;
+    private bool _fadeParameterInitialized = false;
+    private float _currentInitialVolume = 0f;
+    private bool _initialFadeComplete = false;
+    private EventInstance _stingerInstance;
 
     void Start() {
         //If coming back from dream room, load room state
@@ -24,10 +45,43 @@ public class Cave23RoomManager : MonoBehaviour
             StartCoroutine(AfterEliDreamRoom());
         }
     }
+    
+    void FixedUpdate()
+    {
+        if (GameManager.obj.HasEvent(_teleportInitiated))
+            return;
+            
+        if (Player.obj == null || Player.obj.transform == null)
+            return;
+            
+        if (_voicesStartPosition == null || _voicesEndPosition == null)
+            return;
+        
+        float playerX = Player.obj.transform.position.x;
+        float startX = _voicesStartPosition.position.x;
+        float endX = _voicesEndPosition.position.x;
+        
+        bool playerInRange = (playerX >= Mathf.Min(startX, endX) && playerX <= Mathf.Max(startX, endX));
+        
+        if (playerInRange && !_voicesPlaying)
+        {
+            StartVoices();
+        }
+        else if (!playerInRange && _voicesPlaying)
+        {
+            StopVoices();
+        }
+        
+        if (_voicesPlaying)
+        {
+            UpdateVoicesFade(playerX, startX, endX);
+        }
+    }
 
     private void OnDestroy()
     {
         _conversationManager.OnConversationEnd -= OnConversationCompleted;
+        StopVoices();
     }
 
     private IEnumerator AfterEliDreamRoom() {
@@ -77,18 +131,23 @@ public class Cave23RoomManager : MonoBehaviour
     }
 
     private IEnumerator TeleportToDreamRoomRoutine() {
+        GameManager.obj.RegisterEvent(_teleportInitiated);
+
+        _stingerInstance = SoundFXManager.obj.CreateAttachedInstance(_stinger, gameObject);
+        _stingerInstance.start();
         yield return new WaitForSeconds(1f);
         _crystalCutsceneCamera.SetActive(true);
         yield return new WaitForSeconds(2.5f);
         PlayerMovement.obj.StartWalking();
         PlayerMovement.obj.SetMovementInput(new Vector2(1, 0));
-
-        yield return new WaitForSeconds(2.25f);
+        yield return new WaitForSeconds(0.2f);
+        SoundFXManager.obj.PlayAtPosition(_invisibleGrabWithBuildUp, Player.obj.transform.position);
+        yield return new WaitForSeconds(2.05f);
+        _crystalFlash.Flash();
         PlayerMovement.obj.SetMovementInput(Vector2.zero);
         PlayerMovement.obj.StopWalking();
         yield return null;
         PlayerMovement.obj.SetNewPower();
-        yield return new WaitForSeconds(0.05f);
         CameraShakeManager.obj.ForcePushShake();
         yield return new WaitForSeconds(1.5f);
 
@@ -103,6 +162,8 @@ public class Cave23RoomManager : MonoBehaviour
         float deceleration = 1f;
         float currentSpeed = 0f;
 
+        SoundFXManager.obj.PlayAtPosition(_invisibleGrabWithDelay, Player.obj.transform.position);
+        _crystalFlash.Flash();
         CameraShakeManager.obj.ForcePushShake();
         while (Player.obj.transform.position.y < targetY) {
             float distanceRemaining = targetY - Player.obj.transform.position.y;
@@ -121,11 +182,16 @@ public class Cave23RoomManager : MonoBehaviour
             yield return null;
         }
         
+        StopVoices();
         SoundFXManager.obj.Play2D(_teleportSfx);
         SceneFadeManager.obj.StartWhiteFadeOut(0.5f);
 
+        yield return new WaitForSeconds(0.5f);
+        AudioUtils.SafeStop(ref _stingerInstance, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+
         while(SceneFadeManager.obj.IsFadingOut)
             yield return null;
+            
 
         Player.obj.gameObject.SetActive(false);
         Player.obj.rigidBody.gravityScale = 1;
@@ -157,5 +223,98 @@ public class Cave23RoomManager : MonoBehaviour
         GameManager.obj.RegisterEvent(_postDreamSequenceCompleted);
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         _conversationManager.OnConversationEnd -= OnConversationCompleted;
+    }
+    
+    private void StartVoices()
+    {
+        _voicesInstance = RuntimeManager.CreateInstance(_voices);
+        _voicesInstance.start();
+        _voicesPlaying = true;
+        _currentInitialVolume = 0f;
+        _initialFadeComplete = false;
+        _fadeParameterInitialized = false;
+        InitializeFadeParameter();
+    }
+    
+    private void StopVoices()
+    {
+        if (_voicesPlaying && _voicesInstance.isValid())
+        {
+            _voicesInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+            _voicesInstance.release();
+        }
+        _voicesPlaying = false;
+        _fadeParameterInitialized = false;
+        _initialFadeComplete = false;
+        _currentInitialVolume = 0f;
+    }
+    
+    private void InitializeFadeParameter()
+    {
+        if (!_voicesInstance.isValid())
+            return;
+            
+        try
+        {
+            _voicesInstance.getDescription(out var desc);
+            desc.getParameterDescriptionByName("fade", out var fadeParamDesc);
+            _fadeParamId = fadeParamDesc.id;
+            _fadeParameterInitialized = true;
+            _voicesInstance.setParameterByID(_fadeParamId, 0f);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning($"Failed to initialize FMOD fade parameter: {e.Message}");
+        }
+    }
+    
+    private void UpdateVoicesFade(float playerX, float startX, float endX)
+    {
+        if (!_fadeParameterInitialized)
+        {
+            InitializeFadeParameter();
+            return;
+        }
+        
+        if (!_initialFadeComplete)
+        {
+            _currentInitialVolume += _initialVolumeFadeSpeed * Time.deltaTime;
+            if (_currentInitialVolume >= _initialVolumeTarget)
+            {
+                _currentInitialVolume = _initialVolumeTarget;
+                _initialFadeComplete = true;
+            }
+        }
+        
+        float distanceFromStart = Mathf.Abs(playerX - startX);
+        float totalDistance = Mathf.Abs(endX - startX);
+        float normalizedDistance = totalDistance > 0 ? distanceFromStart / totalDistance : 0f;
+        
+        float fadeValue;
+        if (!_initialFadeComplete)
+        {
+            fadeValue = _currentInitialVolume;
+        }
+        else
+        {
+            fadeValue = Mathf.Lerp(_initialVolumeTarget, 1f, normalizedDistance);
+        }
+        
+        SetFadeParameter(fadeValue);
+    }
+    
+    private void SetFadeParameter(float value)
+    {
+        try
+        {
+            if (_voicesInstance.isValid())
+            {
+                _voicesInstance.setParameterByID(_fadeParamId, value);
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning($"Failed to set FMOD fade parameter: {e.Message}");
+        }
     }
 }

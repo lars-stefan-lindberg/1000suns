@@ -7,6 +7,7 @@ public class FirstCaveMiniBossManager : MonoBehaviour
     
     [SerializeField] private SpawnPoint _spawnPoint;
     [SerializeField] private MusicTrack _bossTrack;
+    [SerializeField] private AmbienceTrack _caveMain;
     [SerializeField] private GameEventId _bossCompleted;
     [SerializeField] private GameEventId _bossFightStarted;
     [SerializeField] private GameObject _bossGameObjects;
@@ -20,6 +21,7 @@ public class FirstCaveMiniBossManager : MonoBehaviour
 
     public void EndBossFight() {
         MusicManager.obj.EndCurrentTrack();
+        AmbienceManager.obj.Play(_caveMain);
         GameManager.obj.RegisterEvent(_bossCompleted);
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
     }

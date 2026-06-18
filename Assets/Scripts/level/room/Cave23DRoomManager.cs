@@ -9,6 +9,7 @@ public class Cave23DRoomManager : MonoBehaviour
     [SerializeField] private SpawnPoint _deeSpawnPoint;
     [SerializeField] private SpawnPoint _eliSpawnPoint;
     [SerializeField] private GameObject _fixedCamera;
+    [SerializeField] private GameObject _fixedZoomedInCamera;
     [SerializeField] private GameObject _closingWall1;
     [SerializeField] private GameObject _closingWall2;
     [SerializeField] private ParticleSystem _eliParticles;
@@ -16,6 +17,9 @@ public class Cave23DRoomManager : MonoBehaviour
     [SerializeField] private AmbienceTrack _capeRoomAmbience;
     [SerializeField] private EventReference _introStinger;
     [SerializeField] private EventReference _teleport;
+    [SerializeField] private EventReference _invisbleGrab;
+    [SerializeField] private EventReference _heartbeat;
+    [SerializeField] private EventReference _pulledTogether;
     [SerializeField] private SceneField _teleportBackToScene;
     [SerializeField] private SceneField _thisScene;
     [SerializeField] private GameEventId _dreamRoomCompleted;
@@ -26,6 +30,10 @@ public class Cave23DRoomManager : MonoBehaviour
     [SerializeField] private float _pullAcceleration = 2f;
     [SerializeField] private float _pullMaxSpeed = 5f;
     [SerializeField] private float _touchDistance = 0.5f;
+
+    private FMOD.Studio.EventInstance _heartbeatInstance;
+    private FMOD.Studio.EventInstance _pulledTogetherInstance;
+    private bool _isHeartbeatPlaying = false;
 
     void Start() {
         PlayerMovement.obj.isGrounded = true;
@@ -66,6 +74,7 @@ public class Cave23DRoomManager : MonoBehaviour
         SceneFadeManager.obj.StartFadeIn(0.5f);
         yield return new WaitForSeconds(2.5f);
         PlayerMovement.obj.SetNewPowerReceived();
+        StartHeartbeat();
         yield return new WaitForSeconds(2);
         PlayerMovement.obj.UnFreeze();
     }
@@ -91,6 +100,7 @@ public class Cave23DRoomManager : MonoBehaviour
         _closingWall1.SetActive(true);
         _closingWall2.SetActive(true);
         yield return new WaitForSeconds(1f);
+        ChangeHeartbeatPace(1);
         SoundFXManager.obj.Play2D(_introStinger);
         yield return new WaitForSeconds(5f);
         PlayerMovement.obj.UnFreeze();
@@ -102,8 +112,14 @@ public class Cave23DRoomManager : MonoBehaviour
 
     private IEnumerator StartCutsceneCoroutine() {
         PlayerMovement.obj.Freeze();
-        yield return new WaitForSeconds(2f);
+        ChangeHeartbeatPace(2);
+        AmbienceManager.obj.Stop();
+        _fixedZoomedInCamera.SetActive(true);
+        yield return new WaitForSeconds(3f);
         _lightVfx.Flash();
+        SoundFXManager.obj.PlayAtPosition(_invisbleGrab, Player.obj.transform.position);
+        _pulledTogetherInstance = SoundFXManager.obj.CreateAttachedInstance(_pulledTogether, Player.obj.gameObject);
+        _pulledTogetherInstance.start();
         CameraShakeManager.obj.ForcePushShake();
         Player.obj.StartBeingPulled();
         ShadowTwinPlayer.obj.StartBeingPulled();
@@ -111,7 +127,9 @@ public class Cave23DRoomManager : MonoBehaviour
         _deeParticles.transform.position = new Vector3(ShadowTwinPlayer.obj.transform.position.x - 0.5f, _deeParticles.transform.position.y, _deeParticles.transform.position.z);
         _eliParticles.gameObject.SetActive(true);
         _deeParticles.gameObject.SetActive(true);
+        ChangeHeartbeatPace(3);
         yield return new WaitForSeconds(4f);
+        ChangeHeartbeatPace(4);
         Player.obj.StartContrastFade();
         ShadowTwinPlayer.obj.StartContrastFade();
         
@@ -145,9 +163,14 @@ public class Cave23DRoomManager : MonoBehaviour
         _deeParticles.Stop();
         SoundFXManager.obj.Play2D(_teleport);
         SceneFadeManager.obj.StartWhiteFadeOut(0.8f);
+
+        yield return new WaitForSeconds(0.7f);
+        AudioUtils.SafeStop(ref _pulledTogetherInstance, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+
         while(SceneFadeManager.obj.IsFadingOut)
             yield return null;
 
+        StopHeartbeat();
         Player.obj.StopBeingPulled();
         ShadowTwinPlayer.obj.StopBeingPulled();
         Player.obj.ResetContrast();
@@ -169,4 +192,35 @@ public class Cave23DRoomManager : MonoBehaviour
 
         SceneManager.UnloadSceneAsync(_thisScene.SceneName);
     }
+
+    public void StartHeartbeat() {
+        if (_isHeartbeatPlaying) {
+            return;
+        }
+
+        _heartbeatInstance = RuntimeManager.CreateInstance(_heartbeat);
+        _heartbeatInstance.setParameterByName("heartbeatRate", 0);
+        _heartbeatInstance.start();
+        _isHeartbeatPlaying = true;
+    }
+
+    public void ChangeHeartbeatPace(int pace) {
+        if (!_isHeartbeatPlaying) {
+            return;
+        }
+
+        pace = Mathf.Clamp(pace, 0, 4);
+        _heartbeatInstance.setParameterByName("heartbeatRate", pace);
+    }
+
+    public void StopHeartbeat() {
+        if (!_isHeartbeatPlaying) {
+            return;
+        }
+
+        _isHeartbeatPlaying = false;
+        _heartbeatInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+        _heartbeatInstance.release();
+    }
+
 }
