@@ -4,7 +4,9 @@ using UnityEngine.Events;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 
 
 /// <summary>
@@ -177,8 +179,12 @@ public class RebindActionUI : MonoBehaviour
         }
 
         //Update action binding icon
+#if UNITY_EDITOR
         if (EditorApplication.isPlaying)
             m_ActionBindingIcon.SetAction(deviceLayoutName, controlPath);
+#else
+        m_ActionBindingIcon.SetAction(deviceLayoutName, controlPath);
+#endif
 
         // Give listeners a chance to configure UI in response.
         m_UpdateBindingUIEvent?.Invoke(this, displayString, deviceLayoutName, controlPath);
@@ -553,6 +559,11 @@ public class RebindActionUI : MonoBehaviour
         return actions;
     }
 
+
+    protected void Start()
+    {
+        UpdateBindingDisplay();
+    }
 
     protected void OnEnable()
     {
