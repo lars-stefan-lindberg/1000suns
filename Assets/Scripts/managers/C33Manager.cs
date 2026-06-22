@@ -10,6 +10,7 @@ public class C33Manager : MonoBehaviour
     [SerializeField] private GameObject _blockPrefab;
     [SerializeField] private GameObject _blockingWall;
     [SerializeField] private float _blockingWallFadeMultiplier = 1.5f;
+    [SerializeField] private float _startAttackDelay = 0.5f;
     [SerializeField] private Transform _caveAvatarFleeTargetPosition;
     [SerializeField] private EventReference _brokenFloorReappearSfx;
     public float _attackInterval = 2f;
@@ -37,10 +38,10 @@ public class C33Manager : MonoBehaviour
     void OnTriggerEnter2D(Collider2D collision) {
         if(collision.CompareTag("Player")) {
             _collider.enabled = false;
-            _startAttackSequence = true;
             _blockingWall.SetActive(true);
             SoundFXManager.obj.Play2D(_brokenFloorReappearSfx);
             StartCoroutine(FadeInBlockingWall());
+            StartCoroutine(StartAttackSequenceDelayed());
         }
     }
 
@@ -49,6 +50,11 @@ public class C33Manager : MonoBehaviour
             _blockingWallTilemap.color = new Color(_blockingWallTilemap.color.r, _blockingWallTilemap.color.g, _blockingWallTilemap.color.b, Mathf.MoveTowards(_blockingWallTilemap.color.a, 1, _blockingWallFadeMultiplier * Time.deltaTime));
             yield return null;
         }
+    }
+
+    private IEnumerator StartAttackSequenceDelayed() {
+        yield return new WaitForSeconds(_startAttackDelay);
+        _startAttackSequence = true;
     }
 
     public void Stop()

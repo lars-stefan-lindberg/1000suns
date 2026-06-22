@@ -5,6 +5,7 @@ public class C32CompletedTrigger : MonoBehaviour
 {
     [SerializeField] private Transform _targetPosition;
     [SerializeField] private C32Manager _c32Manager;
+    [SerializeField] private SpawnPoint _spawnPoint;
     private BoxCollider2D _collider;
 
     void Start()
@@ -22,6 +23,7 @@ public class C32CompletedTrigger : MonoBehaviour
             _collider.enabled = false;
             CaveAvatar.obj.SetTarget(_targetPosition, 10);
             LevelManager.obj.SetLevelCompleted("Cave-53");
+            GameManager.obj.SetCurrentSpawnPointId(_spawnPoint.SpawnPointID);
             SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         }
     }

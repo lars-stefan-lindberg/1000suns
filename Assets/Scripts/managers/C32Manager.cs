@@ -74,8 +74,8 @@ public class C32Manager : MonoBehaviour
         SpawnSpike(thirdSpikeXPosition, _spikeSpawnStartPosition.position.y);
         SpawnSpike(fourthSpikeXPosition, _spikeSpawnStartPosition.position.y);
         SpawnSpike(fifthSpikeXPosition, _spikeSpawnStartPosition.position.y);
-        SpawnSpike(sixthSpikeXPosition, _spikeSpawnStartPosition.position.y);
-        SpawnSpike(seventhSpikeXPosition, _spikeSpawnStartPosition.position.y);
+        //SpawnSpike(sixthSpikeXPosition, _spikeSpawnStartPosition.position.y);
+        //SpawnSpike(seventhSpikeXPosition, _spikeSpawnStartPosition.position.y);
 
         yield return null;
     }
