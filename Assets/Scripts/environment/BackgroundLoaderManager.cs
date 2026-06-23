@@ -28,6 +28,10 @@ public class BackgroundLoaderManager : MonoBehaviour
     }
 
     public IEnumerator LoadAndSetBackground(string backgroundScene) {
+        BackgroundLayersManager[] backgroundLayersManagers = Camera.main.gameObject.GetComponentsInChildren<BackgroundLayersManager>();
+        if(backgroundLayersManagers.Length > 0)
+            Debug.LogWarning("Adding background while one is already active");
+            
         AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(backgroundScene, LoadSceneMode.Additive);
         while(!asyncOperation.isDone) {
             yield return null;
@@ -44,7 +48,6 @@ public class BackgroundLoaderManager : MonoBehaviour
     public IEnumerator RemoveBackgroundLayers() {
         Camera mainCamera = Camera.main;
         if(mainCamera != null) {
-            Debug.Log("Removing background layers.");
             BackgroundLayersManager backgroundLayersManager = mainCamera.gameObject.GetComponentInChildren<BackgroundLayersManager>();
             if(backgroundLayersManager != null) {
                 Destroy(backgroundLayersManager.gameObject);

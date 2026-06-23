@@ -179,6 +179,10 @@ public class Cave41RoomManager : MonoBehaviour
             yield return null;
         }
 
+        //Switch backgrounds
+        yield return StartCoroutine(BackgroundLoaderManager.obj.RemoveBackgroundLayers());
+        yield return StartCoroutine(BackgroundLoaderManager.obj.LoadAndSetBackground("CaveBg2"));
+
         AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(_nextScene, LoadSceneMode.Additive);
         while(!asyncOperation.isDone)
             yield return null;

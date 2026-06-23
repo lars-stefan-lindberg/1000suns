@@ -58,7 +58,8 @@ public class Cave4CutsceneManager : MonoBehaviour, ISkippable
     public void RequestSkip() {
         _cutsceneCamera.SetActive(false);
         StopCoroutine(_cutsceneCoroutine);
-        StopCoroutine(_slabCoroutine);
+        if(_slabCoroutine != null)
+            StopCoroutine(_slabCoroutine);
         _conversationManager.HardStopConversation();
         _conversationManager.OnConversationEnd -= OnConversationCompleted;
 

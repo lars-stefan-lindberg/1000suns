@@ -115,6 +115,8 @@ public class PowerUpRoomCutScene : MonoBehaviour
         while(SceneFadeManager.obj.IsFadingOut)
             yield return null;
 
+        AmbienceManager.obj.Stop();
+
         //Load dream room
         AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(_dreamRoomScene, LoadSceneMode.Additive);
         while(!asyncOperation.isDone) {

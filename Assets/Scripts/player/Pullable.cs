@@ -53,6 +53,12 @@ public class Pullable : MonoBehaviour
     private float _previousVelocityMagnitude = 0f;
     private bool _heldParticlesPlaying = false;
 
+    private void Awake() {
+        if (_heldParticles != null) {
+            _heldParticles.Stop();
+        }
+    }
+
     private void Start() {
         IsPulled = false;
         _material = _renderer.material;

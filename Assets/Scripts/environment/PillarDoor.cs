@@ -8,9 +8,9 @@ public class PillarDoor : MonoBehaviour
     [SerializeField] private Transform _doorMovingTransform;
     [SerializeField] private ParticleSystem _doorCaveDust;
     [SerializeField] private ParticleSystem _doorFloorDust;
-    [SerializeField] private EventReference _earthquakeStinger;
+    [SerializeField] private EventReference _pillarDoorOpening;
     [SerializeField] private EventReference _pillarDoorImpact;
-    private EventInstance _earthQuakeStingerInstance;
+    private EventInstance _pillarDoorOpeningInstance;
     private SpriteRenderer _doorSprite;
     private BoxCollider2D _doorCollider;
     [SerializeField] private float _doorRaiseDistance = 3.5f;
@@ -293,12 +293,12 @@ public class PillarDoor : MonoBehaviour
 
     private void StartEarthquake()
     {
-        _earthQuakeStingerInstance = SoundFXManager.obj.CreateAttachedInstance(_earthquakeStinger, gameObject, null);
-        _earthQuakeStingerInstance.start();
+        _pillarDoorOpeningInstance = SoundFXManager.obj.CreateAttachedInstance(_pillarDoorOpening, gameObject, null);
+        _pillarDoorOpeningInstance.start();
     }
 
     private void BeginFadeOutEarthquake()
     {
-        AudioUtils.SafeStop(ref _earthQuakeStingerInstance);
+        AudioUtils.SafeStop(ref _pillarDoorOpeningInstance);
     }
 }
