@@ -80,7 +80,6 @@ public class Reaper : MonoBehaviour
         while(SceneFadeManager.obj.IsFadingOut) {
             yield return null;
         }
-        CollectibleManager.obj.ClearNonFollowingCollectibles();
         LevelManager.obj.ReloadCurrentScene();
     }
 
@@ -91,7 +90,6 @@ public class Reaper : MonoBehaviour
         while(SceneFadeManager.obj.IsFadingOut) {
             yield return null;
         }
-        CollectibleManager.obj.ClearNonFollowingCollectibles();
         LevelManager.obj.ReloadCurrentScene();
     }
 

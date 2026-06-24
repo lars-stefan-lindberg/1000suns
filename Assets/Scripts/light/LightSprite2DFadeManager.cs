@@ -1,6 +1,7 @@
 using System.Collections;
 using FunkyCode;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class LightSprite2DFadeManager : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class LightSprite2DFadeManager : MonoBehaviour
     [SerializeField] private Color _lightColor;
     public bool IsFadingIn { get; private set; }
     public bool IsFadingOut { get; private set; }
+    public UnityEvent OnFullyFadedIn;
 
     void Start() {
         if(_lightSprite2D == null)
@@ -31,6 +33,7 @@ public class LightSprite2DFadeManager : MonoBehaviour
                 _lightSprite2D.color = _lightColor;
             } else {
                 IsFadingIn = false;
+                OnFullyFadedIn?.Invoke();
             }
         }
         if(IsFadingOut) {

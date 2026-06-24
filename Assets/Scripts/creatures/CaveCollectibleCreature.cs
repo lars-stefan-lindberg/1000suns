@@ -37,6 +37,11 @@ public class CaveCollectibleCreature : MonoBehaviour
     private Vector2 _originalPosition;
 
     void Awake() {
+        if(CollectibleManager.obj.IsCollectiblePicked(_id)) {
+            gameObject.SetActive(false);
+            Destroy(gameObject);
+            return;
+        }
         _collider = GetComponent<BoxCollider2D>();
         IsPicked = false;
         IsPermanentlyCollected = false;
@@ -51,6 +56,8 @@ public class CaveCollectibleCreature : MonoBehaviour
             IsPicked = true;
             _caveCollectibleCreatureAudio.PlayCreatureSound(_creatureSfxIndex);
             StartCoroutine(FadeOutLight());
+            portal.gameObject.SetActive(true);
+            portal.GetComponentInChildren<BlackHole>().FadeInLight();
         }
     }
 
@@ -65,7 +72,7 @@ public class CaveCollectibleCreature : MonoBehaviour
         if(IsPermanentlyCollected) {
             if(!_startedTakeOff) {
                 _startedTakeOff = true;
-                _targetTransform = portal; //Portal needs to be set before this is called
+                _targetTransform = portal.GetComponentInChildren<BlackHole>().transform; //Portal needs to be set before this is called
                 _caveCollectibleCreatureAudio.PlayCreatureSound(_creatureSfxIndex);
                 StartCoroutine(PrepareTakeOff(_squeezeX, _squeezeY, _squeezeTime));
             }
@@ -78,12 +85,7 @@ public class CaveCollectibleCreature : MonoBehaviour
             bool isCaveAvatarFacingLeft = CaveAvatar.obj.IsFacingLeft();
             Transform target;   
             if(!_hasTarget) {
-                CaveCollectibleCreature followingCollectible = CollectibleManager.obj.GetCaveCollectibleToFollow();
-                if(followingCollectible == null) {
-                    target = CaveAvatar.obj.GetHeadTransform();
-                } else {
-                    target = followingCollectible.GetHeadTransform();
-                }
+                target = CaveAvatar.obj.GetHeadTransform();
                 _targetTransform = target;
                 _hasTarget = true;
             } else {
@@ -118,22 +120,6 @@ public class CaveCollectibleCreature : MonoBehaviour
         _tailParts[4].transform.position = Vector2.Lerp(_tailParts[4].transform.position, _tailParts[3].transform.position, _tailPartLerpSpeed);
     }
 
-    public void Reset() {
-        _head.transform.position = _originalPosition;
-        foreach(GameObject tail in _tailParts) {
-            tail.transform.position = _head.transform.position;
-        }
-        _collider.enabled = true;
-        _lightSprite2DFadeManager.SetFadedInState();
-        _headSpriteRenderer.flipX = false;
-    }
-
-    public void RestoreFollowingState() {
-        IsPicked = true;
-        _collider.enabled = false;
-        StartCoroutine(FadeOutLight());
-    }
-
     private float _targetReachedMargin = 0.5f;
     private bool IsTargetReached(Vector2 position, Vector2 target) {
         if(
@@ -148,10 +134,6 @@ public class CaveCollectibleCreature : MonoBehaviour
     private bool IsWithinInterval(float value, float lowerBound, float upperBound)
     {
         return value >= lowerBound && value <= upperBound;
-    }
-
-    public Transform GetHeadTransform() {
-        return _head.transform;
     }
 
     private IEnumerator PrepareTakeOff(float xSqueeze, float ySqueeze, float seconds)
@@ -201,28 +183,7 @@ public class CaveCollectibleCreature : MonoBehaviour
         Destroy(gameObject, 1);
     }
 
-    public void SetStartingPosition(Vector2 position) {
-        float horizontalPosition = PlayerMovement.obj.IsFacingLeft() ? position.x + 1.475f : position.x - 1.475f;
-        SetPosition(new Vector2(horizontalPosition, position.y));
-    }
-
-    public void SetPosition(Vector2 target) {
-        bool isPlayerFacingLeft = PlayerMovement.obj.IsFacingLeft();
-        _headSpriteRenderer.flipX = isPlayerFacingLeft;   
-
-        transform.position = target;
-        _head.transform.position = target;
-        for (int i = 0; i < _tailParts.Length; i++) {
-            _tailParts[i].transform.position = target;
-        }
-    }
-
     public string GetId() {
         return _id;
-    }
-
-    public void SetTarget(Transform target) {
-        _targetTransform = target;
-        _hasTarget = true;
     }
 }

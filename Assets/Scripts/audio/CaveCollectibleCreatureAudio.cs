@@ -30,6 +30,7 @@ public class CaveCollectibleCreatureAudio : MonoBehaviour
         if (!_creatureSound.IsNull)
         {
             var inst = RuntimeManager.CreateInstance(_creatureSound);
+            inst.set3DAttributes(RuntimeUtils.To3DAttributes(transform.position)); //Required by FMOD even though we don't need it here (gives log warning if not set)
             inst.getDescription(out var desc);
             desc.getParameterDescriptionByName(
                 "creature_index",

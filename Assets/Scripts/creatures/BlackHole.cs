@@ -1,5 +1,4 @@
 using System.Collections;
-using FunkyCode.Rendering.Lightmap;
 using UnityEngine;
 
 public class BlackHole : MonoBehaviour
@@ -19,19 +18,6 @@ public class BlackHole : MonoBehaviour
         _lightSprite2DFlicker = GetComponent<LightSprite2DFlicker>();
     }
 
-    //In case we want to reuse the same blackhole multiple times
-    //This can happen if you clear a room, leave the creatures, but then pick up
-    //another one in the same room.
-    void OnEnable() {
-        _spriteRenderer = GetComponent<SpriteRenderer>();
-        _particleSystem = GetComponent<ParticleSystem>();
-        _lightSprite2DFlicker = GetComponent<LightSprite2DFlicker>();
-        _spriteRenderer.enabled = true;
-        _lightSprite2DFlicker.enabled = true;
-        if(!_particleSystem.isPlaying)
-            _particleSystem.Play();
-    }
-
     [ContextMenu("Despawn")]
     public void Despawn() {
         _animator.SetTrigger("despawn");
@@ -39,6 +25,10 @@ public class BlackHole : MonoBehaviour
 
     public void FadeInLight() {
         _lightSprite2DFadeManager.StartFadeIn();
+    }
+
+    public void EnableFlicker() {
+        _lightSprite2DFlicker.enabled = true;
     }
 
     public void Destroy() {
@@ -50,8 +40,8 @@ public class BlackHole : MonoBehaviour
         _lightSprite2DFadeManager.StartFadeOut();
         _particleSystem.Stop();
         _spriteRenderer.enabled = false;
-        yield return new WaitForSeconds(1f);
-        gameObject.SetActive(false);
+        Destroy(this, 5);
+        yield return null;
     }
 
 }

@@ -139,32 +139,9 @@ public class LevelManager : MonoBehaviour
             SetCaveAvatarPosition(scene);
         }
 
-        if(SaveManager.obj != null && SaveManager.obj.RestoreFollowingCreaturesOnNextScene) {
-            var data = SaveManager.obj.LastLoadedSaveData;
-            if (data != null) {
-                CollectibleManager.obj.ImportFollowingCollectibles(data.followingCollectibles);
-            }
-            SaveManager.obj.ConsumeRestoreFollowingCreaturesFlag();
-        }
-        //If there are collectibles following, set start positions for them
-        if(CollectibleManager.obj.GetNumberOfCreaturesFollowingPlayer() > 0) {
-            CaveCollectibleCreature previousCollectible = null;
-            foreach(CaveCollectibleCreature collectible in CollectibleManager.obj.GetFollowingCaveCollectibleCreatures()) {
-                if(previousCollectible == null) {
-                    collectible.SetStartingPosition(CaveAvatar.obj.GetHeadTransform().position);
-                    collectible.SetTarget(CaveAvatar.obj.GetHeadTransform());
-                } else {
-                    collectible.SetStartingPosition(previousCollectible.GetHeadTransform().position);
-                    collectible.SetTarget(previousCollectible.GetHeadTransform());
-                }
-                previousCollectible = collectible;
-            }
-        }
-
         if(Player.obj != null)
             Player.obj.SetHasPowerUp(false);
         PlayerPowersManager.obj.EliCanForcePushJump = false;
-        //MothsManager.obj.DestroyMoths();
         
         if(PlayerManager.obj.IsSeparated) {
             PlayerManager.obj.EnableAllPlayers();
@@ -187,9 +164,6 @@ public class LevelManager : MonoBehaviour
         Reaper.obj.playerKilled = false;
 
         StartCoroutine(LoadAdjacentRoomsPrivate(scene));
-
-        //Load any potential collectibles
-        CollectibleManager.obj.MaybeLoadCollectible(scene.name);
 
         // If we just loaded a game from a save, restore audio state (music + ambience)
         if (SaveManager.obj != null && SaveManager.obj.RestoreAudioOnNextScene) {
@@ -233,7 +207,6 @@ public class LevelManager : MonoBehaviour
             if(!sceneToLoad.isLoaded) {
                 SceneManager.LoadSceneAsync(room.SceneName, LoadSceneMode.Additive);
             }
-            CollectibleManager.obj.MaybeLoadCollectible(room.SceneName);
         }
         yield return null;
     }

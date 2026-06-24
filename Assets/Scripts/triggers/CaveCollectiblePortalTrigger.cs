@@ -1,10 +1,12 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CaveCollectiblePortalTrigger : MonoBehaviour
 {
     [SerializeField] private Transform _portal;
     [SerializeField] private Animator _portalAnimator;
+    [SerializeField] private CaveCollectibleCreature _collectible;
 
     void OnTriggerEnter2D(Collider2D collision)
     {
@@ -17,15 +19,13 @@ public class CaveCollectiblePortalTrigger : MonoBehaviour
     private IEnumerator Cutscene() {
         PlayerMovement.obj.Freeze();
         yield return new WaitForSeconds(1f);
-        var collectibles = CollectibleManager.obj.GetFollowingCaveCollectibleCreatures();
-        foreach(var collectible in collectibles) {
-            collectible.IsPermanentlyCollected = true;
-            collectible.portal = _portal;
-            yield return new WaitUntil(() => collectible.IsDespawned);
-        }
+        _collectible.IsPermanentlyCollected = true;
+        yield return new WaitUntil(() => _collectible.IsDespawned);
         
         _portalAnimator.SetTrigger("despawn");
+        CollectibleManager.obj.CollectiblePickedPermanently(_collectible);
+        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         PlayerMovement.obj.UnFreeze();
-        CollectibleManager.obj.ClearFollowingCaveCollectibles();
+        Destroy(this, 5);
     }
 }

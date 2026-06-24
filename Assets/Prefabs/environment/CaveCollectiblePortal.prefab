@@ -77,8 +77,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 163644049
+  m_SortingLayer: -2
   m_SortingOrder: -1
   m_Sprite: {fileID: 1309474951, guid: 11c6b82059d17409f817e8eda860f909, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -141,12 +141,12 @@ MonoBehaviour:
   type: 0
   spriteMode: 0
   sprite: {fileID: 21300000, guid: 6592d6be03fd808449716a11558d506f, type: 3}
-  color: {r: 0.5, g: 0.5, b: 0.5, a: 0}
+  color: {r: 0.8, g: 0.8, b: 0.8, a: 0}
   flipX: 0
   flipY: 0
   lightSpriteTransform:
-    applyRotation: 1
-    scale: {x: 1, y: 1}
+    applyRotation: 0
+    scale: {x: 2, y: 2}
     rotation: 0
     position: {x: 0, y: 0}
   lightSpriteShape:
@@ -170,14 +170,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3806379561081101087}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d54171dab6926401384f5ef67502fab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flickersPerSecond: 10
-  flickerRangeMin: 0.29
-  flickerRangeMax: 0.76
+  flickersPerSecond: 8
+  flickerRangeMin: 0.1
+  flickerRangeMax: -0.1
 --- !u!114 &7761981322623437016
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -194,9 +194,24 @@ MonoBehaviour:
   _fadeOutSpeed: 1.56
   _fadeInSpeed: 1.56
   _fadeOutAlpha: 0
-  _fadeInAlpha: 0.805
+  _fadeInAlpha: 0.9
   _startAlpha: 0
-  _lightColor: {r: 0.7372549, g: 0.7372549, b: 0.7372549, a: 0}
+  _lightColor: {r: 0.8, g: 0.8, b: 0.8, a: 0}
+  OnFullyFadedIn:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4188990367107138095}
+        m_TargetAssemblyTypeName: BlackHole, Assembly-CSharp
+        m_MethodName: EnableFlicker
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!198 &1249871460648102157
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -4960,7 +4975,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -2027969955
-  m_SortingLayer: -2
+  m_SortingLayer: -4
   m_SortingOrder: 0
   m_RenderMode: 0
   m_MeshDistribution: 0
@@ -5060,7 +5075,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.32800293, y: 0.82782745}
+  m_Offset: {x: -0.32800293, y: 1.6099186}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -5071,7 +5086,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.6560059, y: 4.5924606}
+  m_Size: {x: 1.6560059, y: 6.156643}
   m_EdgeRadius: 0
 --- !u!114 &2108552982124057454
 MonoBehaviour:
@@ -5087,3 +5102,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _portal: {fileID: 4027068811644711694}
   _portalAnimator: {fileID: 1467280516058855708}
+  _collectible: {fileID: 0}

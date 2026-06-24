@@ -11,7 +11,6 @@ public class SaveManager : MonoBehaviour
     public SaveData LastLoadedSaveData { get; private set; }
     public bool RestoreAudioOnNextScene { get; private set; }
     public bool RestoreBlobOnNextScene { get; private set; }
-    public bool RestoreFollowingCreaturesOnNextScene { get; private set; }
 
     private int _activeSaveProfile = 0;
 
@@ -95,9 +94,6 @@ public class SaveManager : MonoBehaviour
             if (CollectibleManager.obj != null)
             {
                 CollectibleManager.obj.ImportPickedCollectibles(data?.pickedCollectibles);
-                if(data.followingCollectibles != null && data.followingCollectibles.Count > 0) {
-                    RestoreFollowingCreaturesOnNextScene = true;
-                }
             }
 
             return data;
@@ -188,7 +184,6 @@ public class SaveManager : MonoBehaviour
         data.surface = LevelManager.obj != null ? LevelManager.obj.GetActiveSceneInitRoomData().walkableSurfaceScene : "";
         data.caveTimeline = GameManager.obj != null ? GameManager.obj.GetCaveTimeline().GetCaveTimelineId() : 0;
         data.pickedCollectibles = CollectibleManager.obj != null ? CollectibleManager.obj.ExportPickedCollectibles() : new List<string>();
-        data.followingCollectibles = CollectibleManager.obj != null ? CollectibleManager.obj.ExportFollowingCollectibles() : new List<string>();
         data.lastSaved = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 
         // Capture audio state
@@ -215,9 +210,5 @@ public class SaveManager : MonoBehaviour
     // Called by LevelManager after it restores blob
     public void ConsumeRestoreBlobFlag() {
         RestoreBlobOnNextScene = false;
-    }
-
-    public void ConsumeRestoreFollowingCreaturesFlag() {
-        RestoreFollowingCreaturesOnNextScene = false;
     }
 }
