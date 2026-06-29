@@ -336,7 +336,7 @@ public class FloatyPlatform : MonoBehaviour
         _isFallingOnMovePlatformFallStarted = false;
     }
 
-    private IEnumerator FadeInSprite() {
+    public IEnumerator FadeInSprite() {
         while(_spriteRenderer.color.a < 1f) {
             _fadeStartColor.a += Time.deltaTime * _fadeSpeed;
             _spriteRenderer.color = _fadeStartColor;
@@ -351,6 +351,10 @@ public class FloatyPlatform : MonoBehaviour
             _spriteRenderer.color = currentColor;
             yield return null;
         }
+    }
+
+    public void SetAlpha(float alpha) {
+        _spriteRenderer.color = new Color(_spriteRenderer.color.r, _spriteRenderer.color.g, _spriteRenderer.color.b, alpha);
     }
 
     // private void OnDrawGizmosSelected()
