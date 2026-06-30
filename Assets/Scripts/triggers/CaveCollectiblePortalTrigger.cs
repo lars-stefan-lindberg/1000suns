@@ -19,7 +19,7 @@ public class CaveCollectiblePortalTrigger : MonoBehaviour
     }
 
     private IEnumerator Cutscene() {
-        PlayerMovement.obj.Freeze();
+        PlayerManager.obj.FreezePlayer();
         yield return new WaitForSeconds(1f);
         _collectible.IsPermanentlyCollected = true;
         yield return new WaitUntil(() => _collectible.IsDespawned);
@@ -27,7 +27,7 @@ public class CaveCollectiblePortalTrigger : MonoBehaviour
         _portalAnimator.SetTrigger("despawn");
         CollectibleManager.obj.CollectiblePickedPermanently(_collectible);
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
-        PlayerMovement.obj.UnFreeze();
+        PlayerManager.obj.UnfreezePlayer();
         Destroy(this, 5);
     }
 }

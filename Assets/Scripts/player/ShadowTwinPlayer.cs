@@ -9,8 +9,10 @@ public class ShadowTwinPlayer : MonoBehaviour
     private BoxCollider2D _collider;
     public bool hasPowerUp = false;
     public float spawnFreezeDuration = 1.4f;
-    private bool _hasCrown = false;
     public float _forcePushFlashSpeed = 0.17f;
+    [SerializeField] private Transform _leftAvatarTarget;
+    [SerializeField] private Transform _rightAvatarTarget;
+    private bool _hasCrown = false;
     private float _defaultGravity;
 
     private Animator _animator;
@@ -224,5 +226,13 @@ public class ShadowTwinPlayer : MonoBehaviour
         if (_playerContrastFade != null) {
             _playerContrastFade.ResetContrast();
         }
+    }
+
+    public Transform GetLeftAvatarTarget() {
+        return _leftAvatarTarget;
+    }
+
+    public Transform GetRightAvatarTarget() {
+        return _rightAvatarTarget;
     }
 }

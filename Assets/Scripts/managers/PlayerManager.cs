@@ -345,7 +345,7 @@ public class PlayerManager : MonoBehaviour
     }
 
     //Only use in LevelManager!
-    public bool IsPlayerFacingLeft() {
+    public bool IsPlayerFacingLeftLevelManager() {
         if(Player.obj != null && _lastPlayerType == PlayerType.HUMAN)
             return PlayerMovement.obj.IsFacingLeft();
         else if(PlayerBlob.obj != null && _lastPlayerType == PlayerType.BLOB)
@@ -355,12 +355,12 @@ public class PlayerManager : MonoBehaviour
         return false;
     }
 
-    public bool IsPlayerFacingLeft(PlayerType playerType) {
+    public bool IsPlayerFacingLeft() {
+        PlayerType playerType = GetActivePlayerType();
         if(playerType == PlayerType.HUMAN) {
-            if(Player.obj != null && _lastPlayerType == PlayerType.HUMAN)
-                return PlayerMovement.obj.IsFacingLeft();
-            else if(PlayerBlob.obj != null && _lastPlayerType == PlayerType.BLOB)
-                return PlayerBlobMovement.obj.IsFacingLeft();
+            return PlayerMovement.obj.IsFacingLeft();
+        } else if(playerType == PlayerType.BLOB) {
+            return PlayerBlobMovement.obj.IsFacingLeft();
         } else if(playerType == PlayerType.SHADOW_TWIN) {
             return ShadowTwinMovement.obj.isFacingLeft();
         }
@@ -407,6 +407,48 @@ public class PlayerManager : MonoBehaviour
             if(ShadowTwinPlayer.obj != null && ShadowTwinPlayer.obj.gameObject.activeSelf)
                 ShadowTwinPlayer.obj.PlaySpawn();
         }
+    }
+
+    public Transform GetLeftAvatarTarget() {
+        PlayerType playerType = GetActivePlayerType();
+        if(playerType == PlayerType.HUMAN)
+            return Player.obj.GetLeftAvatarTarget();
+        else if(playerType == PlayerType.SHADOW_TWIN)
+            return ShadowTwinPlayer.obj.GetLeftAvatarTarget();
+        else if(playerType == PlayerType.BLOB)
+            return PlayerBlob.obj.GetLeftAvatarTarget();
+        return null;
+    }
+
+    public Transform GetRightAvatarTarget() {
+        PlayerType playerType = GetActivePlayerType();
+        if(playerType == PlayerType.HUMAN)
+            return Player.obj.GetRightAvatarTarget();
+        else if(playerType == PlayerType.SHADOW_TWIN)
+            return ShadowTwinPlayer.obj.GetRightAvatarTarget();
+        else if(playerType == PlayerType.BLOB)
+            return PlayerBlob.obj.GetRightAvatarTarget();
+        return null;
+    }
+
+    public void FreezePlayer() {
+        PlayerType playerType = GetActivePlayerType();
+        if(playerType == PlayerType.HUMAN)
+            PlayerMovement.obj.Freeze();
+        else if(playerType == PlayerType.SHADOW_TWIN)
+            ShadowTwinMovement.obj.Freeze();
+        else if(playerType == PlayerType.BLOB)
+            PlayerBlobMovement.obj.Freeze();
+    }
+
+    public void UnfreezePlayer() {
+        PlayerType playerType = GetActivePlayerType();
+        if(playerType == PlayerType.HUMAN)
+            PlayerMovement.obj.UnFreeze();
+        else if(playerType == PlayerType.SHADOW_TWIN)
+            ShadowTwinMovement.obj.UnFreeze();
+        else if(playerType == PlayerType.BLOB)
+            PlayerBlobMovement.obj.UnFreeze();
     }
 
     void Awake()

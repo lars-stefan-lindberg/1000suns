@@ -313,17 +313,17 @@ public class LevelManager : MonoBehaviour
 
     private void AdjustSpawnFaceDirection(float sceneLoadTriggerPosition, float playerSpawnPointPosition) {
         bool isLeftSideOfScreen = sceneLoadTriggerPosition - playerSpawnPointPosition >= 0;
-        if(isLeftSideOfScreen && PlayerManager.obj.IsPlayerFacingLeft())
+        if(isLeftSideOfScreen && PlayerManager.obj.IsPlayerFacingLeftLevelManager())
             PlayerManager.obj.FlipPlayer();
-        else if(!isLeftSideOfScreen && !PlayerManager.obj.IsPlayerFacingLeft())
+        else if(!isLeftSideOfScreen && !PlayerManager.obj.IsPlayerFacingLeftLevelManager())
             PlayerManager.obj.FlipPlayer();
     }
 
     private void AdjustSpawnFaceDirectionIsSeparated(float sceneLoadTriggerPosition, float playerSpawnPointPosition, PlayerManager.PlayerType playerType) {
         bool isLeftSideOfScreen = sceneLoadTriggerPosition - playerSpawnPointPosition >= 0;
-        if(isLeftSideOfScreen && PlayerManager.obj.IsPlayerFacingLeft(playerType))
+        if(isLeftSideOfScreen && PlayerManager.obj.IsPlayerFacingLeft())
             PlayerManager.obj.FlipPlayer(playerType);
-        else if(!isLeftSideOfScreen && !PlayerManager.obj.IsPlayerFacingLeft(playerType))
+        else if(!isLeftSideOfScreen && !PlayerManager.obj.IsPlayerFacingLeft())
             PlayerManager.obj.FlipPlayer(playerType);
     }
 

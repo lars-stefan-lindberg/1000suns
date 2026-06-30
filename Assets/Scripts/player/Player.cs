@@ -12,6 +12,8 @@ public class Player : MonoBehaviour
     private bool _hasCape = false;
     public float _forcePushFlashSpeed = 0.17f;
     public float _shadowJumpFlashSpeed = 0.1f;
+    [SerializeField] private Transform _leftAvatarTarget;
+    [SerializeField] private Transform _rightAvatarTarget;
 
     private Animator _animator;
     private PlayerFlash _playerFlash;
@@ -249,5 +251,12 @@ public class Player : MonoBehaviour
         if (_playerContrastFade != null) {
             _playerContrastFade.ResetContrast();
         }
+    }
+    public Transform GetLeftAvatarTarget() {
+        return _leftAvatarTarget;
+    }
+
+    public Transform GetRightAvatarTarget() {
+        return _rightAvatarTarget;
     }
 }

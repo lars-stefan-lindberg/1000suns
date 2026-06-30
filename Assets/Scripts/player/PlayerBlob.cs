@@ -4,6 +4,8 @@ public class PlayerBlob : MonoBehaviour
 {
     public static PlayerBlob obj;
     public Rigidbody2D rigidBody;
+    [SerializeField] private Transform _leftAvatarTarget;
+    [SerializeField] private Transform _rightAvatarTarget;
     private Animator _animator;
     private BoxCollider2D _collider;
     private float _spawnFreezeDuration = 0.9f;
@@ -70,6 +72,14 @@ public class PlayerBlob : MonoBehaviour
 
     public void FadeInPlayerLight() {
         _playerLightManager.FadeIn();
+    }
+
+    public Transform GetLeftAvatarTarget() {
+        return _leftAvatarTarget;
+    }
+
+    public Transform GetRightAvatarTarget() {
+        return _rightAvatarTarget;
     }
 
     void OnDestroy()

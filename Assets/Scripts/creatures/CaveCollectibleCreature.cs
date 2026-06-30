@@ -81,23 +81,33 @@ public class CaveCollectibleCreature : MonoBehaviour
         Vector2 headTargetPosition;
         if(!IsPicked) { 
             headTargetPosition = transform.position;
+        } else if(IsPermanentlyCollected) {
+            headTargetPosition = _targetTransform.position;
         } else { //Follow
-            bool isCaveAvatarFacingLeft = CaveAvatar.obj.IsFacingLeft();
-            Transform target;   
-            if(!_hasTarget) {
-                target = CaveAvatar.obj.GetHeadTransform();
-                _targetTransform = target;
-                _hasTarget = true;
-            } else {
-                target = _targetTransform;
-            }
-            float headTargetX;
-            if(!IsPermanentlyCollected) {
+            if(CaveAvatar.obj.IsFollowingPlayer) {
+                //Follow cave avatar
+                bool isCaveAvatarFacingLeft = CaveAvatar.obj.IsFacingLeft();
+                Transform target;   
+                if(!_hasTarget) {
+                    target = CaveAvatar.obj.GetHeadTransform();
+                    _targetTransform = target;
+                    _hasTarget = true;
+                } else {
+                    target = _targetTransform;
+                }
+                float headTargetX;
                 headTargetX = isCaveAvatarFacingLeft ? target.position.x + 1.475f : target.position.x - 1.475f;
                 _headSpriteRenderer.flipX = isCaveAvatarFacingLeft;
-            } else
-                headTargetX = target.position.x;
-            headTargetPosition = new(headTargetX, target.position.y);
+
+                headTargetPosition = new(headTargetX, target.position.y);
+            } else {
+                //Follow player
+                bool isPlayerFacingLeft = PlayerManager.obj.IsPlayerFacingLeft();
+                _headSpriteRenderer.flipX = isPlayerFacingLeft;
+                _targetTransform = isPlayerFacingLeft ? PlayerManager.obj.GetRightAvatarTarget() : PlayerManager.obj.GetLeftAvatarTarget();
+                headTargetPosition = _targetTransform.position;
+                _hasTarget = true;
+            }
         }
 
         if(IsTargetReached(_head.transform.position, headTargetPosition)) {
