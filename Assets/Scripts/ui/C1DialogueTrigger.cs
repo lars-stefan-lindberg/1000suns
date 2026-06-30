@@ -11,6 +11,7 @@ public class C1DialogueTrigger : MonoBehaviour, ISkippable
     [SerializeField] private Transform _finalCaveAvatarFlyPosition;
     [SerializeField] private GameObject _cutsceneCamera;
     private BoxCollider2D _collider;
+    private Coroutine _cutsceneCoroutine;
 
     void Start() {
         _collider = GetComponent<BoxCollider2D>();
@@ -25,11 +26,13 @@ public class C1DialogueTrigger : MonoBehaviour, ISkippable
     void OnTriggerEnter2D(Collider2D other) {
         if(other.CompareTag("Player")) {
             _collider.enabled = false;
-            StartCoroutine(SetupDialogue());
+            _cutsceneCoroutine = StartCoroutine(SetupDialogue());
         }
     }
 
     public void RequestSkip() {
+        if(_cutsceneCoroutine != null) 
+            StopCoroutine(_cutsceneCoroutine);
         _caveAvatarRootsManager.Stop();
         _conversationManager.HardStopConversation();
         _conversationManager.OnConversationEnd -= OnConversationCompleted;

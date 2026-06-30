@@ -25,6 +25,7 @@ public class Cave23RoomManager : MonoBehaviour
     [SerializeField] private AmbienceTrack _caveMainAmbience;
     [SerializeField] private GameObject _crystalCutsceneCamera;
     [SerializeField] private SpriteFlash _crystalFlash;
+    [SerializeField] private LightFlash _lightVfx;
     
     [Header("Voice Audio Settings")]
     [SerializeField] private float _initialVolumeFadeSpeed = 2f;
@@ -147,6 +148,7 @@ public class Cave23RoomManager : MonoBehaviour
         PlayerMovement.obj.SetMovementInput(Vector2.zero);
         PlayerMovement.obj.StopWalking();
         yield return null;
+        _lightVfx.Flash();
         PlayerMovement.obj.SetNewPower();
         CameraShakeManager.obj.ForcePushShake();
         yield return new WaitForSeconds(1.5f);

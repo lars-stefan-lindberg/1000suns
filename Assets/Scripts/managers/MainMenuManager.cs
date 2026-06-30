@@ -43,6 +43,7 @@ public class MainMenuManager : MonoBehaviour
     private bool _isTransitioning = false;
     private Stack<UIScreen> screenStack = new();
     private GameObject _mainMenuBackSelectable;
+    private bool _ignoreCancelInput = false;
 
     void Awake() {
         obj = this;
@@ -467,8 +468,25 @@ public class MainMenuManager : MonoBehaviour
     }
 
     private void OnCancel(InputAction.CallbackContext context) {
+        if (_ignoreCancelInput)
+            return;
+            
         if(screenStack.Count >= 1)
             UISoundPlayer.obj.PlayBack();
         GoBack();
+    }
+
+    public void IgnoreCancelInputTemporarily(float duration = 0.3f) {
+        if (_ignoreCancelInputCoroutine != null)
+            StopCoroutine(_ignoreCancelInputCoroutine);
+        _ignoreCancelInputCoroutine = StartCoroutine(IgnoreCancelInputCoroutine(duration));
+    }
+
+    private Coroutine _ignoreCancelInputCoroutine;
+    private IEnumerator IgnoreCancelInputCoroutine(float duration) {
+        _ignoreCancelInput = true;
+        yield return new WaitForSecondsRealtime(duration);
+        _ignoreCancelInput = false;
+        _ignoreCancelInputCoroutine = null;
     }
 }

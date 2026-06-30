@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine.Events;
-using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 #if UNITY_EDITOR
@@ -251,6 +250,16 @@ public class RebindActionUI : MonoBehaviour
             // Re-enable UI controls
             var uiControls = action.actionMap.asset.FindActionMap("UIControls");
             uiControls?.Enable();
+            
+            // Tell menu managers to ignore Cancel input temporarily to prevent held buttonEast from triggering navigation
+            if (PauseMenuManager.obj != null)
+            {
+                PauseMenuManager.obj.IgnoreCancelInputTemporarily(0.3f);
+            }
+            if (MainMenuManager.obj != null)
+            {
+                MainMenuManager.obj.IgnoreCancelInputTemporarily(0.3f);
+            }
             
             if (action.bindings[bindingIndex].groups.Contains("Keyboard"))
             {

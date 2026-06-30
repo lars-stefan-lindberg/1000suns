@@ -42,6 +42,7 @@ public class PauseMenuManager : MonoBehaviour
     private bool _isTransitioning = false;
     private Stack<UIScreen> screenStack = new();
     private DialogueController _activeDialogueController;
+    private bool _ignoreCancelInput = false;
 
     void Awake() {
         obj = this;
@@ -358,6 +359,9 @@ public class PauseMenuManager : MonoBehaviour
     }
 
     private void OnCancel(InputAction.CallbackContext context) {
+        if (_ignoreCancelInput)
+            return;
+            
         if(screenStack.Count > 1) {
             UISoundPlayer.obj.PlayBack();
             UIScreen screen = screenStack.Peek();
@@ -394,5 +398,19 @@ public class PauseMenuManager : MonoBehaviour
         var cancelAction = _cancelActionReference.action;
         cancelAction.RemoveBindingOverride(_escapeKeyBindingIndex);
         _escapeKeyBindingIndex = -1;
+    }
+
+    public void IgnoreCancelInputTemporarily(float duration = 0.3f) {
+        if (_ignoreCancelInputCoroutine != null)
+            StopCoroutine(_ignoreCancelInputCoroutine);
+        _ignoreCancelInputCoroutine = StartCoroutine(IgnoreCancelInputCoroutine(duration));
+    }
+
+    private Coroutine _ignoreCancelInputCoroutine;
+    private IEnumerator IgnoreCancelInputCoroutine(float duration) {
+        _ignoreCancelInput = true;
+        yield return new WaitForSecondsRealtime(duration);
+        _ignoreCancelInput = false;
+        _ignoreCancelInputCoroutine = null;
     }
 }
