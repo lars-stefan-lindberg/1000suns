@@ -12,7 +12,9 @@ public class CameraManager : MonoBehaviour
     }
 
     public bool IsRoomCameraActivated() {
-        return currentRoomCameraController?.IsRoomCameraActivated() ?? false;
+        if(currentRoomCameraController == null)
+            return false;
+        return currentRoomCameraController.IsRoomCameraActivated();
     }
 
     public void EnterRoom(
