@@ -20,10 +20,16 @@ public class InputDeviceListener : MonoBehaviour
     }
 
     private Device _currentDevice = Device.None;
+    private Gamepad _activeGamepad = null;
 
     public Device GetCurrentInputDevice()
     {
         return _currentDevice;
+    }
+    
+    public Gamepad GetActiveGamepad()
+    {
+        return _activeGamepad;
     }
 
     public string GetCurrentDeviceLayoutName()
@@ -44,6 +50,7 @@ public class InputDeviceListener : MonoBehaviour
         obj = this;
         if(Gamepad.current != null) {
             _currentDevice = Device.Gamepad;
+            _activeGamepad = Gamepad.current;
         } else {
             _currentDevice = Device.Keyboard;
         }
@@ -64,11 +71,30 @@ public class InputDeviceListener : MonoBehaviour
         {
             InputAction receivedInputAction = (InputAction) obj;
             InputDevice lastDevice = receivedInputAction.activeControl.device;
-            if(lastDevice.name.Contains("Keyboard") && _currentDevice != Device.Keyboard) {
-                _currentDevice = Device.Keyboard;
-                OnInputDeviceStream?.Invoke(_currentDevice);
-            } else if(lastDevice.name.Contains("Gamepad") && _currentDevice != Device.Gamepad) {
-                _currentDevice = Device.Gamepad;
+            
+            Device newDevice = Device.None;
+            bool gamepadChanged = false;
+            
+            if (lastDevice is Keyboard)
+            {
+                newDevice = Device.Keyboard;
+            }
+            else if (lastDevice is Gamepad currentGamepad)
+            {
+                newDevice = Device.Gamepad;
+                
+                // Check if it's a different gamepad than the currently active one
+                if (_activeGamepad != currentGamepad)
+                {
+                    _activeGamepad = currentGamepad;
+                    gamepadChanged = true;
+                }
+            }
+            
+            // Trigger event if device type changed OR if it's a different gamepad
+            if (newDevice != Device.None && (newDevice != _currentDevice || gamepadChanged))
+            {
+                _currentDevice = newDevice;
                 OnInputDeviceStream?.Invoke(_currentDevice);
             }
         }
