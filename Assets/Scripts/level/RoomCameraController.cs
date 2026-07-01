@@ -23,6 +23,7 @@ public class RoomCameraController : MonoBehaviour
     private bool _justActivated = false;
     private Coroutine _unlockYDampingCoroutine;
     private float _unlockYDampingPreviousValue;
+    private bool _requiresVerticalHandling;
 
     public enum RoomCameraType
     {
@@ -37,6 +38,7 @@ public class RoomCameraController : MonoBehaviour
         vcam = GetComponent<CinemachineVirtualCamera>();
         framing = vcam.GetCinemachineComponent<CinemachineFramingTransposer>();
         vcamConfiner = vcam.GetComponent<CinemachineConfiner2D>();
+        _requiresVerticalHandling = (roomType == RoomCameraType.Vertical || roomType == RoomCameraType.HorizontalAndVertical);
     }
 
     void CacheConfinerBounds()
@@ -114,10 +116,9 @@ public class RoomCameraController : MonoBehaviour
 
     void LateUpdate()
     {
-        if (roomType == RoomCameraType.Vertical || roomType == RoomCameraType.HorizontalAndVertical)
+        if (_requiresVerticalHandling)
         {
             HandleVerticalTopLock();
-
             _justActivated = false;
         }
     }
