@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using FunkyCode;
@@ -59,7 +58,29 @@ public class LevelManager : MonoBehaviour
     }
 
     public InitRoom GetInitRoomData(Scene scene) {
-        GameObject initRoomObject = scene.GetRootGameObjects().FirstOrDefault(gameObject => gameObject.CompareTag("InitRoom"));
+        GameObject[] rootObjects = scene.GetRootGameObjects();
+        GameObject initRoomObject = null;
+        foreach (var go in rootObjects) {
+            if (go.CompareTag("InitRoom")) {
+                initRoomObject = go;
+                break;
+            }
+        }
+        if(initRoomObject == null) {
+            Debug.LogWarning("Scene " + scene.name + " does not have any InitRoom data.");
+            return null;
+        }
+        return initRoomObject.GetComponent<InitRoom>();
+    }
+
+    private InitRoom GetInitRoomData(Scene scene, GameObject[] rootObjects) {
+        GameObject initRoomObject = null;
+        foreach (var go in rootObjects) {
+            if (go.CompareTag("InitRoom")) {
+                initRoomObject = go;
+                break;
+            }
+        }
         if(initRoomObject == null) {
             Debug.LogWarning("Scene " + scene.name + " does not have any InitRoom data.");
             return null;
@@ -82,16 +103,15 @@ public class LevelManager : MonoBehaviour
         isRunningAfterSceneLoaded = false;
     }
 
-    private IEnumerator LoadWalkableSurface(Scene scene) {
-        GameObject initRoomObject = scene.GetRootGameObjects().FirstOrDefault(gameObject => gameObject.CompareTag("InitRoom"));
-        InitRoom initRoom = initRoomObject?.GetComponent<InitRoom>();
+    private IEnumerator LoadWalkableSurface(InitRoom initRoom) {       
         SceneField walkableSurfaceSceneField = initRoom.walkableSurfaceScene;
         yield return StartCoroutine(WalkableSurfacesManager.obj.AddWalkableSurface(walkableSurfaceSceneField));
     }
 
     private IEnumerator LoadScene(Scene scene) {
-        InitRoom initRoom = GetInitRoomData(scene);
-        yield return StartCoroutine(LoadWalkableSurface(scene));
+        GameObject[] sceneRootObjects = scene.GetRootGameObjects();
+        InitRoom initRoom = GetInitRoomData(scene, sceneRootObjects);
+        yield return StartCoroutine(LoadWalkableSurface(initRoom));
         
         if(AudioStateManager.obj != null) {
             ReverbZone reverbZone = ReverbZone.Forest;
@@ -160,16 +180,25 @@ public class LevelManager : MonoBehaviour
             SetPlayersStartingState();
         }
 
-        GameObject[] sceneRootObjects = scene.GetRootGameObjects();
-        GameObject mainCamera = sceneRootObjects.First(gameObject => gameObject.CompareTag("MainCamera"));
+        GameObject mainCamera = null;
+        GameObject room = null;
+        foreach (var go in sceneRootObjects) {
+            if (go.CompareTag("MainCamera")) {
+                mainCamera = go;
+            } else if (go.CompareTag("Room")) {
+                room = go;
+            }
+            if (mainCamera != null && room != null) {
+                break;
+            }
+        }
         RoomCameraController cameraController = mainCamera.GetComponent<RoomCameraController>();
-        GameObject room = sceneRootObjects.First(gameObject => gameObject.CompareTag("Room"));
         Collider2D roomCollider = room.GetComponent<Collider2D>();
         CameraManager.obj.EnterRoom(cameraController, roomCollider, PlayerManager.obj.GetPlayerTransform(PlayerManager.obj.GetLastActivePlayerType()), playerSpawnPointCollider.transform.position);  
 
         Reaper.obj.playerKilled = false;
 
-        StartCoroutine(LoadAdjacentRoomsPrivate(scene));
+        StartCoroutine(LoadAdjacentRoomsPrivate(initRoom));
 
         // If we just loaded a game from a save, restore audio state (music + ambience)
         if (SaveManager.obj != null && SaveManager.obj.RestoreAudioOnNextScene) {
@@ -194,19 +223,20 @@ public class LevelManager : MonoBehaviour
     }
 
     private GameObject FindSceneSpawnPoint(string spawnPointId) {
-        SpawnPoint spawnPoint = FindObjectsOfType<SpawnPoint>().FirstOrDefault(spawnPoint => spawnPoint.SpawnPointID == spawnPointId);
-        if(spawnPoint == null) {
-            return null;
+        SpawnPoint[] spawnPoints = FindObjectsOfType<SpawnPoint>();
+        foreach (var sp in spawnPoints) {
+            if (sp.SpawnPointID == spawnPointId) {
+                return sp.gameObject;
+            }
         }
-        return spawnPoint.gameObject;
+        return null;
     }
 
-    public void LoadAdjacentRooms(Scene scene) {
-        StartCoroutine(LoadAdjacentRoomsPrivate(scene));
+    public void LoadAdjacentRooms(InitRoom initRoomData) {
+        StartCoroutine(LoadAdjacentRoomsPrivate(initRoomData));
     }
 
-    private IEnumerator LoadAdjacentRoomsPrivate(Scene scene) {
-        InitRoom initRoomData = GetInitRoomData(scene);
+    private IEnumerator LoadAdjacentRoomsPrivate(InitRoom initRoomData) {
         List<SceneField> adjacentRooms = initRoomData.adjacentRooms;
         foreach(SceneField room in adjacentRooms) {
             Scene sceneToLoad = SceneManager.GetSceneByName(room.SceneName);
@@ -217,8 +247,7 @@ public class LevelManager : MonoBehaviour
         yield return null;
     }
 
-    public void UnloadNonAdjacentRooms(Scene currentScene) {
-        InitRoom initRoomData = GetInitRoomData(currentScene);
+    public void UnloadNonAdjacentRooms(Scene currentScene, InitRoom initRoomData) {
         List<SceneField> adjacentRooms = initRoomData.adjacentRooms;
 
         HashSet<string> excluded = new()
@@ -241,7 +270,17 @@ public class LevelManager : MonoBehaviour
             if (excluded.Contains(scene.name))
                 continue;
 
-            if (LevelSceneNamePrefixes.Any(prefix => scene.name.StartsWith(prefix)))
+            bool isLevelScene = false;
+            foreach (var prefix in LevelSceneNamePrefixes)
+            {
+                if (scene.name.StartsWith(prefix))
+                {
+                    isLevelScene = true;
+                    break;
+                }
+            }
+            
+            if (isLevelScene)
             {
                 scenesToUnload.Add(scene);
             }
@@ -368,7 +407,15 @@ public class LevelManager : MonoBehaviour
     public List<string> ExportCompletedLevels()
     {
         // Only include entries explicitly marked true
-        return levelCompletionMap.Where(kv => kv.Value).Select(kv => kv.Key).ToList();
+        List<string> completedLevels = new List<string>();
+        foreach (var kvp in levelCompletionMap)
+        {
+            if (kvp.Value)
+            {
+                completedLevels.Add(kvp.Key);
+            }
+        }
+        return completedLevels;
     }
 
     // Rebuilds the completion map from a list of completed level ids

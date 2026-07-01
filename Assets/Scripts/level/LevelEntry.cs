@@ -31,8 +31,9 @@ public class LevelEntry : MonoBehaviour
             if(_enablePlayerTransition)
                 PlayerManager.obj.SetTransitioningBetweenLevels(playerType);
 
-            LevelManager.obj.LoadAdjacentRooms(newScene);
-            LevelManager.obj.UnloadNonAdjacentRooms(newScene);
+            InitRoom initRoomData = LevelManager.obj.GetInitRoomData(newScene);
+            LevelManager.obj.LoadAdjacentRooms(initRoomData);
+            LevelManager.obj.UnloadNonAdjacentRooms(newScene, initRoomData);
 
             SceneManager.SetActiveScene(newScene);
 

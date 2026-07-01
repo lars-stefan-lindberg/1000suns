@@ -85,7 +85,8 @@ public class CaveInSurface : MonoBehaviour
         }
         Scene firstScene = SceneManager.GetSceneByName("Cave-1");
         SceneManager.SetActiveScene(firstScene);
-        LevelManager.obj.LoadAdjacentRooms(firstScene);
+        InitRoom initRoomData = LevelManager.obj.GetInitRoomData(firstScene);
+        LevelManager.obj.LoadAdjacentRooms(initRoomData);
         
         SceneManager.UnloadSceneAsync("Forest-1");
         SceneManager.UnloadSceneAsync("Forest-2");

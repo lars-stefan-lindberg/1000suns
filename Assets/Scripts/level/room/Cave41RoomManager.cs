@@ -186,7 +186,8 @@ public class Cave41RoomManager : MonoBehaviour
         AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(_nextScene, LoadSceneMode.Additive);
         while(!asyncOperation.isDone)
             yield return null;
-        LevelManager.obj.LoadAdjacentRooms(SceneManager.GetSceneByName(_nextScene));
+        InitRoom initRoomData = LevelManager.obj.GetInitRoomData(SceneManager.GetSceneByName(_nextScene));
+        LevelManager.obj.LoadAdjacentRooms(initRoomData);
 
         SceneManager.UnloadSceneAsync(_thisScene);
     }

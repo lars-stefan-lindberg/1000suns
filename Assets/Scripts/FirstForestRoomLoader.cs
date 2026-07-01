@@ -28,7 +28,8 @@ public class FirstForestRoomLoader : MonoBehaviour
 
     private IEnumerator LoadRoom() {
         StartCoroutine(WalkableSurfacesManager.obj.AddWalkableSurface(_firstForestSurfaces));
-        LevelManager.obj.LoadAdjacentRooms(gameObject.scene);
+        InitRoom initRoomData = LevelManager.obj.GetInitRoomData(gameObject.scene);
+        LevelManager.obj.LoadAdjacentRooms(initRoomData);
         SceneManager.SetActiveScene(gameObject.scene);
         _loadObjectsManager.LoadIntroObjects();
 
