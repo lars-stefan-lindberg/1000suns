@@ -91,11 +91,11 @@ public class BlobExtraJumpTrigger : MonoBehaviour, ISkippable
         //Start tutorial dialogue
         Time.timeScale = 0;
         _tutorialCanvas.SetActive(true);
-        TutorialDialogManager.obj.StartFadeIn();
-        SoundFXManager.obj.Play2D(_powerupFanfareStinger);
-        while(!TutorialDialogManager.obj.tutorialCompleted) {
-            yield return null;
-        }
+        // TutorialDialogManager.obj.StartFadeIn();
+        // SoundFXManager.obj.Play2D(_powerupFanfareStinger);
+        // while(!TutorialDialogManager.obj.tutorialCompleted) {
+        //     yield return null;
+        // }
         _tutorialCanvas.SetActive(false);
         Time.timeScale = 1;
 

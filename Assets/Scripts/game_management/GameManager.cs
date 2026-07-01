@@ -12,30 +12,6 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     GameProgressDebugger debugView;
 
-    //Cutscene events
-    public bool CaveLevelStarted { get; set; }
-    public bool C1MonologueEnded { get; set; }
-    public bool CapeRoomZoomCompleted { get; set; }
-    public bool CapePicked { get; set; }
-    public bool FirstCaveCollectibleConversationEnded { get; set; }
-    public bool BabyPrisonerAlerted { get; set; }
-    public bool PrisonerIntroSeen { get; set; }
-    public bool FirstPrisonerFightStarted { get; set; }
-    public bool FirstPrisonerKilled { get; set; }
-    public bool FirstCaveMiniBossKilled { get; set; }
-    public bool MirrorConversationEnded { get; set; }
-    public bool PowerUpRoomsFloorBroken { get; set; }
-    public bool FirstPowerUpPicked { get; set; }
-    public bool PowerUpRoomCompletedWallBreak { get; set; }
-    public bool AfterPowerUpRoomsCompletedWallBreak { get; set; }
-    public bool C20CutsceneCompleted { get; set; }
-    public bool C215WallBroken { get; set; }
-    public bool C275FloorBroken { get; set; }
-    public bool C26CutsceneCompleted { get; set; }
-    public bool C27CutsceneCompleted { get; set; }
-    public bool C30CutsceneCompleted { get; set; }
-    public bool C31CutsceneCompleted { get; set; }
-
     public bool IsPauseAllowed { get; set; }
 
     public CaveTimelineId.Id startingTimeline = CaveTimelineId.Id.Eli;
