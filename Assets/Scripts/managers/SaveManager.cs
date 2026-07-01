@@ -1,7 +1,7 @@
 using System.IO;
 using UnityEngine;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 
 public class SaveManager : MonoBehaviour
 {
@@ -29,7 +29,7 @@ public class SaveManager : MonoBehaviour
         return _activeSaveProfile;
     }
 
-    public void SaveGame(string levelId)
+    public async void SaveGame(string levelId)
     {
         if(_activeSaveProfile == 0) {
             Debug.LogWarning("No save profile set...");
@@ -38,16 +38,23 @@ public class SaveManager : MonoBehaviour
         string path = GetSavePath(_activeSaveProfile);
         SaveData data = BuildSaveData(levelId);
         string json = JsonUtility.ToJson(data, true);
-        File.WriteAllText(path, json);
+        
+        // Write to file on background thread to avoid frame hitches
+        await Task.Run(() => 
+        {
+            File.WriteAllText(path, json);
+        });
+        
         Debug.Log($"Game saved to slot {_activeSaveProfile}: {path}");
     }
 
-    public SaveData LoadGame(int slot)
+    public async Task<SaveData> LoadGame(int slot)
     {
         string path = GetSavePath(slot);
         if (File.Exists(path))
         {
-            string json = File.ReadAllText(path);
+            // Read from file on background thread to avoid frame hitches
+            string json = await Task.Run(() => File.ReadAllText(path));
             var data = JsonUtility.FromJson<SaveData>(json);
             LastLoadedSaveData = data;
             RestoreAudioOnNextScene = true; // consumed by LevelManager after next scene load
@@ -106,7 +113,7 @@ public class SaveManager : MonoBehaviour
     }
 
     // Quick check to see if a save file exists and appears valid for loading
-    public bool HasValidSave(int slot)
+    public async Task<bool> HasValidSave(int slot)
     {
         try
         {
@@ -114,7 +121,8 @@ public class SaveManager : MonoBehaviour
             if (!File.Exists(path))
                 return false;
 
-            string json = File.ReadAllText(path);
+            // Read from file on background thread
+            string json = await Task.Run(() => File.ReadAllText(path));
             if (string.IsNullOrWhiteSpace(json)) {
                 DeleteSave(slot);
                 return false;
@@ -170,33 +178,56 @@ public class SaveManager : MonoBehaviour
     }
 
     private SaveData BuildSaveData(string levelId) {
+        // Cache manager references to reduce property access overhead
+        var gameMgr = GameManager.obj;
+        var levelMgr = LevelManager.obj;
+        var playerPowersMgr = PlayerPowersManager.obj;
+        var collectibleMgr = CollectibleManager.obj;
+        var musicMgr = MusicManager.obj;
+        var ambienceMgr = AmbienceManager.obj;
+        var playerStatsMgr = PlayerStatsManager.obj;
+        var player = Player.obj;
+        var shadowPlayer = ShadowTwinPlayer.obj;
+        
         SaveData data = new SaveData();
         data.levelId = levelId;
-        data.spawnPointId = GameManager.obj.GetCurrentSpawnPointId();
-        data.playerDeaths = PlayerStatsManager.obj.numberOfDeaths;
-        data.timePlayed = PlayerStatsManager.obj.GetElapsedTime();
-        data.hasCape = Player.obj.GetHasCape();
-        data.hasCrown = ShadowTwinPlayer.obj.GetHasCrown();
-        data.playerPowers = PlayerPowersManager.obj != null ? PlayerPowersManager.obj.GetUnlockedPowers() : new List<string>();
-        data.completedEvents = GameManager.obj != null ? GameManager.obj.GetProgressForSave().GetCompletedEventIds().ToList() : new List<string>();
-        data.completedLevels = LevelManager.obj != null ? LevelManager.obj.ExportCompletedLevels() : new List<string>();
-        data.background = LevelManager.obj != null ? LevelManager.obj.GetActiveSceneInitRoomData().backgroundScene : "";
-        data.surface = LevelManager.obj != null ? LevelManager.obj.GetActiveSceneInitRoomData().walkableSurfaceScene : "";
-        data.caveTimeline = GameManager.obj != null ? GameManager.obj.GetCaveTimeline().GetCaveTimelineId() : 0;
-        data.pickedCollectibles = CollectibleManager.obj != null ? CollectibleManager.obj.ExportPickedCollectibles() : new List<string>();
+        data.spawnPointId = gameMgr.GetCurrentSpawnPointId();
+        data.playerDeaths = playerStatsMgr.numberOfDeaths;
+        data.timePlayed = playerStatsMgr.GetElapsedTime();
+        data.hasCape = player.GetHasCape();
+        data.hasCrown = shadowPlayer.GetHasCrown();
+        data.playerPowers = playerPowersMgr != null ? playerPowersMgr.GetUnlockedPowers() : new List<string>();
+        
+        // Replace LINQ ToList() with direct list access (already returns IReadOnlyList)
+        if (gameMgr != null) {
+            var completedEventIds = gameMgr.GetProgressForSave().GetCompletedEventIds();
+            data.completedEvents = new List<string>(completedEventIds);
+        } else {
+            data.completedEvents = new List<string>();
+        }
+        
+        data.completedLevels = levelMgr != null ? levelMgr.ExportCompletedLevels() : new List<string>();
+        data.background = levelMgr != null ? levelMgr.GetActiveSceneInitRoomData().backgroundScene : "";
+        data.surface = levelMgr != null ? levelMgr.GetActiveSceneInitRoomData().walkableSurfaceScene : "";
+        data.caveTimeline = gameMgr != null ? gameMgr.GetCaveTimeline().GetCaveTimelineId() : 0;
+        data.pickedCollectibles = collectibleMgr != null ? collectibleMgr.ExportPickedCollectibles() : new List<string>();
         data.lastSaved = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 
         // Capture audio state
-        if (MusicManager.obj != null)
-            if(MusicManager.obj.CurrentTrack != null)
-                data.currentMusicId = MusicManager.obj.CurrentTrack.trackId;
+        if (musicMgr != null)
+            if(musicMgr.CurrentTrack != null)
+                data.currentMusicId = musicMgr.CurrentTrack.trackId;
             else
                 data.currentMusicId = "";
-        if (AmbienceManager.obj != null)
+        
+        // Replace LINQ Select().ToList() with foreach loop
+        if (ambienceMgr != null)
         {
-            data.currentAmbienceIds = AmbienceManager.obj.ActiveInstances.Keys
-                .Select(track => track.ambienceId)
-                .ToList();
+            data.currentAmbienceIds = new List<string>();
+            foreach (var track in ambienceMgr.ActiveInstances.Keys)
+            {
+                data.currentAmbienceIds.Add(track.ambienceId);
+            }
         }
 
         return data;

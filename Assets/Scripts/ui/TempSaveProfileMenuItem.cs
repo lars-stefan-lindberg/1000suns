@@ -4,6 +4,7 @@ using DG.Tweening;
 using TMPro;
 using UnityEngine.Localization;
 using UnityEngine.UI;
+using System.Collections;
 
 public class TempSaveProfileMenuItem : MonoBehaviour, IMoveHandler, ISelectHandler, IDeselectHandler, ISubmitHandler
 {
@@ -22,8 +23,16 @@ public class TempSaveProfileMenuItem : MonoBehaviour, IMoveHandler, ISelectHandl
 
     void Start() {
         _idText.text = _id.ToString();
+        StartCoroutine(UpdateTextBasedOnSave());
+    }
 
-        if(SaveManager.obj.HasValidSave(_id)) {
+    private IEnumerator UpdateTextBasedOnSave() {
+        var hasValidTask = SaveManager.obj.HasValidSave(_id);
+        while (!hasValidTask.IsCompleted) {
+            yield return null;
+        }
+
+        if(hasValidTask.Result) {
             _text.text = _continueGame.GetLocalizedString();
         } else {
             _text.text = _newGame.GetLocalizedString();

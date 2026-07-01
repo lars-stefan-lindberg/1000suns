@@ -1,4 +1,6 @@
 using UnityEngine.Events;
+using System.Collections;
+using UnityEngine;
 
 public class SelectSaveFileScreen : UIScreen
 {
@@ -11,8 +13,16 @@ public class SelectSaveFileScreen : UIScreen
 
     public void OnSaveProfileSelected(int saveSlotId) {
         SaveManager.obj.SetActiveSaveProfile(saveSlotId);
+        StartCoroutine(CheckSaveAndProceed(saveSlotId));
+    }
+
+    private IEnumerator CheckSaveAndProceed(int saveSlotId) {
+        var hasValidTask = SaveManager.obj.HasValidSave(saveSlotId);
+        while (!hasValidTask.IsCompleted) {
+            yield return null;
+        }
         
-        if (SaveManager.obj.HasValidSave(saveSlotId)) {
+        if (hasValidTask.Result) {
             MainMenuManager.obj.ContinueGame();
         } else {
             MainMenuManager.obj.StartGame();

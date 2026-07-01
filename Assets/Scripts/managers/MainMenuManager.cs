@@ -255,7 +255,11 @@ public class MainMenuManager : MonoBehaviour
         PlayerManager.obj.IsCoopActive = false;
 
         int activeSaveSlot = SaveManager.obj.GetActiveSaveProfile();
-        SaveData saveData = SaveManager.obj.LoadGame(activeSaveSlot);
+        var loadTask = SaveManager.obj.LoadGame(activeSaveSlot);
+        while (!loadTask.IsCompleted) {
+            yield return null;
+        }
+        SaveData saveData = loadTask.Result;
         if(saveData == null) {
             Debug.LogWarning("No save data found. Starting new game.");
             StartCoroutine(StartGameCoroutine());
