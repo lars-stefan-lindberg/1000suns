@@ -1057,7 +1057,6 @@ public class ShadowTwinMovement : MonoBehaviour
         ExecuteJump(_stats.JumpPower);
         _sharedPlayerAudio.PlayJump();
         _airJumpToConsume = false;
-        StaminaMgr.obj.ExecutePower(new StaminaMgr.AirJump());
     }
 
     public void SetIsAnchorReached(bool isAnchorReached) {

@@ -55,15 +55,13 @@ public class PlayerPush : MonoBehaviour
         if(PlayerPowersManager.obj.EliCanForcePush && !_isChargeDisabled) {
             if (context.performed)
             {
-                if (defaultPower < StaminaMgr.obj.GetCurrentStamina()) {
-                    pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().HardCancel();
-                    _eliAudio.PlayForcePushStart(ref _forcePushStartSfxInstance);
-                    _buildUpPower = defaultPower;
-                    _buildingUpPower = true;
-                    _buildUpPowerTime = 0;
-                    Player.obj.StartChargeFlash();
-                    Player.obj.PlayerPushLight();
-                }
+                pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().HardCancel();
+                _eliAudio.PlayForcePushStart(ref _forcePushStartSfxInstance);
+                _buildUpPower = defaultPower;
+                _buildingUpPower = true;
+                _buildUpPowerTime = 0;
+                Player.obj.StartChargeFlash();
+                Player.obj.PlayerPushLight();
             }
             if(context.canceled) {
                 if(PlayerMovement.obj.IsTransitioningBetweenLevels()) {
@@ -237,15 +235,13 @@ public class PlayerPush : MonoBehaviour
     }
 
     public void SimulateShootHold() {
-        if (defaultPower < StaminaMgr.obj.GetCurrentStamina()) {
-            pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().HardCancel();
-            _eliAudio.PlayForcePushStart(ref _forcePushStartSfxInstance);
-            _buildUpPower = defaultPower;
-            _buildingUpPower = true;
-            _buildUpPowerTime = 0;
-            Player.obj.StartChargeFlash();
-            Player.obj.PlayerPushLight();
-        }
+        pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().HardCancel();
+        _eliAudio.PlayForcePushStart(ref _forcePushStartSfxInstance);
+        _buildUpPower = defaultPower;
+        _buildingUpPower = true;
+        _buildUpPowerTime = 0;
+        Player.obj.StartChargeFlash();
+        Player.obj.PlayerPushLight();
     }
 
     public void SimulateShootRelease() {

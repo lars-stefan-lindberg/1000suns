@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using Cinemachine;
 using FMOD.Studio;
@@ -40,9 +39,6 @@ public class PlayerMovement : MonoBehaviour
     private SharedCharacterAudio _sharedPlayerAudio;
     private EliAudio _eliAudio;
 
-    //[Header("Dependecies")]
-    public GameObject buildPowerJumpAnimation;
-
     // --- Quick Turn Detection fields ---
     // [SerializeField] private float _minSpeedForQuickTurn = 5f;   // units/sec threshold to consider the player "moving"
     // [SerializeField] private float _quickTurnDebounce = 0.15f;   // seconds to suppress duplicate logs
@@ -71,7 +67,6 @@ public class PlayerMovement : MonoBehaviour
         _collider = GetComponent<BoxCollider2D>();
         _animator = GetComponentInChildren<Animator>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        _powerJumpForce = _stats.JumpPower * 2f;
         _ceilingLayerMasks = LayerMask.GetMask("Ground");
         _playerInput = GetComponent<PlayerInput>();
         _sharedPlayerAudio = GetComponent<SharedCharacterAudio>();
@@ -93,7 +88,6 @@ public class PlayerMovement : MonoBehaviour
         if(!_stopCollisions)
             CheckCollisions();
 
-        BuildUpPowerJump();
         HandleJump();
         HandleDirection();
         HandleGravity();
@@ -516,19 +510,6 @@ public class PlayerMovement : MonoBehaviour
         //     }
         // }
         
-        // if(isDevMode) {
-        //     if (_movementInput.y < 0 && isGrounded && !_buildingUpPowerJump) //Pressing down
-        //     {
-        //         if(StaminaMgr.obj.HasEnoughStamina(new StaminaMgr.PowerJump()))
-        //         {
-        //             _buildingUpPowerJump = true;
-        //             _buildUpPowerJumpTime = 0;
-        //             buildPowerJumpAnimation.GetComponent<BuildPowerJumpAnimationMgr>().Play();
-        //         }
-        //     }
-        //     else if(_movementInput.y >= 0)
-        //         CancelPowerJumpCharge();
-        // } else {
         if(PlayerPowersManager.obj.EliCanTurnFromHumanToBlob) {
             if(_movementInput.y < 0 && value.performed) {
                 if(isTransformingToBlob)
@@ -684,33 +665,26 @@ public class PlayerMovement : MonoBehaviour
                 jumpThroughPlatform.PassThrough();
                 return;
             }
-            if (!PowerJumpMaxCharged)
-            {
-                if(PlayerPowersManager.obj.EliCanShadowJump && _movementInput.x != 0 && PlayerPush.obj.IsFullyCharged() && (isGrounded || CanUseCoyote)) {
-                    ExecuteShadowJump();
-                    _jumpHeldInput = true;
-                    return;
-                }
-                if(PlayerPowersManager.obj.EliCanForcePushJump && _movementInput.x != 0 && PlayerPush.obj.IsFullyCharged() && (isGrounded || CanUseCoyote)) {
-                    _jumpToConsume = true;
-                    _isDashing = false;
-                    ExecuteForcePushJump();
-                }
-                if (isGrounded || CanUseCoyote) {
-                    _jumpToConsume = true;
-                }
-                else
-                {
-                    if(StaminaMgr.obj.HasEnoughStamina(new StaminaMgr.AirJump()))
-                        _airJumpToConsume = true;
-                }
+            
+            if(PlayerPowersManager.obj.EliCanShadowJump && _movementInput.x != 0 && PlayerPush.obj.IsFullyCharged() && (isGrounded || CanUseCoyote)) {
+                ExecuteShadowJump();
                 _jumpHeldInput = true;
-                _timeJumpWasPressed = _time;
-            } else
-            {
-                ExecutePowerJump();
-                CancelPowerJumpCharge();
+                return;
             }
+            if(PlayerPowersManager.obj.EliCanForcePushJump && _movementInput.x != 0 && PlayerPush.obj.IsFullyCharged() && (isGrounded || CanUseCoyote)) {
+                _jumpToConsume = true;
+                _isDashing = false;
+                ExecuteForcePushJump();
+            }
+            if (isGrounded || CanUseCoyote) {
+                _jumpToConsume = true;
+            }
+            else
+            {
+                _airJumpToConsume = true;
+            }
+            _jumpHeldInput = true;
+            _timeJumpWasPressed = _time;
         }
         else if (context.canceled)
         {
@@ -859,16 +833,6 @@ public class PlayerMovement : MonoBehaviour
         _isShadowJumping = false;
     }
 
-    private void BuildUpPowerJump()
-    {
-        if(GameManager.obj.isDevMode) {
-            if (_buildingUpPowerJump && _buildUpPowerJumpTime < POWER_JUMP_MAX_CHARGED_TIME)
-            {
-                _buildUpPowerJumpTime += Time.deltaTime;
-            }
-        }
-    }
-
     private IEnumerator JumpSqueeze(float xSqueeze, float ySqueeze, float seconds)
     {
         Vector3 originalSize = Vector3.one;
@@ -977,7 +941,6 @@ public class PlayerMovement : MonoBehaviour
             _endedJumpEarly = false;
             _numberOfAirJumps = 0;
             _airJumpToConsume = false;
-            _powerJumpExecuted = false;
             _landed = true;
             jumpedWhileForcePushJumping = false;
             isFalling = false;
@@ -1082,12 +1045,6 @@ public class PlayerMovement : MonoBehaviour
     private bool _coyoteUsable;
     private bool _airJumpToConsume = false;
     private int _numberOfAirJumps = 0;
-    private bool _buildingUpPowerJump = false;
-    private float _buildUpPowerJumpTime = 0;
-    private float _powerJumpForce;
-    private bool _powerJumpExecuted = false;
-    private float _powerJumpAirGravityModifer = 0.4f;
-    private const float POWER_JUMP_MAX_CHARGED_TIME = 0.5f;
     private const int MAX_NUMBER_OF_AIR_JUMPS = 1;
     
     private bool _isShadowJumping = false;
@@ -1096,7 +1053,6 @@ public class PlayerMovement : MonoBehaviour
     private float _shadowJumpHorizontalDistanceTraveled = 0f;
     private bool _shadowJumpOppositeDirectionPressed = false;
 
-    private bool PowerJumpMaxCharged => _buildUpPowerJumpTime >= POWER_JUMP_MAX_CHARGED_TIME;
     private bool CanUseJump => (isGrounded || CanUseCoyote) && _jumpToConsume;
     private bool HasBufferedJump => _time < _timeJumpWasPressed + _stats.JumpBuffer;
     private bool CanUseCoyote => _coyoteUsable && !isGrounded && _time < _frameLeftGrounded + _stats.CoyoteTime;
@@ -1105,8 +1061,7 @@ public class PlayerMovement : MonoBehaviour
         !isGrounded &&
         _time > _frameLeftGrounded + _stats.CoyoteTime &&
         _numberOfAirJumps < MAX_NUMBER_OF_AIR_JUMPS &&
-        _airJumpToConsume &&
-        !_powerJumpExecuted;
+        _airJumpToConsume;
 
     private void HandleJump()
     {
@@ -1124,13 +1079,6 @@ public class PlayerMovement : MonoBehaviour
         if (CanUseJump) ExecuteRegularJump();
 
         if (CanUseAirJump) ExecuteAirJump();
-    }
-
-    private void ExecutePowerJump()
-    {
-        ExecuteJump(_powerJumpForce);
-        _powerJumpExecuted = true;
-        StaminaMgr.obj.ExecutePower(new StaminaMgr.PowerJump());
     }
 
     private float _jumpSqueezeX = 0.8f;
@@ -1176,7 +1124,6 @@ public class PlayerMovement : MonoBehaviour
         ExecuteJump(_stats.JumpPower);
         _airJumpToConsume = false;
         _numberOfAirJumps++;
-        StaminaMgr.obj.ExecutePower(new StaminaMgr.AirJump());
     }
 
     private void ExecuteShadowJump()
@@ -1202,7 +1149,6 @@ public class PlayerMovement : MonoBehaviour
         PlayerPush.obj.ExecuteShadowJumpVfx();
         _eliAudio.PlayForcePushJump();
         _ghostTrail.ShowGhosts();
-        CancelPowerJumpCharge();
     }
 
     private void ExecuteJump(float jumpPower)
@@ -1212,14 +1158,6 @@ public class PlayerMovement : MonoBehaviour
         _timeJumpWasPressed = 0;
         _coyoteUsable = false;
         _frameVelocity.y = jumpPower;
-        CancelPowerJumpCharge();
-    }
-
-    private void CancelPowerJumpCharge()
-    {
-        _buildUpPowerJumpTime = 0;
-        _buildingUpPowerJump = false;
-        buildPowerJumpAnimation.GetComponent<BuildPowerJumpAnimationMgr>().Stop();
     }
 
     #endregion
@@ -1408,8 +1346,6 @@ public class PlayerMovement : MonoBehaviour
             else
             {
                 var inAirGravity = _stats.FallAcceleration;
-                if (_powerJumpExecuted)
-                    inAirGravity *= _powerJumpAirGravityModifer;
                 if (jumpedWhileForcePushJumping)
                     inAirGravity *= jumpedWhileForcePushJumpingModifier;
                 if (_endedJumpEarly && _frameVelocity.y > 0)
