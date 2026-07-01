@@ -21,6 +21,12 @@ public class GameProgress
         return completedEventSet.Contains(eventId.id);
     }
 
+    public bool HasEvent(string eventIdString)
+    {
+        EnsureSet();
+        return completedEventSet.Contains(eventIdString);
+    }
+
     public void RegisterEvent(GameEventId eventId)
     {
         EnsureSet();

@@ -62,6 +62,11 @@ public class GameManager : MonoBehaviour
         return Progress.HasEvent(eventId);
     }
 
+    public bool HasEvent(string eventIdString)
+    {
+        return Progress.HasEvent(eventIdString);
+    }
+
     public void RegisterEvent(GameEventId eventId)
     {
         Progress.RegisterEvent(eventId);

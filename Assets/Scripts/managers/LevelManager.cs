@@ -24,6 +24,12 @@ public class LevelManager : MonoBehaviour
         "Underworld-"
     };
 
+    // Event ID constants for cave avatar positioning
+    private const string SOOT_FREED_EVENT = "cave-3.soot-freed";
+    private const string BEFORE_SHADOW_JUMP_EVENT = "Cave-33.first-eli-soot-conversation-completed";
+    private const string AFTER_SHADOW_JUMP_EVENT = "Cave-33.after-shadow-jump-conversation-completed";
+    private const string SOOT_BETRAYAL_EVENT = "Cave-47.cutscene-completed";
+
 
     void Awake() {
         obj = this;
@@ -379,16 +385,7 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    //TODO: optimize
     private void SetCaveAvatarPosition(Scene scene) {
-        GameEventId sootFreed = ScriptableObject.CreateInstance<GameEventId>();
-        sootFreed.id = "cave-3.soot-freed";
-        GameEventId beforeShadowJumpConversationCompleted = ScriptableObject.CreateInstance<GameEventId>();
-        beforeShadowJumpConversationCompleted.id = "Cave-33.first-eli-soot-conversation-completed";
-        GameEventId afterShadowJumpConversationCompleted = ScriptableObject.CreateInstance<GameEventId>();
-        afterShadowJumpConversationCompleted.id = "Cave-33.after-shadow-jump-conversation-completed";
-        GameEventId sootBetrayalCutsceneCompleted = ScriptableObject.CreateInstance<GameEventId>();
-        sootBetrayalCutsceneCompleted.id = "Cave-47.cutscene-completed";
         if (scene.name == "Cave-56") {
             CaveAvatar.obj.SetStartingPositionInRoom35();
         } else if(scene.name == "Cave-55") {
@@ -411,17 +408,16 @@ public class LevelManager : MonoBehaviour
                 CaveAvatar.obj.SetStartingPositionInRoom32();
             else
                 CaveAvatar.obj.SetStartingPositionInRoom52();
-        } else if(GameManager.obj.HasEvent(sootBetrayalCutsceneCompleted)) {
+        } else if(GameManager.obj.HasEvent(SOOT_BETRAYAL_EVENT)) {
             //Let room managers handle Soot's position
-        } else if(GameManager.obj.HasEvent(beforeShadowJumpConversationCompleted) && !GameManager.obj.HasEvent(afterShadowJumpConversationCompleted)) {
+        } else if(GameManager.obj.HasEvent(BEFORE_SHADOW_JUMP_EVENT) && !GameManager.obj.HasEvent(AFTER_SHADOW_JUMP_EVENT)) {
             CaveAvatar.obj.SetStartingPositionInCaveRoom33();   
-        } else if(!GameManager.obj.HasEvent(sootFreed) && !GameManager.obj.isDevMode) {
+        } else if(!GameManager.obj.HasEvent(SOOT_FREED_EVENT) && !GameManager.obj.isDevMode) {
             CaveAvatar.obj.SetStartingPositionInRoom1();
         } else {
             CaveAvatar.obj.SetFollowPlayerStartingPosition();
             CaveAvatar.obj.FollowPlayer();
         }
-        Destroy(sootFreed);
     }
 
     void OnDestroy()
