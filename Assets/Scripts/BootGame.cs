@@ -20,8 +20,6 @@ public class BootGame : MonoBehaviour
             yield return null;
         }
         yield return LoadPreferredLanguage();
-        
-        GeneralTracker.obj.TrackGameStarted();
 
         AsyncOperation loadTitleScreenOperation = SceneManager.LoadSceneAsync(_titleScreen, LoadSceneMode.Additive);
         while(!loadTitleScreenOperation.isDone) {

@@ -217,7 +217,6 @@ public class PauseMenuManager : MonoBehaviour
     public void OnQuitButtonClick() {
         _quitButton.interactable = false;
         UISoundPlayer.obj.PlaySelect();
-        LevelTracker.obj.TrackQuitFromPauseMenu(SceneManager.GetActiveScene().name); 
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         SaveManager.obj.SetActiveSaveProfile(0);
         Quit();

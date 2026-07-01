@@ -34,8 +34,6 @@ public class LevelEntry : MonoBehaviour
             LevelManager.obj.LoadAdjacentRooms(newScene);
             LevelManager.obj.UnloadNonAdjacentRooms(newScene);
 
-            LevelTracker.obj.StartTimeTracking(newScene.name);
-            LevelTracker.obj.StopTimeTracking(exitedScene.name);
             SceneManager.SetActiveScene(newScene);
 
             PlayerManager.PlayerDirection playerDirection = GetPlayerDirection(other);
