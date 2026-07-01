@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ProjectileManager : MonoBehaviour
@@ -17,9 +15,10 @@ public class ProjectileManager : MonoBehaviour
         obj = null;
     }
 
-    public void shootProjectile(Vector3 spawnLocation, int horizontalDirection, float power, bool isPoweredUp)
+    public void ShootProjectile(Vector3 spawnLocation, int horizontalDirection, float power, bool isPoweredUp)
     {
         GameObject projectilePrefab = Instantiate(this.projectile, spawnLocation, transform.rotation);
-        projectilePrefab.GetComponent<Projectile>().Shoot(horizontalDirection, power, isPoweredUp);
+        Projectile projectileComponent = projectilePrefab.GetComponent<Projectile>();
+        projectileComponent.Shoot(horizontalDirection, power, isPoweredUp);
     }
 }

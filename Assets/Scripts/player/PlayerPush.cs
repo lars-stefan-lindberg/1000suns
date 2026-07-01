@@ -225,7 +225,7 @@ public class PlayerPush : MonoBehaviour
         yield return new WaitForSeconds(delay);
         _eliAudio.PlayForcePushRelease();
         int playerFacingDirection = PlayerMovement.obj.IsFacingLeft() ? -1 : 1;
-        ProjectileManager.obj.shootProjectile(
+        ProjectileManager.obj.ShootProjectile(
             new Vector3(_collider.bounds.center.x + (_playerOffset * playerFacingDirection) , gameObject.transform.position.y - playerOffsetY, gameObject.transform.position.z),
             playerFacingDirection,
             power,

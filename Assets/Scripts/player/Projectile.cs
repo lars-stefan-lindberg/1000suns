@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class Projectile : MonoBehaviour
 {
@@ -10,7 +11,13 @@ public class Projectile : MonoBehaviour
     private CircleCollider2D _collider;
     private ParticleSystem _particles;
     private float _horizontalSpawnLocation;
-    public bool isPoweredUp = false; //To break walls
+    public bool isPoweredUp = false;
+    
+    private static readonly HashSet<string> _collisionTags = new HashSet<string>
+    {
+        "Enemy", "Block", "Ground", "FloatingPlatform", 
+        "Rock", "Roots", "Grass", "Wood", "TreeBranch", "BreakableWall"
+    };
 
     void Awake()
     {
@@ -18,13 +25,9 @@ public class Projectile : MonoBehaviour
         _collider = GetComponent<CircleCollider2D>();
         _particles = GetComponent<ParticleSystem>();
         _horizontalSpawnLocation = transform.position.x;
-    }
-
-    private void Update()
-    {
-        if(Mathf.Abs(transform.position.x - _horizontalSpawnLocation) > deadZone){
-            StopAndDestroy();
-        }
+        
+        float maxTravelTime = deadZone / movingSpeed;
+        Invoke(nameof(StopAndDestroy), maxTravelTime);
     }
 
     public void Shoot(int horizontalDirection, float power, bool isPoweredUp)
@@ -39,18 +42,12 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.transform.CompareTag("Enemy") || 
-            collision.transform.CompareTag("Block") || 
-            collision.transform.CompareTag("Ground") || 
-            collision.transform.CompareTag("Orb") || 
-            collision.transform.CompareTag("FloatingPlatform") || 
-            collision.transform.CompareTag("Rock") || 
-            collision.transform.CompareTag("Roots") || 
-            collision.transform.CompareTag("FallingPlatform") ||
-            collision.transform.CompareTag("BreakableWall")) {
+        Transform collisionTransform = collision.transform;
+        
+        if(_collisionTags.Contains(collisionTransform.tag)) {
             StopAndDestroy();
         }
-        if(collision.transform.CompareTag("Player")) {
+        else if(collisionTransform.CompareTag("Player")) {
             if(PlayerManager.obj.GetPlayerTypeFromCollider(collision) != PlayerManager.PlayerType.HUMAN) {
                 StopAndDestroy();
             }
