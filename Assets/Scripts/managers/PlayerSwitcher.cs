@@ -8,6 +8,8 @@ public class PlayerSwitcher : MonoBehaviour
     public PlayerInput deeInput;
     public PlayerInput blobInput;
     public bool isDeeDevMode = false;
+    
+    private PlayerInput _activePlayerInput;
 
     public string keyboardControlSchemeName;
     public string gamepadControlSchemeName;
@@ -41,6 +43,7 @@ public class PlayerSwitcher : MonoBehaviour
         deeInput.enabled = false;
         blobInput.enabled = false;
         eliInput.enabled = true;
+        _activePlayerInput = eliInput;
     }
 
     public void SwitchToDee()
@@ -48,6 +51,7 @@ public class PlayerSwitcher : MonoBehaviour
         eliInput.enabled = false;
         blobInput.enabled = false;
         deeInput.enabled = true;
+        _activePlayerInput = deeInput;
     }
 
     public void SwitchToBlob()
@@ -55,27 +59,23 @@ public class PlayerSwitcher : MonoBehaviour
         eliInput.enabled = false;
         deeInput.enabled = false;
         blobInput.enabled = true;
+        _activePlayerInput = blobInput;
     }
 
     public void DisableAll() {
         eliInput.enabled = false;
         deeInput.enabled = false;
         blobInput.enabled = false;
+        _activePlayerInput = null;
     }
 
     public PlayerInput GetActivePlayerInput() {
-        if(eliInput.enabled)
-            return eliInput;
-        else if(deeInput.enabled)
-            return deeInput;
-        else if(blobInput.enabled)
-            return blobInput;
-        return null;
+        return _activePlayerInput;
     }
 
     void OnDestroy()
     {
-        InputDeviceListener.OnInputDeviceStream += OnInputDeviceChange;
+        InputDeviceListener.OnInputDeviceStream -= OnInputDeviceChange;
         obj = null;
     }
 
@@ -93,17 +93,16 @@ public class PlayerSwitcher : MonoBehaviour
 
     private void OnInputDeviceChange(InputDeviceListener.Device device)
     {
-        var activePlayerInput = GetActivePlayerInput();
-        if(activePlayerInput == null)
+        if(_activePlayerInput == null)
             return;
 
         if(device == InputDeviceListener.Device.Keyboard) {
-            activePlayerInput.SwitchCurrentControlScheme(
+            _activePlayerInput.SwitchCurrentControlScheme(
                 keyboardControlSchemeName,
                 Keyboard.current, Mouse.current
             );
         } else if(device == InputDeviceListener.Device.Gamepad) {
-            activePlayerInput.SwitchCurrentControlScheme(
+            _activePlayerInput.SwitchCurrentControlScheme(
                 gamepadControlSchemeName,
                 Gamepad.current
             );
