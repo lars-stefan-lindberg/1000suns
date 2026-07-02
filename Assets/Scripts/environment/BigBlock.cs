@@ -40,7 +40,7 @@ public class BigBlock : MonoBehaviour
             {
                 _rigidBody.bodyType = RigidbodyType2D.Dynamic;
                 Projectile projectile = collision.gameObject.GetComponent<Projectile>();
-                bool hitFromTheLeft = PlayerManager.obj.GetPlayerTransform().position.x < _rigidBody.position.x;
+                bool hitFromTheLeft = collision.transform.position.x < _rigidBody.position.x;
 
                 float power = basePushPower * projectile.power;
                 _rigidBody.velocity = new Vector2(hitFromTheLeft ? power : -power, 0);

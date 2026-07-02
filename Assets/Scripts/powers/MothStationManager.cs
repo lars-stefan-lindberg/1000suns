@@ -18,10 +18,11 @@ public class MothStationManager : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.CompareTag("Player") && !PlayerPowersManager.obj.EliCanForcePushJump && PlayerManager.obj.GetActivePlayerType() == PlayerManager.PlayerType.HUMAN)
-        {
-            StartCoroutine(Activated());
-        }
+        //PlayerManager code has changed. If I want to revive the power up, need another way to check if it's Eli entering
+        // if(other.CompareTag("Player") && !PlayerPowersManager.obj.EliCanForcePushJump && PlayerManager.obj.GetActivePlayerType() == PlayerManager.PlayerType.HUMAN)
+        // {
+        //     StartCoroutine(Activated());
+        // }
     }
 
     private IEnumerator Activated() {

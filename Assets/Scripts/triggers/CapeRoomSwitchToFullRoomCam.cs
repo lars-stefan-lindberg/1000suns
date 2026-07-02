@@ -33,7 +33,8 @@ public class CapeRoomSwitchToFullRoomCam : MonoBehaviour
         GameObject[] sceneGameObjects = gameObject.scene.GetRootGameObjects();
         GameObject room = sceneGameObjects.First(gameObject => gameObject.CompareTag("Room"));
         Collider2D roomCollider = room.GetComponent<Collider2D>();
-        CameraManager.obj.EnterRoom(cameraController, roomCollider, PlayerManager.obj.GetPlayerTransform(), _spawnPoint.transform.position);
+        PlayerManager.PlayerType playerType = PlayerManager.obj.GetActivePlayerType();
+        CameraManager.obj.EnterRoom(cameraController, roomCollider, PlayerManager.obj.GetPlayerTransform(playerType), _spawnPoint.transform.position);
 
         SoundFXManager.obj.Play2D(_stinger);
 

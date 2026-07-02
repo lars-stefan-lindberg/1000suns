@@ -25,9 +25,10 @@ public class PowerUp : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other) {
         if(other.gameObject.CompareTag("Player")) {
-            if(PlayerManager.obj.GetActivePlayerType() == PlayerManager.PlayerType.HUMAN) {
-                _playerEntered = true;
-            }
+            //PlayerManager code has changed. If I want to revive the power up, need another way to check if it's Eli entering
+            //if(PlayerManager.obj.GetActivePlayerType() == PlayerManager.PlayerType.HUMAN) {
+            //    _playerEntered = true;
+            //}
         }
     }
 

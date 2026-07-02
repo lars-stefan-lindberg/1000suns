@@ -15,7 +15,8 @@ public class PlayerManager : MonoBehaviour
     public enum PlayerType {
         HUMAN,
         BLOB,
-        SHADOW_TWIN
+        SHADOW_TWIN, 
+        NONE
     }
 
     public bool IsSeparated = false;
@@ -56,80 +57,82 @@ public class PlayerManager : MonoBehaviour
         return elisLastForm == PlayerType.BLOB;
     }
     
-    public void DisablePlayerMovement() {
-        if(PlayerMovement.obj != null && PlayerMovement.obj.gameObject.activeSelf)
+    public void DisablePlayerMovement(PlayerType playerType) {
+        if(playerType == PlayerType.HUMAN)
             PlayerMovement.obj.DisablePlayerMovement();
-        else if(PlayerBlobMovement.obj != null && PlayerBlobMovement.obj.gameObject.activeSelf)
+        else if(playerType == PlayerType.BLOB)
             PlayerBlobMovement.obj.DisablePlayerMovement();
-        else if(ShadowTwinMovement.obj != null && ShadowTwinMovement.obj.gameObject.activeSelf)
+        else if(playerType == PlayerType.SHADOW_TWIN)
             ShadowTwinMovement.obj.DisablePlayerMovement();
     }
 
-    public void EnablePlayerMovement() {
-        if(PlayerMovement.obj != null && PlayerMovement.obj.gameObject.activeSelf)
+    public void EnablePlayerMovement(PlayerType playerType) {
+        if(playerType == PlayerType.HUMAN)
             PlayerMovement.obj.EnablePlayerMovement();
-        else if(PlayerBlobMovement.obj != null && PlayerBlobMovement.obj.gameObject.activeSelf)
+        else if(playerType == PlayerType.BLOB)
             PlayerBlobMovement.obj.EnablePlayerMovement();
-        else if(ShadowTwinMovement.obj != null && ShadowTwinMovement.obj.gameObject.activeSelf)
+        else if(playerType == PlayerType.SHADOW_TWIN)
             ShadowTwinMovement.obj.EnablePlayerMovement();
     }
 
-    public bool IsFrozen() {
-        if(PlayerMovement.obj != null && PlayerMovement.obj.gameObject.activeSelf)
+    public bool IsFrozen(PlayerType playerType) {
+        if(playerType == PlayerType.HUMAN)
             return PlayerMovement.obj.IsFrozen();
-        else if(PlayerBlobMovement.obj != null && PlayerBlobMovement.obj.gameObject.activeSelf)
+        else if(playerType == PlayerType.BLOB)
             return PlayerBlobMovement.obj.IsFrozen();
-        else if(ShadowTwinMovement.obj != null && ShadowTwinMovement.obj.gameObject.activeSelf)
+        else if(playerType == PlayerType.SHADOW_TWIN)
             return ShadowTwinMovement.obj.IsFrozen();
         return false;
     }
 
-    public void KillPlayerGeneric(float genericDeathAnimationTime) {
-        if(PlayerMovement.obj != null && PlayerMovement.obj.gameObject.activeSelf) {
+    public void KillPlayerGeneric(PlayerType playerType, float genericDeathAnimationTime) {
+        if(playerType == PlayerType.HUMAN) {
             PlayerMovement.obj.Freeze(genericDeathAnimationTime);
             Player.obj.PlayGenericDeathAnimation();
         }
-        else if(PlayerBlobMovement.obj != null && PlayerBlobMovement.obj.gameObject.activeSelf) {
+        else if(playerType == PlayerType.BLOB) {
             PlayerBlobMovement.obj.Freeze(genericDeathAnimationTime);
             PlayerBlob.obj.PlayGenericDeathAnimation();
         }
-        else if(ShadowTwinMovement.obj != null && ShadowTwinMovement.obj.gameObject.activeSelf) {
+        else if(playerType == PlayerType.SHADOW_TWIN) {
             ShadowTwinMovement.obj.Freeze(genericDeathAnimationTime);
             ShadowTwinPlayer.obj.PlayGenericDeathAnimation();
         }
     }
 
-    public void KillPlayerGeneric(PlayerType playerType, float genericDeathAnimationTime) {
-        if(playerType == PlayerType.HUMAN) {
+    public void KillAllPlayersGeneric(float genericDeathAnimationTime) {
+        if(Player.obj != null && Player.obj.gameObject.activeSelf) {
             PlayerPush.obj.ResetBuiltUpPower();
             PlayerMovement.obj.Freeze(genericDeathAnimationTime);
             Player.obj.FadeOutPlayerLight();
             Player.obj.PlayGenericDeathAnimation();
-        } else if(playerType == PlayerType.BLOB) {
+        }
+        if(PlayerBlob.obj != null && PlayerBlob.obj.gameObject.activeSelf) {
             PlayerBlobMovement.obj.Freeze(genericDeathAnimationTime);
             PlayerBlob.obj.FadeOutPlayerLight();
             PlayerBlob.obj.PlayGenericDeathAnimation();
-        } else if(playerType == PlayerType.SHADOW_TWIN) {
+        }
+        if(ShadowTwinPlayer.obj != null && ShadowTwinPlayer.obj.gameObject.activeSelf) {
             ShadowTwinPull.obj.CancelPulling();
             ShadowTwinMovement.obj.Freeze(genericDeathAnimationTime);
             ShadowTwinPlayer.obj.FadeOutPlayerLight();
             ShadowTwinPlayer.obj.PlayGenericDeathAnimation();
-        }        
+        }
     }
 
-    public void KillPlayerShadow(float shadowDeathAnimationTime) {
-        if(PlayerMovement.obj != null && PlayerMovement.obj.gameObject.activeSelf) {
+    public void KillPlayerShadow(PlayerType playerType, float shadowDeathAnimationTime) {
+        if(playerType == PlayerType.HUMAN) {
             PlayerPush.obj.ResetBuiltUpPower();
             PlayerMovement.obj.Freeze(shadowDeathAnimationTime);
             Player.obj.FadeOutPlayerLight();
             Player.obj.PlayShadowDeathAnimation();
         }
-        else if(PlayerBlobMovement.obj != null && PlayerBlobMovement.obj.gameObject.activeSelf) {
+        else if(playerType == PlayerType.BLOB) {
             PlayerBlobMovement.obj.Freeze(shadowDeathAnimationTime);
             PlayerBlob.obj.FadeOutPlayerLight();
             PlayerBlob.obj.PlayGenericDeathAnimation();
         }
-        else if(ShadowTwinMovement.obj != null && ShadowTwinMovement.obj.gameObject.activeSelf) {
+        else if(playerType == PlayerType.SHADOW_TWIN) {
             ShadowTwinPull.obj.CancelPulling();
             ShadowTwinMovement.obj.Freeze(shadowDeathAnimationTime);
             ShadowTwinPlayer.obj.FadeOutPlayerLight();
@@ -137,46 +140,19 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    public void KillPlayerShadow(PlayerType playerType, float shadowDeathAnimationTime) {
+    public void SetPlayerGameObjectInactive(PlayerType playerType) {
         if(playerType == PlayerType.HUMAN) {
-            if(PlayerMovement.obj != null && PlayerMovement.obj.gameObject.activeSelf) {
-                PlayerPush.obj.ResetBuiltUpPower();
-                PlayerMovement.obj.Freeze(shadowDeathAnimationTime);
-                Player.obj.FadeOutPlayerLight();
-                Player.obj.PlayShadowDeathAnimation();
-            }
-            else if(PlayerBlobMovement.obj != null && PlayerBlobMovement.obj.gameObject.activeSelf) {
-                PlayerBlobMovement.obj.Freeze(shadowDeathAnimationTime);
-                PlayerBlob.obj.FadeOutPlayerLight();
-                PlayerBlob.obj.PlayGenericDeathAnimation();
-            }
+            Player.obj.gameObject.SetActive(false);
+        }
+        else if(playerType == PlayerType.BLOB) {
+            PlayerBlob.obj.gameObject.SetActive(false);
         }
         else if(playerType == PlayerType.SHADOW_TWIN) {
-            if(ShadowTwinMovement.obj != null && ShadowTwinMovement.obj.gameObject.activeSelf) {
-                ShadowTwinPull.obj.CancelPulling();
-                ShadowTwinMovement.obj.Freeze(shadowDeathAnimationTime);
-                ShadowTwinPlayer.obj.FadeOutPlayerLight();
-                ShadowTwinPlayer.obj.PlayShadowDeathAnimation();
-            }
-        }
-    }
-
-    public void SetPlayerGameObjectInactive() {
-        if(PlayerMovement.obj != null && PlayerMovement.obj.gameObject.activeSelf) {
-            Player.obj.gameObject.SetActive(false);
-            _lastPlayerType = PlayerType.HUMAN;
-        }
-        else if(PlayerBlobMovement.obj != null && PlayerBlobMovement.obj.gameObject.activeSelf) {
-            PlayerBlob.obj.gameObject.SetActive(false);
-            _lastPlayerType = PlayerType.BLOB;
-        }
-        else if(ShadowTwinMovement.obj != null && ShadowTwinMovement.obj.gameObject.activeSelf) {
             ShadowTwinPlayer.obj.gameObject.SetActive(false);
-            _lastPlayerType = PlayerType.SHADOW_TWIN;
         }
     }
 
-    public void SetPlayerGameObjectsInactive() {
+    public void SetAllPlayerGameObjectsInactive() {
         if(PlayerMovement.obj != null && PlayerMovement.obj.gameObject.activeSelf) {
             Player.obj.gameObject.SetActive(false);
         }
@@ -188,62 +164,33 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    public void SetPlayerGameObjectInactive(PlayerType playerType) {
-        if(playerType == PlayerType.HUMAN) {
-            if(PlayerMovement.obj != null && PlayerMovement.obj.gameObject.activeSelf) {
-                Player.obj.gameObject.SetActive(false);
-                _lastPlayerType = PlayerType.HUMAN;
-            }
-            else if(PlayerBlobMovement.obj != null && PlayerBlobMovement.obj.gameObject.activeSelf) {
-                PlayerBlob.obj.gameObject.SetActive(false);
-                _lastPlayerType = PlayerType.BLOB;
-            }
-        }
-        else if(playerType == PlayerType.SHADOW_TWIN) {
-            if(ShadowTwinMovement.obj != null && ShadowTwinMovement.obj.gameObject.activeSelf) {
-                ShadowTwinPlayer.obj.gameObject.SetActive(false);
-                _lastPlayerType = PlayerType.SHADOW_TWIN;
-            }
-        }
-    }
-
     public void EnableAllPlayers() {
-        if(Player.obj != null) {
-            Player.obj.gameObject.SetActive(true);
-        } else if(PlayerBlob.obj != null) {
-            PlayerBlob.obj.gameObject.SetActive(true);
-        }
+        //TODO might need to handle Eli/blob case here
+        Player.obj.gameObject.SetActive(true);
         ShadowTwinPlayer.obj.gameObject.SetActive(true);
     }
 
-    public void EnableLastActivePlayerGameObject() {
-        if(_lastPlayerType == PlayerType.HUMAN) {
+    public void EnablePlayerGameObject(PlayerType playerType) {
+        if(playerType == PlayerType.HUMAN) {
             Player.obj.gameObject.SetActive(true);
         }
-        else if(_lastPlayerType == PlayerType.BLOB) {
+        else if(playerType == PlayerType.BLOB) {
             PlayerBlob.obj.gameObject.SetActive(true);
         }
-        else if(_lastPlayerType == PlayerType.SHADOW_TWIN) {
+        else if(playerType == PlayerType.SHADOW_TWIN) {
             ShadowTwinPlayer.obj.gameObject.SetActive(true);
         }
     }
 
-    public void SetLastActivePlayerType(PlayerType type) {
-        _lastPlayerType = type;
-    }
-
     public PlayerType GetActivePlayerType() {
-        if(PlayerMovement.obj != null && PlayerMovement.obj.gameObject.activeSelf)
+        if(PlayerSwitcher.obj.IsEliActive())
             return PlayerType.HUMAN;
-        else if(PlayerBlobMovement.obj != null && PlayerBlobMovement.obj.gameObject.activeSelf)
-            return PlayerType.BLOB;
-        else if(ShadowTwinMovement.obj != null && ShadowTwinMovement.obj.gameObject.activeSelf)
+        else if(PlayerSwitcher.obj.IsDeeActive())
             return PlayerType.SHADOW_TWIN;
-        return PlayerType.HUMAN;
-    }
-
-    public PlayerType GetLastActivePlayerType() {
-        return _lastPlayerType;
+        else if(PlayerSwitcher.obj.IsBlobActive())
+            return PlayerType.BLOB;
+        Debug.LogWarning("No active player type.");
+        return PlayerType.NONE;
     }
 
     public void SetTransitioningBetweenLevels(PlayerType playerType) {
@@ -259,15 +206,6 @@ public class PlayerManager : MonoBehaviour
                 ShadowTwinMovement.obj.SetTransitioningBetweenLevels();
                 break;
         }
-    }
-
-    public void TransitionToNextRoom(PlayerDirection direction) {
-        if(PlayerMovement.obj != null && PlayerMovement.obj.gameObject.activeSelf)
-            PlayerMovement.obj.TransitionToNextRoom(direction);
-        else if(PlayerBlobMovement.obj != null && PlayerBlobMovement.obj.gameObject.activeSelf)
-            PlayerBlobMovement.obj.TransitionToNextRoom(direction);
-        else if(ShadowTwinMovement.obj != null && ShadowTwinMovement.obj.gameObject.activeSelf)
-            ShadowTwinMovement.obj.TransitionToNextRoom(direction);
     }
 
     public void TransitionToNextRoom(PlayerDirection direction, PlayerType playerType) {
@@ -292,32 +230,25 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    public float GetPlayerVerticalVelocity() {
-        if(Player.obj != null && Player.obj.gameObject.activeSelf)
-            return Player.obj.rigidBody.velocity.y;
-        else if(PlayerBlob.obj != null && PlayerBlob.obj.gameObject.activeSelf)
-            return PlayerBlob.obj.rigidBody.velocity.y;
-        else if(ShadowTwinPlayer.obj != null && ShadowTwinPlayer.obj.gameObject.activeSelf)
-            return ShadowTwinPlayer.obj.rigidBody.velocity.y;
+    public float GetPlayerVerticalVelocity(PlayerType playerType) {
+        if(playerType == PlayerType.HUMAN) {
+            if(Player.obj != null && Player.obj.gameObject.activeSelf)
+                return Player.obj.rigidBody.velocity.y;
+        }
+        else if(playerType == PlayerType.BLOB) {
+            if(PlayerBlob.obj != null && PlayerBlob.obj.gameObject.activeSelf)
+                return PlayerBlob.obj.rigidBody.velocity.y;
+        }
+        else if(playerType == PlayerType.SHADOW_TWIN) {
+            if(ShadowTwinPlayer.obj != null && ShadowTwinPlayer.obj.gameObject.activeSelf)
+                return ShadowTwinPlayer.obj.rigidBody.velocity.y;
+        }
         return 0f;    
-    }
-
-    public Transform GetPlayerTransform() {
-        if(Player.obj != null && Player.obj.gameObject.activeSelf)
-            return Player.obj.transform;
-        else if(PlayerBlob.obj != null && PlayerBlob.obj.gameObject.activeSelf)
-            return PlayerBlob.obj.transform;
-        else if(ShadowTwinPlayer.obj != null && ShadowTwinPlayer.obj.gameObject.activeSelf)
-            return ShadowTwinPlayer.obj.transform;
-        return null;
     }
 
     public Transform GetPlayerTransform(PlayerType playerType) {
         if(playerType == PlayerType.HUMAN) {
-            if(Player.obj != null && Player.obj.gameObject.activeSelf)
-                return Player.obj.transform;
-            else if(PlayerBlob.obj != null && PlayerBlob.obj.gameObject.activeSelf)
-                return PlayerBlob.obj.transform;
+            return Player.obj.transform;
         } else if(playerType == PlayerType.SHADOW_TWIN) {
             return ShadowTwinPlayer.obj.transform;
         } else if(playerType == PlayerType.BLOB) {
@@ -326,37 +257,22 @@ public class PlayerManager : MonoBehaviour
             Debug.Log("Unknown player type: " + playerType);
             return null;
         }
-        return null;
     }
 
     public bool IsPlayerGrounded(PlayerType playerType) {
         if(playerType == PlayerType.HUMAN) {
-            if(Player.obj != null && Player.obj.gameObject.activeSelf)
-                return PlayerMovement.obj.isGrounded;
-            else if(PlayerBlob.obj != null && PlayerBlob.obj.gameObject.activeSelf)
-                return PlayerBlobMovement.obj.isGrounded;
+            return PlayerMovement.obj.isGrounded;
+        } else if(playerType == PlayerType.BLOB) {
+            return PlayerBlobMovement.obj.isGrounded;
         } else if(playerType == PlayerType.SHADOW_TWIN) {
             return ShadowTwinMovement.obj.isGrounded;
         } else {
             Debug.Log("Unknown player type: " + playerType);
             return false;
         }
-        return false;
     }
 
-    //Only use in LevelManager!
-    public bool IsPlayerFacingLeftLevelManager() {
-        if(Player.obj != null && _lastPlayerType == PlayerType.HUMAN)
-            return PlayerMovement.obj.IsFacingLeft();
-        else if(PlayerBlob.obj != null && _lastPlayerType == PlayerType.BLOB)
-            return PlayerBlobMovement.obj.IsFacingLeft();
-        else if(ShadowTwinPlayer.obj != null && _lastPlayerType == PlayerType.SHADOW_TWIN)
-            return ShadowTwinMovement.obj.isFacingLeft();
-        return false;
-    }
-
-    public bool IsPlayerFacingLeft() {
-        PlayerType playerType = GetActivePlayerType();
+    public bool IsPlayerFacingLeft(PlayerType playerType) {
         if(playerType == PlayerType.HUMAN) {
             return PlayerMovement.obj.IsFacingLeft();
         } else if(playerType == PlayerType.BLOB) {
@@ -365,16 +281,6 @@ public class PlayerManager : MonoBehaviour
             return ShadowTwinMovement.obj.isFacingLeft();
         }
         return false;
-    }
-
-    //Only use in LevelManager!
-    public void FlipPlayer() {
-        if(Player.obj != null && _lastPlayerType == PlayerType.HUMAN)
-            PlayerMovement.obj.FlipPlayer();
-        else if(PlayerBlob.obj != null && _lastPlayerType == PlayerType.BLOB)
-            PlayerBlobMovement.obj.FlipPlayer();
-        else if(ShadowTwinPlayer.obj != null && _lastPlayerType == PlayerType.SHADOW_TWIN)
-            ShadowTwinMovement.obj.FlipPlayer();
     }
 
     public void FlipPlayer(PlayerType playerType) {
@@ -388,29 +294,17 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    public void PlaySpawn() {
-        if(Player.obj != null && Player.obj.gameObject.activeSelf)
-            Player.obj.PlaySpawn();
-        else if(PlayerBlob.obj != null && PlayerBlob.obj.gameObject.activeSelf)
-            PlayerBlob.obj.PlaySpawn();
-        else if(ShadowTwinPlayer.obj != null && ShadowTwinPlayer.obj.gameObject.activeSelf)
-            ShadowTwinPlayer.obj.PlaySpawn();
-    }
-
     public void PlaySpawn(PlayerType playerType) {
         if(playerType == PlayerType.HUMAN) {
-            if(Player.obj != null && Player.obj.gameObject.activeSelf)
-                Player.obj.PlaySpawn();
-            else if(PlayerBlob.obj != null && PlayerBlob.obj.gameObject.activeSelf)
-                PlayerBlob.obj.PlaySpawn();
+            Player.obj.PlaySpawn();
+        } else if(playerType == PlayerType.BLOB) {
+            PlayerBlob.obj.PlaySpawn();
         } else if(playerType == PlayerType.SHADOW_TWIN) {
-            if(ShadowTwinPlayer.obj != null && ShadowTwinPlayer.obj.gameObject.activeSelf)
-                ShadowTwinPlayer.obj.PlaySpawn();
+            ShadowTwinPlayer.obj.PlaySpawn();
         }
     }
 
-    public Transform GetLeftAvatarTarget() {
-        PlayerType playerType = GetActivePlayerType();
+    public Transform GetLeftAvatarTarget(PlayerType playerType) {
         if(playerType == PlayerType.HUMAN)
             return Player.obj.GetLeftAvatarTarget();
         else if(playerType == PlayerType.SHADOW_TWIN)
@@ -420,8 +314,7 @@ public class PlayerManager : MonoBehaviour
         return null;
     }
 
-    public Transform GetRightAvatarTarget() {
-        PlayerType playerType = GetActivePlayerType();
+    public Transform GetRightAvatarTarget(PlayerType playerType) {
         if(playerType == PlayerType.HUMAN)
             return Player.obj.GetRightAvatarTarget();
         else if(playerType == PlayerType.SHADOW_TWIN)
@@ -431,8 +324,7 @@ public class PlayerManager : MonoBehaviour
         return null;
     }
 
-    public void FreezePlayer() {
-        PlayerType playerType = GetActivePlayerType();
+    public void FreezePlayer(PlayerType playerType) {
         if(playerType == PlayerType.HUMAN)
             PlayerMovement.obj.Freeze();
         else if(playerType == PlayerType.SHADOW_TWIN)
@@ -441,8 +333,7 @@ public class PlayerManager : MonoBehaviour
             PlayerBlobMovement.obj.Freeze();
     }
 
-    public void UnfreezePlayer() {
-        PlayerType playerType = GetActivePlayerType();
+    public void UnfreezePlayer(PlayerType playerType) {
         if(playerType == PlayerType.HUMAN)
             PlayerMovement.obj.UnFreeze();
         else if(playerType == PlayerType.SHADOW_TWIN)

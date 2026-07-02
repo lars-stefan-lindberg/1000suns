@@ -42,7 +42,7 @@ public class FlyingAvatarCreature : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.transform.CompareTag("Projectile")) {
-            bool hitFromTheLeft = PlayerManager.obj.GetPlayerTransform().position.x < transform.position.x;
+            bool hitFromTheLeft = collision.transform.position.x < transform.position.x;
             TriggerHitFlap(hitFromTheLeft);
         }
     }

@@ -161,7 +161,7 @@ public class ShadowTwinMovement : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision) {
         if(collision.transform.CompareTag("Projectile")) {  
             Projectile projectile = collision.gameObject.GetComponent<Projectile>();
-            bool hitFromTheLeft = PlayerManager.obj.GetPlayerTransform().position.x < ShadowTwinPlayer.obj.rigidBody.position.x;
+            bool hitFromTheLeft = collision.transform.position.x < ShadowTwinPlayer.obj.rigidBody.position.x;
 
             if(isOnMoveable && moveableRigidbody.CompareTag("FloatingPlatform")) {
                 if(PlayerMovement.obj.moveableRigidbody != moveableRigidbody) {

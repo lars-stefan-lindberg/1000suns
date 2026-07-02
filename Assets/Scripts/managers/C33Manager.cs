@@ -79,7 +79,8 @@ public class C33Manager : MonoBehaviour
     }
 
     private IEnumerator FireAttack() {
-        float xSpawnPosition = PlayerManager.obj.GetPlayerTransform().position.x;
+        PlayerManager.PlayerType playerType = PlayerManager.obj.GetActivePlayerType();
+        float xSpawnPosition = PlayerManager.obj.GetPlayerTransform(playerType).position.x;
         if(xSpawnPosition > _blockSpawnEndPosition.position.x) {
             xSpawnPosition = _blockSpawnEndPosition.position.x;
         } else if(xSpawnPosition < _blockSpawnStartPosition.position.x) {

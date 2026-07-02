@@ -31,7 +31,7 @@ public class TeleportationTrigger : MonoBehaviour
             Player.obj.transform.position = prisonerSoul.transform.position;
             yield return null;
         }
-        SoundFXManager.obj.PlayAtGameObject(_teleportationEndSfx, PlayerManager.obj.GetPlayerTransform().gameObject);
+        SoundFXManager.obj.PlayAtGameObject(_teleportationEndSfx, Player.obj.gameObject);
         Destroy(prisonerSoul.gameObject);
 
         Player.obj.transform.position = _spawnPoint.transform.position;

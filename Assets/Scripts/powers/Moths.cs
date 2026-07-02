@@ -106,7 +106,8 @@ public class Moths : MonoBehaviour
     void Update()
     {
         if(PlayerManager.obj != null && !stopFollowingPlayer) {
-            Transform playerTransform = PlayerManager.obj.GetPlayerTransform();
+            PlayerManager.PlayerType playerType = PlayerManager.obj.GetActivePlayerType();
+            Transform playerTransform = PlayerManager.obj.GetPlayerTransform(playerType);
             if(playerTransform != null) {
                 transform.position = new Vector2(playerTransform.position.x, playerTransform.position.y);
             }

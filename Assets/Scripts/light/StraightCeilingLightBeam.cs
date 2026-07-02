@@ -74,7 +74,8 @@ public class StraightCeilingLightBeam : MonoBehaviour
     }
 
     private void UpdateLightBasedOnPlayerDistance() {
-        var playerTransform = PlayerManager.obj.GetPlayerTransform();
+        PlayerManager.PlayerType playerType = PlayerManager.obj.GetActivePlayerType();
+        var playerTransform = PlayerManager.obj.GetPlayerTransform(playerType);
         if (playerTransform == null) return;
 
         float distance = Mathf.Abs(playerTransform.position.x - transform.position.x);

@@ -84,7 +84,8 @@ public class PauseMenuManager : MonoBehaviour
                 _cancelActionReference.action.performed += OnCancel;
                 DisableEscapeInUIControls();
                 UISoundPlayer.obj.PlayBack();
-                PlayerManager.obj.DisablePlayerMovement();
+                PlayerManager.PlayerType playerType = PlayerManager.obj.GetActivePlayerType();
+                PlayerManager.obj.DisablePlayerMovement(playerType);
                 PlayerStatsManager.obj.PauseTimer();
                 _activeDialogueController = FindActiveDialogueController();
                 if(_activeDialogueController != null) {
@@ -273,8 +274,11 @@ public class PauseMenuManager : MonoBehaviour
                 _activeDialogueController.ShowAfterPause();
                 _activeDialogueController.FocusDialogue();
                 _activeDialogueController = null;
-            } else if(!PlayerManager.obj.IsFrozen()) {
-                PlayerManager.obj.EnablePlayerMovement();
+            } else {
+                PlayerManager.PlayerType playerType = PlayerManager.obj.GetActivePlayerType();
+                if(!PlayerManager.obj.IsFrozen(playerType)) {
+                    PlayerManager.obj.EnablePlayerMovement(playerType);
+                }
             }
 
             // Set the pause state

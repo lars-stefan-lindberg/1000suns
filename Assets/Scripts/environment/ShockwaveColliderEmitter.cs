@@ -54,9 +54,7 @@ public class ShockwaveColliderEmitter : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (PlayerManager.obj == null || PlayerManager.obj.GetPlayerTransform() == null)
-            return;
-        float playerDist = Vector3.Distance(transform.position, PlayerManager.obj.GetPlayerTransform().position);
+        float playerDist = Vector3.Distance(transform.position, PlayerBlob.obj.transform.position);  //Assuming that this is only used with blob
         float dynamicInterval = GetDynamicInterval(playerDist);
         if (dynamicInterval == 0f)
         {

@@ -129,7 +129,6 @@ public class LevelManager : MonoBehaviour
         if(SaveManager.obj.RestoreBlobOnNextScene) {
             SaveManager.obj.ConsumeRestoreBlobFlag();
             PlayerMovement.obj.ToBlob();
-            PlayerManager.obj.SetLastActivePlayerType(PlayerManager.PlayerType.BLOB);
             PlayerSwitcher.obj.SwitchToBlob();
         }
         
@@ -141,8 +140,8 @@ public class LevelManager : MonoBehaviour
         playerSpawnPointCollider = playerSpawnPoint.GetComponent<Collider2D>();
         //Set correct character active
         CaveTimelineId.Id caveTimelineId = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        PlayerManager.PlayerType playerType = PlayerManager.obj.GetActivePlayerType();
         if(caveTimelineId == CaveTimelineId.Id.Eli) {
-            PlayerManager.PlayerType playerType = PlayerManager.obj.GetLastActivePlayerType();
             if(Player.obj != null && playerType == PlayerManager.PlayerType.HUMAN)
                 Player.obj.transform.position = playerSpawnPointCollider.transform.position;
             else if(PlayerBlob.obj != null && playerType == PlayerManager.PlayerType.BLOB)
@@ -159,7 +158,7 @@ public class LevelManager : MonoBehaviour
             //TODO
         }
 
-        AdjustSpawnFaceDirection(Camera.main.transform.position.x, playerSpawnPoint.transform.position.x);        
+        AdjustSpawnFaceDirection(Camera.main.transform.position.x, playerSpawnPoint.transform.position.x, playerType);        
 
         if(CaveAvatar.obj != null && CaveAvatar.obj.gameObject.activeSelf) {
             SetCaveAvatarPosition(scene);
@@ -176,7 +175,7 @@ public class LevelManager : MonoBehaviour
                 LobbyManager.obj.SetPlayerInputs();
             }
         } else {
-            PlayerManager.obj.EnableLastActivePlayerGameObject();
+            PlayerManager.obj.EnablePlayerGameObject(playerType);
             SetPlayersStartingState();
         }
 
@@ -194,7 +193,7 @@ public class LevelManager : MonoBehaviour
         }
         RoomCameraController cameraController = mainCamera.GetComponent<RoomCameraController>();
         Collider2D roomCollider = room.GetComponent<Collider2D>();
-        CameraManager.obj.EnterRoom(cameraController, roomCollider, PlayerManager.obj.GetPlayerTransform(PlayerManager.obj.GetLastActivePlayerType()), playerSpawnPointCollider.transform.position);  
+        CameraManager.obj.EnterRoom(cameraController, roomCollider, PlayerManager.obj.GetPlayerTransform(PlayerManager.obj.GetActivePlayerType()), playerSpawnPointCollider.transform.position);  
 
         Reaper.obj.playerKilled = false;
 
@@ -217,7 +216,7 @@ public class LevelManager : MonoBehaviour
         }
 
         //Give parallax bg a moment to settle before fading in
-        yield return StartCoroutine(DelayedSceneFadeIn(playerSpawnPointCollider.transform));
+        yield return StartCoroutine(DelayedSceneFadeIn(playerSpawnPointCollider.transform, playerType));
 
         yield return null;
     }
@@ -292,17 +291,11 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    private IEnumerator DelayedSceneFadeIn(Transform playerSpawnPoint) {
+    private IEnumerator DelayedSceneFadeIn(Transform playerSpawnPoint, PlayerManager.PlayerType playerType) {
         yield return new WaitForSeconds(_reloadSceneDelayTime);
         SceneFadeManager.obj.StartFadeIn();
         PlayerStatsManager.obj.ResumeTimer();
-
-        if(PlayerManager.obj.IsSeparated) {
-            PlayerManager.obj.PlaySpawn(PlayerManager.PlayerType.HUMAN);
-            PlayerManager.obj.PlaySpawn(PlayerManager.PlayerType.SHADOW_TWIN);
-        } else {
-            PlayerManager.obj.PlaySpawn();
-        }
+        PlayerManager.obj.PlaySpawn(playerType);
         //Need to play a slightly delayed spawn sound due to when loading a game the sound is broken at the beginning. No idea why!
         StartCoroutine(DelayedSpawnSfx(playerSpawnPoint));
     }
@@ -356,19 +349,19 @@ public class LevelManager : MonoBehaviour
         _sharedCharacterAudio.PlaySpawn(transform);
     }
 
-    private void AdjustSpawnFaceDirection(float sceneLoadTriggerPosition, float playerSpawnPointPosition) {
+    private void AdjustSpawnFaceDirection(float sceneLoadTriggerPosition, float playerSpawnPointPosition, PlayerManager.PlayerType playerType) {
         bool isLeftSideOfScreen = sceneLoadTriggerPosition - playerSpawnPointPosition >= 0;
-        if(isLeftSideOfScreen && PlayerManager.obj.IsPlayerFacingLeftLevelManager())
-            PlayerManager.obj.FlipPlayer();
-        else if(!isLeftSideOfScreen && !PlayerManager.obj.IsPlayerFacingLeftLevelManager())
-            PlayerManager.obj.FlipPlayer();
+        if(isLeftSideOfScreen && PlayerManager.obj.IsPlayerFacingLeft(playerType))
+            PlayerManager.obj.FlipPlayer(playerType);
+        else if(!isLeftSideOfScreen && !PlayerManager.obj.IsPlayerFacingLeft(playerType))
+            PlayerManager.obj.FlipPlayer(playerType);
     }
 
     private void AdjustSpawnFaceDirectionIsSeparated(float sceneLoadTriggerPosition, float playerSpawnPointPosition, PlayerManager.PlayerType playerType) {
         bool isLeftSideOfScreen = sceneLoadTriggerPosition - playerSpawnPointPosition >= 0;
-        if(isLeftSideOfScreen && PlayerManager.obj.IsPlayerFacingLeft())
+        if(isLeftSideOfScreen && PlayerManager.obj.IsPlayerFacingLeft(playerType))
             PlayerManager.obj.FlipPlayer(playerType);
-        else if(!isLeftSideOfScreen && !PlayerManager.obj.IsPlayerFacingLeft())
+        else if(!isLeftSideOfScreen && !PlayerManager.obj.IsPlayerFacingLeft(playerType))
             PlayerManager.obj.FlipPlayer(playerType);
     }
 

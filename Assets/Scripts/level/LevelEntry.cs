@@ -74,7 +74,7 @@ public class LevelEntry : MonoBehaviour
         return PlayerManager.PlayerDirection.RIGHT;
     }
 
-    public IEnumerator ActivateNextRoomCameraAndTransitionPlayer(Scene sceneToActivate, CinemachineVirtualCamera activeCamera, PlayerManager.PlayerDirection direction, PlayerManager.PlayerType playerType) {
+    private IEnumerator ActivateNextRoomCameraAndTransitionPlayer(Scene sceneToActivate, CinemachineVirtualCamera activeCamera, PlayerManager.PlayerDirection direction, PlayerManager.PlayerType playerType) {
         if(_enablePlayerTransition) {
             PlayerManager.obj.TransitionToNextRoom(direction, playerType);
         }

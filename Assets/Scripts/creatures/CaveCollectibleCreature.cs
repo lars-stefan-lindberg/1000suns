@@ -36,6 +36,8 @@ public class CaveCollectibleCreature : MonoBehaviour
     private Transform _targetTransform;
     private Vector2 _originalPosition;
 
+    private PlayerManager.PlayerType _playerTypeToFollow = PlayerManager.PlayerType.NONE;
+
     void Awake() {
         if(CollectibleManager.obj.IsCollectiblePicked(_id)) {
             gameObject.SetActive(false);
@@ -102,9 +104,11 @@ public class CaveCollectibleCreature : MonoBehaviour
                 headTargetPosition = new(headTargetX, target.position.y);
             } else {
                 //Follow player
-                bool isPlayerFacingLeft = PlayerManager.obj.IsPlayerFacingLeft();
+                if(_playerTypeToFollow == PlayerManager.PlayerType.NONE)
+                    _playerTypeToFollow = PlayerManager.obj.GetActivePlayerType();
+                bool isPlayerFacingLeft = PlayerManager.obj.IsPlayerFacingLeft(_playerTypeToFollow);
                 _headSpriteRenderer.flipX = isPlayerFacingLeft;
-                _targetTransform = isPlayerFacingLeft ? PlayerManager.obj.GetRightAvatarTarget() : PlayerManager.obj.GetLeftAvatarTarget();
+                _targetTransform = isPlayerFacingLeft ? PlayerManager.obj.GetRightAvatarTarget(_playerTypeToFollow) : PlayerManager.obj.GetLeftAvatarTarget(_playerTypeToFollow);
                 headTargetPosition = _targetTransform.position;
                 _hasTarget = true;
             }

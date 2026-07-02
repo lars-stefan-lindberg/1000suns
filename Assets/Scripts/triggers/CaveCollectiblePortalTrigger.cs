@@ -13,13 +13,14 @@ public class CaveCollectiblePortalTrigger : MonoBehaviour
         if(collision.gameObject.CompareTag("Player")) {
             if(_portal.gameObject.activeSelf) {
                 GetComponent<BoxCollider2D>().enabled = false;
-                StartCoroutine(Cutscene());
+                PlayerManager.PlayerType playerType = PlayerManager.obj.GetPlayerTypeFromCollider(collision);
+                StartCoroutine(Cutscene(playerType));
             }
         }
     }
 
-    private IEnumerator Cutscene() {
-        PlayerManager.obj.FreezePlayer();
+    private IEnumerator Cutscene(PlayerManager.PlayerType playerType) {
+        PlayerManager.obj.FreezePlayer(playerType);
         yield return new WaitForSeconds(1f);
         _collectible.IsPermanentlyCollected = true;
         yield return new WaitUntil(() => _collectible.IsDespawned);
@@ -27,7 +28,7 @@ public class CaveCollectiblePortalTrigger : MonoBehaviour
         _portalAnimator.SetTrigger("despawn");
         CollectibleManager.obj.CollectiblePickedPermanently(_collectible);
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
-        PlayerManager.obj.UnfreezePlayer();
+        PlayerManager.obj.UnfreezePlayer(playerType);
         Destroy(this, 5);
     }
 }

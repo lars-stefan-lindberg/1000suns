@@ -14,10 +14,12 @@ public class Cave6CustomCameraHandling : MonoBehaviour
         if(GameManager.obj.HasEvent(_customCameraZoomedOutEventId)) {
             GameObject mainCamera = sceneGameObjects.First(gameObject => gameObject.CompareTag("MainCamera"));
             RoomCameraController cameraController = mainCamera.GetComponent<RoomCameraController>();
-            CameraManager.obj.EnterRoom(cameraController, roomCollider, PlayerManager.obj.GetPlayerTransform(), _spawnPoint.transform.position);
+            PlayerManager.PlayerType playerType = PlayerManager.obj.GetActivePlayerType();
+            CameraManager.obj.EnterRoom(cameraController, roomCollider, PlayerManager.obj.GetPlayerTransform(playerType), _spawnPoint.transform.position);
         } else {
             RoomCameraController cameraController = _customCamera.GetComponent<RoomCameraController>();
-            CameraManager.obj.EnterRoom(cameraController, roomCollider, PlayerManager.obj.GetPlayerTransform(), _spawnPoint.transform.position);
+            PlayerManager.PlayerType playerType = PlayerManager.obj.GetActivePlayerType();
+            CameraManager.obj.EnterRoom(cameraController, roomCollider, PlayerManager.obj.GetPlayerTransform(playerType), _spawnPoint.transform.position);
         }
     }
 }

@@ -30,7 +30,7 @@ public class Cave50DRoomManager : MonoBehaviour
         RoomCameraController cameraController = mainCamera.GetComponent<RoomCameraController>();
         GameObject room = sceneGameObjects.First(gameObject => gameObject.CompareTag("Room"));
         Collider2D roomCollider = room.GetComponent<Collider2D>();
-        CameraManager.obj.EnterRoom(cameraController, roomCollider, PlayerManager.obj.GetPlayerTransform(PlayerManager.PlayerType.HUMAN), _blobSpawnPoint.transform.position);
+        CameraManager.obj.EnterRoom(cameraController, roomCollider, PlayerManager.obj.GetPlayerTransform(PlayerManager.PlayerType.BLOB), _blobSpawnPoint.transform.position);
         yield return new WaitForSeconds(1f);
         SceneManager.SetActiveScene(gameObject.scene);
 

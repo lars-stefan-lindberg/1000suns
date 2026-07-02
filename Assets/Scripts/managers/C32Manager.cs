@@ -54,8 +54,9 @@ public class C32Manager : MonoBehaviour
         CaveAvatar.obj.Attack();
 
         yield return new WaitForSeconds(0.5f);
-        
-        float firstSpikeXPosition = PlayerManager.obj.GetPlayerTransform().position.x + _spikesOffset;
+
+        PlayerManager.PlayerType playerType = PlayerManager.obj.GetActivePlayerType();
+        float firstSpikeXPosition = PlayerManager.obj.GetPlayerTransform(playerType).position.x + _spikesOffset;
         if(firstSpikeXPosition > _maxHorizontalSpikeSpawn.position.x) {
             firstSpikeXPosition = _maxHorizontalSpikeSpawn.position.x;
         } else if(firstSpikeXPosition < _minHorizontalSpikeSpawn.position.x) {
