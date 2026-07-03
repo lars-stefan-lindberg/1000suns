@@ -52,6 +52,7 @@ public class WalkableSurfacesManager : MonoBehaviour
                         }
                     }
                 }
+                _consequetiveChecks = 0;
             }
         } else {
             _consequetiveChecks = 0;
