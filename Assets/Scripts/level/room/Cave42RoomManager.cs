@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using FunkyCode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -16,6 +17,7 @@ public class Cave42RoomManager : MonoBehaviour
     {
         if(GameManager.obj.HasEvent(_elevatorCompleted)) {
             _elevator.transform.position = new Vector2(_elevator.transform.position.x, _elevatorStopPosition.position.y);
+            _elevator.GetComponentInChildren<LightSprite2D>().enabled = true;
             return;
         }
         SceneFadeManager.obj.SetFadedOutState();
@@ -45,6 +47,7 @@ public class Cave42RoomManager : MonoBehaviour
         yield return new WaitForSeconds(1f);
         _elevator.SetStopPosition(_elevatorStopPosition.position.y);
         _elevator.StartMoving();
+        _elevator.GetComponentInChildren<LightSprite2D>().enabled = true;
 
         yield return new WaitForSeconds(2f);
 
