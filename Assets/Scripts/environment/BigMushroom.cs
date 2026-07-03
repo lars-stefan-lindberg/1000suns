@@ -21,14 +21,17 @@ public class BigMushroom : MonoBehaviour
     private float _collisionMargin = 0.5f;
     void OnTriggerEnter2D(Collider2D other) {
         if(other.CompareTag("Player") && !_playerEntered) {
+            PlayerManager.PlayerType playerType = PlayerManager.obj.GetPlayerTypeFromCollider(other);
+            if(PlayerManager.obj.IsPlayerGrounded(playerType))
+                return;
+
             Bounds playerCollisionBounds = other.bounds;
             Bounds mushRoomBounds = _collider.bounds;
             Vector2 playerBottom = new(playerCollisionBounds.center.x, playerCollisionBounds.center.y - playerCollisionBounds.extents.y);
             Vector2 mushroomTop = new(mushRoomBounds.center.x, mushRoomBounds.center.y + mushRoomBounds.extents.y); 
             bool landedOnMushroom = playerBottom.y > mushroomTop.y - _collisionMargin;
 
-            PlayerManager.PlayerType playerType = PlayerManager.obj.GetPlayerTypeFromCollider(other);
-            if(landedOnMushroom && PlayerManager.obj.GetPlayerVerticalVelocity(playerType) < 0) {
+            if(landedOnMushroom) {
                 SoundFXManager.obj.PlayAtPosition(_bounce, transform.position);
                 _animator.SetTrigger("bounce");
                 _particles.Emit(5);

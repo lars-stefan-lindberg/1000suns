@@ -24,11 +24,13 @@ public class TwoMushrooms : MonoBehaviour
             Vector2 playerBottom = new(playerCollisionBounds.center.x, playerCollisionBounds.center.y - playerCollisionBounds.extents.y);
             Vector2 mushroomTop = new(mushRoomBounds.center.x, mushRoomBounds.center.y + mushRoomBounds.extents.y); 
             bool landedOnMushroom = playerBottom.y > mushroomTop.y - _collisionMargin;
+            PlayerManager.PlayerType playerType = PlayerManager.obj.GetPlayerTypeFromCollider(other);
+            bool squishMushroom = landedOnMushroom && !PlayerManager.obj.IsPlayerGrounded(playerType);
 
             _animator.SetTrigger("wiggle");
             _playerEntered = true;
 
-            if(landedOnMushroom) {
+            if(squishMushroom) {
                 SoundFXManager.obj.PlayAtPosition(_bounce, transform.position);
                 StartCoroutine(Squeeze(_squeezeX, _squeezeY, _squeezeTime));
             } else {
