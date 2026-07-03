@@ -24,6 +24,8 @@ public class Cave41RoomManager : MonoBehaviour
     private bool _moveSoot = false;
 
     void Start() {
+        PlayerMovement.obj.isOnMoveable = true;
+        PlayerMovement.obj.moveableRigidbody = _elevator.GetComponent<Rigidbody2D>();
         PlayerMovement.obj.Freeze();
         SceneFadeManager.obj.SetFadedOutState();
         Player.obj.transform.position = _eliStartPosition.transform.position;

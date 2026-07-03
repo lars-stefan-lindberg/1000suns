@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 public class Cave42RoomManager : MonoBehaviour
 {
     [SerializeField] private SpawnPoint _eliStartPosition;
+    [SerializeField] private SpawnPoint _afterElevatorSpawnPoint;
     [SerializeField] private Transform _sootStartPosition;
     [SerializeField] private Transform _elevatorStopPosition;
     [SerializeField] private CaveElevator _elevator;
@@ -21,6 +22,8 @@ public class Cave42RoomManager : MonoBehaviour
             return;
         }
         SceneFadeManager.obj.SetFadedOutState();
+        PlayerMovement.obj.isOnMoveable = true;
+        PlayerMovement.obj.moveableRigidbody = _elevator.GetComponent<Rigidbody2D>();
         Player.obj.transform.position = _eliStartPosition.transform.position;
         Player.obj.gameObject.SetActive(true);
         PlayerMovement.obj.SetStartingOnGround();
@@ -55,11 +58,12 @@ public class Cave42RoomManager : MonoBehaviour
         while(SceneFadeManager.obj.IsFadingIn)
             yield return null;
 
-        while(!_elevator.IsAtStopPosition())
+        while(!_elevator.HasReachedStop())
             yield return null;
 
         yield return new WaitForSeconds(1f);
         GameManager.obj.RegisterEvent(_elevatorCompleted);
+        GameManager.obj.SetCurrentSpawnPointId(_afterElevatorSpawnPoint.SpawnPointID);
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         PlayerMovement.obj.UnFreeze();
     }
