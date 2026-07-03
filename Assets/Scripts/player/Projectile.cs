@@ -12,6 +12,7 @@ public class Projectile : MonoBehaviour
     private ParticleSystem _particles;
     private float _horizontalSpawnLocation;
     public bool isPoweredUp = false;
+    public int horizontalDirection { get; private set; }
     
     private static readonly HashSet<string> _collisionTags = new HashSet<string>
     {
@@ -34,6 +35,7 @@ public class Projectile : MonoBehaviour
     {
         this.power = power;
         this.isPoweredUp = isPoweredUp;
+        this.horizontalDirection = horizontalDirection;
 
         //horizontalDirection = -1 -> Left facing
         //horizontalDirection = 1 -> Right facing

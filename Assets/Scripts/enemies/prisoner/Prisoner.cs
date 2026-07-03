@@ -110,9 +110,7 @@ public class Prisoner : MonoBehaviour
         if (collision.transform.CompareTag("Projectile"))
         {
             Projectile projectile = collision.gameObject.GetComponent<Projectile>();
-
-            bool hitFromTheLeft = collision.bounds.center.x < _rigidBody.position.x;
-            applyGotHitState(projectile.power, hitFromTheLeft);
+            applyGotHitState(projectile.power, projectile.horizontalDirection);
         }
         if (collision.transform.CompareTag("Block"))
         {
@@ -135,8 +133,8 @@ public class Prisoner : MonoBehaviour
             Prisoner prisoner = collision.gameObject.GetComponent<Prisoner>();
             if (prisoner.hasBeenHit && !hasBeenHit)
             {
-                bool hitFromTheLeft = prisoner._rigidBody.position.x < _rigidBody.position.x;
-                applyGotHitState(prisoner.damagePower, hitFromTheLeft);
+                int hitDirection = prisoner._rigidBody.position.x < _rigidBody.position.x ? -1 : 1;
+                applyGotHitState(prisoner.damagePower, hitDirection);
             }
         }
         if (collision.transform.CompareTag("Player")) {
@@ -152,7 +150,7 @@ public class Prisoner : MonoBehaviour
         isStatic = false;
     }
 
-    private void applyGotHitState(float hitPower, bool hitFromTheLeft)
+    private void applyGotHitState(float hitPower, int projectileDirection)
     {
         if(!isImmuneToForcePush) {
             // _gotHitAudioSource = SoundFXManager.obj.PlayPrisonerHit(transform);
@@ -165,15 +163,12 @@ public class Prisoner : MonoBehaviour
             hasBeenHitTimeCount = hasBeenHitDuration;   
             _rigidBody.gravityScale = 0;
             _rigidBody.velocity = new Vector2(0, 0);
-            if (hitFromTheLeft)
-                _rigidBody.AddForce(new Vector2(damagePower * forceMultiplier, 0));
-            else
-                _rigidBody.AddForce(new Vector2(damagePower * -forceMultiplier, 0));
+            _rigidBody.AddForce(new Vector2(damagePower * forceMultiplier * projectileDirection, 0));
 
             //Make sure prisoner is moving in the same direction as it got hit, to create sense of "awareness"
-            if(hitFromTheLeft && IsFacingRight())
+            if(projectileDirection == 1 && IsFacingRight())
                 FlipHorizontal();
-            else if(!hitFromTheLeft && !IsFacingRight())
+            else if(projectileDirection == -1 && !IsFacingRight())
                 FlipHorizontal();
             horizontalMoveSpeedDuringHit = _rigidBody.velocity;
         }
