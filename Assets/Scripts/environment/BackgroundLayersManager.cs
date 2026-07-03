@@ -13,8 +13,14 @@ public class BackgroundLayersManager : MonoBehaviour
     private static Vector3 _sharedParallaxOriginCameraPosition;
 
     private Camera _mainCamera;
+    private Transform _mainCameraTransform;
     private PixelPerfectCamera _pixelPerfectCamera;
     private Transform _transform;
+    
+    private int _cachedAssetsPixelsPerUnit;
+    private float _cachedInversePixelsPerUnit;
+    private float _rootSmoothTimeInverse;
+    private float _layerSmoothTimeInverse;
     private Vector3 _startPosition;
     public bool isActive = false;
     public SceneField backgroundScene;
@@ -66,14 +72,25 @@ public class BackgroundLayersManager : MonoBehaviour
     private bool _activationInitialized = false;
     private bool _wasActiveLastFrame = false;
 
+    private void CachePixelPerfectValues()
+    {
+        _cachedAssetsPixelsPerUnit = GetAssetsPixelsPerUnit();
+        _cachedInversePixelsPerUnit = 1f / _cachedAssetsPixelsPerUnit;
+    }
+
     void Start()
     {
         _mainCamera = Camera.main;
         if (_mainCamera != null)
         {
+            _mainCameraTransform = _mainCamera.transform;
             _pixelPerfectCamera = _mainCamera.GetComponent<PixelPerfectCamera>();
         }
         _transform = transform;
+        
+        CachePixelPerfectValues();
+        _rootSmoothTimeInverse = 1f / _rootSmoothTime;
+        _layerSmoothTimeInverse = 1f / _layerSmoothTime;
         _startPosition = transform.position;
         
         _managerOriginalLocalY = _transform.localPosition.y;
@@ -91,12 +108,12 @@ public class BackgroundLayersManager : MonoBehaviour
 
         if (!_isChildOfMainCamera && _mainCamera != null)
         {
-            _isChildOfMainCamera = _transform.parent == _mainCamera.transform;
+            _isChildOfMainCamera = _transform.parent == _mainCameraTransform;
         }
 
         if (_mainCamera != null && !_sharedParallaxOriginInitialized)
         {
-            Vector3 camPos = _mainCamera.transform.position;
+            Vector3 camPos = _mainCameraTransform.position;
             Vector3 snappedCamPos = _cameraPositionAlreadySnapped ? camPos : SnapToPixelGrid(camPos);
             _sharedParallaxOriginInitialized = true;
             _sharedParallaxOriginCameraPosition = snappedCamPos;
@@ -117,7 +134,9 @@ public class BackgroundLayersManager : MonoBehaviour
             _mainCamera = Camera.main;
             if (_mainCamera != null)
             {
+                _mainCameraTransform = _mainCamera.transform;
                 _pixelPerfectCamera = _mainCamera.GetComponent<PixelPerfectCamera>();
+                CachePixelPerfectValues();
             }
         }
 
@@ -128,12 +147,12 @@ public class BackgroundLayersManager : MonoBehaviour
 
         if (!_isChildOfMainCamera && _mainCamera != null)
         {
-            _isChildOfMainCamera = _transform.parent == _mainCamera.transform;
+            _isChildOfMainCamera = _transform.parent == _mainCameraTransform;
         }
 
         if (_mainCamera != null)
         {
-            Vector3 camPos = _mainCamera.transform.position;
+            Vector3 camPos = _mainCameraTransform.position;
             Vector3 snappedCamPos = _cameraPositionAlreadySnapped ? camPos : SnapToPixelGrid(camPos);
             if (!_sharedParallaxOriginInitialized)
             {
@@ -200,7 +219,7 @@ public class BackgroundLayersManager : MonoBehaviour
             rootLocal.x = 0f;
             if (_lockBackgroundYPosition)
             {
-                rootLocal.y = _managerOriginalWorldY - _mainCamera.transform.position.y;
+                rootLocal.y = _managerOriginalWorldY - _mainCameraTransform.position.y;
             }
             else
             {
@@ -212,7 +231,7 @@ public class BackgroundLayersManager : MonoBehaviour
             _rootLastSnappedPixels = WorldToPixel(_rootSmoothedPosition);
         }
 
-        Vector3 cameraPosition = _mainCamera.transform.position;
+        Vector3 cameraPosition = _mainCameraTransform.position;
         if (!_cameraPositionAlreadySnapped)
         {
             cameraPosition = SnapToPixelGrid(cameraPosition);
@@ -299,24 +318,21 @@ public class BackgroundLayersManager : MonoBehaviour
 
     private Vector2Int WorldToPixel(Vector3 position)
     {
-        int ppu = GetAssetsPixelsPerUnit();
         return new Vector2Int(
-            Mathf.RoundToInt(position.x * ppu),
-            Mathf.RoundToInt(position.y * ppu)
+            Mathf.RoundToInt(position.x * _cachedAssetsPixelsPerUnit),
+            Mathf.RoundToInt(position.y * _cachedAssetsPixelsPerUnit)
         );
     }
 
     private Vector3 PixelToWorld(Vector2Int pixels, float z)
     {
-        int ppu = GetAssetsPixelsPerUnit();
-        return new Vector3((float)pixels.x / ppu, (float)pixels.y / ppu, z);
+        return new Vector3(pixels.x * _cachedInversePixelsPerUnit, pixels.y * _cachedInversePixelsPerUnit, z);
     }
 
     private Vector3 SnapToPixelGridHysteresis(Vector3 position, ref Vector2Int lastSnappedPixels)
     {
-        int ppu = GetAssetsPixelsPerUnit();
-        float xPixels = position.x * ppu;
-        float yPixels = position.y * ppu;
+        float xPixels = position.x * _cachedAssetsPixelsPerUnit;
+        float yPixels = position.y * _cachedAssetsPixelsPerUnit;
 
         float margin = Mathf.Max(0f, _snapHysteresisPixels);
 
@@ -343,13 +359,11 @@ public class BackgroundLayersManager : MonoBehaviour
 
     private Vector3 SnapToPixelGrid(Vector3 position)
     {
-        int ppu = GetAssetsPixelsPerUnit();
+        int x = Mathf.RoundToInt(position.x * _cachedAssetsPixelsPerUnit);
+        int y = Mathf.RoundToInt(position.y * _cachedAssetsPixelsPerUnit);
 
-        int x = Mathf.RoundToInt(position.x * ppu);
-        int y = Mathf.RoundToInt(position.y * ppu);
-
-        position.x = (float)x / ppu;
-        position.y = (float)y / ppu;
+        position.x = x * _cachedInversePixelsPerUnit;
+        position.y = y * _cachedInversePixelsPerUnit;
         return position;
     }
 
@@ -373,7 +387,7 @@ public class BackgroundLayersManager : MonoBehaviour
 
         _wasActiveLastFrame = true;
 
-        Vector3 cameraPosition = _mainCamera.transform.position;
+        Vector3 cameraPosition = _mainCameraTransform.position;
         if (!_cameraPositionAlreadySnapped)
         {
             cameraPosition = SnapToPixelGrid(cameraPosition);
@@ -384,7 +398,7 @@ public class BackgroundLayersManager : MonoBehaviour
         if (_isChildOfMainCamera && _lockBackgroundYPosition)
         {
             Vector3 rootLocal = _transform.localPosition;
-            rootLocal.y = _managerOriginalWorldY - _mainCamera.transform.position.y;
+            rootLocal.y = _managerOriginalWorldY - _mainCameraTransform.position.y;
             _transform.localPosition = rootLocal;
         }
 
@@ -398,7 +412,7 @@ public class BackgroundLayersManager : MonoBehaviour
                     _rootSmoothedPosition,
                     rootTarget,
                     ref _rootVelocity,
-                    1f / _rootSmoothTime
+                    _rootSmoothTimeInverse
                 );
             }
             else
@@ -427,7 +441,7 @@ public class BackgroundLayersManager : MonoBehaviour
                 _backSmoothedLocalPosition,
                 targetLocal,
                 ref _backVelocity,
-                1f / _layerSmoothTime
+                _layerSmoothTimeInverse
             );
 
             if (_useHysteresisSnapping)
@@ -451,7 +465,7 @@ public class BackgroundLayersManager : MonoBehaviour
                 _frontSmoothedLocalPosition,
                 targetLocal,
                 ref _frontVelocity,
-                1f / _layerSmoothTime
+                _layerSmoothTimeInverse
             );
 
             if (_useHysteresisSnapping)
