@@ -22,6 +22,7 @@ public class PlayerBlobMovement : MonoBehaviour
     public Rigidbody2D moveableRigidbody;
     private LayerMask _moveableLayerMasks;
     private LayerMask _ceilingLayerMasks;
+    private bool _roundedCeilingCornerThisFrame = false;
 
     private BoxCollider2D _collider;
     private PlayerInput _playerInput;
@@ -402,6 +403,8 @@ public class PlayerBlobMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        _roundedCeilingCornerThisFrame = false;
+        
         if(!_stopCollisions)
             CheckCollisions();
 
@@ -568,19 +571,34 @@ public class PlayerBlobMovement : MonoBehaviour
         // Debug.DrawRay(topRight, Vector2.up * _stats.RoofDistance, Color.red, 2f);
         // Debug.DrawRay(topLeft, Vector2.up * _stats.RoofDistance, Color.red, 2f);
 
+        // Check if player has minimal horizontal velocity (jumping straight up)
+        bool hasMinimalHorizontalVelocity = Mathf.Abs(_frameVelocity.x) < 0.1f;
+
         if(ceilingHitRight && ceilingHitLeft) {
             _frameVelocity.y *= _stats.CeilingBounceBackSpeed;
         } else if(ceilingHitRight) {
-            bool isAirToTheLeft = !Physics2D.Raycast(topRight - new Vector2(0.25f, 0), Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
-            if(isAirToTheLeft) {
-                transform.position = new Vector2(transform.position.x - 0.125f, transform.position.y);
+            // Only apply corner nudge logic if player is moving vertically without horizontal velocity
+            if(hasMinimalHorizontalVelocity) {
+                bool isAirToTheLeft = !Physics2D.Raycast(topRight - new Vector2(0.25f, 0), Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
+                if(isAirToTheLeft) {
+                    transform.position = new Vector2(transform.position.x - 0.125f, transform.position.y);
+                    _roundedCeilingCornerThisFrame = true;
+                } else {
+                    _frameVelocity.y *= _stats.CeilingBounceBackSpeed;
+                }
             } else {
                 _frameVelocity.y *= _stats.CeilingBounceBackSpeed;
             }
         } else if(ceilingHitLeft) {
-            bool isAirToTheRight = !Physics2D.Raycast(topLeft + new Vector2(0.25f, 0), Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
-            if(isAirToTheRight) {
-                transform.position = new Vector2(transform.position.x + 0.125f, transform.position.y);
+            // Only apply corner nudge logic if player is moving vertically without horizontal velocity
+            if(hasMinimalHorizontalVelocity) {
+                bool isAirToTheRight = !Physics2D.Raycast(topLeft + new Vector2(0.25f, 0), Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
+                if(isAirToTheRight) {
+                    transform.position = new Vector2(transform.position.x + 0.125f, transform.position.y);
+                    _roundedCeilingCornerThisFrame = true;
+                } else {
+                    _frameVelocity.y *= _stats.CeilingBounceBackSpeed;
+                }
             } else {
                 _frameVelocity.y *= _stats.CeilingBounceBackSpeed;
             }
@@ -732,11 +750,15 @@ public class PlayerBlobMovement : MonoBehaviour
         }
         else
         {
-            var inAirGravity = _stats.FallAcceleration;
-            if (_endedJumpEarly && _frameVelocity.y > 0)
-                inAirGravity *= _stats.JumpEndEarlyGravityModifier;
+            // Skip gravity deceleration if we just rounded a ceiling corner to maintain jump height
+            if (!_roundedCeilingCornerThisFrame)
+            {
+                var inAirGravity = _stats.FallAcceleration;
+                if (_endedJumpEarly && _frameVelocity.y > 0)
+                    inAirGravity *= _stats.JumpEndEarlyGravityModifier;
 
-            _frameVelocity.y = Mathf.MoveTowards(_frameVelocity.y, -_stats.MaxFallSpeed, inAirGravity * Time.fixedDeltaTime);
+                _frameVelocity.y = Mathf.MoveTowards(_frameVelocity.y, -_stats.MaxFallSpeed, inAirGravity * Time.fixedDeltaTime);
+            }
         }
     }
 
