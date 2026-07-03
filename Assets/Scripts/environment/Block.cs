@@ -6,11 +6,16 @@ using UnityEngine;
 public class Block : MonoBehaviour
 {
     public LayerMask groundLayer;
+    public LayerMask playerLayer;
+    public LayerMask enemyLayer;
     [SerializeField] private float _wallCheckCastDistance = 1.05f;
     [SerializeField] private float _minVelocityForWallHit = 2f;
     [SerializeField] private float _wallDetectionDistance = 0.2f;
     [SerializeField] private float _wallDetectionBoxWidthMultiplier = 0.5f;
     [SerializeField] private bool _showWallDetectionGizmo = true;
+    [SerializeField] private float _killDetectionDistance = 0.5f;
+    [SerializeField] private float _minKillVelocity = 0.05f;
+    [SerializeField] private float _killDetectionWidthMultiplier = 0.9f;
     public float basePushPower = 7f;
     public float deceleration = 1f;
     public float _blockSizeOffSet = 1.002f; //To dial in the landing sound
@@ -35,6 +40,7 @@ public class Block : MonoBehaviour
     private Pullable _pullable;
     private int _adjacentBlockCount = 0;
     private int _adjacentBlockCountWhenMovementStarted = 0;
+    private Vector2 _killBoxSize;
 
     private void Awake()
     {
@@ -43,12 +49,12 @@ public class Block : MonoBehaviour
         _childCollider = GetComponentInChildren<BoxCollider2D>();
         _pullable = GetComponentInChildren<Pullable>();
         _blockAudio = GetComponent<BlockAudio>();
+        _killBoxSize = new Vector2(_childCollider.size.x * _killDetectionWidthMultiplier, _childCollider.size.y);
     }
 
     public void SetGravity(float gravityScale) {
         _rigidBody.gravityScale = gravityScale;
     }
-
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -56,18 +62,6 @@ public class Block : MonoBehaviour
         {
             if(_isGrounded && !_pullable.IsPulled)
                 _rigidBody.bodyType = RigidbodyType2D.Static;
-
-            if(HitUnderneath(collision) && _rigidBody.velocity.y < -0.05f && !_pullable.IsPulled) {
-                PlayerManager.PlayerType playerType = PlayerManager.obj.GetPlayerTypeFromCollider(collision);
-                if(PlayerManager.obj.IsPlayerGrounded(playerType)) {
-                    _rigidBody.bodyType = RigidbodyType2D.Static;
-                    Reaper.obj.KillPlayerGeneric(playerType);
-                }
-                else {
-                    _isPlayerBeneath = true;
-                    _playerType = playerType;
-                }
-            }
         }
         else if (collision.transform.CompareTag("Projectile"))
         {
@@ -92,13 +86,6 @@ public class Block : MonoBehaviour
             _adjacentBlockCount++;
         } else if(collision.transform.CompareTag("Enemy")) {
             _prisonerInContact = collision.GetComponent<Prisoner>();
-            if(HitUnderneath(collision)) {
-                Prisoner prisoner = collision.GetComponent<Prisoner>();
-                if(prisoner.isGrounded) {
-                    _rigidBody.bodyType = RigidbodyType2D.Static;
-                    Reaper.obj.KillPrisoner(prisoner);
-                }
-            }
         }
     }
 
@@ -209,22 +196,41 @@ public class Block : MonoBehaviour
     }
 
     private void FixedUpdate() {
-        if(_isPlayerBeneath && !_pullable.IsPulled) {
-            if(PlayerManager.obj.IsPlayerGrounded(_playerType))
-                Reaper.obj.KillPlayerGeneric(_playerType);
+        if(!_isGrounded && _rigidBody.velocity.y < -_minKillVelocity && !_pullable.IsPulled) {
+            RaycastHit2D playerHit = Physics2D.BoxCast(
+                _childCollider.bounds.center,
+                _killBoxSize,
+                0f,
+                Vector2.down,
+                _killDetectionDistance,
+                playerLayer
+            );
+
+            if(playerHit.collider != null) {
+                PlayerManager.PlayerType playerType = PlayerManager.obj.GetPlayerTypeFromCollider(playerHit.collider);
+                if(PlayerManager.obj.IsPlayerGrounded(playerType)) {
+                    _rigidBody.bodyType = RigidbodyType2D.Static;
+                    Reaper.obj.KillPlayerGeneric(playerType);
+                }
+            }
+
+            RaycastHit2D enemyHit = Physics2D.BoxCast(
+                _childCollider.bounds.center,
+                _killBoxSize,
+                0f,
+                Vector2.down,
+                _killDetectionDistance,
+                enemyLayer
+            );
+
+            if(enemyHit.collider != null) {
+                Prisoner prisoner = enemyHit.collider.GetComponent<Prisoner>();
+                if(prisoner != null && prisoner.isGrounded) {
+                    _rigidBody.bodyType = RigidbodyType2D.Static;
+                    Reaper.obj.KillPrisoner(prisoner);
+                }
+            }
         }
-    }
-
-    private bool HitUnderneath(Collider2D collider) {
-        //For reference:
-        //Vector2 topRight = new Vector2(boxBounds.center.x + boxBounds.extents.x, boxBounds.center.y + boxBounds.extents.y);
-        Bounds collisionBounds = collider.bounds;
-        Vector2 top = new(collisionBounds.center.x, collisionBounds.center.y + collisionBounds.extents.y);
-
-        Bounds blockBounds = _childCollider.bounds;
-        Vector2 bottom = new(blockBounds.center.x, blockBounds.center.y - blockBounds.extents.y);
-        float margin = 0.3f;
-        return bottom.y > top.y - margin;
     }
 
     private void OnDrawGizmos() {

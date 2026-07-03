@@ -125,11 +125,20 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 456
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 1
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 512
   _wallCheckCastDistance: 1.05
   _minVelocityForWallHit: 5
   _wallDetectionDistance: 0.15
   _wallDetectionBoxWidthMultiplier: 0.7
-  _showWallDetectionGizmo: 1
+  _showWallDetectionGizmo: 0
+  _killDetectionDistance: 0.5
+  _minKillVelocity: 0.05
+  _killDetectionWidthMultiplier: 0.5
   basePushPower: 7.2
   deceleration: 20
   _blockSizeOffSet: 1.3
