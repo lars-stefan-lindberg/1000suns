@@ -54,6 +54,7 @@ public class C26CutsceneManager : MonoBehaviour, ISkippable
     void Start()
     {
         if(GameManager.obj.HasEvent(_cutsceneCompleted)) {
+            _backgroundBlobs.SetActive(false);
             if(!CaveAvatar.obj.IsFollowingPlayer && !GameManager.obj.HasEvent(_sootFliedOffInCave48))
                 CaveAvatar.obj.SetStartingPositionInRoom48();
             return;
@@ -202,10 +203,6 @@ public class C26CutsceneManager : MonoBehaviour, ISkippable
         yield return null;
     }
 
-    public void FadeInBlobs() {
-        StartCoroutine(FadeInBlobSprites());
-    }
-
     private IEnumerator StartSoundEvents() {
         yield return new WaitForSeconds(_timeBeforeTransformSfx);
         StartSoundEvent(_blobTransformSfx, ref _blobTransformSfxInstance);
@@ -213,6 +210,12 @@ public class C26CutsceneManager : MonoBehaviour, ISkippable
         StartSoundEvent(_blobTransformStinger, ref _blobTransformStingerInstance);
 
         StartSoundEvent(_rumblingSfx, ref _rumblingInstance);
+    }
+
+    public void FadeInBackgroundBlobs() {
+        if(GameManager.obj.HasEvent(_cutsceneCompleted))
+            return;
+        StartCoroutine(FadeInBlobSprites());
     }
 
     private IEnumerator FadeInBlobSprites() {
