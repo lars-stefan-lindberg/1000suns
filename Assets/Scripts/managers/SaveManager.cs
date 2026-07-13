@@ -44,8 +44,6 @@ public class SaveManager : MonoBehaviour
         {
             File.WriteAllText(path, json);
         });
-        
-        Debug.Log($"Game saved to slot {_activeSaveProfile}: {path}");
     }
 
     public async Task<SaveData> LoadGame(int slot)
