@@ -8,10 +8,13 @@ public class FirstCaveRoomLoader : MonoBehaviour
     [SerializeField] private GameEventId _eliFirstCaveRoomLoaded;
     [SerializeField] private AmbienceTrack _caveMainAmbience;
     [SerializeField] private AmbienceTrack _caveMainWaterDripping;
+    [SerializeField] private ConversationManager _conversationManager;
+    [SerializeField] private GameObject _zoomedCamera;
 
     void Start() {
         if(!GameManager.obj.HasEvent(_eliFirstCaveRoomLoaded)) {
             StartCoroutine(LoadRoom());
+            _conversationManager.OnConversationEnd += OnConversationCompleted;
         }
     }
 
@@ -44,8 +47,6 @@ public class FirstCaveRoomLoader : MonoBehaviour
         AmbienceManager.obj.Play(_caveMainWaterDripping);
         yield return StartCoroutine(StartScene());
 
-        
-
         yield return null;
     }
 
@@ -57,18 +58,30 @@ public class FirstCaveRoomLoader : MonoBehaviour
         SceneFadeManager.obj.SetFadedOutState();
         SceneFadeManager.obj.SetFadeInSpeed(0.2f);
         SceneFadeManager.obj.StartFadeIn();
+        _zoomedCamera.SetActive(true);
 
         Player.obj.PlayGetUpAnimation();
         yield return new WaitForSeconds(4);
         Player.obj.StartAnimator();
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(3);
+        _zoomedCamera.SetActive(false);
+        yield return new WaitForSeconds(3);
 
+        _conversationManager.StartConversation();
+        yield return null;
+    }
+    
+    private void OnConversationCompleted() {
         GameManager.obj.RegisterEvent(_eliFirstCaveRoomLoaded);
 
         PlayerMovement.obj.UnFreeze();
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         GameManager.obj.IsPauseAllowed = true;
 
-        yield return null;
+        _conversationManager.OnConversationEnd -= OnConversationCompleted;
+    }
+
+    void OnDestroy() {
+        _conversationManager.OnConversationEnd -= OnConversationCompleted;
     }
 }
