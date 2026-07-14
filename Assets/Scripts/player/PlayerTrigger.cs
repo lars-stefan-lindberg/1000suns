@@ -13,7 +13,7 @@ public class PlayerTrigger : MonoBehaviour
             return;
         OnPlayerEntered?.Invoke();
         if(_deactivateOnTrigger)
-            GetComponent<BoxCollider2D>().enabled = false;
+            GetComponent<Collider2D>().enabled = false;
     }
 
     void OnTriggerExit2D(Collider2D collision)

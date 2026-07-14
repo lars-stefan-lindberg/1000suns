@@ -30,16 +30,24 @@ public class Cave45RoomManager : MonoBehaviour
         if(GameManager.obj.HasEvent(_bossCompleted))
             return;
         else if(GameManager.obj.HasEvent(_bossStarted)) {
-            _prisoner1.isStatic = false;
-            _prisoner2.isStatic = false;
-            _prisoner1.gameObject.SetActive(true);
-            _prisoner2.gameObject.SetActive(true);
-            _lockedDoor.SetActive(true);
-            _blockingWall.SetActive(true);
-                _blockingWallTilemap.color = new Color(_blockingWallTilemap.color.r, _blockingWallTilemap.color.g, _blockingWallTilemap.color.b, 1f);
+            StartCoroutine(ContinueFight());
         } else
             StartCoroutine(StartFightCoroutine());
+    }
 
+    private IEnumerator ContinueFight() {
+        _prisoner1.isStatic = true;
+        _prisoner2.isStatic = true;
+        _prisoner1.gameObject.SetActive(true);
+        _prisoner2.gameObject.SetActive(true);
+        _lockedDoor.SetActive(true);
+        _blockingWall.SetActive(true);
+        _blockingWallTilemap.color = new Color(_blockingWallTilemap.color.r, _blockingWallTilemap.color.g, _blockingWallTilemap.color.b, 1f);
+
+        yield return new WaitForSeconds(2f);
+
+        _prisoner1.isStatic = false;
+        _prisoner2.isStatic = false;
     }
 
     private IEnumerator StartFightCoroutine() {

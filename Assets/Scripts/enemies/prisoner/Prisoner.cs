@@ -48,7 +48,7 @@ public class Prisoner : MonoBehaviour
     public float recoveryMovementStopMultiplier = 0.4f;
     private bool _isBeingPulled = false;
 
-    public float damagePower; //When hit by projectile stores and uses the power fo the hit
+    public float damagePower; //When hit by projectile stores and uses the power of the hit
     public float forceMultiplier = 7f;  //How "hard" a projectile will hit the enemy
 
     public float timeToTurnAround = 0.5f;
@@ -67,6 +67,7 @@ public class Prisoner : MonoBehaviour
     public bool isAttacking = false;
     public float attackSpeedMultiplier = 1.5f;
     public bool isStuck = false;
+    public float bounceOffOtherPrisonerMultiplier = 0.5f;
 
     private AudioSource _gotHitAudioSource;
     private bool _isFadingOutHitSound = false;
@@ -133,8 +134,8 @@ public class Prisoner : MonoBehaviour
             Prisoner prisoner = collision.gameObject.GetComponent<Prisoner>();
             if (prisoner.hasBeenHit && !hasBeenHit)
             {
-                int hitDirection = prisoner._rigidBody.position.x < _rigidBody.position.x ? -1 : 1;
-                applyGotHitState(prisoner.damagePower, hitDirection);
+                int hitDirection = prisoner._rigidBody.position.x < _rigidBody.position.x ? 1 : -1;
+                applyGotHitState(prisoner.damagePower * bounceOffOtherPrisonerMultiplier, hitDirection);
             }
         }
         if (collision.transform.CompareTag("Player")) {
