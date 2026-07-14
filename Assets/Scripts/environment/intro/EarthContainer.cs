@@ -33,15 +33,15 @@ public class EarthContainer : MonoBehaviour
 
     public void OnZoomInInProgress() {
         _starParticles.Stop();
-        _windParticleCollider.SetActive(false);
         _sunLight.SetActive(false);
         _earthLight.SetActive(false);
         _earthBodyLight.SetActive(false);
-        _windParticles.Stop();
-        _oceanParticles.Stop();
     }
 
     public void OnZoomInCompleted() {
+        _windParticles.Stop();
+        _oceanParticles.Stop();
+        _windParticleCollider.SetActive(false);
         gameObject.SetActive(false);
     }
 }

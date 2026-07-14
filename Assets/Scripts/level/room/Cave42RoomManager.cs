@@ -13,6 +13,7 @@ public class Cave42RoomManager : MonoBehaviour
     [SerializeField] private Transform _elevatorStopPosition;
     [SerializeField] private CaveElevator _elevator;
     [SerializeField] private GameEventId _elevatorCompleted;
+    [SerializeField] private MusicTrack _caveMain;
 
     void Start()
     {
@@ -57,6 +58,8 @@ public class Cave42RoomManager : MonoBehaviour
         SceneFadeManager.obj.StartFadeIn(0.8f);
         while(SceneFadeManager.obj.IsFadingIn)
             yield return null;
+
+        MusicManager.obj.Play(_caveMain);
 
         while(!_elevator.HasReachedStop())
             yield return null;
