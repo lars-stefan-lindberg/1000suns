@@ -5,6 +5,10 @@ public class SetCaveAvatarTarget : MonoBehaviour
     public GameEventId sootFreedEvent;
     void Awake()
     {
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(caveTimeline != CaveTimelineId.Id.Eli) {
+            return;
+        }
         if(!GameManager.obj.HasEvent(sootFreedEvent)) {    
             CaveAvatar.obj.gameObject.SetActive(true);
             CaveAvatar.obj.SetFloatingEnabled(false);

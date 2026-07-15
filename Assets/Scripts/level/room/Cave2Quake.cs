@@ -19,7 +19,8 @@ public class Cave2Quake : MonoBehaviour, ISkippable
     }
 
     public void Activate() {
-        if(GameManager.obj.HasEvent(_quakeEventId)) {
+        var caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(caveTimeline != CaveTimelineId.Id.Eli || GameManager.obj.HasEvent(_quakeEventId)) {
             return;
         }
         _cutsceneCoroutine = StartCoroutine(StartQuakeCutscene());

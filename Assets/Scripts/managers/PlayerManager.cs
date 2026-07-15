@@ -278,7 +278,7 @@ public class PlayerManager : MonoBehaviour
         } else if(playerType == PlayerType.BLOB) {
             return PlayerBlobMovement.obj.IsFacingLeft();
         } else if(playerType == PlayerType.SHADOW_TWIN) {
-            return ShadowTwinMovement.obj.isFacingLeft();
+            return ShadowTwinMovement.obj.IsFacingLeft();
         }
         return false;
     }

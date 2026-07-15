@@ -21,6 +21,9 @@ public class Cave4SlabTrigger : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(caveTimeline != CaveTimelineId.Id.Eli)
+            return;
         if(!GameManager.obj.HasEvent(_isCutsceneCompleted))
             return;
         if (Time.time < _nextAllowedTriggerTime)

@@ -29,6 +29,7 @@ public class LevelManager : MonoBehaviour
     private const string AFTER_SHADOW_JUMP_EVENT = "Cave-33.after-shadow-jump-conversation-completed";
     private const string SOOT_BETRAYAL_EVENT = "Cave-47.cutscene-completed";
     private const string CAVE_52_CONVERSATION_EVENT = "Cave-52.cutscene-completed";
+    private const string CAVE_3_DEE_CONVERSATION_EVENT = "Cave-3.dee.cutscene-completed";
 
 
     void Awake() {
@@ -162,7 +163,7 @@ public class LevelManager : MonoBehaviour
         AdjustSpawnFaceDirection(Camera.main.transform.position.x, playerSpawnPoint.transform.position.x, playerType);        
 
         if(CaveAvatar.obj != null && CaveAvatar.obj.gameObject.activeSelf) {
-            SetCaveAvatarPosition(scene);
+            SetCaveAvatarPosition(scene, caveTimelineId);
         }
 
         if(Player.obj != null)
@@ -426,43 +427,66 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    private void SetCaveAvatarPosition(Scene scene) {
-        if (scene.name == "Cave-56") {
-            CaveAvatar.obj.SetStartingPositionInRoom35();
-        } else if(scene.name == "Cave-55") {
-            if(IsLevelCompleted("Cave-55"))
+    private void SetCaveAvatarPosition(Scene scene, CaveTimelineId.Id caveTimelineId) {
+        if(caveTimelineId == CaveTimelineId.Id.Eli) {
+            if (scene.name == "Cave-56") {
                 CaveAvatar.obj.SetStartingPositionInRoom35();
-            else
-                CaveAvatar.obj.SetStartingPositionInRoom34();
-        } else if(scene.name == "Cave-54") {
-            if(IsLevelCompleted("Cave-54"))
-                CaveAvatar.obj.SetStartingPositionInRoom34();
-            else
-                CaveAvatar.obj.SetStartingPositionInRoom33();
-        } else if(scene.name == "Cave-53") {
-            if(IsLevelCompleted("Cave-53"))
-                CaveAvatar.obj.SetStartingPositionInRoom33();
-            else
-                CaveAvatar.obj.SetStartingPositionInRoom32();
-        } else if(scene.name == "Cave-52") {
-            if(IsLevelCompleted("Cave-52"))
-                CaveAvatar.obj.SetStartingPositionInRoom32();
-            else {
-                if(GameManager.obj.HasEvent(CAVE_52_CONVERSATION_EVENT)) {
-                    CaveAvatar.obj.SetStartingPositionInRoom52AfterConversation();
-                } else {
-                    CaveAvatar.obj.SetStartingPositionInRoom52BeforeConversation();
-                }    
+            } else if(scene.name == "Cave-55") {
+                if(IsLevelCompleted("Cave-55"))
+                    CaveAvatar.obj.SetStartingPositionInRoom35();
+                else
+                    CaveAvatar.obj.SetStartingPositionInRoom34();
+            } else if(scene.name == "Cave-54") {
+                if(IsLevelCompleted("Cave-54"))
+                    CaveAvatar.obj.SetStartingPositionInRoom34();
+                else
+                    CaveAvatar.obj.SetStartingPositionInRoom33();
+            } else if(scene.name == "Cave-53") {
+                if(IsLevelCompleted("Cave-53"))
+                    CaveAvatar.obj.SetStartingPositionInRoom33();
+                else
+                    CaveAvatar.obj.SetStartingPositionInRoom32();
+            } else if(scene.name == "Cave-52") {
+                if(IsLevelCompleted("Cave-52"))
+                    CaveAvatar.obj.SetStartingPositionInRoom32();
+                else {
+                    if(GameManager.obj.HasEvent(CAVE_52_CONVERSATION_EVENT)) {
+                        CaveAvatar.obj.SetStartingPositionInRoom52AfterConversation();
+                    } else {
+                        CaveAvatar.obj.SetStartingPositionInRoom52BeforeConversation();
+                    }    
+                }
+            } else if(GameManager.obj.HasEvent(SOOT_BETRAYAL_EVENT)) {
+                //Let room managers handle Soot's position
+            } else if(GameManager.obj.HasEvent(BEFORE_SHADOW_JUMP_EVENT) && !GameManager.obj.HasEvent(AFTER_SHADOW_JUMP_EVENT)) {
+                CaveAvatar.obj.SetStartingPositionInCaveRoom33();   
+            } else if(!GameManager.obj.HasEvent(SOOT_FREED_EVENT) && !GameManager.obj.isDevMode) {
+                CaveAvatar.obj.SetStartingPositionInRoom1();
+            } else {
+                CaveAvatar.obj.SetFollowPlayerStartingPosition();
+                CaveAvatar.obj.FollowPlayer();
             }
-        } else if(GameManager.obj.HasEvent(SOOT_BETRAYAL_EVENT)) {
-            //Let room managers handle Soot's position
-        } else if(GameManager.obj.HasEvent(BEFORE_SHADOW_JUMP_EVENT) && !GameManager.obj.HasEvent(AFTER_SHADOW_JUMP_EVENT)) {
-            CaveAvatar.obj.SetStartingPositionInCaveRoom33();   
-        } else if(!GameManager.obj.HasEvent(SOOT_FREED_EVENT) && !GameManager.obj.isDevMode) {
-            CaveAvatar.obj.SetStartingPositionInRoom1();
-        } else {
-            CaveAvatar.obj.SetFollowPlayerStartingPosition();
-            CaveAvatar.obj.FollowPlayer();
+        } else if(caveTimelineId == CaveTimelineId.Id.Dee) {
+            if(!ShadowTwinPlayer.obj.GetHasCrown()) {
+                Player.obj.SetCaveStartingCoordinates();
+                Player.obj.gameObject.SetActive(true);
+                PlayerMovement.obj.SetStartingOnGround();
+                PlayerMovement.obj.isGrounded = true;
+                PlayerMovement.obj.CancelJumping();
+                PlayerMovement.obj.spriteRenderer.flipX = false;
+                Player.obj.SetAnimatorLayerAndHasCape(false);
+                Player.obj.PlayGetUpAnimation();
+
+                if(GameManager.obj.HasEvent(CAVE_3_DEE_CONVERSATION_EVENT)) {
+                    CaveAvatar.obj.SetStartingPositionInRoom1();
+                } else {
+                    CaveAvatar.obj.SetFollowPlayerStartingPosition();
+                    CaveAvatar.obj.FollowPlayer();    
+                }
+            } else {
+                CaveAvatar.obj.SetFollowPlayerStartingPosition();
+                CaveAvatar.obj.FollowPlayer();
+            }
         }
     }
 

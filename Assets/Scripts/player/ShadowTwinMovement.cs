@@ -195,7 +195,7 @@ public class ShadowTwinMovement : MonoBehaviour
         spriteRenderer.flipX = !spriteRenderer.flipX;
     }
 
-    public bool isFacingLeft()
+    public bool IsFacingLeft()
     {
         return spriteRenderer.flipX;
     }
@@ -211,7 +211,7 @@ public class ShadowTwinMovement : MonoBehaviour
         } else if(chargePower == ShadowTwinPull.PullPowerType.Full) {
             speed = initialDashSpeed;
         }
-        _frameVelocity.x = isFacingLeft() ? -speed : speed;
+        _frameVelocity.x = IsFacingLeft() ? -speed : speed;
     }
 
     public void EndDash() {
@@ -647,13 +647,13 @@ public class ShadowTwinMovement : MonoBehaviour
                 bool isEliInBlobForm = PlayerManager.obj.IsEliInBlobForm();
                 Vector3 splitTarget;
                 if(isEliInBlobForm) {
-                    if(isFacingLeft()) {
+                    if(IsFacingLeft()) {
                         splitTarget = transform.position + new Vector3(-1, -0.5f, 0);
                     } else {
                         splitTarget = transform.position + new Vector3(1, -0.5f, 0);
                     }
                 } else {
-                    if(isFacingLeft()) {
+                    if(IsFacingLeft()) {
                         splitTarget = transform.position + new Vector3(-1, 0, 0);
                     } else {
                         splitTarget = transform.position + new Vector3(1, 0, 0);
@@ -709,7 +709,7 @@ public class ShadowTwinMovement : MonoBehaviour
         _frameVelocity = new Vector2(0, 0);
         gameObject.SetActive(false);
         _playerTwin.transform.position = transform.position;
-        _playerTwin.GetComponent<PlayerMovement>().spriteRenderer.flipX = isFacingLeft();
+        _playerTwin.GetComponent<PlayerMovement>().spriteRenderer.flipX = IsFacingLeft();
         _playerTwin.SetActive(true);
         PlayerSwitcher.obj.SwitchToEli();
         if(isGrounded) {
@@ -737,7 +737,7 @@ public class ShadowTwinMovement : MonoBehaviour
         _frameVelocity = new Vector2(0, 0);
         
         _playerTwin.transform.position = splitTarget;
-        _playerTwin.GetComponent<PlayerMovement>().spriteRenderer.flipX = isFacingLeft();
+        _playerTwin.GetComponent<PlayerMovement>().spriteRenderer.flipX = IsFacingLeft();
         if(isGrounded) {
             _playerTwin.GetComponent<PlayerMovement>().SetStartingOnGround();
             _playerTwin.GetComponent<PlayerMovement>().isGrounded = true;
@@ -766,7 +766,7 @@ public class ShadowTwinMovement : MonoBehaviour
         _frameVelocity = new Vector2(0, 0);
         gameObject.SetActive(false);
         _playerBlob.transform.position = transform.position - new Vector3(0, 0.5f, 0);
-        _playerBlob.GetComponent<PlayerBlobMovement>().spriteRenderer.flipX = isFacingLeft();
+        _playerBlob.GetComponent<PlayerBlobMovement>().spriteRenderer.flipX = IsFacingLeft();
         _playerBlob.SetActive(true);
         PlayerSwitcher.obj.SwitchToBlob();
         if(isGrounded) {
@@ -794,7 +794,7 @@ public class ShadowTwinMovement : MonoBehaviour
 
         _playerBlob.transform.position = splitTarget;
 
-        _playerBlob.GetComponent<PlayerBlobMovement>().spriteRenderer.flipX = isFacingLeft();
+        _playerBlob.GetComponent<PlayerBlobMovement>().spriteRenderer.flipX = IsFacingLeft();
         if(isGrounded) {
             _playerBlob.GetComponent<PlayerBlobMovement>().SetStartingOnGround();
             _playerBlob.GetComponent<PlayerBlobMovement>().isGrounded = true;

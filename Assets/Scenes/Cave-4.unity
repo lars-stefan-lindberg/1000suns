@@ -6851,6 +6851,7 @@ GameObject:
   - component: {fileID: 1217601492}
   - component: {fileID: 1217601491}
   - component: {fileID: 1217601490}
+  - component: {fileID: 1217601494}
   m_Layer: 2
   m_Name: CutsceneTrigger
   m_TagString: Untagged
@@ -6958,6 +6959,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1217601494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1217601489}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50003f64917d14508850111208186523, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  timelineId: {fileID: 11400000, guid: 0bec9271562614293937eb561c0eec4b, type: 2}
 --- !u!1001 &1221244981
 PrefabInstance:
   m_ObjectHideFlags: 0

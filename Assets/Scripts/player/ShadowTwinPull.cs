@@ -169,7 +169,7 @@ public class ShadowTwinPull : MonoBehaviour
         // Throttle detection to reduce CPU overhead
         if (Time.time - _lastDetectionTime >= _detectionInterval)
         {
-            bool isFacingLeft = ShadowTwinMovement.obj.isFacingLeft();
+            bool isFacingLeft = ShadowTwinMovement.obj.IsFacingLeft();
             _cachedClosestPullable = _pullableDetector.GetClosestPullable(isFacingLeft);
             _lastDetectionTime = Time.time;
         }
@@ -268,7 +268,7 @@ public class ShadowTwinPull : MonoBehaviour
             _pulledPullable.StopGrabbed();
             
             // Check if the released pullable is still the closest one
-            bool isFacingLeft = ShadowTwinMovement.obj.isFacingLeft();
+            bool isFacingLeft = ShadowTwinMovement.obj.IsFacingLeft();
             Pullable closestPullable = _pullableDetector.GetClosestPullable(isFacingLeft);
             
             // Only fade out outline if it's not the closest pullable anymore
@@ -599,7 +599,7 @@ public class ShadowTwinPull : MonoBehaviour
     {
         CircleCollider2D closestFacingAnchorPoint = null;
         if(_anchorPointDetector.isAnchorPointDetected) {
-            closestFacingAnchorPoint = _anchorPointDetector.GetClosestFacingAnchorPoint(transform, ShadowTwinMovement.obj.isFacingLeft());
+            closestFacingAnchorPoint = _anchorPointDetector.GetClosestFacingAnchorPoint(transform, ShadowTwinMovement.obj.IsFacingLeft());
         }
         if(closestFacingAnchorPoint != null && !ShadowTwinMovement.obj.isGrounded) {
             Vector3 anchorPosition = closestFacingAnchorPoint.bounds.center;

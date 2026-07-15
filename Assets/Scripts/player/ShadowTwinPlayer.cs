@@ -180,7 +180,7 @@ public class ShadowTwinPlayer : MonoBehaviour
     }
 
     public void SetCaveStartingCoordinates() {
-        transform.position = new Vector2(191.975f, 24.89f);
+        transform.position = new Vector2(174f, -67.875f);
     }
 
     public void SetCaveStartingCoordinatesCoop() {

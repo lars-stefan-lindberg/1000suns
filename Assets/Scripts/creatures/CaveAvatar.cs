@@ -13,7 +13,9 @@ public class CaveAvatar : MonoBehaviour
     [SerializeField] private SpriteRenderer _headSpriteRenderer;
     [SerializeField] private GameObject[] _tailParts;
     [SerializeField] private Transform _playerTargetLeft;
-    [SerializeField] private Transform _playerTargetRight;
+    [SerializeField] private Transform _playerTargetRight;    
+    [SerializeField] private Transform _deeTargetLeft;
+    [SerializeField] private Transform _deeTargetRight;
     [SerializeField] private EventReference _attackSfx;
     private Transform _target;
     private Animator _animator;
@@ -51,12 +53,18 @@ public class CaveAvatar : MonoBehaviour
         Vector2 headTargetPosition;
 
         if(IsFollowingPlayer) {
-            //If in debug mode and no Eli, just return
-            if(PlayerMovement.obj == null) 
+            PlayerManager.PlayerType activePlayerType = PlayerManager.obj.GetActivePlayerType();
+            if(activePlayerType == PlayerManager.PlayerType.HUMAN) {
+                bool isPlayerFacingLeft = PlayerMovement.obj.IsFacingLeft();
+                _headSpriteRenderer.flipX = isPlayerFacingLeft;   
+                headTargetPosition = isPlayerFacingLeft ? _playerTargetRight.position : _playerTargetLeft.position;
+            } else if(activePlayerType == PlayerManager.PlayerType.SHADOW_TWIN) {
+                bool isPlayerFacingLeft = ShadowTwinMovement.obj.IsFacingLeft();
+                _headSpriteRenderer.flipX = isPlayerFacingLeft;   
+                headTargetPosition = isPlayerFacingLeft ? _deeTargetRight.position : _deeTargetLeft.position;
+            } else {
                 return;
-            bool isPlayerFacingLeft = PlayerMovement.obj.IsFacingLeft();
-            _headSpriteRenderer.flipX = isPlayerFacingLeft;   
-            headTargetPosition = isPlayerFacingLeft ? _playerTargetRight.position : _playerTargetLeft.position;
+            }
         } else {
             if(_target == null) {
                 headTargetPosition = _head.transform.position;
@@ -159,10 +167,14 @@ public class CaveAvatar : MonoBehaviour
     }
 
     public void SetFollowPlayerStartingPosition() {
-        //If in debug mode and no Eli, just return
-        if(PlayerMovement.obj == null) 
-            return;
-        Vector2 headTargetPosition = PlayerMovement.obj.IsFacingLeft() ? _playerTargetRight.position : _playerTargetLeft.position;
+        PlayerManager.PlayerType activePlayerType = PlayerManager.obj.GetActivePlayerType();
+        Vector2 headTargetPosition;
+        if(activePlayerType == PlayerManager.PlayerType.HUMAN) {
+            headTargetPosition = PlayerManager.obj.IsPlayerFacingLeft(activePlayerType) ? _playerTargetRight.position : _playerTargetLeft.position;
+        } else if(activePlayerType == PlayerManager.PlayerType.SHADOW_TWIN) {
+            headTargetPosition = PlayerManager.obj.IsPlayerFacingLeft(activePlayerType) ? _deeTargetRight.position : _deeTargetLeft.position;
+        } else
+            headTargetPosition = new(0, 0);
         SetPosition(headTargetPosition);
     }
 
@@ -207,7 +219,6 @@ public class CaveAvatar : MonoBehaviour
         _headSpriteRenderer.color = Color.white;
         _animator.SetLayerWeight(1, 1);
     }
-
     public void SetStartingPositionInRoom32() {
         SetPosition(new Vector2(2136.75f, -236.625f));
         IsFollowingPlayer = false;
@@ -245,11 +256,13 @@ public class CaveAvatar : MonoBehaviour
         IsFollowingPlayer = false;
         _target = null;
         SetFloatingEnabled(false);
+        SetFlipX(true);
     }
     public void SetPosition(Vector2 target, bool adjustFlipXToPlayer = true) {
         if(adjustFlipXToPlayer) {
-            bool isPlayerFacingLeft = PlayerMovement.obj.IsFacingLeft();
-            _headSpriteRenderer.flipX = isPlayerFacingLeft;   
+            PlayerManager.PlayerType activePlayerType = PlayerManager.obj.GetActivePlayerType();
+            bool isPlayerFacingLeft = PlayerManager.obj.IsPlayerFacingLeft(activePlayerType);
+            _headSpriteRenderer.flipX = isPlayerFacingLeft;
         }
 
         transform.position = target;
@@ -317,7 +330,8 @@ public class CaveAvatar : MonoBehaviour
 
     public Vector2 GetTarget() {
         if(IsFollowingPlayer) {
-            bool isPlayerFacingLeft = PlayerMovement.obj.IsFacingLeft();
+            PlayerManager.PlayerType activePlayerType = PlayerManager.obj.GetActivePlayerType();
+            bool isPlayerFacingLeft = PlayerManager.obj.IsPlayerFacingLeft(activePlayerType);
             _headSpriteRenderer.flipX = isPlayerFacingLeft;   
             return isPlayerFacingLeft ? _playerTargetRight.position : _playerTargetLeft.position;
         } else {

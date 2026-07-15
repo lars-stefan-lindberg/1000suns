@@ -6,15 +6,20 @@ using UnityEngine.SceneManagement;
 public class FirstCaveRoomLoader : MonoBehaviour
 {
     [SerializeField] private GameEventId _eliFirstCaveRoomLoaded;
+    [SerializeField] private GameEventId _deeFirstCaveRoomCutsceneCompleted;
     [SerializeField] private AmbienceTrack _caveMainAmbience;
     [SerializeField] private AmbienceTrack _caveMainWaterDripping;
     [SerializeField] private ConversationManager _conversationManager;
     [SerializeField] private GameObject _zoomedCamera;
+    [SerializeField] private SpawnPoint _deeSpawnPoint;
 
     void Start() {
-        if(!GameManager.obj.HasEvent(_eliFirstCaveRoomLoaded)) {
-            StartCoroutine(LoadRoom());
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(!GameManager.obj.HasEvent(_eliFirstCaveRoomLoaded) && caveTimeline == CaveTimelineId.Id.Eli) {
+            StartCoroutine(LoadRoomEli());
             _conversationManager.OnConversationEnd += OnConversationCompleted;
+        } else if(!GameManager.obj.HasEvent(_deeFirstCaveRoomCutsceneCompleted) && caveTimeline == CaveTimelineId.Id.Dee) {
+            StartCoroutine(LoadRoomDee());
         }
     }
 
@@ -24,7 +29,45 @@ public class FirstCaveRoomLoader : MonoBehaviour
         }
     }
 
-    private IEnumerator LoadRoom() {
+    private IEnumerator LoadRoomDee() {
+        ShadowTwinPlayer.obj.SetCaveStartingCoordinates();
+        ShadowTwinPlayer.obj.gameObject.SetActive(true);
+        ShadowTwinMovement.obj.SetStartingOnGround();
+        ShadowTwinMovement.obj.isGrounded = true;
+        ShadowTwinMovement.obj.CancelJumping();
+        ShadowTwinMovement.obj.spriteRenderer.flipX = true;
+        ShadowTwinPlayer.obj.SetAnimatorLayerAndHasCrown(false);
+        ShadowTwinMovement.obj.Freeze();
+
+        Player.obj.SetCaveStartingCoordinates();
+        Player.obj.gameObject.SetActive(true);
+        PlayerMovement.obj.SetStartingOnGround();
+        PlayerMovement.obj.isGrounded = true;
+        PlayerMovement.obj.CancelJumping();
+        PlayerMovement.obj.spriteRenderer.flipX = false;
+        Player.obj.SetAnimatorLayerAndHasCape(false);
+        Player.obj.PlayGetUpAnimation();
+
+        GameObject[] sceneGameObjects = gameObject.scene.GetRootGameObjects();
+        GameObject mainCamera = sceneGameObjects.First(gameObject => gameObject.CompareTag("MainCamera"));
+        GameObject room = sceneGameObjects.First(gameObject => gameObject.CompareTag("Room"));
+        Collider2D roomCollider = room.GetComponent<Collider2D>();
+        RoomCameraController cameraController = mainCamera.GetComponent<RoomCameraController>();
+        CameraManager.obj.EnterRoom(cameraController, roomCollider, ShadowTwinPlayer.obj.transform, ShadowTwinPlayer.obj.transform.position);   
+
+        CaveAvatar.obj.SetPosition(ShadowTwinPlayer.obj.transform.position);
+        CaveAvatar.obj.gameObject.SetActive(true);
+        CaveAvatar.obj.FollowPlayer();
+        CaveAvatar.obj.SetEyeColor(Color.white);
+
+        AmbienceManager.obj.Play(_caveMainAmbience);
+        AmbienceManager.obj.Play(_caveMainWaterDripping);
+        yield return StartCoroutine(StartSceneDee());
+
+        yield return null;
+    }
+
+    private IEnumerator LoadRoomEli() {
         Player.obj.SetCaveStartingCoordinates();
         Player.obj.gameObject.SetActive(true);
         PlayerMovement.obj.SetStartingOnGround();
@@ -45,12 +88,12 @@ public class FirstCaveRoomLoader : MonoBehaviour
 
         AmbienceManager.obj.Play(_caveMainAmbience);
         AmbienceManager.obj.Play(_caveMainWaterDripping);
-        yield return StartCoroutine(StartScene());
+        yield return StartCoroutine(StartSceneEli());
 
         yield return null;
     }
 
-    private IEnumerator StartScene() {
+    private IEnumerator StartSceneEli() {
         Player.obj.gameObject.GetComponent<EliAudio>().PlayLongFall();
         yield return new WaitForSeconds(2.5f);
         Player.obj.gameObject.GetComponent<EliAudio>().PlayHeavyLand();
@@ -68,6 +111,19 @@ public class FirstCaveRoomLoader : MonoBehaviour
         yield return new WaitForSeconds(3);
 
         _conversationManager.StartConversation();
+        yield return null;
+    }
+
+    private IEnumerator StartSceneDee() {
+        SceneFadeManager.obj.SetFadedOutState();
+        SceneFadeManager.obj.SetFadeInSpeed(0.2f);
+        SceneFadeManager.obj.StartFadeIn();
+        yield return new WaitForSeconds(3f);
+        GameManager.obj.RegisterEvent(_deeFirstCaveRoomCutsceneCompleted);
+        GameManager.obj.SetCurrentSpawnPointId(_deeSpawnPoint.SpawnPointID);
+        ShadowTwinMovement.obj.UnFreeze();
+        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
+        GameManager.obj.IsPauseAllowed = true;
         yield return null;
     }
     

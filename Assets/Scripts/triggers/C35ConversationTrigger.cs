@@ -1,6 +1,7 @@
 using System.Collections;
 using Cinemachine;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class C35ConversationTrigger : MonoBehaviour
 {
@@ -12,6 +13,9 @@ public class C35ConversationTrigger : MonoBehaviour
     [SerializeField] private bool _flipCaveAvatar = false;
     [SerializeField] private bool _isFirstConversation = false;
     [SerializeField] private Transform _deeCutsceneStartingPosition;
+    [SerializeField] private SceneField _firstCaveBackground;
+    [SerializeField] private SceneField _firstCaveSurfaces;
+
     private BoxCollider2D _collider;
 
     void Start() {
@@ -84,7 +88,8 @@ public class C35ConversationTrigger : MonoBehaviour
     }
 
     private IEnumerator BreakFloor() {
-        PlayerStatsManager.obj.PauseTimer();
+        GameManager.obj.IsPauseAllowed = false;
+
         AmbienceManager.obj.Stop();
         yield return new WaitForSeconds(1.5f);
         CaveAvatar.obj.Attack();
@@ -95,6 +100,41 @@ public class C35ConversationTrigger : MonoBehaviour
         yield return new WaitForSeconds(3f);
 
         SceneFadeManager.obj.StartFadeOut(0.3f);
-        //TODO, end chapter and load Dee timeline.
+
+        while(SceneFadeManager.obj.IsFadingOut)
+            yield return null;
+
+        yield return new WaitForSeconds(3f);
+
+        //Set player objects inactive
+        Player.obj.gameObject.SetActive(false);
+        CaveAvatar.obj.gameObject.SetActive(false);
+        ShadowTwinPlayer.obj.gameObject.SetActive(false);
+
+        yield return StartCoroutine(BackgroundLoaderManager.obj.RemoveBackgroundLayers());
+        WalkableSurfacesManager.obj.RemoveAllSurfaces();
+
+        yield return StartCoroutine(BackgroundLoaderManager.obj.LoadAndSetBackground(_firstCaveBackground));
+        yield return StartCoroutine(WalkableSurfacesManager.obj.AddWalkableSurface(_firstCaveSurfaces));
+
+        //Set cave timeline
+        GameManager.obj.SetCaveTimeline(new CaveTimeline(CaveTimelineId.Id.Dee));
+        PlayerSwitcher.obj.SwitchToDee();
+
+        //Load first cave room
+        AsyncOperation loadFirstCaveRoomOperation = SceneManager.LoadSceneAsync("Cave-1", LoadSceneMode.Additive);
+        while(!loadFirstCaveRoomOperation.isDone) {
+            yield return null;
+        }
+        Scene firstScene = SceneManager.GetSceneByName("Cave-1");
+        SceneManager.SetActiveScene(firstScene);
+        InitRoom initRoomData = LevelManager.obj.GetInitRoomData(firstScene);
+        LevelManager.obj.LoadAdjacentRooms(initRoomData);
+
+        //Unload current rooms
+        SceneManager.UnloadSceneAsync("Cave-55");
+        SceneManager.UnloadSceneAsync("Cave-56");
+
+        yield return null;
     }
 }
