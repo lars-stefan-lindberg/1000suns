@@ -929,8 +929,8 @@ public class PlayerMovement : MonoBehaviour
 
         if(!isGrounded) {
             bool ceilingHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
-            // Hit a Ceiling
-            if (ceilingHit && !groundHit)
+            // Hit a Ceiling - only handle if moving upward
+            if (ceilingHit && !groundHit && _frameVelocity.y > 0)
             {
                 HandleCeilingCollisions();
             }
@@ -1348,7 +1348,7 @@ public class PlayerMovement : MonoBehaviour
             }
             else if (_isShadowJumping)
             {
-                // Skip gravity deceleration if we just rounded a ceiling corner to maintain jump height
+                // Skip gravity deceleration if we just rounded a ceiling corner while moving upward
                 if (!_roundedCeilingCornerThisFrame)
                 {
                     bool isAboveStartingPosition = transform.position.y >= _shadowJumpStartY;
@@ -1367,7 +1367,7 @@ public class PlayerMovement : MonoBehaviour
             }
             else
             {
-                // Skip gravity deceleration if we just rounded a ceiling corner to maintain jump height
+                // Skip gravity deceleration if we just rounded a ceiling corner while moving upward
                 if (!_roundedCeilingCornerThisFrame)
                 {
                     var inAirGravity = _stats.FallAcceleration;

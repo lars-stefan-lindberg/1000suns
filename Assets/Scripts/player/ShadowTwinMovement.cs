@@ -885,8 +885,8 @@ public class ShadowTwinMovement : MonoBehaviour
 
         if(!isGrounded) {
             bool ceilingHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
-            // Hit a Ceiling
-            if (ceilingHit && !groundHit)
+            // Hit a Ceiling - only handle if moving upward
+            if (ceilingHit && !groundHit && _frameVelocity.y > 0)
             {
                 HandleCeilingCollisions();
             }
