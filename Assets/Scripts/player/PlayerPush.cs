@@ -98,6 +98,11 @@ public class PlayerPush : MonoBehaviour
         return _buildUpPower >= maxForce;
     }
 
+    public bool IsChargedEnoughForShadowJump(float chargeMargin) {
+        float requiredCharge = maxForce * (1f - chargeMargin);
+        return _buildUpPower >= requiredCharge;
+    }
+
     public void ResetBuiltUpPower() {
         pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().Cancel();
         Player.obj.AbortFlash();

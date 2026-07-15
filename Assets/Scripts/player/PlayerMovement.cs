@@ -668,12 +668,12 @@ public class PlayerMovement : MonoBehaviour
                 return;
             }
             
-            if(PlayerPowersManager.obj.EliCanShadowJump && _movementInput.x != 0 && PlayerPush.obj.IsFullyCharged() && (isGrounded || CanUseCoyote)) {
+            if(PlayerPowersManager.obj.EliCanShadowJump && _movementInput.x != 0 && PlayerPush.obj.IsChargedEnoughForShadowJump(_stats.ShadowJumpChargeMargin) && (isGrounded || CanUseCoyote)) {
                 ExecuteShadowJump();
                 _jumpHeldInput = true;
                 return;
             }
-            if(PlayerPowersManager.obj.EliCanForcePushJump && _movementInput.x != 0 && PlayerPush.obj.IsFullyCharged() && (isGrounded || CanUseCoyote)) {
+            if(PlayerPowersManager.obj.EliCanForcePushJump && _movementInput.x != 0 && PlayerPush.obj.IsChargedEnoughForShadowJump(_stats.ShadowJumpChargeMargin) && (isGrounded || CanUseCoyote)) {
                 _jumpToConsume = true;
                 _isDashing = false;
                 ExecuteForcePushJump();

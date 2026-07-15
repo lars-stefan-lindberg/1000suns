@@ -101,4 +101,7 @@ public class ScriptableStats : ScriptableObject
     
     [Tooltip("Used if player presses opposite direction")]
     public float ShadowJumpInterruptedDeceleration = 10;
+
+    [Tooltip("Charge margin for shadow jump execution. Allows shadow jump when charge is within this margin of full charge (e.g., 0.2 means 80% charge is enough)"), Range(0f, 1f)]
+    public float ShadowJumpChargeMargin = 0.1f;
 }
