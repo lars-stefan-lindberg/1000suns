@@ -8,6 +8,9 @@ public class C31ConversationTrigger : MonoBehaviour
     [SerializeField] private C31Manager _c31Manager;
     [SerializeField] private MusicTrack _musicTrack;
     [SerializeField] private GameEventId _cave52CutsceneCompleted;
+    [SerializeField] private GameObject _cutsceneCamera;
+    [SerializeField] private Transform _sootAfterConversationTarget;
+
     private BoxCollider2D _collider;
 
     void Start() {
@@ -37,7 +40,8 @@ public class C31ConversationTrigger : MonoBehaviour
             PlayerBlobMovement.obj.Freeze();
             PlayerBlobMovement.obj.ToHuman();
         }
-        yield return new WaitForSeconds(1f);
+        _cutsceneCamera.SetActive(true);
+        yield return new WaitForSeconds(2.2f);
         _conversationManager.StartConversation();
     }
 
@@ -46,8 +50,15 @@ public class C31ConversationTrigger : MonoBehaviour
     }
 
     private IEnumerator OnConversationCompletedCoroutine() {
-        MusicManager.obj.Play(_musicTrack);
+        CaveAvatar.obj.SetTarget(_sootAfterConversationTarget);
         yield return new WaitForSeconds(2f);
+        _cutsceneCamera.SetActive(false);
+        yield return new WaitForSeconds(1f);
+        MusicManager.obj.Play(_musicTrack);
+        yield return new WaitForSeconds(1.5f);
+        CaveAvatar.obj.SetTarget(null);
+        CaveAvatar.obj.SetFlipX(true);
+        yield return new WaitForSeconds(0.5f);
         _c31Manager.StartAttackSequence();
         yield return new WaitForSeconds(1f);
         PlayerMovement.obj.UnFreeze();

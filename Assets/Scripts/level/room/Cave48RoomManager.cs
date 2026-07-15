@@ -7,16 +7,21 @@ public class Cave48RoomManager : MonoBehaviour
     [SerializeField] private GameObject _hiddenFloor;
     [SerializeField] private GameEventId _hiddenFloorRevealed;
     [SerializeField] private GameEventId _sootFliedOff;
+    [SerializeField] private GameEventId _cave52ConversationCompleted;
     [SerializeField] private GameObject _caveAvatarFlyOffTarget;
-    [SerializeField] private GameObject _caveAvatarStartingPos;
     [SerializeField] private GameObject _cutsceneTrigger;
 
     void Start()
     {
         //If not following player -> assuming that we are Eli
         if(!CaveAvatar.obj.IsFollowingPlayer) {
-            if(GameManager.obj.HasEvent(_sootFliedOff))
-                CaveAvatar.obj.SetStartingPositionInRoom52();
+            if(GameManager.obj.HasEvent(_sootFliedOff)) {
+                if(GameManager.obj.HasEvent(_cave52ConversationCompleted)) {
+                    CaveAvatar.obj.SetStartingPositionInRoom52AfterConversation();
+                } else {
+                    CaveAvatar.obj.SetStartingPositionInRoom52BeforeConversation();
+                }
+            }
             else
                 CaveAvatar.obj.SetStartingPositionInRoom48();
         }

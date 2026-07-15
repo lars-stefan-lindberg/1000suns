@@ -173,8 +173,16 @@ public class CaveAvatar : MonoBehaviour
         SetRedEyes();
     }
 
-    public void SetStartingPositionInRoom52() {
+    public void SetStartingPositionInRoom52AfterConversation() {
         SetPosition(new Vector2(2056f, -225f));
+        IsFollowingPlayer = false;
+        _target = null;
+        _headSpriteRenderer.flipX = true;
+        SetRedEyes();
+    }
+
+    public void SetStartingPositionInRoom52BeforeConversation() {
+        SetPosition(new Vector2(2035.125f, -233.125f));
         IsFollowingPlayer = false;
         _target = null;
         _headSpriteRenderer.flipX = true;

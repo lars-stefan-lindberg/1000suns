@@ -28,6 +28,7 @@ public class LevelManager : MonoBehaviour
     private const string BEFORE_SHADOW_JUMP_EVENT = "Cave-33.first-eli-soot-conversation-completed";
     private const string AFTER_SHADOW_JUMP_EVENT = "Cave-33.after-shadow-jump-conversation-completed";
     private const string SOOT_BETRAYAL_EVENT = "Cave-47.cutscene-completed";
+    private const string CAVE_52_CONVERSATION_EVENT = "Cave-52.cutscene-completed";
 
 
     void Awake() {
@@ -446,8 +447,13 @@ public class LevelManager : MonoBehaviour
         } else if(scene.name == "Cave-52") {
             if(IsLevelCompleted("Cave-52"))
                 CaveAvatar.obj.SetStartingPositionInRoom32();
-            else
-                CaveAvatar.obj.SetStartingPositionInRoom52();
+            else {
+                if(GameManager.obj.HasEvent(CAVE_52_CONVERSATION_EVENT)) {
+                    CaveAvatar.obj.SetStartingPositionInRoom52AfterConversation();
+                } else {
+                    CaveAvatar.obj.SetStartingPositionInRoom52BeforeConversation();
+                }    
+            }
         } else if(GameManager.obj.HasEvent(SOOT_BETRAYAL_EVENT)) {
             //Let room managers handle Soot's position
         } else if(GameManager.obj.HasEvent(BEFORE_SHADOW_JUMP_EVENT) && !GameManager.obj.HasEvent(AFTER_SHADOW_JUMP_EVENT)) {

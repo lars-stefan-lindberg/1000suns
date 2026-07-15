@@ -884,6 +884,67 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8515548852307158604, guid: 4ad59badb72fb4457ba26e3b5605fff2, type: 3}
   m_PrefabInstance: {fileID: 382054113}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &532855332
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 520131270585620684, guid: 55f3e3e7147604b7bb2d22fcd7ff0b32, type: 3}
+      propertyPath: m_Name
+      value: Cutscene camera (Cave-52)
+      objectReference: {fileID: 0}
+    - target: {fileID: 520131270585620684, guid: 55f3e3e7147604b7bb2d22fcd7ff0b32, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 643016202675813108, guid: 55f3e3e7147604b7bb2d22fcd7ff0b32, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 2035
+      objectReference: {fileID: 0}
+    - target: {fileID: 643016202675813108, guid: 55f3e3e7147604b7bb2d22fcd7ff0b32, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -233.375
+      objectReference: {fileID: 0}
+    - target: {fileID: 643016202675813108, guid: 55f3e3e7147604b7bb2d22fcd7ff0b32, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -1.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 643016202675813108, guid: 55f3e3e7147604b7bb2d22fcd7ff0b32, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 643016202675813108, guid: 55f3e3e7147604b7bb2d22fcd7ff0b32, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 643016202675813108, guid: 55f3e3e7147604b7bb2d22fcd7ff0b32, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 643016202675813108, guid: 55f3e3e7147604b7bb2d22fcd7ff0b32, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 643016202675813108, guid: 55f3e3e7147604b7bb2d22fcd7ff0b32, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 643016202675813108, guid: 55f3e3e7147604b7bb2d22fcd7ff0b32, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 643016202675813108, guid: 55f3e3e7147604b7bb2d22fcd7ff0b32, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 55f3e3e7147604b7bb2d22fcd7ff0b32, type: 3}
 --- !u!1001 &550471657
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -938,7 +999,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2576842243526084596, guid: 681e618cc4d84440da9934c23736f209, type: 3}
       propertyPath: m_Name
-      value: MainVCam static
+      value: MainVCam static (Cave-52)
       objectReference: {fileID: 0}
     - target: {fileID: 2576842243526084596, guid: 681e618cc4d84440da9934c23736f209, type: 3}
       propertyPath: m_IsActive
@@ -949,6 +1010,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+--- !u!1 &554002178 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 520131270585620684, guid: 55f3e3e7147604b7bb2d22fcd7ff0b32, type: 3}
+  m_PrefabInstance: {fileID: 532855332}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &603128660
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1762,6 +1828,8 @@ MonoBehaviour:
   _c31Manager: {fileID: 267759082}
   _musicTrack: {fileID: 11400000, guid: 0098003e9ac4f4b9b9070768dbac3bcb, type: 2}
   _cave52CutsceneCompleted: {fileID: 11400000, guid: 7610eeaba8e7a4ed2af6db9e6e0f1bbd, type: 2}
+  _cutsceneCamera: {fileID: 554002178}
+  _sootAfterConversationTarget: {fileID: 1259067939}
 --- !u!61 &1020882550
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2109,7 +2177,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1259067939}
   m_Layer: 2
-  m_Name: CaveAvatarTargetPosC31
+  m_Name: CaveAvatarTargetAfterConversation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3011,6 +3079,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8515548852307158604, guid: 4ad59badb72fb4457ba26e3b5605fff2, type: 3}
   m_PrefabInstance: {fileID: 1631611460}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1781955953
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1781955954}
+  m_Layer: 2
+  m_Name: CaveAvatarTargetBeforeConversation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1781955954
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1781955953}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 2035.125, y: -233.125, z: -0.020960212}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1786488131
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3552,6 +3651,7 @@ SceneRoots:
   - {fileID: 1606613061}
   - {fileID: 671854874}
   - {fileID: 550471657}
+  - {fileID: 532855332}
   - {fileID: 57084318}
   - {fileID: 263131692}
   - {fileID: 1245204100}
@@ -3564,5 +3664,6 @@ SceneRoots:
   - {fileID: 655563064}
   - {fileID: 737041086}
   - {fileID: 1259067939}
+  - {fileID: 1781955954}
   - {fileID: 1485461555}
   - {fileID: 1165494156}
