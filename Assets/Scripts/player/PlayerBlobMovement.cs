@@ -624,6 +624,11 @@ public class PlayerBlobMovement : MonoBehaviour
 
         if (!_jumpToConsume && !CanUseAirJump && !HasBufferedJump) return;
 
+        if(HasBufferedJump && isGrounded && !_jumpToConsume) {
+            ExecuteRegularJump();
+            return;
+        }
+
         if (CanUseJump) ExecuteRegularJump();
         if (CanUseAirJump) ExecuteAirJump();
     }

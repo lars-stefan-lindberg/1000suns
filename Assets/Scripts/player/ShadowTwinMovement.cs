@@ -1016,7 +1016,7 @@ public class ShadowTwinMovement : MonoBehaviour
 
         if (!_jumpToConsume && !CanUseAirJump && !HasBufferedJump) return;
 
-        if(HasBufferedJump && isGrounded) {
+        if(HasBufferedJump && isGrounded && !_jumpToConsume) {
             ExecuteRegularJump();
             return;
         }
