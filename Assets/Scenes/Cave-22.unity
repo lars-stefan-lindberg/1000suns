@@ -679,7 +679,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 1611283372}
+    m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 3658160454134421921, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
       propertyPath: m_LocalPosition.x
@@ -734,11 +734,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
---- !u!4 &299030915 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 3658160454134421921, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
-  m_PrefabInstance: {fileID: 299030914}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &299030916 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7339979703855284144, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
@@ -1601,7 +1596,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1063922883
 Transform:
   m_ObjectHideFlags: 0
@@ -2307,7 +2302,9 @@ MonoBehaviour:
   _bossTrack: {fileID: 11400000, guid: 8793223e4ec0a47399427bc58138884b, type: 2}
   _caveMain: {fileID: 11400000, guid: 6475a932dfa8b47c89b448fbfee74692, type: 2}
   _bossCompleted: {fileID: 11400000, guid: 0ad99355ff461438fb86be2618a2349c, type: 2}
+  _bossCompletedDee: {fileID: 11400000, guid: d397555a58cc343bb841c79889e20c9d, type: 2}
   _bossFightStarted: {fileID: 11400000, guid: 89262671265034cd1a01622125317238, type: 2}
+  _bossFightStartedDee: {fileID: 11400000, guid: 73df8e36c4751455fa0ce07a2e55b61b, type: 2}
   _bossGameObjects: {fileID: 1611283371}
   _prisoners:
   - {fileID: 1210401383}
@@ -2368,7 +2365,6 @@ Transform:
   - {fileID: 1337756894}
   - {fileID: 1060182593}
   - {fileID: 790956480}
-  - {fileID: 299030915}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1670848465
@@ -3105,3 +3101,4 @@ SceneRoots:
   - {fileID: 1574170583}
   - {fileID: 1611283372}
   - {fileID: 306872260}
+  - {fileID: 299030914}

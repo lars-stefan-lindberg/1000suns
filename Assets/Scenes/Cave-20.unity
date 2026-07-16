@@ -1205,6 +1205,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3330757345974882793, guid: 371789a1a5f2142329879a47aef51de8, type: 3}
   m_PrefabInstance: {fileID: 651718586}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &725167173 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7497542003183226443, guid: 212d53e652c3f4601b3cfe5a5b380f74, type: 3}
+  m_PrefabInstance: {fileID: 30320650}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &728315796
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1232,6 +1237,34 @@ PrefabInstance:
     - target: {fileID: 6584189283114910710, guid: 8c753bb03b4ae4d618470a04b710fe7b, type: 3}
       propertyPath: numberOfSoulsBeforeUnlock
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6584189283114910710, guid: 8c753bb03b4ae4d618470a04b710fe7b, type: 3}
+      propertyPath: DoorDestroyed.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6584189283114910710, guid: 8c753bb03b4ae4d618470a04b710fe7b, type: 3}
+      propertyPath: DoorDestroyed.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6584189283114910710, guid: 8c753bb03b4ae4d618470a04b710fe7b, type: 3}
+      propertyPath: DoorDestroyed.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1037197593}
+    - target: {fileID: 6584189283114910710, guid: 8c753bb03b4ae4d618470a04b710fe7b, type: 3}
+      propertyPath: DoorDestroyed.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6584189283114910710, guid: 8c753bb03b4ae4d618470a04b710fe7b, type: 3}
+      propertyPath: DoorDestroyed.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SetEliCompletedRoom
+      objectReference: {fileID: 0}
+    - target: {fileID: 6584189283114910710, guid: 8c753bb03b4ae4d618470a04b710fe7b, type: 3}
+      propertyPath: DoorDestroyed.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: Cave20RoomManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6584189283114910710, guid: 8c753bb03b4ae4d618470a04b710fe7b, type: 3}
+      propertyPath: DoorDestroyed.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 8015169388887705927, guid: 8c753bb03b4ae4d618470a04b710fe7b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1282,6 +1315,16 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 8015169388887705927, guid: 8c753bb03b4ae4d618470a04b710fe7b, type: 3}
   m_PrefabInstance: {fileID: 728315796}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &737649156 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3064315344167564214, guid: 8e9973c1a4fa84d10bb20c7070fa6093, type: 3}
+  m_PrefabInstance: {fileID: 2097575382}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &750597255 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7497542003183226443, guid: 212d53e652c3f4601b3cfe5a5b380f74, type: 3}
+  m_PrefabInstance: {fileID: 1117259391}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &865170651
 PrefabInstance:
@@ -1584,7 +1627,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _secretRevealed: {fileID: 11400000, guid: 69144144bd9a14f449cdd6aee7c55df3, type: 2}
+  _eliCompletedRoom: {fileID: 11400000, guid: 4025a2e9d7b3a4c52b0f1c9a14f9c04d, type: 2}
   _secretWall: {fileID: 1413277067}
+  _prisonerTriggers:
+  - {fileID: 750597255}
+  - {fileID: 725167173}
+  - {fileID: 737649156}
+  - {fileID: 2097052596}
 --- !u!4 &1037197594
 Transform:
   m_ObjectHideFlags: 0
@@ -1698,6 +1747,22 @@ PrefabInstance:
     - target: {fileID: 4720458059243767474, guid: 212d53e652c3f4601b3cfe5a5b380f74, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5345624932733389397, guid: 212d53e652c3f4601b3cfe5a5b380f74, type: 3}
+      propertyPath: m_Size.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5345624932733389397, guid: 212d53e652c3f4601b3cfe5a5b380f74, type: 3}
+      propertyPath: m_Size.y
+      value: 16.458546
+      objectReference: {fileID: 0}
+    - target: {fileID: 5345624932733389397, guid: 212d53e652c3f4601b3cfe5a5b380f74, type: 3}
+      propertyPath: m_Offset.x
+      value: 0.09240723
+      objectReference: {fileID: 0}
+    - target: {fileID: 5345624932733389397, guid: 212d53e652c3f4601b3cfe5a5b380f74, type: 3}
+      propertyPath: m_Offset.y
+      value: -0.8041744
       objectReference: {fileID: 0}
     - target: {fileID: 7497542003183226443, guid: 212d53e652c3f4601b3cfe5a5b380f74, type: 3}
       propertyPath: m_Name
@@ -4101,6 +4166,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6202330355303371771, guid: 3145f9164b58d418aa705e04936c4c26, type: 3}
   m_PrefabInstance: {fileID: 2048119017}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2097052596 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1241590722392887769, guid: 8c753bb03b4ae4d618470a04b710fe7b, type: 3}
+  m_PrefabInstance: {fileID: 728315796}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2097575382
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4119,11 +4189,11 @@ PrefabInstance:
       objectReference: {fileID: 865170652}
     - target: {fileID: 8243297318883697029, guid: 8e9973c1a4fa84d10bb20c7070fa6093, type: 3}
       propertyPath: m_Size.y
-      value: 10.706688
+      value: 17.684765
       objectReference: {fileID: 0}
     - target: {fileID: 8243297318883697029, guid: 8e9973c1a4fa84d10bb20c7070fa6093, type: 3}
       propertyPath: m_Offset.y
-      value: -0.47917175
+      value: -3.9682102
       objectReference: {fileID: 0}
     - target: {fileID: 8606831978734134842, guid: 8e9973c1a4fa84d10bb20c7070fa6093, type: 3}
       propertyPath: m_LocalPosition.x
