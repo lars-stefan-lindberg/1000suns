@@ -38,27 +38,37 @@ public class Cave23RoomManager : MonoBehaviour
     private float _currentInitialVolume = 0f;
     private bool _initialFadeComplete = false;
     private EventInstance _stingerInstance;
+    private CaveTimelineId.Id _activeCaveTimeline;
 
     void Start() {
+        _activeCaveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
         //If coming back from dream room, load room state
-        if(GameManager.obj.HasEvent(_dreamSequenceCompleted) && !GameManager.obj.HasEvent(_postDreamSequenceCompleted)) {
-            _conversationManager.OnConversationEnd += OnConversationCompleted;
-            StartCoroutine(AfterEliDreamRoom());
+        if(_activeCaveTimeline == CaveTimelineId.Id.Eli) {
+            if(GameManager.obj.HasEvent(_dreamSequenceCompleted) && !GameManager.obj.HasEvent(_postDreamSequenceCompleted)) {
+                _conversationManager.OnConversationEnd += OnConversationCompleted;
+                StartCoroutine(AfterEliDreamRoom());
+            }
         }
     }
     
     void FixedUpdate()
     {
-        if (GameManager.obj.HasEvent(_teleportInitiated))
-            return;
-            
-        if (Player.obj == null || Player.obj.transform == null)
+        if (GameManager.obj.HasEvent(_teleportInitiated) && _activeCaveTimeline == CaveTimelineId.Id.Eli)
             return;
             
         if (_voicesStartPosition == null || _voicesEndPosition == null)
             return;
+
+        Transform playerTransform;
+        if(_activeCaveTimeline == CaveTimelineId.Id.Eli) {
+            playerTransform = Player.obj.transform;
+        } else if(_activeCaveTimeline == CaveTimelineId.Id.Dee) {
+            playerTransform = ShadowTwinPlayer.obj.transform;
+        } else {
+            return;
+        }
         
-        float playerX = Player.obj.transform.position.x;
+        float playerX = playerTransform.position.x;
         float startX = _voicesStartPosition.position.x;
         float endX = _voicesEndPosition.position.x;
         
@@ -121,7 +131,7 @@ public class Cave23RoomManager : MonoBehaviour
     }
     
     public void TeleportToDreamRoom() {
-        if(GameManager.obj.HasEvent(_dreamSequenceCompleted))
+        if(GameManager.obj.HasEvent(_dreamSequenceCompleted) || _activeCaveTimeline != CaveTimelineId.Id.Eli)
             return;
         PlayerMovement.obj.SetMovementInput(Vector2.zero);
         PlayerMovement.obj.Freeze();
