@@ -13,7 +13,8 @@ public class CapeRoomSwitchToFullRoomCam : MonoBehaviour
     private bool _isTriggered = false;
 
     void Awake() {
-        if(GameManager.obj.HasEvent(_customCameraZoomedOutEventId)) {
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(GameManager.obj.HasEvent(_customCameraZoomedOutEventId) || caveTimeline != CaveTimelineId.Id.Eli) {
             _isTriggered = true;
             Destroy(gameObject, 3);
         }

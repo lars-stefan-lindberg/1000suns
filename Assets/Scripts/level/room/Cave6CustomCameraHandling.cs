@@ -8,10 +8,11 @@ public class Cave6CustomCameraHandling : MonoBehaviour
     [SerializeField] private GameObject _customCamera;
     [SerializeField] private SpawnPoint _spawnPoint;
     public void HandleCamera() {
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
         GameObject[] sceneGameObjects = gameObject.scene.GetRootGameObjects();
         GameObject room = sceneGameObjects.First(gameObject => gameObject.CompareTag("Room"));
         Collider2D roomCollider = room.GetComponent<Collider2D>();
-        if(GameManager.obj.HasEvent(_customCameraZoomedOutEventId)) {
+        if(GameManager.obj.HasEvent(_customCameraZoomedOutEventId) || caveTimeline != CaveTimelineId.Id.Eli) {
             GameObject mainCamera = sceneGameObjects.First(gameObject => gameObject.CompareTag("MainCamera"));
             RoomCameraController cameraController = mainCamera.GetComponent<RoomCameraController>();
             PlayerManager.PlayerType playerType = PlayerManager.obj.GetActivePlayerType();
