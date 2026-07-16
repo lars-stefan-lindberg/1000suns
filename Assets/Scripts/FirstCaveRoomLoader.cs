@@ -39,15 +39,6 @@ public class FirstCaveRoomLoader : MonoBehaviour
         ShadowTwinPlayer.obj.SetAnimatorLayerAndHasCrown(false);
         ShadowTwinMovement.obj.Freeze();
 
-        Player.obj.SetCaveStartingCoordinates();
-        Player.obj.gameObject.SetActive(true);
-        PlayerMovement.obj.SetStartingOnGround();
-        PlayerMovement.obj.isGrounded = true;
-        PlayerMovement.obj.CancelJumping();
-        PlayerMovement.obj.spriteRenderer.flipX = false;
-        Player.obj.SetAnimatorLayerAndHasCape(false);
-        Player.obj.PlayGetUpAnimation();
-
         GameObject[] sceneGameObjects = gameObject.scene.GetRootGameObjects();
         GameObject mainCamera = sceneGameObjects.First(gameObject => gameObject.CompareTag("MainCamera"));
         GameObject room = sceneGameObjects.First(gameObject => gameObject.CompareTag("Room"));

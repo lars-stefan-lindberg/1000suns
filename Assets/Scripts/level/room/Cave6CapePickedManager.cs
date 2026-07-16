@@ -254,6 +254,9 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
         
         GameManager.obj.RegisterEvent(_crownPicked);
 
+        //Clean up Soot, it's safe from this point since you can't backtrack
+        CaveAvatar.obj.gameObject.SetActive(false);
+
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
     }
 

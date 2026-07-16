@@ -468,24 +468,16 @@ public class LevelManager : MonoBehaviour
             }
         } else if(caveTimelineId == CaveTimelineId.Id.Dee) {
             if(!ShadowTwinPlayer.obj.GetHasCrown()) {
-                Player.obj.SetCaveStartingCoordinates();
-                Player.obj.gameObject.SetActive(true);
-                PlayerMovement.obj.SetStartingOnGround();
-                PlayerMovement.obj.isGrounded = true;
-                PlayerMovement.obj.CancelJumping();
-                PlayerMovement.obj.spriteRenderer.flipX = false;
-                Player.obj.SetAnimatorLayerAndHasCape(false);
-                Player.obj.PlayGetUpAnimation();
-
                 if(GameManager.obj.HasEvent(CAVE_3_DEE_CONVERSATION_EVENT)) {
                     CaveAvatar.obj.SetStartingPositionInRoom1();
                 } else {
                     CaveAvatar.obj.SetFollowPlayerStartingPosition();
                     CaveAvatar.obj.FollowPlayer();    
                 }
-            } else {
-                CaveAvatar.obj.SetFollowPlayerStartingPosition();
-                CaveAvatar.obj.FollowPlayer();
+            } else if(ShadowTwinPlayer.obj.GetHasCrown()) {
+                if(CaveAvatar.obj != null && CaveAvatar.obj.gameObject.activeSelf) {
+                    CaveAvatar.obj.gameObject.SetActive(false);
+                }
             }
         }
     }
