@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class LockedDoor : MonoBehaviour
@@ -14,8 +11,8 @@ public class LockedDoor : MonoBehaviour
         _collider = GetComponent<BoxCollider2D>();
     }
 
-    void Start() {
-        _lightSprite2DFadeManager = GetComponentInChildren<LightSprite2DFadeManager>();
+    void OnEnable() {
+        _lightSprite2DFadeManager = GetComponent<LightSprite2DFadeManager>();
         _lightSprite2DFadeManager.StartFadeIn();
     }
 

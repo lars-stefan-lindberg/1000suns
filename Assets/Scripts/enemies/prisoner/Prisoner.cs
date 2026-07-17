@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Prisoner : MonoBehaviour
@@ -81,7 +80,7 @@ public class Prisoner : MonoBehaviour
         _rigidBody = GetComponent<Rigidbody2D>();
         _animator = GetComponentInChildren<Animator>();
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        _lightSprite2DFadeManager = GetComponentInChildren<LightSprite2DFadeManager>();
+        _lightSprite2DFadeManager = GetComponent<LightSprite2DFadeManager>();
         _pullable = GetComponent<Pullable>();
         if(isImmuneToForcePush)
             _spriteRenderer.color = new Color(0.6f, 0, 0, 1);

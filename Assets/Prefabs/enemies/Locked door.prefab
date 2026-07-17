@@ -218,9 +218,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _lightSprite2D: {fileID: 6292067216848879652}
-  _fadeOutSpeed: 1
+  _fadeOutSpeed: 0.74
   _fadeInSpeed: 1
   _fadeOutAlpha: 0
   _fadeInAlpha: 1
   _startAlpha: 0
-  _lightColor: {r: 0.72156864, g: 0.72156864, b: 0.72156864, a: 1}
+  _lightColor: {r: 0.72156864, g: 0.72156864, b: 0.72156864, a: 0}
+  OnFullyFadedIn:
+    m_PersistentCalls:
+      m_Calls: []
