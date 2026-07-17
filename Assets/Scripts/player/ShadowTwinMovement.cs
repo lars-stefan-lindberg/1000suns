@@ -57,7 +57,7 @@ public class ShadowTwinMovement : MonoBehaviour
         _collider = GetComponent<BoxCollider2D>();
         _animator = GetComponentInChildren<Animator>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        _ceilingLayerMasks = LayerMask.GetMask("Ground");
+        _ceilingLayerMasks = LayerMask.GetMask(new[] { "Ground", "Default", "Block" });
         _playerInput = GetComponent<PlayerInput>();
         _sharedPlayerAudio = GetComponent<SharedCharacterAudio>();
         _deeAudio = GetComponent<DeeAudio>();

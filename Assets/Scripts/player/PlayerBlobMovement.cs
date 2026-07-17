@@ -57,7 +57,7 @@ public class PlayerBlobMovement : MonoBehaviour
         obj = this;
         _collider = GetComponent<BoxCollider2D>();
         _moveableLayerMasks = LayerMask.GetMask("JumpThroughs", "Block");
-        _ceilingLayerMasks = LayerMask.GetMask("Ground");
+        _ceilingLayerMasks = LayerMask.GetMask(new[] { "Ground", "Default", "Block" });
         _playerInput = GetComponent<PlayerInput>();
         _animator = GetComponentInChildren<Animator>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();

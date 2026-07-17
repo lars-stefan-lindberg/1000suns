@@ -208,10 +208,8 @@ public class Block : MonoBehaviour
 
             if(playerHit.collider != null) {
                 PlayerManager.PlayerType playerType = PlayerManager.obj.GetPlayerTypeFromCollider(playerHit.collider);
-                if(PlayerManager.obj.IsPlayerGrounded(playerType)) {
-                    _rigidBody.bodyType = RigidbodyType2D.Static;
-                    Reaper.obj.KillPlayerGeneric(playerType);
-                }
+                _rigidBody.bodyType = RigidbodyType2D.Static;
+                Reaper.obj.KillPlayerGeneric(playerType);
             }
 
             RaycastHit2D enemyHit = Physics2D.BoxCast(
@@ -225,10 +223,8 @@ public class Block : MonoBehaviour
 
             if(enemyHit.collider != null) {
                 Prisoner prisoner = enemyHit.collider.GetComponent<Prisoner>();
-                if(prisoner != null && prisoner.isGrounded) {
-                    _rigidBody.bodyType = RigidbodyType2D.Static;
-                    Reaper.obj.KillPrisoner(prisoner);
-                }
+                _rigidBody.bodyType = RigidbodyType2D.Static;
+                Reaper.obj.KillPrisoner(prisoner);
             }
         }
     }
