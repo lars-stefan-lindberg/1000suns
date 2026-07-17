@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 7095778574724373909}
   - component: {fileID: 5927239113955508123}
   - component: {fileID: 6237881809795408357}
+  - component: {fileID: 5386429779092876960}
+  - component: {fileID: 1688534815980612699}
   m_Layer: 0
   m_Name: Spike
   m_TagString: Untagged
@@ -176,6 +178,7 @@ MonoBehaviour:
   castDistance: 6.3
   gravity: 5
   spawnTime: 3
+  _playerDetectionEnabled: 1
   _fadeSpeed: 0.71
   _dustParticles: {fileID: 1872525979991460346, guid: c2a0ce56198a346c88013cf7afb1a9b2, type: 3}
   _fallStartSfx:
@@ -228,3 +231,63 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &5386429779092876960
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2972060492442625651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d62ac029b1017974ead8b6ad01623c82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lightLayer: 0
+  type: 0
+  spriteMode: 0
+  sprite: {fileID: 21300000, guid: 6592d6be03fd808449716a11558d506f, type: 3}
+  color: {r: 0.5, g: 0.5, b: 0.5, a: 0}
+  flipX: 0
+  flipY: 0
+  lightSpriteTransform:
+    applyRotation: 1
+    scale: {x: 0.5, y: 0.625}
+    rotation: 0
+    position: {x: -0.125, y: 0.16}
+  lightSpriteShape:
+    update: 0
+  meshMode:
+    enable: 0
+    alpha: 0.5
+    shader: 0
+    materials:
+    - {fileID: 0}
+    sortingLayer:
+      name: Default
+      Order: 0
+  glowMode:
+    enable: 0
+    glowRadius: 1
+--- !u!114 &1688534815980612699
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2972060492442625651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9bcd0a9374b64dbdbf3f1e233e90d97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _lightSprite2D: {fileID: 5386429779092876960}
+  _fadeOutSpeed: 8
+  _fadeInSpeed: 8
+  _fadeOutAlpha: 0
+  _fadeInAlpha: 0.8
+  _startAlpha: 0
+  _lightColor: {r: 0.5, g: 0.5, b: 0.5, a: 0}
+  OnFullyFadedIn:
+    m_PersistentCalls:
+      m_Calls: []

@@ -7,6 +7,7 @@ public class Spike : MonoBehaviour
     private Rigidbody2D _rigidBody;
     private BoxCollider2D _collider;
     private SpriteRenderer _spriteRenderer;
+    private LightSprite2DFadeManager _lightSprite2DFadeManager;
     private Animator _animator;
     public bool isRespawnable = false;
     private bool _isRespawning = false;
@@ -45,6 +46,10 @@ public class Spike : MonoBehaviour
         _originXPosition = _spriteRenderer.transform.position.x;
     }
 
+    void Start() {
+        _lightSprite2DFadeManager = GetComponent<LightSprite2DFadeManager>();
+    }
+
     private readonly float _raycastOffsetX = 2;
     [SerializeField] private float _raycastOffsetY = 0;
 
@@ -71,6 +76,7 @@ public class Spike : MonoBehaviour
             }
 
             if(hit) {
+                _lightSprite2DFadeManager.StartFadeIn();
                 GameObject dustParticles = Instantiate(_dustParticles, transform);
                 dustParticles.transform.parent = null;
                 dustParticles.GetComponent<ParticleSystem>().Play();
@@ -127,6 +133,8 @@ public class Spike : MonoBehaviour
             return;
         if(!hitLiquid) {
             SoundFXManager.obj.PlayAtPosition(_impactGroundSfx, transform.position);
+            if(_lightSprite2DFadeManager != null)
+                _lightSprite2DFadeManager.StartFadeOut();
         }
         _hasDetectedPlayer = true;
         _isFalling = false;
@@ -153,6 +161,7 @@ public class Spike : MonoBehaviour
         if(collision.gameObject.CompareTag("ToxicLiquid"))
         {
             hitLiquid = true;
+            _lightSprite2DFadeManager.StartFadeOut();
             SoundFXManager.obj.PlayAtPosition(_impactLiquidSfx, transform.position);
         }
     }
