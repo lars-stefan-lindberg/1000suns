@@ -28,6 +28,7 @@ public class Spike : MonoBehaviour
     [SerializeField] private EventReference _impactGroundSfx;
     [SerializeField] private EventReference _impactLiquidSfx;
 
+    private LayerMask _playerLayerMask;
     private float _originXPosition;
     private readonly float _shakeDistance = 0.1f;
     private readonly float _shakeTime = 0.12f;
@@ -44,6 +45,7 @@ public class Spike : MonoBehaviour
         _startingPosition = transform.position;
         _fadeStartColor = new Color(_spriteRenderer.color.r, _spriteRenderer.color.g, _spriteRenderer.color.b, 0);
         _originXPosition = _spriteRenderer.transform.position.x;
+        _playerLayerMask = LayerMask.GetMask("Default");
     }
 
     void Start() {
@@ -62,7 +64,7 @@ public class Spike : MonoBehaviour
         if (_playerDetectionEnabled && !_isFalling && !_hasDetectedPlayer) {
             //RaycastHit2D hitLeft = Physics2D.Raycast(new Vector2(transform.position.x - _raycastOffsetX, transform.position.y + _raycastOffsetY), Vector3.down, castDistance + _raycastOffsetY);
             //RaycastHit2D hitRight = Physics2D.Raycast(new Vector2(transform.position.x + _raycastOffsetX, transform.position.y + _raycastOffsetY), Vector3.down, castDistance + _raycastOffsetY);
-            RaycastHit2D hitRight = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + _raycastOffsetY), Vector3.down, castDistance + _raycastOffsetY);
+            RaycastHit2D hitRight = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + _raycastOffsetY), Vector3.down, castDistance + _raycastOffsetY, _playerLayerMask);
             bool hit = false;
             // if(hitLeft.transform != null) {
             //     if(hitLeft.transform.CompareTag("Player")) {
