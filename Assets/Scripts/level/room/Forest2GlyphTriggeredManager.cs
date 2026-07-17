@@ -12,6 +12,7 @@ public class Forest2GlyphTriggeredManager : MonoBehaviour, ISkippable
     [SerializeField] private GameEventId _forestGlyphTouchEventId;
     [SerializeField] private GameObject _cutsceneCamera;
     [SerializeField] private EventReference _stinger;
+    [SerializeField] private Transform _playerGlyphStonePosition;
 
     private Coroutine _cutsceneCoroutine;
     private EventInstance _stingerInstance;
@@ -51,7 +52,9 @@ public class Forest2GlyphTriggeredManager : MonoBehaviour, ISkippable
         PlayerMovement.obj.StartWalking();
         PlayerMovement.obj.SetMovementInput(new Vector2(1, 0));
 
-        yield return new WaitForSeconds(3f);
+        while (Player.obj.transform.position.x < _playerGlyphStonePosition.position.x) {
+            yield return null;
+        }
         PlayerMovement.obj.SetMovementInput(Vector2.zero);
         PlayerMovement.obj.StopWalking();
 

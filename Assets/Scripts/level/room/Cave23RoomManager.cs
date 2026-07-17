@@ -26,6 +26,7 @@ public class Cave23RoomManager : MonoBehaviour
     [SerializeField] private GameObject _crystalCutsceneCamera;
     [SerializeField] private SpriteFlash _crystalFlash;
     [SerializeField] private LightFlash _lightVfx;
+    [SerializeField] private Transform _eliCutsceneStopPosition;
     
     [Header("Voice Audio Settings")]
     [SerializeField] private float _initialVolumeFadeSpeed = 2f;
@@ -153,7 +154,9 @@ public class Cave23RoomManager : MonoBehaviour
         PlayerMovement.obj.SetMovementInput(new Vector2(1, 0));
         yield return new WaitForSeconds(0.2f);
         SoundFXManager.obj.PlayAtPosition(_invisibleGrabWithBuildUp, Player.obj.transform.position);
-        yield return new WaitForSeconds(2.05f);
+        while (Player.obj.transform.position.x < _eliCutsceneStopPosition.position.x) {
+            yield return null;
+        }
         _crystalFlash.Flash();
         PlayerMovement.obj.SetMovementInput(Vector2.zero);
         PlayerMovement.obj.StopWalking();

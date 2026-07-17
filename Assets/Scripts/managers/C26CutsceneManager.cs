@@ -25,6 +25,7 @@ public class C26CutsceneManager : MonoBehaviour, ISkippable
     [SerializeField] private float _timeBeforeTransformSfx = 0.8f;
     [SerializeField] private float _timeBeforeTransformStinger = 1f;
     [SerializeField] private float _timeBeforeTransformVfx = 1f;
+    [SerializeField] private Transform _eliCutscenePosition;
     private EventInstance _blobTransformStingerInstance;
     private EventInstance _sootEvilEyesStingerInstance;
     private EventInstance _rumblingInstance;
@@ -100,6 +101,7 @@ public class C26CutsceneManager : MonoBehaviour, ISkippable
         if(_startCutscene) {
             _startCutscene = false;
             PlayerMovement.obj.Freeze();
+            Player.obj.transform.position = new Vector2(_eliCutscenePosition.position.x, Player.obj.transform.position.y);
             StartCoroutine(Cutscene());
         }
     }
@@ -112,7 +114,7 @@ public class C26CutsceneManager : MonoBehaviour, ISkippable
 
     private IEnumerator Cutscene() {
         yield return new WaitForSeconds(1f);
-
+        
         //Soot flies off
         CaveAvatar.obj.SetTarget(_sootFlyTarget1, 3f);
 
