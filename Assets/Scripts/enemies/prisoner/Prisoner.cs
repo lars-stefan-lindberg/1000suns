@@ -68,6 +68,10 @@ public class Prisoner : MonoBehaviour
     public bool isStuck = false;
     public float bounceOffOtherPrisonerMultiplier = 0.5f;
 
+    public bool isRampaging = false;
+    public float rampageDuration = 2f;
+    private float rampageTimeCount = 0f;
+
     private AudioSource _gotHitAudioSource;
     private bool _isFadingOutHitSound = false;
     public bool muteDeathSoundFX = false;
@@ -336,8 +340,19 @@ public class Prisoner : MonoBehaviour
             {
                 recoveryTimeCount -= Time.deltaTime;
                 if (recoveryTimeCount < 0)
+                {
                     isRecovering = false;
+                    isRampaging = true;
+                    rampageTimeCount = rampageDuration;
+                }
             }
+        }
+
+        if (isRampaging)
+        {
+            rampageTimeCount -= Time.deltaTime;
+            if (rampageTimeCount < 0)
+                isRampaging = false;
         }
 
         if (!_isBeingPulled && !hasBeenHit && !isRecovering && isGrounded && !isStatic && !isTurning && !isStuck)
@@ -410,7 +425,12 @@ public class Prisoner : MonoBehaviour
             if (!isTurning && !isStatic)
             {
                 Vector2 currentVelocity = _rigidBody.velocity;
-                currentVelocity.x = -_collider.transform.right.x * speed * (isAttacking ? attackSpeedMultiplier : 1);
+                float speedMultiplier = 1f;
+                if (isAttacking)
+                    speedMultiplier = attackSpeedMultiplier;
+                else if (isRampaging)
+                    speedMultiplier = attackSpeedMultiplier;
+                currentVelocity.x = -_collider.transform.right.x * speed * speedMultiplier;
                 _rigidBody.velocity = currentVelocity;
             }
         }
