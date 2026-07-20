@@ -252,6 +252,76 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0514ef94a3f95460c8f606d13da9e8c4, type: 3}
+--- !u!1 &393416933
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 393416934}
+  - component: {fileID: 393416935}
+  m_Layer: 2
+  m_Name: Crystal light
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &393416934
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 393416933}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -5, y: 5.375, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1063922883}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &393416935
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 393416933}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d62ac029b1017974ead8b6ad01623c82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lightLayer: 0
+  type: 0
+  spriteMode: 0
+  sprite: {fileID: 21300000, guid: 6592d6be03fd808449716a11558d506f, type: 3}
+  color: {r: 0.80871135, g: 0.36103532, b: 0.8784314, a: 0.204}
+  flipX: 0
+  flipY: 0
+  lightSpriteTransform:
+    applyRotation: 1
+    scale: {x: 1.5, y: 0.75}
+    rotation: 0
+    position: {x: 0, y: 0}
+  lightSpriteShape:
+    update: 0
+  meshMode:
+    enable: 0
+    alpha: 0.111
+    shader: 0
+    materials:
+    - {fileID: 0}
+    sortingLayer:
+      name: Default
+      Order: 0
+  glowMode:
+    enable: 0
+    glowRadius: 1
 --- !u!1001 &445428069
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -651,6 +721,8 @@ Transform:
   - {fileID: 445428070}
   - {fileID: 1048035708}
   - {fileID: 1157620005}
+  - {fileID: 393416934}
+  - {fileID: 1287622129}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1157620004
@@ -781,6 +853,76 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7007949607855692761, guid: 50610373a2d3a4524b62b9c872cafb8c, type: 3}
   m_PrefabInstance: {fileID: 1259677155}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1287622128
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1287622129}
+  - component: {fileID: 1287622130}
+  m_Layer: 2
+  m_Name: Crystal light (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1287622129
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1287622128}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 7, y: 5.375, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1063922883}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1287622130
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1287622128}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d62ac029b1017974ead8b6ad01623c82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lightLayer: 0
+  type: 0
+  spriteMode: 0
+  sprite: {fileID: 21300000, guid: 6592d6be03fd808449716a11558d506f, type: 3}
+  color: {r: 0.80871135, g: 0.36103532, b: 0.8784314, a: 0.204}
+  flipX: 0
+  flipY: 0
+  lightSpriteTransform:
+    applyRotation: 1
+    scale: {x: 1.5, y: 0.75}
+    rotation: 0
+    position: {x: 0, y: 0}
+  lightSpriteShape:
+    update: 0
+  meshMode:
+    enable: 0
+    alpha: 0.111
+    shader: 0
+    materials:
+    - {fileID: 0}
+    sortingLayer:
+      name: Default
+      Order: 0
+  glowMode:
+    enable: 0
+    glowRadius: 1
 --- !u!1001 &1488391681
 PrefabInstance:
   m_ObjectHideFlags: 0
