@@ -42,13 +42,13 @@ public class Prisoner : MonoBehaviour
     public float hasBeenHitTimeCount = 0f;
     public float recoveryDuration = 0.5f;
     public float recoveryTimeCount = 0f;
-    public Vector2 horizontalMoveSpeedDuringHit;
     public bool isRecovering = false;
     public float recoveryMovementStopMultiplier = 0.4f;
     private bool _isBeingPulled = false;
 
     public float damagePower; //When hit by projectile stores and uses the power of the hit
     public float forceMultiplier = 7f;  //How "hard" a projectile will hit the enemy
+    public float forceMultiplierBack = 6f;  //How "hard" a projectile will hit the enemy if hit in the back
 
     public float timeToTurnAround = 0.5f;
     public float turnAroundTimer = 1.3f;
@@ -110,7 +110,7 @@ public class Prisoner : MonoBehaviour
         if (collision.transform.CompareTag("Projectile"))
         {
             Projectile projectile = collision.gameObject.GetComponent<Projectile>();
-            applyGotHitState(projectile.power, projectile.horizontalDirection);
+            ApplyGotHitState(projectile.power, projectile.horizontalDirection);
         }
         if (collision.transform.CompareTag("Block"))
         {
@@ -134,7 +134,7 @@ public class Prisoner : MonoBehaviour
             if (prisoner.hasBeenHit && !hasBeenHit)
             {
                 int hitDirection = prisoner._rigidBody.position.x < _rigidBody.position.x ? 1 : -1;
-                applyGotHitState(prisoner.damagePower * bounceOffOtherPrisonerMultiplier, hitDirection);
+                ApplyGotHitState(prisoner.damagePower * bounceOffOtherPrisonerMultiplier, hitDirection);
             }
         }
         if (collision.transform.CompareTag("Player")) {
@@ -150,7 +150,7 @@ public class Prisoner : MonoBehaviour
         isStatic = false;
     }
 
-    private void applyGotHitState(float hitPower, int projectileDirection)
+    private void ApplyGotHitState(float hitPower, int projectileDirection)
     {
         if(!isImmuneToForcePush) {
             // _gotHitAudioSource = SoundFXManager.obj.PlayPrisonerHit(transform);
@@ -163,14 +163,22 @@ public class Prisoner : MonoBehaviour
             hasBeenHitTimeCount = hasBeenHitDuration;   
             _rigidBody.gravityScale = 0;
             _rigidBody.velocity = new Vector2(0, 0);
-            _rigidBody.AddForce(new Vector2(damagePower * forceMultiplier * projectileDirection, 0));
+
+            bool isFacingRight = IsFacingRight();
+
+            bool isHitFront = (projectileDirection == 1 && !isFacingRight) || (projectileDirection == -1 && isFacingRight);
+
+            if(isRecovering || isHitFront)
+                _rigidBody.AddForce(new Vector2(damagePower * forceMultiplier * projectileDirection, 0));
+            else
+                _rigidBody.AddForce(new Vector2(damagePower * forceMultiplierBack * projectileDirection, 0));
+            isRecovering = false;
 
             //Make sure prisoner is moving in the same direction as it got hit, to create sense of "awareness"
-            if(projectileDirection == 1 && IsFacingRight())
+            if(projectileDirection == 1 && isFacingRight)
                 FlipHorizontal();
-            else if(projectileDirection == -1 && !IsFacingRight())
+            else if(projectileDirection == -1 && !isFacingRight)
                 FlipHorizontal();
-            horizontalMoveSpeedDuringHit = _rigidBody.velocity;
         }
     }
 
@@ -315,10 +323,7 @@ public class Prisoner : MonoBehaviour
         }
         if (isRecovering)
         {
-            float currentVelocity =
-                _rigidBody.velocity.x == horizontalMoveSpeedDuringHit.x ?
-                horizontalMoveSpeedDuringHit.x : _rigidBody.velocity.x;
-            GracefulMovementStop(currentVelocity);
+            GracefulMovementStop(_rigidBody.velocity.x);
             if (_rigidBody.velocity.x == 0)
             {
                 recoveryTimeCount -= Time.deltaTime;
