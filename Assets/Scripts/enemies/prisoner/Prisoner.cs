@@ -214,6 +214,14 @@ public class Prisoner : MonoBehaviour
             isRecovering = true;
             recoveryTimeCount = recoveryDuration;
             _rigidBody.gravityScale = _defaultGravity;
+            //Turn towards player
+            PlayerManager.PlayerType activePlayerType = PlayerManager.obj.GetActivePlayerType();
+            Transform playerTransform = PlayerManager.obj.GetPlayerTransform(activePlayerType);
+            bool isFacingRight = IsFacingRight();
+            bool isPlayerToTheRight = playerTransform.position.x > transform.position.x;
+            if(isFacingRight != isPlayerToTheRight) {
+                FlipHorizontal();
+            }
         }
 
         //To check if we should stop a block when cornered to a wall
