@@ -26,6 +26,10 @@ public class LightSprite2DFadeManager : MonoBehaviour
         _lightColor.a = _startAlpha;
     }
 
+    public void SetFadeInAlpha(float fadeInAlpha) {
+        _fadeInAlpha = fadeInAlpha;
+    }
+
     void Update() {
         if(IsFadingIn) {
             if(_lightSprite2D.color.a < _fadeInAlpha) {

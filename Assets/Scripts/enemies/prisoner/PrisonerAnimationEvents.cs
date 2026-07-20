@@ -17,6 +17,8 @@ public class PrisonerAnimationEvents : MonoBehaviour
     }
     public void PlaySpawn() {
         _prisonerAudio.PlaySpawn();
+        if(_prisoner.isImmuneToForcePush)
+            PlaySlide();
     }
     public void PlaySlide() {
         _prisonerAudio.PlaySlide();

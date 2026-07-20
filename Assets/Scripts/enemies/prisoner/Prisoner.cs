@@ -1,4 +1,5 @@
 using System.Collections;
+using FunkyCode;
 using UnityEngine;
 
 public class Prisoner : MonoBehaviour
@@ -10,6 +11,7 @@ public class Prisoner : MonoBehaviour
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
     private LightSprite2DFadeManager _lightSprite2DFadeManager;
+    private LightSprite2D _lightSprite2D;
     private Pullable _pullable;
     public LayerMask groundLayer; //Used to check if grounded
     public LayerMask collisionLayer; //Raycast for collisions like other prisoners, walls, blocks
@@ -76,18 +78,23 @@ public class Prisoner : MonoBehaviour
     private bool _isFadingOutHitSound = false;
     public bool muteDeathSoundFX = false;
     private Rigidbody2D _blockInContact;
-    private float _edgeRecoveryCoolDownTime = 0.1f;
-    private float _edgeRecoveryCoolDownTimer = 0;
+    private Material _material;
 
     private void Awake()
     {
         _rigidBody = GetComponent<Rigidbody2D>();
         _animator = GetComponentInChildren<Animator>();
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        _material = _spriteRenderer.material;
+        _lightSprite2D = GetComponent<LightSprite2D>();
         _lightSprite2DFadeManager = GetComponent<LightSprite2DFadeManager>();
         _pullable = GetComponent<Pullable>();
-        if(isImmuneToForcePush)
-            _spriteRenderer.color = new Color(0.6f, 0, 0, 1);
+        if(isImmuneToForcePush) {
+            _lightSprite2DFadeManager.SetFadeInAlpha(0.7f);
+            _lightSprite2D.color = Color.HSVToRGB(0f, 0.9f, 1f);
+            _lightSprite2D.color.a = 0.7f;
+            _material.SetFloat("_ColorReplaceFade", 1);
+        }
         if(isSpawningFast)
             _animator.speed = spawnAnimationSpeed;
         _collider = GetComponent<BoxCollider2D>();
@@ -183,6 +190,8 @@ public class Prisoner : MonoBehaviour
                 FlipHorizontal();
             else if(projectileDirection == -1 && !isFacingRight)
                 FlipHorizontal();
+        } else {
+            //TODO, react to being hit
         }
     }
 
