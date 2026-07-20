@@ -240,15 +240,15 @@ public class Prisoner : MonoBehaviour
                 }
             }
         }
-        //Check if grounded
-        Vector3 groundLineCastPosition = _collider.transform.position;
-        //Debug.DrawLine(
-        //    groundLineCastPosition,
-        //    new Vector3(groundLineCastPosition.x, groundLineCastPosition.y - isGroundedCheckOffset, groundLineCastPosition.z),
-        //    Color.red);
-        bool groundHit = Physics2D.Linecast(
-            groundLineCastPosition,
-            new Vector3(groundLineCastPosition.x, groundLineCastPosition.y - isGroundedCheckOffset, groundLineCastPosition.z),
+        //Check if grounded using boxcast
+        Vector2 boxSize = new Vector2(_collider.bounds.size.x, 0.1f);
+        Vector2 boxCastOrigin = _collider.bounds.center;
+        RaycastHit2D groundHit = Physics2D.BoxCast(
+            boxCastOrigin,
+            boxSize,
+            0f,
+            Vector2.down,
+            isGroundedCheckOffset,
             groundLayer);
 
         if(!isGrounded && groundHit) {
@@ -260,7 +260,7 @@ public class Prisoner : MonoBehaviour
             _animator.SetTrigger("fall");
         }
 
-        isGrounded = groundHit;
+        isGrounded = groundHit.collider != null;
 
         //Check if space to move is too small. If so go into idle state
         if(isGrounded) {
@@ -358,29 +358,6 @@ public class Prisoner : MonoBehaviour
                     isAttacking = false;
             } else
                 isAttacking = false;
-        }
-
-        //Check if landed on edge. Try to recover by moving to one side -> either fall, or reach stable ground
-        if(!isGrounded && !_isBeingPulled && _rigidBody.velocity == Vector2.zero) {
-            _edgeRecoveryCoolDownTimer += Time.deltaTime;
-            if(_edgeRecoveryCoolDownTimer >= _edgeRecoveryCoolDownTime) {
-                _edgeRecoveryCoolDownTimer = 0;
-
-                //Check if ground to right or left, and apply force accordingly
-                Vector2 groundLineAheadCastPosition = _collider.transform.position - _collider.transform.right * enemyWidth * groundAheadCheck;
-                isGroundFloorAhead = Physics2D.Linecast(groundLineAheadCastPosition, groundLineAheadCastPosition + Vector2.down, groundLayer);
-                if(IsFacingRight()) {
-                    if(!isGroundFloorAhead) {
-                        _rigidBody.velocity = new Vector2(5, 0);
-                    } else
-                        _rigidBody.velocity = new Vector2(-5, 0);
-                } else {
-                    if(!isGroundFloorAhead) {
-                        _rigidBody.velocity = new Vector2(-5, 0);
-                    } else
-                        _rigidBody.velocity = new Vector2(5, 0);
-                }
-            }
         }
 
         if(isStuck)
@@ -510,10 +487,16 @@ public class Prisoner : MonoBehaviour
         }
     }
 
-    //private void OnDrawGizmos()
-    //{
-    //    Gizmos.color = Color.cyan;
-    //    //Gizmos.DrawLine(collider.transform.position, collider.transform.position + Vector3.down * floorCheckY);
-    //    Gizmos.DrawLine(collider.transform.position, collider.transform.position + new Vector3(-collider.transform.right.x, 0, 0) * frontCheck);
-    //}
+    // private void OnDrawGizmos()
+    // {
+    //     if(_collider != null) {
+    //         Gizmos.color = Color.cyan;
+    //         Vector2 boxSize = new Vector2(_collider.bounds.size.x, 0.1f);
+    //         Vector3 boxCastOrigin = _collider.bounds.center;
+    //         Vector3 boxCastEnd = boxCastOrigin + Vector3.down * isGroundedCheckOffset;
+            
+    //         Gizmos.DrawWireCube(boxCastEnd, boxSize);
+    //         Gizmos.DrawLine(boxCastOrigin, boxCastEnd);
+    //     }
+    // }
 }
