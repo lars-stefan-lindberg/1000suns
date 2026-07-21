@@ -353,6 +353,8 @@ public class Prisoner : MonoBehaviour
             isRecovering = true;
             recoveryTimeCount = recoveryDuration;
         } else if(isGrounded && !groundHit && !hasBeenHit && !_isBeingPulled && !isRecovering && !IsSpawning) {
+            isTurning = false;
+            turnAroundTimer = timeToTurnAround;
             _isFalling = true;
             _animator.SetTrigger("fall");
         }
