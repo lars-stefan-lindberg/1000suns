@@ -50,6 +50,13 @@ public class Prisoner : MonoBehaviour
     public bool isRecovering = false;
     public float recoveryMovementStopMultiplier = 0.4f;
     private bool _isBeingPulled = false;
+    
+    //Pull break-free for immune prisoners
+    public float pullBreakFreeThreshold = 2f; //Time in seconds before immune prisoner breaks free
+    private float _pullTimer = 0f;
+    public float pullImmunityDuration = 3f; //Time in seconds prisoner is immune to being pulled after breaking free
+    private float _pullImmunityTimer = 0f;
+    private bool _isImmuneToPull = false;
 
     public float damagePower; //When hit by projectile stores and uses the power of the hit
     public float forceMultiplier = 7f;  //How "hard" a projectile will hit the enemy
@@ -254,13 +261,15 @@ public class Prisoner : MonoBehaviour
             _isStuckCooldownTimer = 0;
         }
 
-        if(_pullable.IsPulled && !_isBeingPulled) {
+        if(_pullable.IsPulled && !_isBeingPulled && !_isImmuneToPull) {
             _isBeingPulled = true;
+            _pullTimer = 0f; //Reset timer when pull starts
             _rigidBody.gravityScale = 0;
             _rigidBody.velocity = new Vector2(0, 0);
             _animator.SetTrigger("hit");
         } else if(!_pullable.IsPulled && _isBeingPulled) {
             _isBeingPulled = false;
+            _pullTimer = 0f; //Reset timer when pull ends
             isRecovering = true;
             recoveryTimeCount = recoveryDuration;
             _rigidBody.gravityScale = _defaultGravity;
@@ -271,6 +280,44 @@ public class Prisoner : MonoBehaviour
             bool isPlayerToTheRight = playerTransform.position.x > transform.position.x;
             if(isFacingRight != isPlayerToTheRight) {
                 FlipHorizontal();
+            }
+        }
+        
+        //Handle immune prisoner break-free from pull
+        if(_isBeingPulled && isImmuneToForcePush) {
+            _pullTimer += Time.deltaTime;
+            if(_pullTimer >= pullBreakFreeThreshold) {
+                //Break free from pull
+                _pullable.IsPulled = false;
+                _isBeingPulled = false;
+                _pullTimer = 0f;
+                isRecovering = true;
+                recoveryTimeCount = recoveryDuration;
+                _rigidBody.gravityScale = _defaultGravity;
+                //Turn towards player
+                PlayerManager.PlayerType activePlayerType = PlayerManager.obj.GetActivePlayerType();
+                Transform playerTransform = PlayerManager.obj.GetPlayerTransform(activePlayerType);
+                bool isFacingRight = IsFacingRight();
+                bool isPlayerToTheRight = playerTransform.position.x > transform.position.x;
+                if(isFacingRight != isPlayerToTheRight) {
+                    FlipHorizontal();
+                }
+                _prisonerAudio.PlaySlide();
+                TriggerHitShake();
+                //Start immunity timer
+                _isImmuneToPull = true;
+                _pullImmunityTimer = pullImmunityDuration;
+                _pullable.SetImmune(true);
+            }
+        }
+        
+        //Count down pull immunity timer
+        if(_isImmuneToPull) {
+            _pullImmunityTimer -= Time.deltaTime;
+            if(_pullImmunityTimer <= 0f) {
+                _isImmuneToPull = false;
+                _pullImmunityTimer = 0f;
+                _pullable.SetImmune(false);
             }
         }
 

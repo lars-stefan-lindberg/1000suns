@@ -93,6 +93,10 @@ public class PullableDetector : MonoBehaviour
             if (pullable == null)
                 continue;
             
+            // Skip immune pullables
+            if (pullable.IsImmune)
+                continue;
+            
             Vector2 directionToPullable = pullable.transform.position - _playerTransform.position;
             
             // Early out: Check facing direction first (cheapest)

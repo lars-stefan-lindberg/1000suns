@@ -156,6 +156,13 @@ public class ShadowTwinPull : MonoBehaviour
 
     private void Update()
     {
+        // Check if currently pulled pullable became immune - release it immediately
+        if (_isPullingObject && _pulledPullable != null && _pulledPullable.IsImmune)
+        {
+            OnShootButtonCanceled();
+            return;
+        }
+        
         // Enable control when player lands while holding a grabbed pullable
         if (_isPullingObject && !_isControllingObject && _pulledPullable != null && ShadowTwinMovement.obj.isGrounded)
         {
@@ -376,6 +383,13 @@ public class ShadowTwinPull : MonoBehaviour
 
         if (_targetRb == null || _pulledPullable == null || _pulledPullable.IsHeavy())
             return;
+        
+        // Check if pullable became immune - stop controlling immediately
+        if (_pulledPullable.IsImmune)
+        {
+            OnShootButtonCanceled();
+            return;
+        }
         
         // Only allow control movement when player is grounded
         if (!ShadowTwinMovement.obj.isGrounded)

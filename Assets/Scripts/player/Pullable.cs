@@ -30,6 +30,7 @@ public class Pullable : MonoBehaviour
     [SerializeField] private float _velocityThreshold = 0.1f;
     
     public bool IsPulled {get; set;}
+    public bool IsImmune {get; private set;}
     
     private Material _material;
     private Transform _spriteTransform;
@@ -61,6 +62,7 @@ public class Pullable : MonoBehaviour
 
     private void Start() {
         IsPulled = false;
+        IsImmune = false;
         _material = _renderer.material;
         _material.SetFloat("_SineGlowFade", 0f);
         _material.SetFloat("_PixelOutlineFade", 0f);
@@ -83,6 +85,16 @@ public class Pullable : MonoBehaviour
 
     public bool IsHeavy() {
         return _isHeavy;
+    }
+    
+    public void SetImmune(bool immune) {
+        IsImmune = immune;
+        if (immune) {
+            // If setting immune while being pulled, stop the pull
+            if (IsPulled) {
+                IsPulled = false;
+            }
+        }
     }
     
     public void StartHighlight() {
