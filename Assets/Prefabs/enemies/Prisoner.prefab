@@ -5146,6 +5146,9 @@ MonoBehaviour:
   isSpawningSoul: 0
   isImmuneToForcePush: 0
   isSpawningFast: 0
+  immuneSpeedReductionMultiplier: 0.5
+  immuneSpeedReductionDuration: 0.5
+  immuneFlipDelay: 0.2
   spawnAnimationSpeed: 3
   IsSpawning: 1
   playerCastDistance: 7
@@ -5153,7 +5156,12 @@ MonoBehaviour:
   attackSpeedMultiplier: 2
   isStuck: 0
   bounceOffOtherPrisonerMultiplier: 0.5
+  isRampaging: 0
+  rampageDuration: 2
   muteDeathSoundFX: 0
+  _shakeDistance: 0.4
+  _shakeDuration: 0.2
+  _shakeVibrato: 15
   isSpawningPrisoners: 0
   prisonersToSpawn: []
 --- !u!114 &2591660405728026287

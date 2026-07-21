@@ -1,4 +1,5 @@
 using System.Collections;
+using DG.Tweening;
 using FunkyCode;
 using UnityEngine;
 
@@ -10,8 +11,10 @@ public class Prisoner : MonoBehaviour
     private BoxCollider2D _collider;
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
+    private Transform _spriteTransform;
     private LightSprite2DFadeManager _lightSprite2DFadeManager;
     private LightSprite2D _lightSprite2D;
+    private PrisonerAudio _prisonerAudio;
     private Pullable _pullable;
     public LayerMask groundLayer; //Used to check if grounded
     public LayerMask collisionLayer; //Raycast for collisions like other prisoners, walls, blocks
@@ -60,6 +63,11 @@ public class Prisoner : MonoBehaviour
     public bool isSpawningSoul = false;
     public bool isImmuneToForcePush = false;
     public bool isSpawningFast = false;
+    
+    public float immuneSpeedReductionMultiplier = 0.5f;
+    public float immuneSpeedReductionDuration = 0.3f;
+    public float immuneFlipDelay = 0.2f;
+    private bool _isSpeedReduced = false;
     public float spawnAnimationSpeed = 3;
     public bool IsSpawning = true;
     private bool _isFalling = false;
@@ -79,12 +87,19 @@ public class Prisoner : MonoBehaviour
     public bool muteDeathSoundFX = false;
     private Rigidbody2D _blockInContact;
     private Material _material;
+    private Vector3 _originalSpritePosition;
+    [Header("Hit Shake")]
+    [SerializeField] private float _shakeDistance = 0.1f;
+    [SerializeField] private float _shakeDuration = 0.2f;
+    [SerializeField] private int _shakeVibrato = 10;
 
     private void Awake()
     {
+        _prisonerAudio = GetComponentInParent<PrisonerAudio>();
         _rigidBody = GetComponent<Rigidbody2D>();
         _animator = GetComponentInChildren<Animator>();
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        _spriteTransform = _spriteRenderer.transform;
         _material = _spriteRenderer.material;
         _lightSprite2D = GetComponent<LightSprite2D>();
         _lightSprite2DFadeManager = GetComponent<LightSprite2DFadeManager>();
@@ -191,10 +206,32 @@ public class Prisoner : MonoBehaviour
             else if(projectileDirection == -1 && !isFacingRight)
                 FlipHorizontal();
         } else {
-            //TODO, react to being hit
+            bool isFacingRight = IsFacingRight();
+            bool isHitFromFront = (projectileDirection == 1 && !isFacingRight) || (projectileDirection == -1 && isFacingRight);
+            _prisonerAudio.PlaySlide();
+            TriggerHitShake();
+            if(isTurning) {
+                isAttacking = true;
+                isTurning = false;
+                turnAroundTimer = timeToTurnAround;
+                if(!isHitFromFront)
+                    FlipHorizontal();
+                StartCoroutine(TemporarySpeedReduction());
+            } else {
+                StartCoroutine(TemporarySpeedReduction());
+                if(!isHitFromFront) {
+                    StartCoroutine(DelayedFlip());
+                }
+            }
         }
     }
 
+    private void TriggerHitShake() {
+        _spriteTransform.DOKill();
+        _spriteTransform.localPosition = _originalSpritePosition;
+        _spriteTransform.DOShakePosition(_shakeDuration, new Vector3(_shakeDistance, 0f, 0f), _shakeVibrato, 0, false, false)
+            .OnComplete(() => _spriteTransform.localPosition = _originalSpritePosition);
+    }
 
     private float _isStuckCooldownTimer = 0;
     private readonly float _isStuckCooldownTime = 1.5f;
@@ -435,10 +472,14 @@ public class Prisoner : MonoBehaviour
             {
                 Vector2 currentVelocity = _rigidBody.velocity;
                 float speedMultiplier = 1f;
-                if (isAttacking)
+                if(isAttacking && _isSpeedReduced)
+                    speedMultiplier = attackSpeedMultiplier * immuneSpeedReductionMultiplier;
+                else if (isAttacking)
                     speedMultiplier = attackSpeedMultiplier;
                 else if (isRampaging)
                     speedMultiplier = attackSpeedMultiplier;
+                else if (_isSpeedReduced)
+                    speedMultiplier = immuneSpeedReductionMultiplier;
                 currentVelocity.x = -_collider.transform.right.x * speed * speedMultiplier;
                 _rigidBody.velocity = currentVelocity;
             }
@@ -456,6 +497,19 @@ public class Prisoner : MonoBehaviour
     private void GracefulSpeedChange()
     {        
         speed = Mathf.MoveTowards(speed, defaultSpeed, speedAcceleration * Time.fixedDeltaTime);
+    }
+    
+    private IEnumerator TemporarySpeedReduction()
+    {
+        _isSpeedReduced = true;
+        yield return new WaitForSeconds(immuneSpeedReductionDuration);
+        _isSpeedReduced = false;
+    }
+    
+    private IEnumerator DelayedFlip()
+    {
+        yield return new WaitForSeconds(immuneFlipDelay);
+        FlipHorizontal();
     }
 
     private void FlipHorizontal()
