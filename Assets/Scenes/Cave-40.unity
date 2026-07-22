@@ -2822,6 +2822,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _elevator: {fileID: 905198845}
+  _elevatorFlash: {fileID: 1542519595878148883}
   _nextScene:
     _sceneAsset: {fileID: 102900000, guid: 19dbedf6ef7454092b620a42d8734905, type: 3}
     _sceneName: Cave-41
@@ -2917,7 +2918,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 821690305994934905, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1669.875
+      value: 1668.25
       objectReference: {fileID: 0}
     - target: {fileID: 821690305994934905, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2961,7 +2962,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6368901749949411461, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
       propertyPath: m_Size.x
-      value: 1.1669922
+      value: 3.8186035
       objectReference: {fileID: 0}
     - target: {fileID: 6368901749949411461, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
       propertyPath: m_Size.y
@@ -2969,7 +2970,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6368901749949411461, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
       propertyPath: m_Offset.x
-      value: 0.083496094
+      value: 1.7487793
       objectReference: {fileID: 0}
     - target: {fileID: 6368901749949411461, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
       propertyPath: m_Offset.y
@@ -5632,11 +5633,42 @@ PrefabInstance:
       propertyPath: m_Name
       value: Elevator
       objectReference: {fileID: 0}
+    - target: {fileID: 8512229407997385264, guid: 122069d98019e4ae0a2b1eb7b4155ec1, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 8717aec04351f4ffa88baa95363b7619, type: 2}
+    - target: {fileID: 8659241892950010974, guid: 122069d98019e4ae0a2b1eb7b4155ec1, type: 3}
+      propertyPath: _acceleration
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7422973699328229312, guid: 122069d98019e4ae0a2b1eb7b4155ec1, type: 3}
+      insertIndex: 2
+      addedObject: {fileID: 1542519595878148883}
   m_SourcePrefab: {fileID: 100100000, guid: 122069d98019e4ae0a2b1eb7b4155ec1, type: 3}
+--- !u!1 &1542519595878148882 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7422973699328229312, guid: 122069d98019e4ae0a2b1eb7b4155ec1, type: 3}
+  m_PrefabInstance: {fileID: 1542519595878148881}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1542519595878148883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1542519595878148882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6661ac003ca14770bddd996b428a4fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _flashIntensity: 0.25
+  _increaseFlashSpeed: 0.2
+  _decreaseFlashSpeed: 2
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
