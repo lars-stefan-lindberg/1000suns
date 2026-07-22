@@ -17,6 +17,7 @@ public class Cave33RoomManager : MonoBehaviour
     [SerializeField] private GameObject _deeBlockingFloor;
     [SerializeField] private GameObject _deeBreakableFloor;
     [SerializeField] private EventReference _blockingFloorSfx;
+    [SerializeField] private GameObject _blockDeePathBack;
 
 
     void Start() {
@@ -25,6 +26,11 @@ public class Cave33RoomManager : MonoBehaviour
             _deesPathLeft.SetActive(true);
         else if(id == CaveTimelineId.Id.Both)
             _deesPathRight.SetActive(false);
+        else if(id == CaveTimelineId.Id.Dee) {
+            _blockDeePathBack.SetActive(true);
+            CaveAvatar.obj.gameObject.SetActive(true);
+            CaveAvatar.obj.SetStartingPositionInCaveRoom33(); 
+        }
 
         if(id == CaveTimelineId.Id.Eli && GameManager.obj.HasEvent(_hasShadowJump)) {
             _deeBlockingFloor.SetActive(true);
@@ -34,9 +40,6 @@ public class Cave33RoomManager : MonoBehaviour
         if(GameManager.obj.HasEvent(_hasShadowJump) && !GameManager.obj.HasEvent(_afterShadowJumpConversationCompleted)) {
             _afterShadowJumpConversation.enabled = true;
             _afterShadowJumpConversation.OnConversationEnd += OnAfterShadowJumpConversationCompleted;
-        }
-
-        if(GameManager.obj.HasEvent(_hasShadowJump) && !GameManager.obj.HasEvent(_afterShadowJumpConversationCompleted)) {
             foreach(GameObject platform in _rootPlatforms)
                 platform.SetActive(true);
         }
