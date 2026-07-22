@@ -9,8 +9,7 @@ public class Cave32RoomManager : MonoBehaviour
 
     void Start()
     {
-        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
-        if(GameManager.obj.HasEvent(_secretRevealed) && caveTimeline == CaveTimelineId.Id.Eli) {
+        if(GameManager.obj.HasEvent(_secretRevealed)) {
             _secretWall.SetActive(false);
         }
     }
