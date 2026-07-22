@@ -99,11 +99,6 @@ public class PullableDetector : MonoBehaviour
             
             Vector2 directionToPullable = pullable.transform.position - _playerTransform.position;
             
-            // Early out: Check facing direction first (cheapest)
-            bool isInFront = Vector2.Dot(directionToPullable, isFacingLeft ? Vector2.left : Vector2.right) >= 0;
-            if (!isInFront)
-                continue;
-            
             // Early out: Check beneath player (cheap)
             if (IsBeneathPlayer(pullable))
                 continue;
