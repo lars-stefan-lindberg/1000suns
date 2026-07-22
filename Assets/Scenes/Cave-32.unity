@@ -1265,7 +1265,7 @@ PrefabInstance:
       objectReference: {fileID: 1632688476}
     - target: {fileID: 5469460401231062988, guid: 550eeccd691734285bd9830178b5b140, type: 3}
       propertyPath: adjacentRooms.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5469460401231062988, guid: 550eeccd691734285bd9830178b5b140, type: 3}
       propertyPath: backgroundScene._sceneName
@@ -1292,6 +1292,10 @@ PrefabInstance:
       value: Cave-33
       objectReference: {fileID: 0}
     - target: {fileID: 5469460401231062988, guid: 550eeccd691734285bd9830178b5b140, type: 3}
+      propertyPath: adjacentRooms.Array.data[2]._sceneName
+      value: Cave-32-S
+      objectReference: {fileID: 0}
+    - target: {fileID: 5469460401231062988, guid: 550eeccd691734285bd9830178b5b140, type: 3}
       propertyPath: adjacentRooms.Array.data[0]._sceneAsset
       value: 
       objectReference: {fileID: 102900000, guid: 845f4963e16a447b6a233db725c12e46, type: 3}
@@ -1299,6 +1303,10 @@ PrefabInstance:
       propertyPath: adjacentRooms.Array.data[1]._sceneAsset
       value: 
       objectReference: {fileID: 102900000, guid: 00976db65722d4a1bbac850a58310ae7, type: 3}
+    - target: {fileID: 5469460401231062988, guid: 550eeccd691734285bd9830178b5b140, type: 3}
+      propertyPath: adjacentRooms.Array.data[2]._sceneAsset
+      value: 
+      objectReference: {fileID: 102900000, guid: 6fbb5c2a6b7374f82bd406601d8a2e2a, type: 3}
     - target: {fileID: 7238864598812726562, guid: 550eeccd691734285bd9830178b5b140, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1360.1887
@@ -3056,6 +3064,34 @@ PrefabInstance:
     - target: {fileID: 568777150840642684, guid: ffababde73efa4d61927ce40eb279109, type: 3}
       propertyPath: m_Tiles.Array.data[20].second.m_TileSpriteIndex
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1006852159905508797, guid: ffababde73efa4d61927ce40eb279109, type: 3}
+      propertyPath: OnTilemapRevealed.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1006852159905508797, guid: ffababde73efa4d61927ce40eb279109, type: 3}
+      propertyPath: OnTilemapRevealed.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1006852159905508797, guid: ffababde73efa4d61927ce40eb279109, type: 3}
+      propertyPath: OnTilemapRevealed.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 612786255}
+    - target: {fileID: 1006852159905508797, guid: ffababde73efa4d61927ce40eb279109, type: 3}
+      propertyPath: OnTilemapRevealed.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1006852159905508797, guid: ffababde73efa4d61927ce40eb279109, type: 3}
+      propertyPath: OnTilemapRevealed.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SetSecretRevealed
+      objectReference: {fileID: 0}
+    - target: {fileID: 1006852159905508797, guid: ffababde73efa4d61927ce40eb279109, type: 3}
+      propertyPath: OnTilemapRevealed.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: Cave32RoomManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1006852159905508797, guid: ffababde73efa4d61927ce40eb279109, type: 3}
+      propertyPath: OnTilemapRevealed.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 4270652555147624154, guid: ffababde73efa4d61927ce40eb279109, type: 3}
       propertyPath: m_Name

@@ -162,10 +162,6 @@ public class LevelManager : MonoBehaviour
 
         AdjustSpawnFaceDirection(Camera.main.transform.position.x, playerSpawnPoint.transform.position.x, playerType);        
 
-        if(CaveAvatar.obj != null && CaveAvatar.obj.gameObject.activeSelf) {
-            SetCaveAvatarPosition(scene, caveTimelineId);
-        }
-
         if(Player.obj != null)
             Player.obj.SetHasPowerUp(false);
         PlayerPowersManager.obj.EliCanForcePushJump = false;
@@ -179,6 +175,10 @@ public class LevelManager : MonoBehaviour
         } else {
             PlayerManager.obj.EnablePlayerGameObject(playerType);
             SetPlayersStartingState();
+        }
+
+        if(CaveAvatar.obj != null && CaveAvatar.obj.gameObject.activeSelf) {
+            SetCaveAvatarPosition(scene, caveTimelineId);
         }
 
         GameObject mainCamera = null;
