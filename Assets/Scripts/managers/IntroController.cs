@@ -63,6 +63,9 @@ public class IntroController : MonoBehaviour
     [Header("Game logo")]
     [SerializeField] private Canvas _gameLogoCanvas;
     [SerializeField] private Animator _gameLogoAnimator;
+    [SerializeField] private Canvas _gameLogoParticlesCanvas;
+    [SerializeField] private ParticleSystem _titleParticles;
+    [SerializeField] private ParticleSystem _fallingStarsParticles;
 
     private Queue<DialogueContent.ParagraphEntry> _paragraphs = new();
 
@@ -77,6 +80,8 @@ public class IntroController : MonoBehaviour
     {
         _gameLogoCanvas.worldCamera = Camera.main;
         _gameLogoCanvas.sortingLayerName = "UI";
+        _gameLogoParticlesCanvas.worldCamera = Camera.main;
+        _gameLogoParticlesCanvas.sortingLayerName = "UI";
         StartCoroutine(Cutscene());
     }
 
@@ -97,13 +102,13 @@ public class IntroController : MonoBehaviour
             SceneFadeManager.obj.StartFadeIn();
             yield return new WaitForSeconds(5f);
             _ummaraEyes.Activate();
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(1f);
             StartText();
             yield return new WaitForSeconds(6f);
             DisplayNextParagraph();
             yield return new WaitForSeconds(10f);
             DisplayNextParagraph();
-            yield return new WaitForSeconds(6f);
+            yield return new WaitForSeconds(7f);
             FadeOutText();
             yield return new WaitForSeconds(4f);
             _ummaraParticles.Stop();
@@ -160,8 +165,15 @@ public class IntroController : MonoBehaviour
         _earth.OnZoomedOutCompleted();
 
         _gameLogoAnimator.SetTrigger("fadeIn");
-        yield return new WaitForSeconds(15.6f);
+        yield return new WaitForSeconds(2f);
+        _titleParticles.gameObject.SetActive(true);
+        yield return new WaitForSeconds(5f);
+        _fallingStarsParticles.gameObject.SetActive(true);
+        yield return new WaitForSeconds(5f);
+        _fallingStarsParticles.Stop();
+        yield return new WaitForSeconds(3.6f);
         _gameLogoAnimator.SetTrigger("fadeOut");
+        _titleParticles.Stop();
         yield return new WaitForSeconds(4.7f);
         _earth.PrepZoomIn();
         yield return new WaitForSeconds(0.8f);
