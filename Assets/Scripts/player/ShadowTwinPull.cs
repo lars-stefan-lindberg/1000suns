@@ -313,6 +313,9 @@ public class ShadowTwinPull : MonoBehaviour
             _pulledPullable.StartGrabbed();
             _pulledCollider = pullable.GetComponent<Collider2D>();
             
+            // Play grab sound when object is grabbed
+            _deeAudio.PlayShadowPullGrab(ref _forcePullStartSfxInstance);
+            
             // Cache a conservative broad-phase radius so we can skip the precise collider
             // Distance check when the pullable is clearly far from the player. Using each
             // collider's bounding diagonal (extents.magnitude) overestimates reach, so the
@@ -338,9 +341,6 @@ public class ShadowTwinPull : MonoBehaviour
 
             // Reset loop tracking
             _isObectMovingLoopPlaying = false;
-
-            // Start shadow pull loop (plays continuously while grabbed)
-            _shadowPullLoopInstance = _deeAudio.StartShadowPullLoop();
 
             //ShowPullRangeGuide();
         }
@@ -668,6 +668,10 @@ public class ShadowTwinPull : MonoBehaviour
             _deeAudio.PlayShadowPullGrab(ref _forcePullStartSfxInstance);
         } else {
             _isPullingObject = true;
+            
+            // Start shadow pull loop (plays regardless of pullable)
+            _shadowPullLoopInstance = _deeAudio.StartShadowPullLoop();
+            
             if(_highlightedPullable != null) {
                 CameraShakeManager.obj.ForcePushShake();
                 SetPullable(_highlightedPullable);
@@ -675,7 +679,6 @@ public class ShadowTwinPull : MonoBehaviour
             // Show the range guide whenever pull starts, even with no pullable grabbed
             //ShowPullRangeGuide();
             pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().HardCancel();
-            _deeAudio.PlayShadowPullGrab(ref _forcePullStartSfxInstance);
             ShadowTwinPlayer.obj.StartChargeFlash();
             ShadowTwinPlayer.obj.PlayerPullLight();
             ShadowTwinPlayer.obj.StartFullyChargedVfx();
