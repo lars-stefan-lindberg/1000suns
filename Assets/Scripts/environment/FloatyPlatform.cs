@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using FMODUnity;
 using UnityEngine;
 
 public class FloatyPlatform : MonoBehaviour
@@ -8,6 +9,7 @@ public class FloatyPlatform : MonoBehaviour
     [SerializeField] private BoxCollider2D _childCollider;
     [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private PlatformEffector2D _platformEffector;
+    [SerializeField] private EventReference _impactSfx;
     private Rigidbody2D _rigidBody;
     private Pullable _pullable;
 
@@ -22,6 +24,7 @@ public class FloatyPlatform : MonoBehaviour
     public float basePushPower = 5f;
     public float deceleration = 20f;
     private LayerMask _blockingCastLayerMask;
+    private LayerMask _soundTriggeringLayerMask;
     public bool movePlatform = false;
     public bool isFallingPlatform = false;
     public bool isFallingOnMovePlatform = false;
@@ -49,6 +52,7 @@ public class FloatyPlatform : MonoBehaviour
         _collider = GetComponent<BoxCollider2D>();
         _rigidBody = GetComponent<Rigidbody2D>();
         _blockingCastLayerMask = LayerMask.GetMask(new[] { "Ground", "Default", "JumpThroughs", "Enemies", "Block", "Spikes" });
+        _soundTriggeringLayerMask = LayerMask.GetMask(new[] { "Ground", "JumpThroughs", "Block", "Spikes" });
         startingVerticalPosition = transform.position.y;
         //_idleVerticalTargetPosition = startingVerticalPosition - idleVerticalDistance;
         _fallingPlatformFlash = GetComponentInChildren<FallingPlatformFlash>();
@@ -210,34 +214,66 @@ public class FloatyPlatform : MonoBehaviour
             }
             
             // Only check for walls when not being pulled
-            somethingToTheRight = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.right, blockingCastDistance, _blockingCastLayerMask);
-            somethingToTheLeft = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.left, blockingCastDistance, _blockingCastLayerMask);
-            somethingAbove = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.up, blockingCastDistance, _blockingCastLayerMask);
-            somethingBelow = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, blockingCastDistance, _blockingCastLayerMask);
+            RaycastHit2D hitRight = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.right, blockingCastDistance, _blockingCastLayerMask);
+            RaycastHit2D hitLeft = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.left, blockingCastDistance, _blockingCastLayerMask);
+            RaycastHit2D hitAbove = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.up, blockingCastDistance, _blockingCastLayerMask);
+            RaycastHit2D hitBelow = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, blockingCastDistance, _blockingCastLayerMask);
+            
+            somethingToTheRight = hitRight.collider != null;
+            somethingToTheLeft = hitLeft.collider != null;
+            somethingAbove = hitAbove.collider != null;
+            somethingBelow = hitBelow.collider != null;
 
-            if (somethingToTheRight && _rigidBody.velocity.x > 0) {
+            if (hitRight.collider != null && _rigidBody.velocity.x > 0) {
                 movePlatform = false;
-                //TODO: wall hit sfx
-                //SoundFXManager.obj.PlayFloatingPlatformWallHit(transform);
+                if (((1 << hitRight.collider.gameObject.layer) & _soundTriggeringLayerMask) != 0) {
+                    SoundFXManager.obj.PlayAtPosition(_impactSfx, transform.position);
+                }
             }
-            if (somethingToTheLeft && _rigidBody.velocity.x < 0) {
+            if (hitLeft.collider != null && _rigidBody.velocity.x < 0) {
                 movePlatform = false;
-                //TODO: wall hit sfx
-                //SoundFXManager.obj.PlayFloatingPlatformWallHit(transform);
+                if (((1 << hitLeft.collider.gameObject.layer) & _soundTriggeringLayerMask) != 0) {
+                    SoundFXManager.obj.PlayAtPosition(_impactSfx, transform.position);
+                }
             }
-            if (somethingAbove && _rigidBody.velocity.y > 0) {
+            if (hitAbove.collider != null && _rigidBody.velocity.y > 0) {
                 movePlatform = false;
-                //TODO: wall hit sfx
-                //SoundFXManager.obj.PlayFloatingPlatformWallHit(transform);
+                if (((1 << hitAbove.collider.gameObject.layer) & _soundTriggeringLayerMask) != 0) {
+                    SoundFXManager.obj.PlayAtPosition(_impactSfx, transform.position);
+                }
             }
-            if (somethingBelow && _rigidBody.velocity.y < 0) {
+            if (hitBelow.collider != null && _rigidBody.velocity.y < 0) {
                 movePlatform = false;
-                //TODO: wall hit sfx
-                //SoundFXManager.obj.PlayFloatingPlatformWallHit(transform);
+                if (((1 << hitBelow.collider.gameObject.layer) & _soundTriggeringLayerMask) != 0) {
+                    SoundFXManager.obj.PlayAtPosition(_impactSfx, transform.position);
+                }
             }
         }
         else
         {
+            // Check for walls when being pulled
+            RaycastHit2D hitRight = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.right, blockingCastDistance, _blockingCastLayerMask);
+            RaycastHit2D hitLeft = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.left, blockingCastDistance, _blockingCastLayerMask);
+            RaycastHit2D hitAbove = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.up, blockingCastDistance, _blockingCastLayerMask);
+            RaycastHit2D hitBelow = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, blockingCastDistance, _blockingCastLayerMask);
+            
+            somethingToTheRight = hitRight.collider != null;
+            somethingToTheLeft = hitLeft.collider != null;
+            somethingAbove = hitAbove.collider != null;
+            somethingBelow = hitBelow.collider != null;
+
+            if (hitRight.collider != null && _rigidBody.velocity.x > 0 && ((1 << hitRight.collider.gameObject.layer) & _soundTriggeringLayerMask) != 0) {
+                SoundFXManager.obj.PlayAtPosition(_impactSfx, transform.position);
+            }
+            if (hitLeft.collider != null && _rigidBody.velocity.x < 0 && ((1 << hitLeft.collider.gameObject.layer) & _soundTriggeringLayerMask) != 0) {
+                SoundFXManager.obj.PlayAtPosition(_impactSfx, transform.position);
+            }
+            if (hitAbove.collider != null && _rigidBody.velocity.y > 0 && ((1 << hitAbove.collider.gameObject.layer) & _soundTriggeringLayerMask) != 0) {
+                SoundFXManager.obj.PlayAtPosition(_impactSfx, transform.position);
+            }
+            if (hitBelow.collider != null && _rigidBody.velocity.y < 0 && ((1 << hitBelow.collider.gameObject.layer) & _soundTriggeringLayerMask) != 0) {
+                SoundFXManager.obj.PlayAtPosition(_impactSfx, transform.position);
+            }
             // When being pulled, ensure movePlatform is true so velocity isn't zeroed
             movePlatform = true;
         }
