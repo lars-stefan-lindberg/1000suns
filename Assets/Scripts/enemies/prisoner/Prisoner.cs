@@ -240,8 +240,6 @@ public class Prisoner : MonoBehaviour
             .OnComplete(() => _spriteTransform.localPosition = _originalSpritePosition);
     }
 
-    private float _isStuckCooldownTimer = 0;
-    private readonly float _isStuckCooldownTime = 1.5f;
     void Update()
     {
         if(_killed) {
@@ -252,14 +250,6 @@ public class Prisoner : MonoBehaviour
             return;
         else
             _animator.speed = 1;
-
-        //If stuck, give a second or two to recover
-        if(isStuck && _isStuckCooldownTimer < _isStuckCooldownTime) {
-            _isStuckCooldownTimer += Time.deltaTime;
-            return;
-        } else {
-            _isStuckCooldownTimer = 0;
-        }
 
         if(_pullable.IsPulled && !_isBeingPulled && !_isImmuneToPull) {
             _isBeingPulled = true;

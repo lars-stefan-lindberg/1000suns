@@ -1,5 +1,7 @@
 using UnityEngine;
 using DG.Tweening;
+using FMODUnity;
+using System.Collections;
 
 public class Pullable : MonoBehaviour
 {
@@ -11,6 +13,7 @@ public class Pullable : MonoBehaviour
     [SerializeField] private float _glowFadeSpeed = 0.5f;
     [SerializeField] private bool _useSineGlowFade = false;
     [SerializeField] private ParticleSystem _heldParticles;
+    [SerializeField] private EventReference _grabbedSfx;
     // [SerializeField] private ParticleSystem _trailingParticles;
     //[SerializeField] private ParticleSystem _grabbedParticles;
     // [SerializeField] private int _grabbedNumberOfParticles = 20;
@@ -126,6 +129,7 @@ public class Pullable : MonoBehaviour
         //VFX
         TriggerGrabShake();
         ShockWaveManager.obj.CallShockWave(transform.position, 0.2f, 0.05f, 0.15f);
+        StartCoroutine(DelayedSfx());
         //EmitEvenCircle(_grabbedParticles, _grabbedNumberOfParticles, _grabbedParticlesRadius, _grabbedParticlesSpeed);
         // _trailingParticles.Play();
         
@@ -138,6 +142,11 @@ public class Pullable : MonoBehaviour
             _heldParticles.Play();
             _heldParticlesPlaying = true;
         }
+    }
+
+    private IEnumerator DelayedSfx() {
+        yield return new WaitForSeconds(0.1f);
+        PlayGrabbedSfx();   
     }
 
     // private void EmitEvenCircle(ParticleSystem ps, int count, float radius, float speed)
@@ -258,6 +267,10 @@ public class Pullable : MonoBehaviour
         // Lerp between default (1) and max brightness
         _currentBrightness = Mathf.Lerp(1f, _maxBrightness, normalizedSine);
         _material.SetFloat("_Brightness", _currentBrightness);
+    }
+    
+    private void PlayGrabbedSfx() {
+        SoundFXManager.obj.PlayAtPosition(_grabbedSfx, transform.position);
     }
     
     // private void UpdateGhostTrail() {

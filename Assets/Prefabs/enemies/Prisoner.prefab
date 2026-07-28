@@ -5136,6 +5136,8 @@ MonoBehaviour:
   recoveryTimeCount: 0
   isRecovering: 0
   recoveryMovementStopMultiplier: 20
+  pullBreakFreeThreshold: 2
+  pullImmunityDuration: 3
   damagePower: 0
   forceMultiplier: 150
   forceMultiplierBack: 200
@@ -5244,6 +5246,13 @@ MonoBehaviour:
   _glowFadeSpeed: 0.5
   _useSineGlowFade: 0
   _heldParticles: {fileID: 6444942085283081607}
+  _grabbedSfx:
+    Guid:
+      Data1: -500547765
+      Data2: 1292285667
+      Data3: 2099186351
+      Data4: 634820597
+    Path: event:/enemies/prisoner/slide
   _shakeDistance: 0.19
   _shakeDuration: 0.2
   _shakeVibrato: 30

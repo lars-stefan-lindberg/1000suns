@@ -175,7 +175,7 @@ public class Block : MonoBehaviour
 
         if(!_isGrounded && groundHit && _booted)
             _blockAudio.PlayLand();
-        if(_isGrounded && !groundHit && _isMovingHorizontally)
+        if(_isGrounded && !groundHit && _isMovingHorizontally && !_isBeingPulled)
             _blockAudio.PlaySlideOffEdge();
         
         if(!_isTouchingCeiling && ceilingHit && _pullable.IsPulled)

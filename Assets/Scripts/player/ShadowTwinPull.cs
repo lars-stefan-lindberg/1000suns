@@ -38,8 +38,11 @@ public class ShadowTwinPull : MonoBehaviour
     public FloatyPlatform platform;
 
     private EventInstance _forcePullStartSfxInstance;
+    private EventInstance _shadowPullObjectMovingLoopInstance;
+    private EventInstance _shadowPullLoopInstance;
 
     private bool _isPullDisabled = false;
+    private bool _isObectMovingLoopPlaying = false;
 
     [Header("Pull Box Configuration")]
     [SerializeField] private Vector2 _pullBoxSize = new Vector2(12f, 8f);
@@ -255,6 +258,10 @@ public class ShadowTwinPull : MonoBehaviour
         ShadowTwinMovement.obj.UpdateAnimatorIsPulling(false);
         ShadowTwinMovement.obj.EndAnchorPull();
         ShadowTwinPlayer.obj.ResetGravity();
+
+        //For instance tough prisoners can break themselves free and cancel pulling, resulting in no pulled pullable
+        if(_pulledPullable != null)
+            _deeAudio.PlayShadowPullRelease(_pulledPullable.transform);
         
         // Restore object's gravity
         if (_targetRb != null)
@@ -262,6 +269,16 @@ public class ShadowTwinPull : MonoBehaviour
             _targetRb.gravityScale = _originalGravityScale;
             _controlledObjectVelocity = Vector2.zero;
         }
+        
+        // Stop shadow pull object moving loop
+        if (_isObectMovingLoopPlaying)
+        {
+            _deeAudio.StopInstanceWithFadeOut(ref _shadowPullObjectMovingLoopInstance);
+            _isObectMovingLoopPlaying = false;
+        }
+        
+        // Stop shadow pull loop
+        _deeAudio.StopInstanceWithFadeOut(ref _shadowPullLoopInstance);
         
         ResetPullableObject();
 
@@ -318,6 +335,12 @@ public class ShadowTwinPull : MonoBehaviour
             
             // Only enable control if player is grounded
             _isControllingObject = ShadowTwinMovement.obj.isGrounded;
+
+            // Reset loop tracking
+            _isObectMovingLoopPlaying = false;
+
+            // Start shadow pull loop (plays continuously while grabbed)
+            _shadowPullLoopInstance = _deeAudio.StartShadowPullLoop();
 
             //ShowPullRangeGuide();
         }
@@ -586,6 +609,25 @@ public class ShadowTwinPull : MonoBehaviour
             // We check this on the next frame by comparing what we set vs what actually happened
             StartCoroutine(SyncVelocityAfterPhysics());
         }
+        
+        // Control static loop based on movement
+        bool hasInput = movementInput.magnitude > 0.01f;
+        bool objectIsMoving = _controlledObjectVelocity.magnitude > 0.01f;
+        if (hasInput && objectIsMoving)
+        {
+            // Start static loop if not already playing
+            if (!_isObectMovingLoopPlaying)
+            {
+                _shadowPullObjectMovingLoopInstance = _deeAudio.StartShadowPullMoveLoop();
+                _isObectMovingLoopPlaying = true;
+            }
+        }
+        else if (_isObectMovingLoopPlaying)
+        {
+            // Stop static loop when movement stops
+            _deeAudio.StopInstanceWithFadeOut(ref _shadowPullObjectMovingLoopInstance);
+            _isObectMovingLoopPlaying = false;
+        }
     }
     
     private IEnumerator SyncVelocityAfterPhysics()
@@ -623,7 +665,7 @@ public class ShadowTwinPull : MonoBehaviour
             ShadowTwinMovement.obj.StartAnchorPull();
             ShadowTwinPlayer.obj.DisableGravity();
             //_ghostTrail.ShowGhosts();
-            _deeAudio.PlayForcePullStart(ref _forcePullStartSfxInstance);
+            _deeAudio.PlayShadowPullGrab(ref _forcePullStartSfxInstance);
         } else {
             _isPullingObject = true;
             if(_highlightedPullable != null) {
@@ -633,7 +675,7 @@ public class ShadowTwinPull : MonoBehaviour
             // Show the range guide whenever pull starts, even with no pullable grabbed
             //ShowPullRangeGuide();
             pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().HardCancel();
-            _deeAudio.PlayForcePullStart(ref _forcePullStartSfxInstance);
+            _deeAudio.PlayShadowPullGrab(ref _forcePullStartSfxInstance);
             ShadowTwinPlayer.obj.StartChargeFlash();
             ShadowTwinPlayer.obj.PlayerPullLight();
             ShadowTwinPlayer.obj.StartFullyChargedVfx();
