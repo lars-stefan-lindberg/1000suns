@@ -16,6 +16,7 @@ public class Block : MonoBehaviour
     [SerializeField] private float _killDetectionDistance = 0.5f;
     [SerializeField] private float _minKillVelocity = 0.05f;
     [SerializeField] private float _killDetectionWidthMultiplier = 0.9f;
+    [SerializeField] private float _minLandingVelocity = 1f;
     public float basePushPower = 7f;
     public float deceleration = 1f;
     public float _blockSizeOffSet = 1.002f; //To dial in the landing sound
@@ -41,6 +42,7 @@ public class Block : MonoBehaviour
     private int _adjacentBlockCount = 0;
     private int _adjacentBlockCountWhenMovementStarted = 0;
     private Vector2 _killBoxSize;
+    private float _velocityBeforeLanding = 0f;
 
     private void Awake()
     {
@@ -173,13 +175,20 @@ public class Block : MonoBehaviour
             }
         }
 
-        if(!_isGrounded && groundHit && _booted)
-            _blockAudio.PlayLand();
+        if(!_isGrounded && groundHit && _booted) {
+            if(Mathf.Abs(_velocityBeforeLanding) >= _minLandingVelocity)
+                _blockAudio.PlayLand();
+        }
         if(_isGrounded && !groundHit && _isMovingHorizontally && !_isBeingPulled)
             _blockAudio.PlaySlideOffEdge();
         
-        if(!_isTouchingCeiling && ceilingHit && _pullable.IsPulled)
-            _blockAudio.PlayLand();
+        if(!_isTouchingCeiling && ceilingHit && _pullable.IsPulled) {
+            if(Mathf.Abs(_velocityBeforeLanding) >= _minLandingVelocity)
+                _blockAudio.PlayLand();
+        }
+        
+        if(!_isGrounded)
+            _velocityBeforeLanding = _rigidBody.velocity.y;
         
         _isGrounded = groundHit;
         _isTouchingCeiling = ceilingHit;
