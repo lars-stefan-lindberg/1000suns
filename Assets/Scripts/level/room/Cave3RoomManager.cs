@@ -8,10 +8,13 @@ public class Cave3RoomManager : MonoBehaviour
     
     public void StartCutscene()
     {
-        if(GameManager.obj.HasEvent(_cutsceneCompleted)) {
-            return;
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(caveTimeline == CaveTimelineId.Id.Dee) {
+            if(GameManager.obj.HasEvent(_cutsceneCompleted)) {
+                return;
+            }
+            CaveAvatar.obj.IsFollowingPlayer = false;
+            GameManager.obj.RegisterEvent(_cutsceneCompleted);
         }
-        CaveAvatar.obj.IsFollowingPlayer = false;
-        GameManager.obj.RegisterEvent(_cutsceneCompleted);
     }
 }
