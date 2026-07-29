@@ -1,9 +1,11 @@
 using FunkyCode;
 using UnityEngine;
+using FMODUnity;
 
 public class Torch : MonoBehaviour
 {
     [SerializeField] private bool _isLit = true;
+    [SerializeField] private EventReference _lightUpSfx;
     private LightSprite2D _lightSprite;
     private LightSprite2DFlicker _lightSpriteFlicker;
 
@@ -22,9 +24,12 @@ public class Torch : MonoBehaviour
     }
 
     public void LightUp() {
-        //TODO: play proper sound effect
-        //SoundFXManager.obj.PlayJump(transform);
         _lightSprite.enabled = true;
         _lightSpriteFlicker.enabled = true;
+        SoundFXManager.obj.Play2D(_lightUpSfx);
+    }
+
+    public bool IsLit() {
+        return _isLit;
     }
 }

@@ -11,7 +11,9 @@ public class LightUpTorchTrigger : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other) {
         if(other.gameObject.CompareTag("Player")) {
-            _torch.LightUp();
+            if(!_torch.IsLit()) {
+                _torch.LightUp();
+            }
             _collider.enabled = false;
         }
     }
