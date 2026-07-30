@@ -11,6 +11,7 @@ public class Cave40RoomManager : MonoBehaviour
     [SerializeField] private SceneField _nextScene;
     [SerializeField] private SceneField _thisScene;
     [SerializeField] private EventReference _elevatorBuzzSfx;
+    [SerializeField] private EventReference _elevatorCrystalSfx;
     
     [Header("Sound Settings")]
     [SerializeField] [Range(0.1f, 1f)] private float _soundMaxIntensityAtSpeedPercent = 0.5f;
@@ -23,7 +24,9 @@ public class Cave40RoomManager : MonoBehaviour
 
     private IEnumerator StartElevatorCoroutine() {
         PlayerMovement.obj.Freeze();
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(0.1f);
+        SoundFXManager.obj.Play2D(_elevatorCrystalSfx);
+        yield return new WaitForSeconds(1.4f);
         _elevatorFlash.Flash();
         yield return new WaitForSeconds(2.5f);
         
