@@ -2829,6 +2829,14 @@ MonoBehaviour:
   _thisScene:
     _sceneAsset: {fileID: 102900000, guid: 68c18a4fe305043f0b1143b1eaa28bcd, type: 3}
     _sceneName: Cave-40
+  _elevatorBuzzSfx:
+    Guid:
+      Data1: -644345276
+      Data2: 1297361954
+      Data3: 1692629140
+      Data4: -155315076
+    Path: event:/game/general/elevator_buzz
+  _soundMaxIntensityAtSpeedPercent: 0.5
 --- !u!4 &484303819
 Transform:
   m_ObjectHideFlags: 0
@@ -5640,6 +5648,10 @@ PrefabInstance:
     - target: {fileID: 8659241892950010974, guid: 122069d98019e4ae0a2b1eb7b4155ec1, type: 3}
       propertyPath: _acceleration
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8659241892950010974, guid: 122069d98019e4ae0a2b1eb7b4155ec1, type: 3}
+      propertyPath: _soundMaxIntensityAtSpeedPercent
+      value: 0.41
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -1,4 +1,5 @@
 using System.Collections;
+using FMOD.Studio;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -19,7 +20,12 @@ public class Cave41RoomManager : MonoBehaviour
     [SerializeField] private float _secondForcePushChargeTime = 0.4f;
     [SerializeField] private float _thirdForcePushChargeTime = 0.8f;
     [SerializeField] private float _waitTimeBetweenForcePushes = 0.4f;
+    
+    [Header("Elevator Sound Settings")]
+    [SerializeField] private float _elevatorSoundFadeDuration = 1f;
+    [SerializeField] [Range(0f, 1f)] private float _elevatorSoundFadeValue = 0.7f;
 
+    private const string ELEVATOR_SOUND_NAME = "ElevatorBuzz";
     private float _sootDistanceToElevator;
     private bool _moveSoot = false;
 
@@ -60,6 +66,9 @@ public class Cave41RoomManager : MonoBehaviour
     private IEnumerator StartScene() {
         //Give some time to transition from previous scene
         yield return new WaitForSeconds(1.5f);
+        
+        StartCoroutine(FadeElevatorSound());
+        
         SceneFadeManager.obj.StartFadeIn(0.8f);
         while(SceneFadeManager.obj.IsFadingIn)
             yield return null;
@@ -192,5 +201,35 @@ public class Cave41RoomManager : MonoBehaviour
         LevelManager.obj.LoadAdjacentRooms(initRoomData);
 
         SceneManager.UnloadSceneAsync(_thisScene);
+    }
+    
+    private IEnumerator FadeElevatorSound()
+    {
+        if (!SoundFXManager.obj.HasNamedSound(ELEVATOR_SOUND_NAME))
+            yield break;
+            
+        float elapsed = 0f;
+        
+        while (elapsed < _elevatorSoundFadeDuration)
+        {
+            if (!SoundFXManager.obj.HasNamedSound(ELEVATOR_SOUND_NAME))
+                yield break;
+                
+            elapsed += Time.deltaTime;
+            float t = elapsed / _elevatorSoundFadeDuration;
+            float fadeValue = Mathf.Lerp(1f, _elevatorSoundFadeValue, t);
+            
+            EventInstance elevatorSound = SoundFXManager.obj.GetNamedSound(ELEVATOR_SOUND_NAME);
+            SoundFXManager.obj.SetSoundParameter(elevatorSound, "fade", fadeValue);
+            
+            yield return null;
+        }
+        
+        // Ensure final value is set
+        if (SoundFXManager.obj.HasNamedSound(ELEVATOR_SOUND_NAME))
+        {
+            EventInstance elevatorSound = SoundFXManager.obj.GetNamedSound(ELEVATOR_SOUND_NAME);
+            SoundFXManager.obj.SetSoundParameter(elevatorSound, "fade", _elevatorSoundFadeValue);
+        }
     }
 }

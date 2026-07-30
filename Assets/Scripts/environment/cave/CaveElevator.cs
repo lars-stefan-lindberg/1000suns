@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CaveElevator : MonoBehaviour
@@ -16,6 +14,9 @@ public class CaveElevator : MonoBehaviour
     private bool _hasStopPosition = false;
     private float _stopPositionY = 0f;
     private const float STOP_THRESHOLD = 0.01f;
+    
+    public float CurrentSpeed => _currentSpeed;
+    public float MaxSpeed => _maxSpeed;
 
     private void Awake()
     {
