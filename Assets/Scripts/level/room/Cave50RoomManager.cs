@@ -6,13 +6,13 @@ using UnityEngine.SceneManagement;
 
 public class Cave50RoomManager : MonoBehaviour
 {
-    [SerializeField] private EventReference _teleportSfx;
     [SerializeField] private SceneField _dreamRoomScene;
     [SerializeField] private SceneField _thisScene;
     [SerializeField] private GameEventId _dreamSequenceCompleted;
     [SerializeField] private GameEventId _postDreamSequenceCompleted;
     [SerializeField] private SpawnPoint _eliReturnFromDreamRoomPosition;
     [SerializeField] private EventReference _powerupFanfareStinger;
+    [SerializeField] private EventReference _teleportSfx;
     [SerializeField] private PowerUpScreen _powerUpScreen;
     [SerializeField] private AmbienceTrack _caveMain;
     [SerializeField] private GameObject _powerUpPortal;
@@ -88,16 +88,18 @@ public class Cave50RoomManager : MonoBehaviour
     }
 
     private IEnumerator TeleportToDreamRoomRoutine() {
-        yield return new WaitForSeconds(1f);
+        while(!PlayerBlobMovement.obj.isGrounded)
+            yield return null;
         PlayerBlobMovement.obj.isGrounded = true;
         PlayerBlobMovement.obj.SetStartingOnGround();
         PlayerBlob.obj.transform.position = _playerTeleportPosition.transform.position;
         PlayerBlob.obj.SetNewPower();
+        yield return new WaitForSeconds(0.5f);
+        SoundFXManager.obj.Play2D(_teleportSfx);
         PlayerBlob.obj.FlashFor(2f);
         _powerUpPortal.GetComponent<Animator>().SetTrigger("enableFast");
         yield return new WaitForSeconds(1.5f);
 
-        SoundFXManager.obj.Play2D(_teleportSfx);
         SceneFadeManager.obj.StartWhiteFadeOut(0.5f);
 
         while(SceneFadeManager.obj.IsFadingOut)
