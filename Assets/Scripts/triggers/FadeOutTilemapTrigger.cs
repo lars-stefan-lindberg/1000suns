@@ -8,7 +8,9 @@ public class FadeOutTilemap : MonoBehaviour
 {
     [SerializeField] private Animator _visibleLayerAnimator;
     [SerializeField] private bool _playRevealSound = true;
+    [SerializeField] private bool _playRevealTilemapSound = false;
     [SerializeField] private EventReference _revealSecretStinger;
+    [SerializeField] private EventReference _revealTilemapSfx;
     public UnityEvent OnTilemapRevealed;
     private BoxCollider2D _collider;
     private Tilemap _tilemap;
@@ -27,6 +29,8 @@ public class FadeOutTilemap : MonoBehaviour
             }
             if(_playRevealSound)
                 SoundFXManager.obj.Play2D(_revealSecretStinger);
+            if(_playRevealTilemapSound)
+                SoundFXManager.obj.PlayAtPosition(_revealTilemapSfx, _collider.bounds.center);
             _collider.enabled = false;
             OnTilemapRevealed?.Invoke();
             Destroy(gameObject, 5);

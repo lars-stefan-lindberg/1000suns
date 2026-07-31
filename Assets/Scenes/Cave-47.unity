@@ -8169,14 +8169,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _visibleLayerAnimator: {fileID: 0}
-  _playRevealSound: 0
+  _playRevealSound: 1
+  _playRevealTilemapSound: 0
   _revealSecretStinger:
     Guid:
-      Data1: 0
-      Data2: 0
-      Data3: 0
-      Data4: 0
-    Path: 
+      Data1: -685255636
+      Data2: 1262691360
+      Data3: 415709833
+      Data4: -1334008296
+    Path: event:/game/01_cave/stingers/cave_reveal_secret
+  _revealTilemapSfx:
+    Guid:
+      Data1: -604385954
+      Data2: 1275429884
+      Data3: 965836200
+      Data4: -45700921
+    Path: event:/game/general/tilemap_reveal
   OnTilemapRevealed:
     m_PersistentCalls:
       m_Calls: []
