@@ -67,12 +67,13 @@ public class FloatyPlatform : MonoBehaviour
         if(collider.transform.CompareTag("FloatingPlatform"))
         {
             FloatyPlatform floatyPlatform = collider.GetComponentInParent<FloatyPlatform>();
-            if(floatyPlatform.isPlayer1OnPlatform && floatyPlatform.IsFalling()) {
+            bool isAbove = floatyPlatform.transform.position.y > transform.position.y;
+            if(isAbove && floatyPlatform.isPlayer1OnPlatform && floatyPlatform.IsFalling()) {
                 collider.enabled = false;
                 floatyPlatform._collider.enabled = false;
                 RegisterPlayer1OnPlatform();
             }
-            if(floatyPlatform.isPlayer2OnPlatform && floatyPlatform.IsFalling()) {
+            if(isAbove && floatyPlatform.isPlayer2OnPlatform && floatyPlatform.IsFalling()) {
                 collider.enabled = false;
                 floatyPlatform._collider.enabled = false;
                 RegisterPlayer2OnPlatform();
