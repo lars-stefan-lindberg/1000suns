@@ -19,6 +19,10 @@ public class BabyPrisonerAlertTrigger : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other) 
     {
         if(other.gameObject.CompareTag("Player")) {
+            PlayerIdentity player = other.GetComponent<PlayerIdentity>();
+            if(player.id == 2) { //If Dee, don't get alerted
+                return;
+            }
             if(playerFreezeTime > 0) {
                 PlayerMovement.obj.Freeze(playerFreezeTime);
             }

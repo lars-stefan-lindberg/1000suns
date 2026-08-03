@@ -204,6 +204,7 @@ MonoBehaviour:
   speedAcceleration: 1
   timeToTurnAround: 1.31
   turnAroundTimer: 1.3199993
+  isAlertedFromStart: 0
   alertRunDirection: -1
   _idleInPlaceUntilAlerted: 0
   maxTravellingDistance: 3
@@ -274,12 +275,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _lightSprite2D: {fileID: 1485132814754727850}
-  _fadeOutSpeed: 1
+  _fadeOutSpeed: 2
   _fadeInSpeed: 1
   _fadeOutAlpha: 0
   _fadeInAlpha: 1
   _startAlpha: 1
   _lightColor: {r: 0.72156864, g: 0.72156864, b: 0.72156864, a: 1}
+  OnFullyFadedIn:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &-4716705603780358100
 MonoBehaviour:
   m_ObjectHideFlags: 0

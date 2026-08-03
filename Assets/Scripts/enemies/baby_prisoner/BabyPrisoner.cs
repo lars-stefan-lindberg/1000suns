@@ -171,6 +171,30 @@ public class BabyPrisoner : MonoBehaviour
         }
     }
 
+    void OnCollisionEnter2D(Collision2D collision) {
+        if(collision.gameObject.CompareTag("Player")) {
+            PlayerIdentity player = collision.gameObject.GetComponent<PlayerIdentity>();
+            if(player.id == 2) {
+                _rigidBody.bodyType = RigidbodyType2D.Static;
+                Collider2D playerCollider = collision.collider;
+                float playerLowerBound = playerCollider.bounds.min.y;
+                float babyPrisonerUpperBound = _collider.bounds.max.y;
+
+                if(playerLowerBound >= babyPrisonerUpperBound) {
+                    _idleInPlaceUntilAlerted = true;
+                    QuickDespawn();
+                }
+                //if collision is not on top, stop until collision exits
+            }
+        }
+    }
+
+    void OnCollisionExit2D(Collision2D collision) {
+        if(collision.gameObject.CompareTag("Player")) {
+            _rigidBody.bodyType = RigidbodyType2D.Dynamic;
+        }
+    }
+
     private bool IsMovingLeft() {
         return _rigidBody.velocity.x < 0;
     }
@@ -229,6 +253,14 @@ public class BabyPrisoner : MonoBehaviour
 
     public void Despawn() {
         _animator.SetTrigger("despawn");
+        _babyPrisonerAudio.PlayDespawn();
+        _lightSprite2DFadeManager.SetFadedInState();
+        _lightSprite2DFadeManager.StartFadeOut();
+        StartCoroutine(DelayedSetInactive(1f));
+    }
+
+    public void QuickDespawn() {
+        _animator.SetTrigger("quickDespawn");
         _babyPrisonerAudio.PlayDespawn();
         _lightSprite2DFadeManager.SetFadedInState();
         _lightSprite2DFadeManager.StartFadeOut();
