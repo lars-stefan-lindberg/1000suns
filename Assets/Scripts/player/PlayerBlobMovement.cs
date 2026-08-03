@@ -466,6 +466,13 @@ public class PlayerBlobMovement : MonoBehaviour
         _startingOnGroundFalseCoroutineStarted = false;
     }
 
+    //May be used by moveables, like floating platforms, to unregister themselves
+    public void UnregisterMoveable() {
+        isOnMoveable = false;
+        moveableRigidbody = null;
+        PlayerPush.obj.platform = null;
+    }
+
     private void CheckCollisions()
     {
         Physics2D.queriesStartInColliders = false;

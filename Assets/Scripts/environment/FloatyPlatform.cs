@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using FMODUnity;
+using FunkyCode;
 using UnityEngine;
 
 public class FloatyPlatform : MonoBehaviour
@@ -10,6 +11,7 @@ public class FloatyPlatform : MonoBehaviour
     [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private PlatformEffector2D _platformEffector;
     [SerializeField] private EventReference _impactSfx;
+    [SerializeField] private LightSprite2D _lightSprite;
     private Rigidbody2D _rigidBody;
     private Pullable _pullable;
 
@@ -110,11 +112,16 @@ public class FloatyPlatform : MonoBehaviour
                 {
                     isPlayer1OnPlatform = false;
                     _isPlayer1CollisionTriggered = false;
+                    if(player.id == 1)
+                        PlayerMovement.obj.UnregisterMoveable();
+                    else if(player.id == 3)
+                        PlayerBlobMovement.obj.UnregisterMoveable();
                 }
                 else if (player.id == 2)
                 {
                     isPlayer2OnPlatform = false;
                     _isPlayer2CollisionTriggered = false;
+                    ShadowTwinMovement.obj.UnregisterMoveable();
                 }
             }
         }
@@ -132,12 +139,20 @@ public class FloatyPlatform : MonoBehaviour
             _fallingPlatformFlash.StartFlashingConstantSpeed();
     }
 
+    public void StartFallCountDown() {
+        _startFallCountDown = true;
+    }
+
     private void RegisterPlayer2OnPlatform() {
         isPlayer2OnPlatform = true;
         if(isFallingPlatform)
             _startFallCountDown = true;
         else if(isFallingOnMovePlatform)
             _fallingPlatformFlash.StartFlashingConstantSpeed();
+    }
+
+    public void PlayImpactSfx() {
+        SoundFXManager.obj.PlayAtPosition(_impactSfx, transform.position);
     }
 
     public bool somethingToTheRight = false;
@@ -358,6 +373,7 @@ public class FloatyPlatform : MonoBehaviour
     }
 
     private void StartRespawning() {
+        _lightSprite.enabled = false;
         _respawning = true;
         fallTimer = 0f;
         _startFallCountDown = false;
@@ -380,6 +396,7 @@ public class FloatyPlatform : MonoBehaviour
             _spriteRenderer.color = _fadeStartColor;
             yield return null;
         }
+        _lightSprite.enabled = true;
     }
 
     public void SetAlpha(float alpha) {

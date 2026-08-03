@@ -200,6 +200,12 @@ public class ShadowTwinMovement : MonoBehaviour
         return spriteRenderer.flipX;
     }
 
+    //May be used by moveables, like floating platforms, to unregister themselves
+    public void UnregisterMoveable() {
+        isOnMoveable = false;
+        moveableRigidbody = null;
+    }
+
     public float _poweredDashMultiplier = 1.2f;
     public void ExecuteDash(ShadowTwinPull.PullPowerType chargePower)
     {
