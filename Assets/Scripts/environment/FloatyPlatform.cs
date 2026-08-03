@@ -364,7 +364,7 @@ public class FloatyPlatform : MonoBehaviour
         _rigidBody.velocity = new Vector3(0,0,0);
         _rigidBody.gravityScale = 0;
         _rigidBody.bodyType = RigidbodyType2D.Kinematic;
-        StartCoroutine(FadeOutSprite());
+        SetAlpha(0f);
         isPlayer1OnPlatform = false;
         isPlayer2OnPlatform = false;
         _fallingPlatformFlash.StopFlashing();
@@ -373,18 +373,10 @@ public class FloatyPlatform : MonoBehaviour
     }
 
     public IEnumerator FadeInSprite() {
+        _fadeStartColor.a = 0f;
         while(_spriteRenderer.color.a < 1f) {
             _fadeStartColor.a += Time.deltaTime * _fadeSpeed;
             _spriteRenderer.color = _fadeStartColor;
-            yield return null;
-        }
-    }
-
-    private IEnumerator FadeOutSprite() {
-        Color currentColor = _spriteRenderer.color;
-        while(currentColor.a > 0f) {
-            currentColor.a -= Time.deltaTime * _fadeSpeed;
-            _spriteRenderer.color = currentColor;
             yield return null;
         }
     }
