@@ -35177,12 +35177,19 @@ MonoBehaviour:
       Data3: 448377988
       Data4: 623752613
     Path: event:/game/01_cave/space_room/eli_statue_shockwave
+  _ghostRenderer: {fileID: 1325184851}
+  shockwaveTime: 0.8
+  startPosition: 0.05
+  endPosition: 0.6
   minInterval: 0.6
   maxInterval: 2
   minPlayerDistance: 2
   maxPlayerDistance: 15
   minForce: 20
   maxForce: 60
+  scaleMultiplier: 1.4
+  scaleDuration: 0.1
+  scaleEase: 6
 --- !u!4 &176999301
 Transform:
   m_ObjectHideFlags: 0
@@ -35395,7 +35402,7 @@ Transform:
   m_GameObject: {fileID: 752476016}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1963.75, y: -379.625, z: -0.020960212}
+  m_LocalPosition: {x: 1960.125, y: -379.625, z: -0.020960212}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -42585,7 +42592,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 326891353
   m_SortingLayer: -1
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_Sprite: {fileID: 21300000, guid: 9fe2b6394133245b1ae65f7b60f61102, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

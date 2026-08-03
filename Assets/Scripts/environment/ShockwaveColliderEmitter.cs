@@ -1,3 +1,4 @@
+using DG.Tweening;
 using FMODUnity;
 using UnityEngine;
 
@@ -6,7 +7,12 @@ public class ShockwaveColliderEmitter : MonoBehaviour
     public GameObject shockwavePrefab;
 
     [SerializeField] private EventReference _statueShockWaveSfx;
+    [SerializeField] private SpriteRenderer _ghostRenderer;
 
+    [Header("Shockwave Settings")]
+    public float shockwaveTime = 0.8f;
+    public float startPosition = 0.05f;
+    public float endPosition = 1f;
     [Header("Shockwave Timing Settings")]
     public float minInterval = 0.5f;
     public float maxInterval = 2.0f;
@@ -15,6 +21,11 @@ public class ShockwaveColliderEmitter : MonoBehaviour
     public float minForce = 20f;
     public float maxForce = 60f;
     private float timer = 0f;
+
+    [Header("Ghost Scale Animation")]
+    public float scaleMultiplier = 1.2f;
+    public float scaleDuration = 0.15f;
+    public Ease scaleEase = Ease.OutQuad;
 
     private float GetDynamicInterval(float playerDist)
     {
@@ -39,11 +50,18 @@ public class ShockwaveColliderEmitter : MonoBehaviour
     [ContextMenu("Trigger Shockwave")]
     void TriggerShockwave(float playerDist)
     {
-        ShockWaveManager.obj.CallShockWave(transform.position, 0.8f, 0.05f, 1f);
+        ShockWaveManager.obj.CallBigShockWave(transform.position, shockwaveTime, startPosition, endPosition);
 
         SoundFXManager.obj.Play2D(_statueShockWaveSfx);
 
         CameraShakeManager.obj.ForcePushShake();
+
+        if (_ghostRenderer != null)
+        {
+            _ghostRenderer.transform.DOScale(_ghostRenderer.transform.localScale * scaleMultiplier, scaleDuration)
+                .SetEase(scaleEase)
+                .OnComplete(() => _ghostRenderer.transform.DOScale(Vector3.one, scaleDuration).SetEase(scaleEase));
+        }
 
         float force = GetDynamicForce(playerDist);
         var shockwaveGameObject = Instantiate(shockwavePrefab, transform.position, Quaternion.identity);

@@ -5,6 +5,7 @@ public class ShockWaveManager : MonoBehaviour
 {
     public static ShockWaveManager obj;
     [SerializeField] private GameObject _shockWavePrefab;
+    [SerializeField] private GameObject _bigShockWavePrefab;
 
     private static int _waveDistanceFromCenter = Shader.PropertyToID("_WaveDistanceFromCenter");
 
@@ -14,6 +15,12 @@ public class ShockWaveManager : MonoBehaviour
 
     public void CallShockWave(Vector3 spawnLocation, float shockWaveTime, float startPosition, float endPosition) {
         GameObject shockWave = Instantiate(_shockWavePrefab, spawnLocation, Quaternion.identity);
+        SpriteRenderer spriteRenderer = shockWave.GetComponent<SpriteRenderer>();
+        StartCoroutine(ShockWaveAction(shockWave, spriteRenderer, shockWaveTime, startPosition, endPosition));
+    }
+
+    public void CallBigShockWave(Vector3 spawnLocation, float shockWaveTime, float startPosition, float endPosition) {
+        GameObject shockWave = Instantiate(_bigShockWavePrefab, spawnLocation, Quaternion.identity);
         SpriteRenderer spriteRenderer = shockWave.GetComponent<SpriteRenderer>();
         StartCoroutine(ShockWaveAction(shockWave, spriteRenderer, shockWaveTime, startPosition, endPosition));
     }
