@@ -1156,12 +1156,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1167462561473728010, guid: 6716a012b459548df95048eb346289ed, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1497415238}
-    - targetCorrespondingSourceObject: {fileID: 1167462561473728010, guid: 6716a012b459548df95048eb346289ed, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1497415237}
-    - targetCorrespondingSourceObject: {fileID: 1167462561473728010, guid: 6716a012b459548df95048eb346289ed, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1497415236}
   m_SourcePrefab: {fileID: 100100000, guid: 6716a012b459548df95048eb346289ed, type: 3}
 --- !u!114 &1497415233 stripped
 MonoBehaviour:
@@ -1184,63 +1178,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 662832881858926814, guid: 6716a012b459548df95048eb346289ed, type: 3}
   m_PrefabInstance: {fileID: 1497415232}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1497415236
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1497415234}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f9bcd0a9374b64dbdbf3f1e233e90d97, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _lightSprite2D: {fileID: 0}
-  _fadeOutSpeed: 1
-  _fadeInSpeed: 1
-  _fadeOutAlpha: 0
-  _fadeInAlpha: 1
-  _startAlpha: 1
-  _lightColor: {r: 0, g: 0, b: 0, a: 0}
---- !u!114 &1497415237
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1497415234}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d62ac029b1017974ead8b6ad01623c82, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lightLayer: 0
-  type: 0
-  spriteMode: 0
-  sprite: {fileID: 21300000, guid: 6592d6be03fd808449716a11558d506f, type: 3}
-  color: {r: 0.4811321, g: 0.4811321, b: 0.4811321, a: 0.601}
-  flipX: 0
-  flipY: 0
-  lightSpriteTransform:
-    applyRotation: 0
-    scale: {x: 0.5, y: 0.5}
-    rotation: 0
-    position: {x: 0, y: 0}
-  lightSpriteShape:
-    update: 0
-  meshMode:
-    enable: 0
-    alpha: 0.5
-    shader: 0
-    materials:
-    - {fileID: 0}
-    sortingLayer:
-      name: Default
-      Order: 0
-  glowMode:
-    enable: 0
-    glowRadius: 1
 --- !u!114 &1497415238
 MonoBehaviour:
   m_ObjectHideFlags: 0

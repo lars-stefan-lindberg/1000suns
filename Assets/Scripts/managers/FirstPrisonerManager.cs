@@ -5,13 +5,18 @@ using UnityEngine.Tilemaps;
 
 public class FirstPrisonerManager : MonoBehaviour
 {
-    [SerializeField] private GameEventId _firstPrisonerFightEnded;
+    [SerializeField] private GameEventId _firstPrisonerFightEndedEli;
+    [SerializeField] private GameEventId _firstPrisonerFightEndedDee;
     [SerializeField] private GameObject _bossGameObjects;
     [SerializeField] private GameObject _blockingWall;
     [SerializeField] private Tilemap _blockingWallTilemap;
 
     void Start() {
-        if(GameManager.obj.HasEvent(_firstPrisonerFightEnded)) {
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        
+        if(caveTimeline == CaveTimelineId.Id.Eli && GameManager.obj.HasEvent(_firstPrisonerFightEndedEli)) {
+            _bossGameObjects.SetActive(false);
+        } else if(caveTimeline == CaveTimelineId.Id.Dee && GameManager.obj.HasEvent(_firstPrisonerFightEndedDee)) {
             _bossGameObjects.SetActive(false);
         }
     }
@@ -27,7 +32,12 @@ public class FirstPrisonerManager : MonoBehaviour
         });
         
         MusicManager.obj.EndCurrentTrack();
-        GameManager.obj.RegisterEvent(_firstPrisonerFightEnded);
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(caveTimeline == CaveTimelineId.Id.Eli) {
+            GameManager.obj.RegisterEvent(_firstPrisonerFightEndedEli);
+        } else if(caveTimeline == CaveTimelineId.Id.Dee) {
+            GameManager.obj.RegisterEvent(_firstPrisonerFightEndedDee);
+        }
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
     }
 }

@@ -859,8 +859,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _musicTrack: {fileID: 11400000, guid: b2e0156d4ce2c41878a250de4a882848, type: 2}
-  _firstPrisonerFightEnded: {fileID: 11400000, guid: 3c57a029da0854db8aa1b3422036dc0d, type: 2}
-  _firstPrisonerFightStarted: {fileID: 11400000, guid: 60ce5163cf7164f1c9136252644cb676, type: 2}
+  _firstPrisonerFightEndedEli: {fileID: 11400000, guid: 3c57a029da0854db8aa1b3422036dc0d, type: 2}
+  _firstPrisonerFightEndedDee: {fileID: 11400000, guid: 1ca7364bbc28540f2bb54a081c58684c, type: 2}
+  _firstPrisonerFightStartedEli: {fileID: 11400000, guid: 60ce5163cf7164f1c9136252644cb676, type: 2}
+  _firstPrisonerFightStartedDee: {fileID: 11400000, guid: fcef86575acff4832886242e42bdb226, type: 2}
   _spawnPoint: {fileID: 2020224174}
   _blockingWall: {fileID: 1731037167}
   _blockingWallTilemap: {fileID: 887467274}
@@ -1122,7 +1124,6 @@ Transform:
   m_Children:
   - {fileID: 709072008}
   - {fileID: 714541504}
-  - {fileID: 1987648403}
   - {fileID: 1497415234}
   - {fileID: 2075495319}
   m_Father: {fileID: 1063922883}
@@ -1775,6 +1776,7 @@ Transform:
   - {fileID: 2086513344}
   - {fileID: 302215657}
   - {fileID: 1450721870}
+  - {fileID: 1987648403}
   - {fileID: 788756713}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2218,15 +2220,15 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 788756713}
+    m_TransformParent: {fileID: 1063922883}
     m_Modifications:
     - target: {fileID: 662832881858926814, guid: 6716a012b459548df95048eb346289ed, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -10.875
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 662832881858926814, guid: 6716a012b459548df95048eb346289ed, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -5.125
+      value: -10.25
       objectReference: {fileID: 0}
     - target: {fileID: 662832881858926814, guid: 6716a012b459548df95048eb346289ed, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2603,7 +2605,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 012ee85d80bd2491fb0a701d561ec41f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _firstPrisonerFightEnded: {fileID: 11400000, guid: 3c57a029da0854db8aa1b3422036dc0d, type: 2}
+  _firstPrisonerFightEndedEli: {fileID: 11400000, guid: 3c57a029da0854db8aa1b3422036dc0d, type: 2}
+  _firstPrisonerFightEndedDee: {fileID: 11400000, guid: 1ca7364bbc28540f2bb54a081c58684c, type: 2}
   _bossGameObjects: {fileID: 788756712}
   _blockingWall: {fileID: 1731037167}
   _blockingWallTilemap: {fileID: 887467274}
