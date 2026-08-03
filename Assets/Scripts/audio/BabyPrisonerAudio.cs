@@ -17,6 +17,10 @@ public class BabyPrisonerAudio : MonoBehaviour
         SoundFXManager.obj.PlayAtPosition(_sounds.idle, transform.position);
     }
 
+    public void PlayJumpedOn() {
+        SoundFXManager.obj.PlayAtPosition(_sounds.jumpedOn, transform.position);
+    }
+
     public void PlayDespawn() {
         SoundFXManager.obj.PlayAtPosition(_sounds.despawn, transform.position);
     }

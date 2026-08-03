@@ -1096,6 +1096,19 @@ public class ShadowTwinMovement : MonoBehaviour
         _frameVelocity.y = jumpPower;
     }
 
+    [Header("Bounce Settings")]
+    [SerializeField] private float _enemyBounceForce = 20f;
+    private bool _justBounced = false;
+
+    public void ApplyBounce()
+    {
+        _frameVelocity.y = _enemyBounceForce;
+        _endedJumpEarly = false;
+        _coyoteUsable = false;
+        _justBounced = true;
+        isGrounded = false;
+    }
+
     #endregion
 
     #region Horizontal
@@ -1244,7 +1257,15 @@ public class ShadowTwinMovement : MonoBehaviour
         }
         if (isGrounded && _frameVelocity.y <= 0f)
         {
-            _frameVelocity.y = _stats.GroundingForce;
+            // Don't apply grounding force if we just bounced off an enemy
+            if (!_justBounced)
+            {
+                _frameVelocity.y = _stats.GroundingForce;
+            }
+            else
+            {
+                _justBounced = false;
+            }
         }
         else
         {

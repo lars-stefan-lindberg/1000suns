@@ -10,4 +10,5 @@ public class BabyPrisonerSoundSet : ScriptableObject
     public EventReference idle;
     public EventReference scared;
     public EventReference escapeLoop;
+    public EventReference jumpedOn;
 }

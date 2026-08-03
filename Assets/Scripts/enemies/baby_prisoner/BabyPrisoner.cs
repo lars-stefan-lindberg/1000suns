@@ -25,6 +25,7 @@ public class BabyPrisoner : MonoBehaviour
     private bool isTurning = false;
 
     private bool isAlerted = false;
+    private bool _isDespawning = false;
     private bool _isHiding = false;
     public int alertRunDirection = 1; //-1: left, 1: right
 
@@ -181,18 +182,28 @@ public class BabyPrisoner : MonoBehaviour
                 float babyPrisonerUpperBound = _collider.bounds.max.y;
 
                 if(playerLowerBound >= babyPrisonerUpperBound) {
+                    // Apply bounce to the player
+                    if(ShadowTwinMovement.obj != null) {
+                        _babyPrisonerAudio.PlayJumpedOn();
+                        ShadowTwinMovement.obj.ApplyBounce();
+                    }
                     _idleInPlaceUntilAlerted = true;
                     QuickDespawn();
                 }
-                //if collision is not on top, stop until collision exits
             }
         }
     }
 
     void OnCollisionExit2D(Collision2D collision) {
         if(collision.gameObject.CompareTag("Player")) {
-            _rigidBody.bodyType = RigidbodyType2D.Dynamic;
+            StartCoroutine(DelayedSetDynamic());
         }
+    }
+
+    private IEnumerator DelayedSetDynamic() {
+        yield return new WaitForSeconds(0.1f);
+        if(!_isDespawning)
+            _rigidBody.bodyType = RigidbodyType2D.Dynamic;
     }
 
     private bool IsMovingLeft() {
@@ -252,6 +263,7 @@ public class BabyPrisoner : MonoBehaviour
     }
 
     public void Despawn() {
+        _isDespawning = true;
         _animator.SetTrigger("despawn");
         _babyPrisonerAudio.PlayDespawn();
         _lightSprite2DFadeManager.SetFadedInState();
@@ -260,6 +272,9 @@ public class BabyPrisoner : MonoBehaviour
     }
 
     public void QuickDespawn() {
+        _isDespawning = true;
+        _rigidBody.bodyType = RigidbodyType2D.Static;
+        _collider.enabled = false;
         _animator.SetTrigger("quickDespawn");
         _babyPrisonerAudio.PlayDespawn();
         _lightSprite2DFadeManager.SetFadedInState();
