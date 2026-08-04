@@ -36,5 +36,6 @@ public class Cave35DRoomManager : MonoBehaviour
         PlayerMovement.obj.SetNewPowerReceived();
         yield return new WaitForSeconds(2);
         PlayerMovement.obj.UnFreeze();
+        GameManager.obj.IsPauseAllowed = true;
     }
 }

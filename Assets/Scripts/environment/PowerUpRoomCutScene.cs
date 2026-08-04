@@ -1,14 +1,16 @@
 using System.Collections;
 using Cinemachine;
+using FMOD.Studio;
 using FMODUnity;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class PowerUpRoomCutScene : MonoBehaviour
+public class PowerUpRoomCutScene : MonoBehaviour, ISkippable
 {
     private Animator _animator;
 
     [SerializeField] private GameObject _zoomedCamera;
+    [SerializeField] private GameObject _skipCutsceneCamera;
     [SerializeField] private EventReference _receivePowerupStinger;
     [SerializeField] private EventReference _powerupFanfareStinger;
     [SerializeField] private EventReference _pickupPowerupSfx;
@@ -23,7 +25,10 @@ public class PowerUpRoomCutScene : MonoBehaviour
     private bool _playerEntered = false;
     private bool _isSpawned = false;
     private bool _cutsceneFinished = false;
-
+    private EventInstance _receivePowerupStingerInstance;
+    private EventInstance _pickupPowerupSfxInstance;
+    private Coroutine _cutsceneCoroutine;
+    
     void Start() {
         _animator = GetComponent<Animator>();
         if(GameManager.obj.HasEvent(_shadowJumpReceived)) {
@@ -35,7 +40,7 @@ public class PowerUpRoomCutScene : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other) {
         if(other.CompareTag("Player")) {
             if(!_cutsceneFinished)
-                StartCoroutine(StartCutscene());
+                _cutsceneCoroutine = StartCoroutine(StartCutscene());
             else {
                 _playerEntered = true;
             }
@@ -50,6 +55,7 @@ public class PowerUpRoomCutScene : MonoBehaviour
     }
 
     private IEnumerator StartCutscene() {
+        PauseMenuManager.obj.RegisterSkippable(this);
         PlayerMovement.obj.Freeze();
 
         yield return new WaitForSeconds(1);
@@ -61,7 +67,11 @@ public class PowerUpRoomCutScene : MonoBehaviour
         Player.obj.transform.position = new Vector2(1306.25f, Player.obj.transform.position.y);
         PlayerMovement.obj.SetNewPower();
         yield return new WaitForSeconds(1.5f);
-        SoundFXManager.obj.Play2D(_receivePowerupStinger);
+
+        _receivePowerupStingerInstance = SoundFXManager.obj.CreateAttachedInstance(_receivePowerupStinger, gameObject);
+        _receivePowerupStingerInstance.start();
+        _receivePowerupStingerInstance.release();
+
         _animator.SetTrigger("enableFast");
         Player.obj.FlashFor(5f);
 
@@ -73,8 +83,7 @@ public class PowerUpRoomCutScene : MonoBehaviour
         
         _animator.SetTrigger("disableFast");
         SetIsPicked();
-        GameManager.obj.RegisterEvent(_shadowJumpReceived);
-
+        
         yield return new WaitForSeconds(1);
 
         //Zoom out
@@ -82,6 +91,35 @@ public class PowerUpRoomCutScene : MonoBehaviour
         
         yield return new WaitForSeconds(2.5f);
 
+        PauseMenuManager.obj.UnregisterSkippable();
+
+        StartCoroutine(ShowPowerUpScreen());
+
+        yield return null;
+    }
+
+    public void RequestSkip() {
+        if(_cutsceneCoroutine != null) {
+            StopCoroutine(_cutsceneCoroutine);
+        }
+
+        CameraShakeManager.obj.ShakeCamera(0, 0, 0);
+
+        AudioUtils.SafeStop(ref _receivePowerupStingerInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+        AudioUtils.SafeStop(ref _pickupPowerupSfxInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+
+        Player.obj.transform.position = new Vector2(1306.25f, Player.obj.transform.position.y);
+        PlayerMovement.obj.SetNewPower();
+        Player.obj.AbortFlash();
+
+        _isPicked = false;
+        _animator.SetBool("isPicked", true);
+        _animator.Play("idle_picked", 0, 0);
+
+        StartCoroutine(ResumeGameplay());
+    }
+
+    private IEnumerator ShowPowerUpScreen() {
         GameManager.obj.IsPauseAllowed = false;
         Time.timeScale = 0;
         _powerUpScreen.Show();
@@ -90,7 +128,6 @@ public class PowerUpRoomCutScene : MonoBehaviour
             yield return null;
         }
         Time.timeScale = 1;
-        GameManager.obj.IsPauseAllowed = true;
 
         //PlayerMovement.obj.SetNewPowerReceived();
         PlayerPowersManager.obj.EliCanShadowJump = true;
@@ -105,7 +142,25 @@ public class PowerUpRoomCutScene : MonoBehaviour
         StartCoroutine(TeleportToDreamRoomRoutine());
 
         _cutsceneFinished = true;
+    }
 
+    private IEnumerator ResumeGameplay() {
+        yield return null;
+        _skipCutsceneCamera.SetActive(true);
+        _zoomedCamera.SetActive(false);
+        CinemachineVirtualCamera zoomedCameraVcam = _zoomedCamera.GetComponent<CinemachineVirtualCamera>();
+        zoomedCameraVcam.enabled = false;
+        yield return null;
+        _skipCutsceneCamera.SetActive(false);
+        yield return null;
+
+        yield return new WaitForSeconds(0.2f);
+        SceneFadeManager.obj.StartFadeIn();
+        while(SceneFadeManager.obj.IsFadingIn) {
+            yield return null;
+        }
+        yield return new WaitForSeconds(0.3f);
+        StartCoroutine(ShowPowerUpScreen());
         yield return null;
     }
 
@@ -141,7 +196,9 @@ public class PowerUpRoomCutScene : MonoBehaviour
     }
 
     private void SetIsPicked() {
-        SoundFXManager.obj.Play2D(_pickupPowerupSfx);
+        _pickupPowerupSfxInstance = SoundFXManager.obj.CreateAttachedInstance(_pickupPowerupSfx, gameObject);
+        _pickupPowerupSfxInstance.start();
+        _pickupPowerupSfxInstance.release();
         _animator.SetBool("isPicked", true);
         _isPicked = true;
     }

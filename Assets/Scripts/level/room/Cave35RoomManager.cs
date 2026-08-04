@@ -38,8 +38,8 @@ public class Cave35RoomManager : MonoBehaviour
         //Give things some time to properly load
         yield return new WaitForSeconds(1f);
 
-        SceneFadeManager.obj.StartFadeIn(0.5f);
-        while(SceneFadeManager.obj.IsFadingIn)
+        WhiteSceneFadeManager.obj.StartFadeIn(0.5f);
+        while(WhiteSceneFadeManager.obj.IsFadingIn)
             yield return null;
 
 
@@ -49,6 +49,8 @@ public class Cave35RoomManager : MonoBehaviour
 
         GameManager.obj.RegisterEvent(_postDreamSequenceCompleted);
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
+
+        GameManager.obj.IsPauseAllowed = true;
 
         PlayerMovement.obj.UnFreeze();
     }

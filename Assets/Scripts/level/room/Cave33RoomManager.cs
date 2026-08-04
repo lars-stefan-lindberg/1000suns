@@ -1,9 +1,10 @@
 using System.Collections;
+using FMOD.Studio;
 using FMODUnity;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Cave33RoomManager : MonoBehaviour
+public class Cave33RoomManager : MonoBehaviour, ISkippable
 {
     [SerializeField] private GameEventId _floorBroken;
     [SerializeField] private GameEventId _hasShadowJump;
@@ -18,6 +19,9 @@ public class Cave33RoomManager : MonoBehaviour
     [SerializeField] private GameObject _deeBreakableFloor;
     [SerializeField] private EventReference _blockingFloorSfx;
     [SerializeField] private GameObject _blockDeePathBack;
+
+    private Coroutine _cutsceneCoroutine;
+    private EventInstance _blockingFloorSfxInstance;
 
 
     void Start() {
@@ -72,17 +76,52 @@ public class Cave33RoomManager : MonoBehaviour
         
         PlayerMovement.obj.Freeze();
         CaveAvatar.obj.SetFlipX(true);
-        StartCoroutine(StartConversation());
+        _cutsceneCoroutine = StartCoroutine(StartConversation());
+    }
+
+    public void RequestSkip() {
+        if(_cutsceneCoroutine != null)
+            StopCoroutine(_cutsceneCoroutine);
+        _afterShadowJumpConversation.HardStopConversation();
+        _afterShadowJumpConversation.CleanUp();
+        _afterShadowJumpConversation.OnConversationEnd -= OnAfterShadowJumpConversationCompleted;
+        _afterShadowJumpConversation.enabled = false;
+
+        CaveAvatar.obj.IsFollowingPlayer = true;
+
+        SpriteRenderer spriteRenderer = _eliBlockingFloor.GetComponentInChildren<SpriteRenderer>();
+        spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 1);
+        _eliBlockingFloor.SetActive(true);
+
+        AudioUtils.SafeStop(ref _blockingFloorSfxInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+
+        GameManager.obj.RegisterEvent(_afterShadowJumpConversationCompleted);
+        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
+
+        StartCoroutine(ResumeGameplay());
+    }
+
+    private IEnumerator ResumeGameplay() {
+        SceneFadeManager.obj.StartFadeIn();
+        while(SceneFadeManager.obj.IsFadingIn) {
+            yield return null;
+        }
+        PlayerMovement.obj.UnFreeze();
+        GameManager.obj.IsPauseAllowed = true;
+        yield return null;
     }
 
     private IEnumerator StartConversation() {
+        PauseMenuManager.obj.RegisterSkippable(this);
+        _blockingFloorSfxInstance = SoundFXManager.obj.CreateAttachedInstance(_blockingFloorSfx, _eliBlockingFloor.gameObject);
+        _blockingFloorSfxInstance.start();
+        _blockingFloorSfxInstance.release();
         StartCoroutine(FadeInBlockingFloor(_eliBlockingFloor));
         yield return new WaitForSeconds(1.5f);
         _afterShadowJumpConversation.StartConversation();
     }
 
     private IEnumerator FadeInBlockingFloor(GameObject blockingFloor) {
-        SoundFXManager.obj.PlayAtPosition(_blockingFloorSfx, blockingFloor.transform.position);
         SpriteRenderer spriteRenderer = blockingFloor.GetComponentInChildren<SpriteRenderer>();
         spriteRenderer.color = spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 0);
         blockingFloor.SetActive(true);
@@ -100,5 +139,6 @@ public class Cave33RoomManager : MonoBehaviour
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         _afterShadowJumpConversation.OnConversationEnd -= OnAfterShadowJumpConversationCompleted;
         _afterShadowJumpConversation.enabled = false;
+        PauseMenuManager.obj.UnregisterSkippable();
     }
 }

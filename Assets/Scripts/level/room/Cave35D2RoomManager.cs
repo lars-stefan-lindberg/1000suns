@@ -10,6 +10,7 @@ public class Cave35D2RoomManager : MonoBehaviour
     [SerializeField] private SceneField _thisScene;
     [SerializeField] private SceneField _otherScene;
     [SerializeField] private EventReference _teleport;
+    [SerializeField] private GameEventId _shadowJumpReceived;
 
     public void Teleport() {
         PlayerMovement.obj.Freeze();
@@ -17,6 +18,9 @@ public class Cave35D2RoomManager : MonoBehaviour
     }
 
     private IEnumerator TeleportCoroutine() {
+        GameManager.obj.IsPauseAllowed = false;
+        GameManager.obj.RegisterEvent(_shadowJumpReceived);
+
         yield return new WaitForSeconds(0.3f);
         PlayerMovement.obj.SetNewPower();
         yield return new WaitForSeconds(0.2f);
