@@ -79,6 +79,7 @@ public class Cave42RoomManager : MonoBehaviour
         GameManager.obj.SetCurrentSpawnPointId(_afterElevatorSpawnPoint.SpawnPointID);
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         PlayerMovement.obj.UnFreeze();
+        GameManager.obj.IsPauseAllowed = true;
     }
     
     private IEnumerator FadeElevatorSoundBack()

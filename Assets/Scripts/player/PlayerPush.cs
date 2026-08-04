@@ -249,6 +249,10 @@ public class PlayerPush : MonoBehaviour
         Player.obj.PlayerPushLight();
     }
 
+    public void AbortShoot() {
+        ResetBuiltUpPower();
+    }
+
     public void SimulateShootRelease() {
 
             if(_buildingUpPower && _buildUpPowerTime >= minBuildUpPowerTime)

@@ -3,7 +3,7 @@ using FMOD.Studio;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Cave41RoomManager : MonoBehaviour
+public class Cave41RoomManager : MonoBehaviour, ISkippable
 {
     [SerializeField] private SpawnPoint _eliStartPosition;
     [SerializeField] private Transform _sootStartPosition;
@@ -28,6 +28,9 @@ public class Cave41RoomManager : MonoBehaviour
     private const string ELEVATOR_SOUND_NAME = "ElevatorBuzz";
     private float _sootDistanceToElevator;
     private bool _moveSoot = false;
+    private Coroutine _cutsceneCoroutine;
+    private Coroutine _fadeElevatorSoundCoroutine;
+    private Coroutine _performThreeForcePushesCoroutine;
 
     void Start() {
         PlayerMovement.obj.isOnMoveable = true;
@@ -48,7 +51,7 @@ public class Cave41RoomManager : MonoBehaviour
 
         _sootDistanceToElevator = _sootStartPosition.position.y - _elevator.transform.position.y;
 
-        StartCoroutine(StartScene());
+        _cutsceneCoroutine = StartCoroutine(StartScene());
     }
 
     void OnDestroy() {
@@ -64,14 +67,18 @@ public class Cave41RoomManager : MonoBehaviour
     }
 
     private IEnumerator StartScene() {
+        PauseMenuManager.obj.RegisterSkippable(this);
+
         //Give some time to transition from previous scene
         yield return new WaitForSeconds(1.5f);
         
-        StartCoroutine(FadeElevatorSound());
+        _fadeElevatorSoundCoroutine = StartCoroutine(FadeElevatorSound());
         
         SceneFadeManager.obj.StartFadeIn(0.8f);
         while(SceneFadeManager.obj.IsFadingIn)
             yield return null;
+
+        GameManager.obj.IsPauseAllowed = true;
     
         yield return new WaitForSeconds(1.5f);
         PlayerMovement.obj.FlipPlayer();
@@ -89,7 +96,8 @@ public class Cave41RoomManager : MonoBehaviour
     }
 
     private IEnumerator OnConversation1CompletedCoroutine() {
-        yield return StartCoroutine(PerformThreeForcePushes());
+        _performThreeForcePushesCoroutine = StartCoroutine(PerformThreeForcePushes());
+        yield return _performThreeForcePushesCoroutine;
         yield return new WaitForSeconds(0.2f);
         PlayerMovement.obj.TriggerFallToKnees();
         _conversation2Manager.enabled = true;
@@ -182,6 +190,10 @@ public class Cave41RoomManager : MonoBehaviour
         yield return new WaitForSeconds(1f);
         yield return StartCoroutine(SlowDownAndStopAnimator());
         yield return new WaitForSeconds(2f);
+
+        PauseMenuManager.obj.UnregisterSkippable();
+        GameManager.obj.IsPauseAllowed = false;
+
         Player.obj.gameObject.SetActive(false);
         _elevator.StopAbruptly();
         SceneFadeManager.obj.StartFadeOut(0.8f);
@@ -190,6 +202,67 @@ public class Cave41RoomManager : MonoBehaviour
             yield return null;
         }
 
+        //Switch backgrounds
+        yield return StartCoroutine(BackgroundLoaderManager.obj.RemoveBackgroundLayers());
+        yield return StartCoroutine(BackgroundLoaderManager.obj.LoadAndSetBackground("CaveBg2"));
+
+        AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(_nextScene, LoadSceneMode.Additive);
+        while(!asyncOperation.isDone)
+            yield return null;
+        InitRoom initRoomData = LevelManager.obj.GetInitRoomData(SceneManager.GetSceneByName(_nextScene));
+        LevelManager.obj.LoadAdjacentRooms(initRoomData);
+
+        SceneManager.UnloadSceneAsync(_thisScene);
+    }
+
+    public void RequestSkip() {
+        if(_cutsceneCoroutine != null) {
+            StopCoroutine(_cutsceneCoroutine);
+        }
+        if(_fadeElevatorSoundCoroutine != null) {
+            StopCoroutine(_fadeElevatorSoundCoroutine);
+        }
+        if(_performThreeForcePushesCoroutine != null) {
+            StopCoroutine(_performThreeForcePushesCoroutine);
+        }
+
+        //Stop all conversations
+        _conversation1Manager.OnConversationEnd -= OnConversation1Completed;
+        if(_conversation1Manager.enabled) {
+            _conversation1Manager.HardStopConversation();
+            _conversation1Manager.enabled = false;
+        }
+        _conversation2Manager.OnConversationEnd -= OnConversation2Completed;
+        if(_conversation2Manager.enabled) {
+            _conversation2Manager.HardStopConversation();
+            _conversation2Manager.enabled = false;
+        }
+        _conversation3Manager.OnConversationEnd -= OnConversation3Completed;
+        if(_conversation3Manager.enabled) {
+            _conversation3Manager.HardStopConversation();
+            _conversation3Manager.enabled = false;
+        }
+        _conversation4Manager.OnConversationEnd -= OnConversation4Completed;
+        if(_conversation4Manager.enabled) {
+            _conversation4Manager.HardStopConversation();
+            _conversation4Manager.enabled = false;
+        }
+
+        _elevator.StopAbruptly();
+        _backgroundAnimator.speed = 0f;
+        _backgroundAnimator.enabled = false;
+
+        PlayerPush.obj.AbortShoot();
+        if(PlayerMovement.obj.IsFacingLeft())
+            PlayerMovement.obj.FlipPlayer();
+        Player.obj.ResetAnimator();
+        CaveAvatar.obj.IsFollowingPlayer = false;
+        _moveSoot = false;
+
+        StartCoroutine(ResumeGameplay());
+    }
+
+    private IEnumerator ResumeGameplay() {
         //Switch backgrounds
         yield return StartCoroutine(BackgroundLoaderManager.obj.RemoveBackgroundLayers());
         yield return StartCoroutine(BackgroundLoaderManager.obj.LoadAndSetBackground("CaveBg2"));
