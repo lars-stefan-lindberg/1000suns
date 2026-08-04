@@ -20,6 +20,14 @@ public class LightFlash : MonoBehaviour
         _flashCoroutine = StartCoroutine(FlashCoroutine());
     }
 
+    public void AbortFlash() {
+        if (_flashCoroutine != null) {
+            StopCoroutine(_flashCoroutine);
+            _flashCoroutine = null;
+        }
+        _light.enabled = false;
+    }
+
     private IEnumerator FlashCoroutine() {
         _light.enabled = true;
         _light.lightSpriteTransform.scale = Vector2.zero;

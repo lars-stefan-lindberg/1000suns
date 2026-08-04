@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using FMOD.Studio;
 
-public class Cave23RoomManager : MonoBehaviour
+public class Cave23RoomManager : MonoBehaviour, ISkippable
 {
     [SerializeField] private EventReference _teleportSfx;
     [SerializeField] private EventReference _voices;
@@ -39,7 +39,10 @@ public class Cave23RoomManager : MonoBehaviour
     private float _currentInitialVolume = 0f;
     private bool _initialFadeComplete = false;
     private EventInstance _stingerInstance;
+    private EventInstance _invisibleGrabWithDelayInstance;
+    private EventInstance _invisibleGrabWithBuildUpInstance;
     private CaveTimelineId.Id _activeCaveTimeline;
+    private Coroutine _cutsceneCoroutine;
 
     void Start() {
         _activeCaveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
@@ -96,6 +99,16 @@ public class Cave23RoomManager : MonoBehaviour
         StopVoices();
     }
 
+    private IEnumerator ResumeGameplay() {
+        SceneFadeManager.obj.StartFadeIn();
+        while(SceneFadeManager.obj.IsFadingIn) {
+            yield return null;
+        }
+        PlayerMovement.obj.UnFreeze();
+        GameManager.obj.IsPauseAllowed = true;
+        yield return null;
+    }
+
     private IEnumerator AfterEliDreamRoom() {
         AmbienceManager.obj.Stop();
         AmbienceManager.obj.Play(_caveMainAmbience);
@@ -139,10 +152,56 @@ public class Cave23RoomManager : MonoBehaviour
         CaveAvatar.obj.IsFollowingPlayer = false;
         AmbienceManager.obj.Stop();
         
-        StartCoroutine(TeleportToDreamRoomRoutine());
+        _cutsceneCoroutine = StartCoroutine(TeleportToDreamRoomRoutine());
+    }
+
+    public void RequestSkip() {
+        if(!GameManager.obj.HasEvent(_dreamSequenceCompleted)) {
+            if (_cutsceneCoroutine != null) {
+                StopCoroutine(_cutsceneCoroutine);
+                _cutsceneCoroutine = null;
+            }
+
+            AmbienceManager.obj.Stop();
+            AmbienceManager.obj.Play(_caveMainAmbience);
+
+            AudioUtils.SafeStop(ref _stingerInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+
+            _crystalCutsceneCamera.SetActive(false);
+
+            PlayerMovement.obj.SetMovementInput(Vector2.zero);
+            Player.obj.ResetAnimator();
+            PlayerMovement.obj.IsControlledProgrammatically = false;
+            Player.obj.rigidBody.gravityScale = 1;
+            PlayerMovement.obj.isGrounded = true;
+            PlayerMovement.obj.SetStartingOnGround();
+            Player.obj.transform.position = _eliReturnFromDreamRoomPosition.transform.position;
+
+            CaveAvatar.obj.SetPosition(_sootStartPositionAfterDreamRoom.position, false);
+            CaveAvatar.obj.SetFlipX(true);
+            CaveAvatar.obj.IsFollowingPlayer = true;
+
+            CameraShakeManager.obj.ShakeCamera(0, 0, 0);
+
+            StopVoices();
+
+            AudioUtils.SafeStop(ref _invisibleGrabWithDelayInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+            AudioUtils.SafeStop(ref _invisibleGrabWithBuildUpInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+
+            _crystalFlash.AbortFlash();
+            _lightVfx.AbortFlash();
+
+            GameManager.obj.RegisterEvent(_teleportInitiated);
+            GameManager.obj.RegisterEvent(_dreamSequenceCompleted);
+            GameManager.obj.RegisterEvent(_postDreamSequenceCompleted);
+            SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
+        }
+        StartCoroutine(ResumeGameplay());
     }
 
     private IEnumerator TeleportToDreamRoomRoutine() {
+        PauseMenuManager.obj.RegisterSkippable(this);
+
         GameManager.obj.RegisterEvent(_teleportInitiated);
 
         _stingerInstance = SoundFXManager.obj.CreateAttachedInstance(_stinger, gameObject);
@@ -153,7 +212,11 @@ public class Cave23RoomManager : MonoBehaviour
         PlayerMovement.obj.StartWalking();
         PlayerMovement.obj.SetMovementInput(new Vector2(1, 0));
         yield return new WaitForSeconds(0.2f);
-        SoundFXManager.obj.PlayAtPosition(_invisibleGrabWithBuildUp, Player.obj.transform.position);
+        
+        _invisibleGrabWithBuildUpInstance = SoundFXManager.obj.CreateAttachedInstance(_invisibleGrabWithBuildUp, Player.obj.gameObject);
+        _invisibleGrabWithBuildUpInstance.start();
+        _invisibleGrabWithBuildUpInstance.release();
+
         while (Player.obj.transform.position.x < _eliCutsceneStopPosition.position.x) {
             yield return null;
         }
@@ -177,7 +240,9 @@ public class Cave23RoomManager : MonoBehaviour
         float deceleration = 1f;
         float currentSpeed = 0f;
 
-        SoundFXManager.obj.PlayAtPosition(_invisibleGrabWithDelay, Player.obj.transform.position);
+        _invisibleGrabWithDelayInstance = SoundFXManager.obj.CreateAttachedInstance(_invisibleGrabWithDelay, Player.obj.gameObject);
+        _invisibleGrabWithDelayInstance.start();
+        _invisibleGrabWithDelayInstance.release();
         _crystalFlash.Flash();
         CameraShakeManager.obj.ForcePushShake();
         while (Player.obj.transform.position.y < targetY) {
@@ -198,6 +263,10 @@ public class Cave23RoomManager : MonoBehaviour
         }
         
         StopVoices();
+
+        PauseMenuManager.obj.UnregisterSkippable();
+        GameManager.obj.IsPauseAllowed = false;
+
         SoundFXManager.obj.Play2D(_teleportSfx);
         WhiteSceneFadeManager.obj.StartFadeOut(0.5f);
 
@@ -229,6 +298,7 @@ public class Cave23RoomManager : MonoBehaviour
     private IEnumerator SetupDialogue() {
         yield return new WaitForSeconds(0.5f);
         _conversationManager.StartConversation();
+        GameManager.obj.IsPauseAllowed = true;
     }
 
     private void OnConversationCompleted() {

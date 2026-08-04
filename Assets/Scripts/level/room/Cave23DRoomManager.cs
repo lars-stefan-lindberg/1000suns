@@ -76,6 +76,7 @@ public class Cave23DRoomManager : MonoBehaviour
         PlayerMovement.obj.SetNewPowerReceived();
         StartHeartbeat();
         yield return new WaitForSeconds(2);
+        GameManager.obj.IsPauseAllowed = true;
         PlayerMovement.obj.UnFreeze();
     }
 
@@ -162,6 +163,8 @@ public class Cave23DRoomManager : MonoBehaviour
         _eliParticles.Stop();
         _deeParticles.Stop();
         SoundFXManager.obj.Play2D(_teleport);
+
+        GameManager.obj.IsPauseAllowed = false;
         WhiteSceneFadeManager.obj.StartFadeOut(0.8f);
 
         yield return new WaitForSeconds(0.7f);

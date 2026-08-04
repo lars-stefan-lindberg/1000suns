@@ -51,7 +51,11 @@ public class Cave15CutsceneManager : MonoBehaviour, ISkippable
 
         _conversationManager.HardStopConversation();
         _conversationManager.OnConversationEnd -= OnConversationCompleted;
+        _conversationManager.CleanUp();
+        _conversationManager.OnConversationEnd -= OnConversationCompleted;
+
         MusicManager.obj.Play(_tenseBassTrack);
+        ShadowTwinMovement.obj.SetMovementInput(new Vector2(0, 0));
         ShadowTwinPlayer.obj.gameObject.SetActive(false);
         ShadowTwinMovement.obj.gameObject.tag = "Player";
 

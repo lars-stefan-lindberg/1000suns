@@ -313,6 +313,9 @@ public class PauseMenuManager : MonoBehaviour
         if(dialogueObject == null) {
             return null;
         }
+        if(!dialogueObject.activeSelf) {
+            return null;
+        }
         return dialogueObject.GetComponent<DialogueController>();
     }
 
