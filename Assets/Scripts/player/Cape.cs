@@ -13,15 +13,13 @@ public class Cape : MonoBehaviour
     private Vector3 _originalPosition;
     private Tweener _hoverTween;
 
-    void Awake() {
+    void Start() {
         if(GameManager.obj.HasEvent(_capePicked)) {
-            Destroy(gameObject, 3);
+            Destroy(gameObject);
+            return;
         }
         _animator = GetComponent<Animator>();
         _animator.enabled = false;
-    }
-
-    void Start() {
         _originalPosition = transform.localPosition;
         StartHover();
     }

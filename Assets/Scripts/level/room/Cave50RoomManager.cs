@@ -54,8 +54,8 @@ public class Cave50RoomManager : MonoBehaviour
 
         AmbienceManager.obj.Play(_caveMain);
 
-        SceneFadeManager.obj.StartFadeIn(0.5f);
-        while(SceneFadeManager.obj.IsFadingIn)
+        WhiteSceneFadeManager.obj.StartFadeIn(0.5f);
+        while(WhiteSceneFadeManager.obj.IsFadingIn)
             yield return null;
 
         Player.obj.StartAnimator();
@@ -100,9 +100,9 @@ public class Cave50RoomManager : MonoBehaviour
         _powerUpPortal.GetComponent<Animator>().SetTrigger("enableFast");
         yield return new WaitForSeconds(1.5f);
 
-        SceneFadeManager.obj.StartWhiteFadeOut(0.5f);
+        WhiteSceneFadeManager.obj.StartFadeOut(0.5f);
 
-        while(SceneFadeManager.obj.IsFadingOut)
+        while(WhiteSceneFadeManager.obj.IsFadingOut)
             yield return null;
 
         //Load dream room

@@ -110,9 +110,9 @@ public class PowerUpRoomCutScene : MonoBehaviour
     }
 
     private IEnumerator TeleportToDreamRoomRoutine() {
-        SceneFadeManager.obj.StartWhiteFadeOut(0.5f);
+        WhiteSceneFadeManager.obj.StartFadeOut(0.5f);
 
-        while(SceneFadeManager.obj.IsFadingOut)
+        while(WhiteSceneFadeManager.obj.IsFadingOut)
             yield return null;
 
         AmbienceManager.obj.Stop();

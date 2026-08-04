@@ -12,13 +12,11 @@ public class Crown : MonoBehaviour
     private Vector3 _originalPosition;
     private Tweener _hoverTween;
 
-    void Awake() {
-        if(GameManager.obj.HasEvent(_crownPicked)) {
-            Destroy(gameObject, 3);
-        }
-    }
-
     void Start() {
+        if(GameManager.obj.HasEvent(_crownPicked)) {
+            Destroy(gameObject);
+            return;
+        }
         _originalPosition = transform.localPosition;
         StartHover();
     }

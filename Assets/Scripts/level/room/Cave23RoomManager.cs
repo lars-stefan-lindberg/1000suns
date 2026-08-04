@@ -120,8 +120,8 @@ public class Cave23RoomManager : MonoBehaviour
         //Give things some time to properly load
         yield return new WaitForSeconds(1f);
 
-        SceneFadeManager.obj.StartFadeIn(0.5f);
-        while(SceneFadeManager.obj.IsFadingIn)
+        WhiteSceneFadeManager.obj.StartFadeIn(0.5f);
+        while(WhiteSceneFadeManager.obj.IsFadingIn)
             yield return null;
 
 
@@ -199,12 +199,12 @@ public class Cave23RoomManager : MonoBehaviour
         
         StopVoices();
         SoundFXManager.obj.Play2D(_teleportSfx);
-        SceneFadeManager.obj.StartWhiteFadeOut(0.5f);
+        WhiteSceneFadeManager.obj.StartFadeOut(0.5f);
 
         yield return new WaitForSeconds(0.5f);
         AudioUtils.SafeStop(ref _stingerInstance, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
 
-        while(SceneFadeManager.obj.IsFadingOut)
+        while(WhiteSceneFadeManager.obj.IsFadingOut)
             yield return null;
             
 

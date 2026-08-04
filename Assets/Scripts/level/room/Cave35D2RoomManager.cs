@@ -22,8 +22,8 @@ public class Cave35D2RoomManager : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
         AmbienceManager.obj.Stop();
         SoundFXManager.obj.Play2D(_teleport);
-        SceneFadeManager.obj.StartWhiteFadeOut(0.8f);
-        while(SceneFadeManager.obj.IsFadingOut)
+        WhiteSceneFadeManager.obj.StartFadeOut(0.8f);
+        while(WhiteSceneFadeManager.obj.IsFadingOut)
             yield return null;
 
         DustParticleMgr.obj.Enabled = true;

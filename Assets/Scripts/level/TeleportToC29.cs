@@ -30,9 +30,9 @@ public class TeleportToC29 : MonoBehaviour
         AmbienceManager.obj.Stop();
 
         SoundFXManager.obj.Play2D(_teleportSfx);
-        SceneFadeManager.obj.StartWhiteFadeOut(0.8f);
+        WhiteSceneFadeManager.obj.StartFadeOut(0.8f);
 
-        while(SceneFadeManager.obj.IsFadingOut)
+        while(WhiteSceneFadeManager.obj.IsFadingOut)
             yield return null;
 
         PlayerBlobMovement.obj.ToHuman(false);

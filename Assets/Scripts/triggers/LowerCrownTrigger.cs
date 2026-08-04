@@ -11,6 +11,7 @@ public class LowerCrownTrigger : MonoBehaviour, ISkippable
     [SerializeField] private MusicTrack _musicTrack;
     [SerializeField] private CinemachineVirtualCamera _defaultCamera;
     [SerializeField] private GameObject _zoomedCamera;
+    [SerializeField] private GameObject _skipCutsceneCamera;
     [SerializeField] private LightSprite2D _beamOfLightLight;
     [SerializeField] private GameObject _crown;
     [SerializeField] private Transform _crownMoveTarget;
@@ -66,25 +67,34 @@ public class LowerCrownTrigger : MonoBehaviour, ISkippable
 
         AudioUtils.SafeStop(ref _lightBeamSfxInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
 
-        _defaultCamera.enabled = true;
-        _zoomedCamera.SetActive(false);
-        CinemachineVirtualCamera zoomedCameraVcam = _zoomedCamera.GetComponent<CinemachineVirtualCamera>();
-        zoomedCameraVcam.enabled = false;
         _cave6CapePickedManager.FadeOutAndStopAmbience();
 
-        MusicManager.obj.Play(_musicTrack);
-
-        GameManager.obj.RegisterEvent(_crownPicked);
         StartCoroutine(ResumeGameplay());
     }
 
     private IEnumerator ResumeGameplay() {
+        yield return null;
+        ShadowTwinMovement.obj.SetNewPower();
+        yield return null;
+        ShadowTwinPlayer.obj.StartAnimator();
+        yield return null;
+        _skipCutsceneCamera.SetActive(true);
+        yield return null;
+        _zoomedCamera.SetActive(false);
+        _defaultCamera.enabled = true;
+        yield return null;
+        _skipCutsceneCamera.SetActive(false);
+        CinemachineVirtualCamera zoomedCameraVcam = _zoomedCamera.GetComponent<CinemachineVirtualCamera>();
+        zoomedCameraVcam.enabled = false;
+
+        yield return new WaitForSeconds(0.2f);
+
         SceneFadeManager.obj.StartFadeIn();
         while(SceneFadeManager.obj.IsFadingIn) {
             yield return null;
         }
-        ShadowTwinMovement.obj.UnFreeze();
-        GameManager.obj.IsPauseAllowed = true;
+        
+        StartCoroutine(_cave6CapePickedManager.DeePowerUpScreen());
         yield return null;
     }
 

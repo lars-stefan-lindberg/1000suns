@@ -34,7 +34,7 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
 
         CameraShakeManager.obj.ShakeCamera(0, 0, 0);
 
-        SceneFadeManager.obj.Reset();
+        WhiteSceneFadeManager.obj.Reset();
 
         _cape.SetActive(false);
         _crown.SetActive(false);
@@ -52,7 +52,6 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
             PlayerMovement.obj.isGrounded = true;
             PlayerMovement.obj.CancelJumping();
             Player.obj.ResetAnimator();
-            GameManager.obj.RegisterEvent(_capePicked);
         } else if(caveTimeline == CaveTimelineId.Id.Dee) {
             ShadowTwinPlayer.obj.SetAnimatorLayerAndHasCrown(true);
             PlayerPowersManager.obj.DeeCanForcePull = true;
@@ -61,26 +60,38 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
             ShadowTwinMovement.obj.isGrounded = true;
             ShadowTwinMovement.obj.CancelJumping();
             ShadowTwinPlayer.obj.ResetAnimator();
-            GameManager.obj.RegisterEvent(_crownPicked);
         }
 
         AudioUtils.SafeStop(ref _capePickedRoarInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
-        MusicManager.obj.Play(_musicTrack);
-        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         StartCoroutine(ResumeGameplay(caveTimeline));
     }
 
     private IEnumerator ResumeGameplay(CaveTimelineId.Id caveTimeline) {
+        if(caveTimeline == CaveTimelineId.Id.Eli) {
+            yield return null;
+            PlayerMovement.obj.SetNewPower();
+            yield return null;
+            Player.obj.StartAnimator();
+            yield return null;
+        } else if(caveTimeline == CaveTimelineId.Id.Dee) {
+            yield return null;
+            ShadowTwinMovement.obj.SetNewPower();
+            yield return null;
+            ShadowTwinPlayer.obj.StartAnimator();
+            yield return null;
+        }
+        yield return new WaitForSeconds(0.2f);
+
         SceneFadeManager.obj.StartFadeIn();
         while(SceneFadeManager.obj.IsFadingIn) {
             yield return null;
         }
+        yield return new WaitForSeconds(0.3f);
         if(caveTimeline == CaveTimelineId.Id.Eli) {
-            PlayerMovement.obj.UnFreeze();
+            StartCoroutine(EliPowerUpScreen());
         } else if(caveTimeline == CaveTimelineId.Id.Dee) {
-            ShadowTwinMovement.obj.UnFreeze();
+            StartCoroutine(DeePowerUpScreen());
         }
-        GameManager.obj.IsPauseAllowed = true;
         yield return null;
     }
 
@@ -110,8 +121,8 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
         FadeOutAndStopAmbience();
 
         StartSoundEvent(_capePickedRoarSfx, ref _capePickedRoarInstance);
-        SceneFadeManager.obj.SetSortingLayer("Player", 6);
-        SceneFadeManager.obj.StartWhiteFadeOut(_lightFadeOutSpeed);
+        WhiteSceneFadeManager.obj.SetSortingLayer("Player", 6);
+        WhiteSceneFadeManager.obj.StartFadeOut(_lightFadeOutSpeed);
 
         List<Animator> animators = new List<Animator>();
         foreach(var blob in _blobs) {
@@ -137,11 +148,11 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
         PlayerMovement.obj.CancelJumping();
         PlayerMovement.obj.SetNewPower();
         _cape.SetActive(false);
-        SceneFadeManager.obj.StartFadeIn(_lightFadeInSpeed);
+        WhiteSceneFadeManager.obj.StartFadeIn(_lightFadeInSpeed);
         
         yield return new WaitForSeconds(3.3f);
 
-        SceneFadeManager.obj.RestoreLayer();
+        WhiteSceneFadeManager.obj.RestoreLayer();
         
         List<SpriteRenderer> blobSprites = new();
         foreach(var blob in _blobs) {
@@ -156,9 +167,11 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
             yield return null;
         }
 
-        PlayerMovement.obj.Freeze();
-
         PauseMenuManager.obj.UnregisterSkippable();
+        StartCoroutine(EliPowerUpScreen());
+    }
+
+    public IEnumerator EliPowerUpScreen() {
         GameManager.obj.IsPauseAllowed = false;
         Time.timeScale = 0;
         _powerUpScreen.Show();
@@ -178,6 +191,8 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
         GameManager.obj.RegisterEvent(_capePicked);
 
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
+
+        yield return null;
     }
 
     private IEnumerator StartCutsceneCrownPicked() {
@@ -188,8 +203,8 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
         FadeOutAndStopAmbience();
 
         StartSoundEvent(_capePickedRoarSfx, ref _capePickedRoarInstance);
-        SceneFadeManager.obj.SetSortingLayer("Player", 6);
-        SceneFadeManager.obj.StartWhiteFadeOut(_lightFadeOutSpeed);
+        WhiteSceneFadeManager.obj.SetSortingLayer("Player", 6);
+        WhiteSceneFadeManager.obj.StartFadeOut(_lightFadeOutSpeed);
 
         List<Animator> animators = new List<Animator>();
         foreach(var blob in _blobs) {
@@ -214,11 +229,11 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
         ShadowTwinMovement.obj.CancelJumping();
         ShadowTwinMovement.obj.SetNewPower();
         _crown.SetActive(false);
-        SceneFadeManager.obj.StartFadeIn(_lightFadeInSpeed);
+        WhiteSceneFadeManager.obj.StartFadeIn(_lightFadeInSpeed);
         
         yield return new WaitForSeconds(3.3f);
 
-        SceneFadeManager.obj.RestoreLayer();
+        WhiteSceneFadeManager.obj.RestoreLayer();
         
         List<SpriteRenderer> blobSprites = new();
         foreach(var blob in _blobs) {
@@ -233,9 +248,11 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
             yield return null;
         }
 
-        ShadowTwinMovement.obj.Freeze();
-
         PauseMenuManager.obj.UnregisterSkippable();
+        StartCoroutine(DeePowerUpScreen());
+    }
+
+    public IEnumerator DeePowerUpScreen() {
         GameManager.obj.IsPauseAllowed = false;
         Time.timeScale = 0;
         _powerUpScreenDee.Show();
@@ -258,6 +275,8 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
         CaveAvatar.obj.gameObject.SetActive(false);
 
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
+
+        yield return null;
     }
 
     public void FadeOutAndStopAmbience() {

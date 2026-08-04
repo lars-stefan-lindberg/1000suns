@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class FirstCaveRoomLoader : MonoBehaviour
+public class FirstCaveRoomLoader : MonoBehaviour, ISkippable
 {
     [SerializeField] private GameEventId _eliFirstCaveRoomLoaded;
     [SerializeField] private GameEventId _deeFirstCaveRoomCutsceneCompleted;
@@ -12,6 +12,9 @@ public class FirstCaveRoomLoader : MonoBehaviour
     [SerializeField] private ConversationManager _conversationManager;
     [SerializeField] private GameObject _zoomedCamera;
     [SerializeField] private SpawnPoint _deeSpawnPoint;
+    private bool _isDee = false;
+
+    private Coroutine _cutsceneCoroutine;
 
     void Start() {
         CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
@@ -19,6 +22,7 @@ public class FirstCaveRoomLoader : MonoBehaviour
             StartCoroutine(LoadRoomEli());
             _conversationManager.OnConversationEnd += OnConversationCompleted;
         } else if(!GameManager.obj.HasEvent(_deeFirstCaveRoomCutsceneCompleted) && caveTimeline == CaveTimelineId.Id.Dee) {
+            _isDee = true;
             StartCoroutine(LoadRoomDee());
         }
     }
@@ -79,7 +83,7 @@ public class FirstCaveRoomLoader : MonoBehaviour
 
         AmbienceManager.obj.Play(_caveMainAmbience);
         AmbienceManager.obj.Play(_caveMainWaterDripping);
-        yield return StartCoroutine(StartSceneEli());
+        _cutsceneCoroutine = StartCoroutine(StartSceneEli());
 
         yield return null;
     }
@@ -94,6 +98,9 @@ public class FirstCaveRoomLoader : MonoBehaviour
         SceneFadeManager.obj.StartFadeIn();
         _zoomedCamera.SetActive(true);
 
+        PauseMenuManager.obj.RegisterSkippable(this);
+        GameManager.obj.IsPauseAllowed = true;
+        
         Player.obj.PlayGetUpAnimation();
         yield return new WaitForSeconds(4);
         Player.obj.StartAnimator();
@@ -123,9 +130,35 @@ public class FirstCaveRoomLoader : MonoBehaviour
 
         PlayerMovement.obj.UnFreeze();
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
-        GameManager.obj.IsPauseAllowed = true;
 
         _conversationManager.OnConversationEnd -= OnConversationCompleted;
+        PauseMenuManager.obj.UnregisterSkippable();
+    }
+
+    public void RequestSkip() {
+        if(_cutsceneCoroutine != null)
+            StopCoroutine(_cutsceneCoroutine);
+
+        if(!_isDee) {
+            Player.obj.ResetAnimator();
+            Player.obj.StartAnimator();
+            _conversationManager.HardStopConversation();
+            _conversationManager.OnConversationEnd -= OnConversationCompleted;
+            _zoomedCamera.SetActive(false);
+            GameManager.obj.RegisterEvent(_eliFirstCaveRoomLoaded);
+            SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);        
+            StartCoroutine(ResumeGameplayEli());
+        }
+    }
+
+    private IEnumerator ResumeGameplayEli() {
+        SceneFadeManager.obj.StartFadeIn();
+        while(SceneFadeManager.obj.IsFadingIn) {
+            yield return null;
+        }
+        PlayerMovement.obj.UnFreeze();
+        GameManager.obj.IsPauseAllowed = true;
+        yield return null;
     }
 
     void OnDestroy() {

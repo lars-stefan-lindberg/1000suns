@@ -71,7 +71,7 @@ public class Cave23DRoomManager : MonoBehaviour
         SceneManager.SetActiveScene(gameObject.scene);
 
         //All loading should be completed. Start fading in room
-        SceneFadeManager.obj.StartFadeIn(0.5f);
+        WhiteSceneFadeManager.obj.StartFadeIn(0.5f);
         yield return new WaitForSeconds(2.5f);
         PlayerMovement.obj.SetNewPowerReceived();
         StartHeartbeat();
@@ -162,12 +162,12 @@ public class Cave23DRoomManager : MonoBehaviour
         _eliParticles.Stop();
         _deeParticles.Stop();
         SoundFXManager.obj.Play2D(_teleport);
-        SceneFadeManager.obj.StartWhiteFadeOut(0.8f);
+        WhiteSceneFadeManager.obj.StartFadeOut(0.8f);
 
         yield return new WaitForSeconds(0.7f);
         AudioUtils.SafeStop(ref _pulledTogetherInstance, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
 
-        while(SceneFadeManager.obj.IsFadingOut)
+        while(WhiteSceneFadeManager.obj.IsFadingOut)
             yield return null;
 
         StopHeartbeat();

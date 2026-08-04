@@ -39,7 +39,7 @@ public class TeleportToC295 : MonoBehaviour
         
         AmbienceManager.obj.Stop();
         SoundFXManager.obj.Play2D(_teleportSfx);
-        SceneFadeManager.obj.StartWhiteFadeOut();
+        WhiteSceneFadeManager.obj.StartFadeOut();
 
         yield return new WaitForSeconds(1f);
 
@@ -67,7 +67,7 @@ public class TeleportToC295 : MonoBehaviour
         yield return new WaitForSeconds(2f);
         SoundFXManager.obj.Play2D(_introStinger);
         yield return new WaitForSeconds(1f);
-        SceneFadeManager.obj.StartFadeIn();
+        WhiteSceneFadeManager.obj.StartFadeIn();
 
         Destroy(_lightPortal);
 

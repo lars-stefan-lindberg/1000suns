@@ -1,9 +1,9 @@
 using UnityEngine.UI;
 using UnityEngine;
 
-public class SceneFadeManager : MonoBehaviour
+public class WhiteSceneFadeManager : MonoBehaviour
 {
-    public static SceneFadeManager obj;
+    public static WhiteSceneFadeManager obj;
 
     [SerializeField] private Image _fadeOutImage;
     [Range(0.1f, 10f), SerializeField] private float _fadeOutSpeed = 5f;
