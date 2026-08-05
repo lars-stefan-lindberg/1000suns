@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class C31ConversationTrigger : MonoBehaviour
+public class C31ConversationTrigger : MonoBehaviour, ISkippable
 {
     [SerializeField] private ConversationManager _conversationManager;
     [SerializeField] private C31Manager _c31Manager;
@@ -12,6 +12,7 @@ public class C31ConversationTrigger : MonoBehaviour
     [SerializeField] private Transform _sootAfterConversationTarget;
 
     private BoxCollider2D _collider;
+    private Coroutine _cutsceneCoroutine;
 
     void Start() {
         if(GameManager.obj.HasEvent(_cave52CutsceneCompleted)) {
@@ -29,7 +30,7 @@ public class C31ConversationTrigger : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other) {
         if(other.CompareTag("Player")) {
             _collider.enabled = false;
-            StartCoroutine(SetupDialogue());
+            _cutsceneCoroutine = StartCoroutine(SetupDialogue());
         }
     }
 
@@ -40,12 +41,34 @@ public class C31ConversationTrigger : MonoBehaviour
             PlayerBlobMovement.obj.Freeze();
             PlayerBlobMovement.obj.ToHuman();
         }
+        PauseMenuManager.obj.RegisterSkippable(this);
         _cutsceneCamera.SetActive(true);
         yield return new WaitForSeconds(2.2f);
         _conversationManager.StartConversation();
     }
 
+    public void RequestSkip() {
+        if(_cutsceneCoroutine != null) {
+            StopCoroutine(_cutsceneCoroutine);
+        }
+
+        _conversationManager.HardStopConversation();
+
+        StartCoroutine(ResumeGameplay());
+    }
+
+    private IEnumerator ResumeGameplay() {
+        SceneFadeManager.obj.StartFadeIn();
+        while(SceneFadeManager.obj.IsFadingIn) {
+            yield return null;
+        }
+        StartCoroutine(OnConversationCompletedCoroutine());
+        GameManager.obj.IsPauseAllowed = true;
+        yield return null;
+    }
+
     private void OnConversationCompleted() {
+        PauseMenuManager.obj.UnregisterSkippable();
         StartCoroutine(OnConversationCompletedCoroutine());
     }
 

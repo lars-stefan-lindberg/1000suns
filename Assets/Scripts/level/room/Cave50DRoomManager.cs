@@ -35,7 +35,7 @@ public class Cave50DRoomManager : MonoBehaviour
         SceneManager.SetActiveScene(gameObject.scene);
 
         //All loading should be completed. Start fading in room
-        SceneFadeManager.obj.StartFadeIn(0.5f);
+        WhiteSceneFadeManager.obj.StartFadeIn(0.5f);
         SoundFXManager.obj.Play2D(_introStinger);
         yield return new WaitForSeconds(2.5f);
         PlayerBlob.obj.SetNewPowerRecevied();
