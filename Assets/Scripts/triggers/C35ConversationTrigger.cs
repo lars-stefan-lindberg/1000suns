@@ -3,7 +3,7 @@ using Cinemachine;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class C35ConversationTrigger : MonoBehaviour
+public class C35ConversationTrigger : MonoBehaviour, ISkippable
 {
     [SerializeField] private ConversationManager _conversationManager;
     [SerializeField] private ConversationManager _nextConversationManager;
@@ -12,11 +12,14 @@ public class C35ConversationTrigger : MonoBehaviour
     [SerializeField] private bool _runOnConversationCompleted = true;
     [SerializeField] private bool _flipCaveAvatar = false;
     [SerializeField] private bool _isFirstConversation = false;
+    [SerializeField] private bool _isLastConversation = false;
     [SerializeField] private Transform _deeCutsceneStartingPosition;
     [SerializeField] private SceneField _firstCaveBackground;
     [SerializeField] private SceneField _firstCaveSurfaces;
 
     private BoxCollider2D _collider;
+    private Coroutine _cutsceneCoroutine;
+    private Coroutine _breakFloorCoroutine;
 
     void Start() {
         _collider = GetComponent<BoxCollider2D>();
@@ -42,7 +45,7 @@ public class C35ConversationTrigger : MonoBehaviour
         if(other.CompareTag("Player")) {
             _collider.enabled = false;
             PlayerMovement.obj.SetMovementInput(Vector2.zero);
-            StartCoroutine(SetupDialogue());
+            _cutsceneCoroutine = StartCoroutine(SetupDialogue());
         }
     }
 
@@ -55,6 +58,8 @@ public class C35ConversationTrigger : MonoBehaviour
         }
 
         if(_isFirstConversation) {
+            PauseMenuManager.obj.RegisterSkippable(this);
+
             _fixedCamera.SetActive(true);
             yield return new WaitForSeconds(2.4f);
             ShadowTwinMovement.obj.SetMovementInput(new Vector2(1, 0));
@@ -73,6 +78,38 @@ public class C35ConversationTrigger : MonoBehaviour
         _conversationManager.StartConversation();
     }
 
+    public void RequestSkip() {
+        if(_cutsceneCoroutine != null) {
+            StopCoroutine(_cutsceneCoroutine);
+        }
+        if(_breakFloorCoroutine != null) {
+            StopCoroutine(_breakFloorCoroutine);
+        }
+
+        PlayerMovement.obj.SetMovementInput(Vector2.zero);
+        ShadowTwinMovement.obj.SetMovementInput(Vector2.zero);
+        ShadowTwinPlayer.obj.gameObject.SetActive(false);
+        ShadowTwinMovement.obj.gameObject.tag = "Player";
+
+        AmbienceManager.obj.Stop();
+
+        CaveAvatar.obj.StopAttack();
+        if(_breakableFloor != null)
+            _breakableFloor.Stop();
+        
+        _conversationManager.HardStopConversation();
+        _conversationManager.CleanUp();
+
+        StartCoroutine(ResumeGameplay());
+    }
+
+    private IEnumerator ResumeGameplay() {
+        yield return null;
+        yield return new WaitForSeconds(2f);
+        StartCoroutine(LoadNextScene());
+        yield return null;
+    }
+
     private void OnConversationCompleted() {
         if(_runOnConversationCompleted) {
             PlayerMovement.obj.SetMovementInput(new Vector2(1, 0));
@@ -81,14 +118,13 @@ public class C35ConversationTrigger : MonoBehaviour
         if(_nextConversationManager != null) {
             _nextConversationManager.enabled = true;
         }
-        if(_breakableFloor != null) {
+        if(_isLastConversation) {
             _conversationManager.CleanUp();
             StartCoroutine(BreakFloor());
         }
     }
 
     private IEnumerator BreakFloor() {
-        GameManager.obj.IsPauseAllowed = false;
 
         AmbienceManager.obj.Stop();
         yield return new WaitForSeconds(1.5f);
@@ -99,6 +135,10 @@ public class C35ConversationTrigger : MonoBehaviour
 
         yield return new WaitForSeconds(3f);
 
+        PauseMenuManager.obj.UnregisterSkippable();
+
+        GameManager.obj.IsPauseAllowed = false;
+
         SceneFadeManager.obj.StartFadeOut(0.3f);
 
         while(SceneFadeManager.obj.IsFadingOut)
@@ -106,6 +146,10 @@ public class C35ConversationTrigger : MonoBehaviour
 
         yield return new WaitForSeconds(3f);
 
+        StartCoroutine(LoadNextScene());
+    }
+
+    private IEnumerator LoadNextScene() {
         //Set player objects inactive
         Player.obj.gameObject.SetActive(false);
         CaveAvatar.obj.gameObject.SetActive(false);
@@ -134,7 +178,5 @@ public class C35ConversationTrigger : MonoBehaviour
         //Unload current rooms
         SceneManager.UnloadSceneAsync("Cave-55");
         SceneManager.UnloadSceneAsync("Cave-56");
-
-        yield return null;
     }
 }

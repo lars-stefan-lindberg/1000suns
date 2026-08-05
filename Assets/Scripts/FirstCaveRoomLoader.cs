@@ -113,8 +113,9 @@ public class FirstCaveRoomLoader : MonoBehaviour, ISkippable
     }
 
     private IEnumerator StartSceneDee() {
+        yield return new WaitForSeconds(1f);
         SceneFadeManager.obj.SetFadedOutState();
-        SceneFadeManager.obj.SetFadeInSpeed(0.2f);
+        SceneFadeManager.obj.SetFadeInSpeed(0.3f);
         SceneFadeManager.obj.StartFadeIn();
         yield return new WaitForSeconds(3f);
         GameManager.obj.RegisterEvent(_deeFirstCaveRoomCutsceneCompleted);

@@ -1,4 +1,5 @@
 using System.Collections;
+using FMOD.Studio;
 using FMODUnity;
 using UnityEngine;
 using UnityEngine.Events;
@@ -31,6 +32,8 @@ public class BreakableFloor : MonoBehaviour
     public float shakeFrameWait = 0.08f;
     private float _originYPosition;
     private float[] _shakeTargetsY;
+    private EventInstance _breakableWallCracklingSfxInstance;
+    private EventInstance _breakSfxInstance;
 
     private void Awake() {
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
@@ -75,7 +78,9 @@ public class BreakableFloor : MonoBehaviour
         }
         if(_breakFloor) {
             _breakFloor = false;
-            SoundFXManager.obj.Play2D(_breakSfx);
+            _breakSfxInstance = SoundFXManager.obj.CreateAttachedInstance(_breakSfx, gameObject);
+            _breakSfxInstance.start();
+            _breakSfxInstance.release();
             _shakeAnimation.Emit(numberOfShakeParticles);
             _floorCollider.enabled = false;
             _playerOnTopDetectionCollider.enabled = false;
@@ -96,9 +101,25 @@ public class BreakableFloor : MonoBehaviour
         _breakFloor = true;
     }
 
+    public void Stop() {
+        _breakFloor = false;
+        _shakeFloor = false;
+        _hintFloor = false;
+        _fadeSprite = false;
+        _spriteRenderer.color = new Color(_spriteRenderer.color.r, _spriteRenderer.color.b, _spriteRenderer.color.g, 0);
+        _shakeAnimation.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
+        AudioUtils.SafeStop(ref _breakSfxInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+        AudioUtils.SafeStop(ref _breakableWallCracklingSfxInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+
+        gameObject.SetActive(false);
+    }
+
     private IEnumerator ShakeWall() {
         yield return new WaitForSeconds(0.05f);
-        SoundFXManager.obj.PlayAtPosition(_breakableWallCracklingSfx, transform.position);
+        _breakableWallCracklingSfxInstance = SoundFXManager.obj.CreateAttachedInstance(_breakableWallCracklingSfx, gameObject);
+        _breakableWallCracklingSfxInstance.start();
+        _breakableWallCracklingSfxInstance.release();
         _shakeAnimation.Emit(numberOfShakeParticles);
         float time = 0f;
         int index = 1;

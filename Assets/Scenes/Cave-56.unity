@@ -5139,17 +5139,18 @@ MonoBehaviour:
   _conversationManager: {fileID: 176678980}
   _nextConversationManager: {fileID: 1918073888}
   _fixedCamera: {fileID: 0}
-  _breakableFloor: {fileID: 0}
+  _breakableFloor: {fileID: 581821158}
   _runOnConversationCompleted: 1
   _flipCaveAvatar: 0
   _isFirstConversation: 0
+  _isLastConversation: 0
   _deeCutsceneStartingPosition: {fileID: 0}
   _firstCaveBackground:
-    _sceneAsset: {fileID: 0}
-    _sceneName: 
+    _sceneAsset: {fileID: 102900000, guid: 49dcf73c3e66c41c7abfab1c1bccca2d, type: 3}
+    _sceneName: CaveBg1
   _firstCaveSurfaces:
-    _sceneAsset: {fileID: 0}
-    _sceneName: 
+    _sceneAsset: {fileID: 102900000, guid: 60bd225bc92df489ea4212c4063672f3, type: 3}
+    _sceneName: Cave-surfaces-1
 --- !u!61 &176678982
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -5439,17 +5440,18 @@ MonoBehaviour:
   _conversationManager: {fileID: 292056579}
   _nextConversationManager: {fileID: 176678980}
   _fixedCamera: {fileID: 668649008}
-  _breakableFloor: {fileID: 0}
+  _breakableFloor: {fileID: 581821158}
   _runOnConversationCompleted: 1
   _flipCaveAvatar: 1
   _isFirstConversation: 1
+  _isLastConversation: 0
   _deeCutsceneStartingPosition: {fileID: 1198887739}
   _firstCaveBackground:
-    _sceneAsset: {fileID: 0}
-    _sceneName: 
+    _sceneAsset: {fileID: 102900000, guid: 49dcf73c3e66c41c7abfab1c1bccca2d, type: 3}
+    _sceneName: CaveBg1
   _firstCaveSurfaces:
-    _sceneAsset: {fileID: 0}
-    _sceneName: 
+    _sceneAsset: {fileID: 102900000, guid: 60bd225bc92df489ea4212c4063672f3, type: 3}
+    _sceneName: Cave-surfaces-1
 --- !u!61 &292056581
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -6958,6 +6960,7 @@ MonoBehaviour:
   _runOnConversationCompleted: 0
   _flipCaveAvatar: 0
   _isFirstConversation: 0
+  _isLastConversation: 1
   _deeCutsceneStartingPosition: {fileID: 0}
   _firstCaveBackground:
     _sceneAsset: {fileID: 102900000, guid: 49dcf73c3e66c41c7abfab1c1bccca2d, type: 3}

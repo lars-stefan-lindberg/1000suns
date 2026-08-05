@@ -1,4 +1,5 @@
 using System.Collections;
+using FMOD.Studio;
 using FMODUnity;
 using UnityEngine;
 
@@ -37,6 +38,7 @@ public class CaveAvatar : MonoBehaviour
     [SerializeField] private float _linearMoveDuration = 0.5f;
     private bool _isLinearMoving = false;
     private bool _isFloatingEnabled = true;
+    private EventInstance _attackSfxInstance;
 
     void Awake() {
         obj = this;
@@ -125,7 +127,14 @@ public class CaveAvatar : MonoBehaviour
     public void Attack() {
         _animator.SetTrigger("attack");
         CameraShakeManager.obj.ForcePushShake();
-        SoundFXManager.obj.Play2D(_attackSfx);
+        _attackSfxInstance = SoundFXManager.obj.CreateAttachedInstance(_attackSfx, gameObject);
+        _attackSfxInstance.start();
+        _attackSfxInstance.release();
+    }
+
+    public void StopAttack() {
+        _animator.Play("idle", 0, 0);
+        AudioUtils.SafeStop(ref _attackSfxInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
     }
 
     public void NudgeUpwards() {
