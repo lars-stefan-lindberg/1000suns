@@ -8,7 +8,8 @@ public class BabyPrisonerSoundSet : ScriptableObject
     public EventReference alert;
     public EventReference despawn;
     public EventReference idle;
-    public EventReference scared;
     public EventReference escapeLoop;
     public EventReference jumpedOn;
+    public EventReference angryAfterJumpedOn;
+    public EventReference cuteGreeting;
 }

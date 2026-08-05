@@ -163,7 +163,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 4
+  m_Constraints: 6
 --- !u!95 &7617666646281092189
 Animator:
   serializedVersion: 5
@@ -202,12 +202,14 @@ MonoBehaviour:
   hideSpeed: 6
   maxSpeed: 1.6
   speedAcceleration: 1
-  timeToTurnAround: 1.31
+  timeToTurnAround: 1.5
   turnAroundTimer: 1.3199993
   isAlertedFromStart: 0
   alertRunDirection: -1
   _idleInPlaceUntilAlerted: 0
+  _hideSoundToPlay: 0
   maxTravellingDistance: 3
+  _bouncePower: 1
   groundLayer:
     serializedVersion: 2
     m_Bits: 8

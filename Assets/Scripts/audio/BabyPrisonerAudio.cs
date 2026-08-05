@@ -9,10 +9,6 @@ public class BabyPrisonerAudio : MonoBehaviour
         SoundFXManager.obj.PlayAtPosition(_sounds.crawl, transform.position);
     }
 
-    public void PlayScared() {
-        SoundFXManager.obj.PlayAtGameObject(_sounds.scared, gameObject);
-    }
-
     public void PlayIdle() {
         SoundFXManager.obj.PlayAtPosition(_sounds.idle, transform.position);
     }
@@ -27,6 +23,14 @@ public class BabyPrisonerAudio : MonoBehaviour
 
     public void PlayAlert() {
         SoundFXManager.obj.PlayAtPosition(_sounds.alert, transform.position);
+    }
+    
+    public void PlayAngryAfterJumpedOn() {
+        SoundFXManager.obj.PlayAtPosition(_sounds.angryAfterJumpedOn, transform.position);
+    }
+    
+    public void PlayCuteGreeting() {
+        SoundFXManager.obj.PlayAtPosition(_sounds.cuteGreeting, transform.position);
     }
 
     public void PlayEscape(ref EventInstance escapeSfxInstance) {

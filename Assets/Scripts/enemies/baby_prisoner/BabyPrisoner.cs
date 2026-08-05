@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class BabyPrisoner : MonoBehaviour
 {
+    public enum HideSound
+    {
+        None,
+        CuteGreeting,
+        AngryAfterJumpedOn
+    }
+
     private BoxCollider2D _collider;
     private Rigidbody2D _rigidBody;
     private Animator _animator;
@@ -30,6 +37,7 @@ public class BabyPrisoner : MonoBehaviour
     public int alertRunDirection = 1; //-1: left, 1: right
 
     [SerializeField] private bool _idleInPlaceUntilAlerted = false;
+    [SerializeField] private HideSound _hideSoundToPlay = HideSound.None;
 
     bool IsMoving => Mathf.Abs(_rigidBody.velocity.x) > 0.01;
 
@@ -49,6 +57,7 @@ public class BabyPrisoner : MonoBehaviour
     private EventInstance _escapeAudioInstance;
     private LightSprite2DFadeManager _lightSprite2DFadeManager;
     private BabyPrisonerAudio _babyPrisonerAudio;
+    private Coroutine _delayedSetDynamicCoroutine;
 
     void Start() {
         _collider = GetComponent<BoxCollider2D>();
@@ -120,7 +129,7 @@ public class BabyPrisoner : MonoBehaviour
 
         if(isAlerted && IsMoving) {
             if(playScaredSoundEffectTimer >= playScaredSoundEffectInterval) {
-                _babyPrisonerAudio.PlayScared();
+                _babyPrisonerAudio.PlayCuteGreeting();
                 playScaredSoundEffectTimer = 0;
             }
             playScaredSoundEffectTimer += Time.deltaTime;
@@ -133,7 +142,7 @@ public class BabyPrisoner : MonoBehaviour
     }
 
     public void PlayScaredSfx() {
-        _babyPrisonerAudio.PlayScared();
+        _babyPrisonerAudio.PlayCuteGreeting();
     }
 
     void FixedUpdate()
@@ -189,7 +198,9 @@ public class BabyPrisoner : MonoBehaviour
                         ShadowTwinMovement.obj.ApplyBounce(_bouncePower);
                     }
                     _idleInPlaceUntilAlerted = true;
-                    QuickDespawn();
+                    SetBouncedOn();
+                } else if(PlayerManager.obj.IsPlayerGrounded(PlayerManager.PlayerType.SHADOW_TWIN)) {
+                    _babyPrisonerAudio.PlayCuteGreeting();
                 }
             }
         }
@@ -197,14 +208,21 @@ public class BabyPrisoner : MonoBehaviour
 
     void OnCollisionExit2D(Collision2D collision) {
         if(collision.gameObject.CompareTag("Player")) {
-            StartCoroutine(DelayedSetDynamic());
+            if(_delayedSetDynamicCoroutine != null) {
+                StopCoroutine(_delayedSetDynamicCoroutine);
+            }
+            _delayedSetDynamicCoroutine = StartCoroutine(DelayedSetDynamic());
         }
     }
 
     private IEnumerator DelayedSetDynamic() {
-        yield return new WaitForSeconds(0.1f);
-        if(!_isDespawning)
-            _rigidBody.bodyType = RigidbodyType2D.Dynamic;
+        yield return new WaitForSeconds(0.5f);
+        if(_idleInPlaceUntilAlerted) {
+            _babyPrisonerAudio.PlayAngryAfterJumpedOn();
+        }
+        yield return new WaitForSeconds(0.5f);
+        _rigidBody.bodyType = RigidbodyType2D.Dynamic;
+        _idleInPlaceUntilAlerted = false;
     }
 
     private bool IsMovingLeft() {
@@ -253,7 +271,19 @@ public class BabyPrisoner : MonoBehaviour
         isTurning = false;
         _lightSprite2DFadeManager.SetFadedInState();
         _lightSprite2DFadeManager.StartFadeOut();
-        _babyPrisonerAudio.PlayScared();
+
+        switch (_hideSoundToPlay)
+        {
+            case HideSound.CuteGreeting:
+                _babyPrisonerAudio.PlayCuteGreeting();
+                break;
+            case HideSound.AngryAfterJumpedOn:
+                _babyPrisonerAudio.PlayAngryAfterJumpedOn();
+                break;
+            case HideSound.None:
+            default:
+                break;
+        }
     }
 
     private IEnumerator AlertRunDelay(float alertRunDelay) {
@@ -272,15 +302,9 @@ public class BabyPrisoner : MonoBehaviour
         StartCoroutine(DelayedSetInactive(1f));
     }
 
-    public void QuickDespawn() {
-        _isDespawning = true;
+    public void SetBouncedOn() {
         _rigidBody.bodyType = RigidbodyType2D.Static;
-        _collider.enabled = false;
-        _animator.SetTrigger("quickDespawn");
-        _babyPrisonerAudio.PlayDespawn();
-        _lightSprite2DFadeManager.SetFadedInState();
-        _lightSprite2DFadeManager.StartFadeOut();
-        StartCoroutine(DelayedSetInactive(1f));
+        _animator.Play("bounced_on", 0, 0);
     }
 
     private IEnumerator DelayedSetInactive(float delay) {
