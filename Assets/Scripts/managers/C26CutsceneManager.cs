@@ -31,6 +31,9 @@ public class C26CutsceneManager : MonoBehaviour, ISkippable
     private EventInstance _rumblingInstance;
     private EventInstance _blobTransformSfxInstance;
     private int _dialogueIndex = 0;
+    private Coroutine _cutsceneCoroutine;
+    private Coroutine _increaseParticleSpeedCoroutine;
+    private Coroutine _startSoundEventsCoroutine;
 
     private bool _startCutscene = false;
     void OnTriggerEnter2D(Collider2D other) {
@@ -78,31 +81,13 @@ public class C26CutsceneManager : MonoBehaviour, ISkippable
         _dialogueIndex++;
     }
 
-    public void RequestSkip() {
-        //TODO
-        AudioUtils.SafeStop(ref _blobTransformStingerInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
-        AudioUtils.SafeStop(ref _sootEvilEyesStingerInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
-        AudioUtils.SafeStop(ref _rumblingInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
-        AudioUtils.SafeStop(ref _blobTransformSfxInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
-    }
-
-    private IEnumerator ResumeGameplay() {
-        SceneFadeManager.obj.StartFadeIn();
-        while(SceneFadeManager.obj.IsFadingIn) {
-            yield return null;
-        }
-        PlayerMovement.obj.UnFreeze();
-        GameManager.obj.IsPauseAllowed = true;
-        yield return null;
-    }
-
     void Update()
     {
         if(_startCutscene) {
             _startCutscene = false;
             PlayerMovement.obj.Freeze();
             Player.obj.transform.position = new Vector2(_eliCutscenePosition.position.x, Player.obj.transform.position.y);
-            StartCoroutine(Cutscene());
+            _cutsceneCoroutine = StartCoroutine(Cutscene());
         }
     }
 
@@ -113,6 +98,8 @@ public class C26CutsceneManager : MonoBehaviour, ISkippable
     }
 
     private IEnumerator Cutscene() {
+        PauseMenuManager.obj.RegisterSkippable(this);
+
         yield return new WaitForSeconds(1f);
         
         //Soot flies off
@@ -147,9 +134,9 @@ public class C26CutsceneManager : MonoBehaviour, ISkippable
 
         //Start particle effect
         _particleEffect.Play();
-        StartCoroutine(GraduallyIncreaseParticleSpeed(_particleEffect, -2, -5, 2.3f, 1f, 7f));
+        _increaseParticleSpeedCoroutine = StartCoroutine(GraduallyIncreaseParticleSpeed(_particleEffect, -2, -5, 2.3f, 1f, 7f));
 
-        StartCoroutine(StartSoundEvents());
+        _startSoundEventsCoroutine = StartCoroutine(StartSoundEvents());
 
         yield return new WaitForSeconds(_timeBeforeTransformVfx);
 
@@ -196,12 +183,66 @@ public class C26CutsceneManager : MonoBehaviour, ISkippable
 
         yield return new WaitForSeconds(2f);
 
+        PauseMenuManager.obj.UnregisterSkippable();
+
+        EndCutscene();
+    }
+
+    private void EndCutscene() {
         MusicManager.obj.Play(_musicTrack);
         PlayerPowersManager.obj.EliBlobCanJump = true;
         GameManager.obj.RegisterEvent(_cutsceneCompleted);
         PlayerPowersManager.obj.EliCanTurnFromHumanToBlob = true;
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         PlayerBlobMovement.obj.UnFreeze();
+    }
+
+    public void RequestSkip() {
+        if(_cutsceneCoroutine != null)
+            StopCoroutine(_cutsceneCoroutine);
+        if(_increaseParticleSpeedCoroutine != null)
+            StopCoroutine(_increaseParticleSpeedCoroutine);
+        if(_startSoundEventsCoroutine != null)
+            StopCoroutine(_startSoundEventsCoroutine);
+
+        CameraShakeManager.obj.ShakeCamera(0, 0, 0);
+
+        AudioUtils.SafeStop(ref _blobTransformStingerInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+        AudioUtils.SafeStop(ref _sootEvilEyesStingerInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+        AudioUtils.SafeStop(ref _rumblingInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+        AudioUtils.SafeStop(ref _blobTransformSfxInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+
+        Player.obj.AbortFlash();
+        Player.obj.SetAnimatorSpeed(1);
+        Player.obj.ResetAnimator();
+        PlayerMovement.obj.ToBlob();
+
+        CaveAvatar.obj.SetEyeColor(new Color(0.6226415f, 0.02643288f, 0.02643288f, 1f));
+        CaveAvatar.obj.IsFollowingPlayer = false;
+        CaveAvatar.obj.SetPosition(_sootFlyOffTarget.position, false);
+
+        if(_dialogueController.IsDisplayed()) {
+            _dialogueController.HardStopConversation();
+        }
+        _dialogueController.CleanUp();
+        _dialogueController.gameObject.SetActive(false);
+
+        _backgroundBlobs.SetActive(false);
+
+        _particleEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
+        StartCoroutine(ResumeGameplay());
+    }
+
+    private IEnumerator ResumeGameplay() {
+        yield return null;
+        
+        SceneFadeManager.obj.StartFadeIn();
+        while(SceneFadeManager.obj.IsFadingIn) {
+            yield return null;
+        }
+        EndCutscene();
+        GameManager.obj.IsPauseAllowed = true;
         yield return null;
     }
 
