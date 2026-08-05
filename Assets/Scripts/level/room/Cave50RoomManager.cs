@@ -32,8 +32,6 @@ public class Cave50RoomManager : MonoBehaviour
         SceneManager.SetActiveScene(gameObject.scene);
         PlayerMovement.obj.SetStartingOnGround();
         PlayerMovement.obj.isGrounded = true;
-        PlayerMovement.obj.isForcePushJumping = false;
-        PlayerMovement.obj.jumpedWhileForcePushJumping = false;
         PlayerMovement.obj.CancelJumping();
         Player.obj.SetAnimatorLayerAndHasCape(true);        
         Player.obj.transform.position = _eliReturnFromDreamRoomPosition.transform.position;

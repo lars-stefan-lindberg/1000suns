@@ -1096,17 +1096,17 @@ public class ShadowTwinMovement : MonoBehaviour
         _frameVelocity.y = jumpPower;
     }
 
-    [Header("Bounce Settings")]
-    [SerializeField] private float _enemyBounceForce = 20f;
     private bool _justBounced = false;
-
-    public void ApplyBounce()
+    public void ApplyBounce(float bouncePower)
     {
-        _frameVelocity.y = _enemyBounceForce;
+        isOnMoveable = false;
         _endedJumpEarly = false;
+        _timeJumpWasPressed = 0;
         _coyoteUsable = false;
+        _frameVelocity.y = _stats.JumpPower * bouncePower;
         _justBounced = true;
         isGrounded = false;
+        _animator.Play("main_character_with_cape_jump", 0, 0);
     }
 
     #endregion
@@ -1257,7 +1257,7 @@ public class ShadowTwinMovement : MonoBehaviour
         }
         if (isGrounded && _frameVelocity.y <= 0f)
         {
-            // Don't apply grounding force if we just bounced off an enemy
+            // Don't apply grounding force if we just bounced
             if (!_justBounced)
             {
                 _frameVelocity.y = _stats.GroundingForce;

@@ -27,7 +27,6 @@ public class MothStationManager : MonoBehaviour
 
     private IEnumerator Activated() {
         SoundFXManager.obj.Play2D(_pickupPowerupSfx);
-        PlayerPowersManager.obj.EliCanForcePushJump = true;
         Player.obj.FlashOnce();
         MothsManager.obj.SpawnMoths();
         StartCoroutine(FlashTorch());

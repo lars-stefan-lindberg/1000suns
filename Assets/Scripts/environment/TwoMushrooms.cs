@@ -25,7 +25,8 @@ public class TwoMushrooms : MonoBehaviour
             Vector2 mushroomTop = new(mushRoomBounds.center.x, mushRoomBounds.center.y + mushRoomBounds.extents.y); 
             bool landedOnMushroom = playerBottom.y > mushroomTop.y - _collisionMargin;
             PlayerManager.PlayerType playerType = PlayerManager.obj.GetPlayerTypeFromCollider(other);
-            bool squishMushroom = landedOnMushroom && !PlayerManager.obj.IsPlayerGrounded(playerType);
+            float verticalVelocity = PlayerManager.obj.GetPlayerVerticalVelocity(playerType);
+            bool squishMushroom = landedOnMushroom && !PlayerManager.obj.IsPlayerGrounded(playerType) && verticalVelocity < -1;
 
             _animator.SetTrigger("wiggle");
             _playerEntered = true;

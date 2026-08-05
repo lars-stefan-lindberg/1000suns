@@ -473,6 +473,18 @@ public class PlayerBlobMovement : MonoBehaviour
         PlayerPush.obj.platform = null;
     }
 
+    private bool _justBounced = false;
+    public void ApplyBounce(float bouncePower)
+    {
+        isOnMoveable = false;
+        _endedJumpEarly = false;
+        _timeJumpWasPressed = 0;
+        _coyoteUsable = false;
+        _frameVelocity.y = _stats.JumpPower * bouncePower;
+        _justBounced = true;
+        isGrounded = false;
+    }
+
     private void CheckCollisions()
     {
         Physics2D.queriesStartInColliders = false;
@@ -758,7 +770,15 @@ public class PlayerBlobMovement : MonoBehaviour
         }
         if (isGrounded && _frameVelocity.y <= 0f)
         {
-            _frameVelocity.y = _stats.GroundingForce;
+            // Don't apply grounding force if we just bounced
+            if (!_justBounced)
+            {
+                _frameVelocity.y = _stats.GroundingForce;
+            }
+            else
+            {
+                _justBounced = false;
+            }
         }
         else
         {

@@ -10,6 +10,7 @@ public class BigMushroom : MonoBehaviour
     private BoxCollider2D _collider;
     [SerializeField] private Transform _anchorTransform;
     [SerializeField] private EventReference _bounce;
+    [SerializeField] private float _bouncePower = 1f;
     private bool _playerEntered;
 
     void Awake() {
@@ -25,6 +26,10 @@ public class BigMushroom : MonoBehaviour
             if(PlayerManager.obj.IsPlayerGrounded(playerType))
                 return;
 
+            float verticalVelocity = PlayerManager.obj.GetPlayerVerticalVelocity(playerType);
+            if(verticalVelocity > -1)
+                return;
+
             Bounds playerCollisionBounds = other.bounds;
             Bounds mushRoomBounds = _collider.bounds;
             Vector2 playerBottom = new(playerCollisionBounds.center.x, playerCollisionBounds.center.y - playerCollisionBounds.extents.y);
@@ -33,10 +38,19 @@ public class BigMushroom : MonoBehaviour
 
             if(landedOnMushroom) {
                 SoundFXManager.obj.PlayAtPosition(_bounce, transform.position);
+                _animator.Play("idle", 0, 0);
                 _animator.SetTrigger("bounce");
                 _particles.Emit(5);
                 _playerEntered = true;
                 StartCoroutine(Squeeze(_squeezeX, _squeezeY, _squeezeTime));
+                if(playerType == PlayerManager.PlayerType.HUMAN) {
+                    PlayerMovement.obj.ApplyBounce(_bouncePower);
+                } else if(playerType == PlayerManager.PlayerType.SHADOW_TWIN) {
+                    ShadowTwinMovement.obj.ApplyBounce(_bouncePower);
+                } else if(playerType == PlayerManager.PlayerType.BLOB) {
+                    PlayerBlobMovement.obj.ApplyBounce(_bouncePower);
+                }
+                
             }
         }
     }

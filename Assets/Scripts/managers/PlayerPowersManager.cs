@@ -7,7 +7,6 @@ public class PlayerPowersManager : MonoBehaviour
     public static PlayerPowersManager obj;
 
     public bool EliCanShadowDash {get; set;} //Deprecated, but might use in future
-    public bool EliCanForcePushJump {get; set;} //Deprecated, but might use in future
     public bool EliBlobCanExtraJump { get; set; } //Deprecated, but might use in future
     public bool EliCanForcePush { get; set; }
 
@@ -74,7 +73,7 @@ public class PlayerPowersManager : MonoBehaviour
             if (prop.PropertyType == typeof(bool) && prop.CanRead && prop.CanWrite)
             {
                 var value = (bool)(prop.GetValue(this) ?? false);
-                if (value && prop.Name != nameof(EliCanForcePushJump))
+                if (value)
                 {
                     unlocked.Add(prop.Name);
                 }

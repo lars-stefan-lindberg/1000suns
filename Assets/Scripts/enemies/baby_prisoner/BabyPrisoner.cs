@@ -37,6 +37,7 @@ public class BabyPrisoner : MonoBehaviour
 
     private float originHorizontalPos;
     public float maxTravellingDistance = 5f;
+    [SerializeField] private float _bouncePower = 1f;
 
     [Header("Dependencies")]
     public LayerMask groundLayer;
@@ -185,7 +186,7 @@ public class BabyPrisoner : MonoBehaviour
                     // Apply bounce to the player
                     if(ShadowTwinMovement.obj != null) {
                         _babyPrisonerAudio.PlayJumpedOn();
-                        ShadowTwinMovement.obj.ApplyBounce();
+                        ShadowTwinMovement.obj.ApplyBounce(_bouncePower);
                     }
                     _idleInPlaceUntilAlerted = true;
                     QuickDespawn();

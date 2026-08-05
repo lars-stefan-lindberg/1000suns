@@ -161,10 +161,6 @@ public class LevelManager : MonoBehaviour
         }
 
         AdjustSpawnFaceDirection(Camera.main.transform.position.x, playerSpawnPoint.transform.position.x, playerType);        
-
-        if(Player.obj != null)
-            Player.obj.SetHasPowerUp(false);
-        PlayerPowersManager.obj.EliCanForcePushJump = false;
         
         if(PlayerManager.obj.IsSeparated) {
             PlayerManager.obj.EnableAllPlayers();
@@ -313,8 +309,6 @@ public class LevelManager : MonoBehaviour
         if(PlayerMovement.obj != null && PlayerMovement.obj.gameObject.activeSelf) {
             PlayerMovement.obj.SetStartingOnGround();
             PlayerMovement.obj.isGrounded = true;
-            PlayerMovement.obj.isForcePushJumping = false;
-            PlayerMovement.obj.jumpedWhileForcePushJumping = false;
             PlayerMovement.obj.isTransformingToBlob = false;
             PlayerMovement.obj.isTransformingToTwin = false;
             PlayerMovement.obj.CancelJumping();

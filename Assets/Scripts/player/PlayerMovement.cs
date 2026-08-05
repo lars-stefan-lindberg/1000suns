@@ -178,12 +178,7 @@ public class PlayerMovement : MonoBehaviour
     public float _poweredDashMultiplier = 1.2f;
     public float partialDashPower = 35;
     public void ExecuteDash(PlayerPush.ChargePowerType chargePower)
-    {
-        //Reset potential force push jump
-        _cameFromForcePushJump = false;
-        isForcePushJumping = false;
-        jumpedWhileForcePushJumping = false;
-        
+    {        
         _isDashing = true;
         float speed = 0;
         if(chargePower == PlayerPush.ChargePowerType.Powered) {
@@ -215,16 +210,6 @@ public class PlayerMovement : MonoBehaviour
         _isBreathingOnKnees = isBreathingOnKnees;
     }
 
-    public void ExecuteForcePushJump() {
-        isForcePushJumping = true;
-        forcePushJumpOnGroundTimer = 0;
-        _cameFromForcePushJump = true;
-        _frameVelocity.x = IsFacingLeft() ? -initialForcePushJumpSpeed : initialForcePushJumpSpeed;
-        PlayerPush.obj.ResetBuiltUpPower();
-        PlayerPush.obj.ExecuteForcePushVfx(PlayerPush.ChargePowerType.Powered);
-        _ghostTrail.ShowGhosts();
-    }
-
     public void ExecuteForcePushWithProjectile(PlayerPush.ChargePowerType chargePowerType) {
         if(!isGrounded) {
             if(chargePowerType == PlayerPush.ChargePowerType.Partial) {
@@ -249,7 +234,6 @@ public class PlayerMovement : MonoBehaviour
     public bool isMoving = false;
     // Treat player as moving if velocity exceeds a tiny epsilon
     //[SerializeField] private float _movingVelocityEpsilon = 0.05f;
-    private bool _cameFromForcePushJump = false;
     private void UpdateAnimator()
     {
         _animator.SetBool("isDashing", _isDashing);
@@ -266,10 +250,6 @@ public class PlayerMovement : MonoBehaviour
         {
             DustParticleMgr.obj.CreateDust(PlayerManager.PlayerType.HUMAN);
             _sharedPlayerAudio.PlayLand(surface);
-            if(_cameFromForcePushJump) {
-                _eliAudio.PlayForcePushLand();
-                _cameFromForcePushJump = false;
-            }
             StartCoroutine(JumpSqueeze(_landedSqueezeX, _landedSqueezeY, _landedSqueezeTime));
             _landed = false;
         }
@@ -673,11 +653,6 @@ public class PlayerMovement : MonoBehaviour
                 _jumpHeldInput = true;
                 return;
             }
-            if(PlayerPowersManager.obj.EliCanForcePushJump && _movementInput.x != 0 && PlayerPush.obj.IsChargedEnoughForShadowJump(_stats.ShadowJumpChargeMargin) && (isGrounded || CanUseCoyote)) {
-                _jumpToConsume = true;
-                _isDashing = false;
-                ExecuteForcePushJump();
-            }
             if (isGrounded || CanUseCoyote) {
                 _jumpToConsume = true;
             }
@@ -897,6 +872,19 @@ public class PlayerMovement : MonoBehaviour
         _collider.enabled = true;
     }
 
+    private bool _justBounced = false;
+    public void ApplyBounce(float bouncePower)
+    {
+        isOnMoveable = false;
+        _endedJumpEarly = false;
+        _timeJumpWasPressed = 0;
+        _coyoteUsable = false;
+        _frameVelocity.y = _stats.JumpPower * bouncePower;
+        _justBounced = true;
+        isGrounded = false;
+        _animator.Play("main_character_with_cape_jump", 0, 0);
+    }
+
     //May be used by moveables, like floating platforms, to unregister themselves
     public void UnregisterMoveable() {
         isOnMoveable = false;
@@ -952,7 +940,6 @@ public class PlayerMovement : MonoBehaviour
             _numberOfAirJumps = 0;
             _airJumpToConsume = false;
             _landed = true;
-            jumpedWhileForcePushJumping = false;
             isFalling = false;
 
             if (_isShadowJumping)
@@ -1053,17 +1040,13 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region Jumping
-    public bool isForcePushJumping = false;
-    public bool jumpedWhileForcePushJumping = false;
-    public float jumpedWhileForcePushJumpingModifier = 0.6f;
-    public float initialForcePushJumpSpeed = 30f;
+    
     public float initialPoweredForcePushGroundedSpeed = 30f;
     public float fullyPoweredForcePushPushBackSpeed = 10f;
     public float fullyPoweredForcePushGroundedPushBackSpeed = 10f;
     public float partialForcePushPushBackSpeed = 5f;
     public float normalForcePushPushBackSpeed = 10f;
-    public float forcePushJumpOnGroundDuration = 0.01f;
-    public float forcePushJumpOnGroundTimer = 0f;
+
     private bool _jumpToConsume;
     private float _timeJumpWasPressed = -100;  //To avoid having buffered jump from the start
     private bool _endedJumpEarly;
@@ -1117,7 +1100,7 @@ public class PlayerMovement : MonoBehaviour
         
         // Activate jump kick start
         // Disabled for now due to horizontal scrolling issue
-        // if(!isForcePushJumping && !_isDashing && Mathf.Abs(_frameVelocity.x) >= _stats.MaxSpeed) {
+        // if(!_isDashing && Mathf.Abs(_frameVelocity.x) >= _stats.MaxSpeed) {
         //     _isJumpKickActive = true;
         //     _jumpKickTimer = _jumpKickDuration;
         //     _jumpKickDirection = isFacingLeft() ? -1f : 1f;
@@ -1196,18 +1179,7 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
         
-        if (isForcePushJumping) {
-            forcePushJumpOnGroundTimer += Time.fixedDeltaTime;
-            if(forcePushJumpOnGroundTimer > forcePushJumpOnGroundDuration) 
-                isForcePushJumping = false;
-        }
-        
-        
-        if(jumpedWhileForcePushJumping) {
-            //Time to defy physics and keep horizontal velocity, except if you hit a wall
-            if(Player.obj.rigidBody.velocity.x < 0.01 && Player.obj.rigidBody.velocity.x > -0.01)
-                jumpedWhileForcePushJumping = false;
-        } else if (_isShadowJumping) {
+        if (_isShadowJumping) {
             _shadowJumpHorizontalDistanceTraveled = Mathf.Abs(transform.position.x - _shadowJumpStartX);
             bool shouldApplyDeceleration = _shadowJumpHorizontalDistanceTraveled >= _stats.ShadowJumpDecelerationStartDistance;
             
@@ -1344,7 +1316,15 @@ public class PlayerMovement : MonoBehaviour
         }
         if (isGrounded && _frameVelocity.y <= 0f)
         {
-            _frameVelocity.y = _stats.GroundingForce;
+            // Don't apply grounding force if we just bounced
+            if (!_justBounced)
+            {
+                _frameVelocity.y = _stats.GroundingForce;
+            }
+            else
+            {
+                _justBounced = false;
+            }
         }
         else
         {
@@ -1378,8 +1358,6 @@ public class PlayerMovement : MonoBehaviour
                 if (!_roundedCeilingCornerThisFrame)
                 {
                     var inAirGravity = _stats.FallAcceleration;
-                    if (jumpedWhileForcePushJumping)
-                        inAirGravity *= jumpedWhileForcePushJumpingModifier;
                     if (_endedJumpEarly && _frameVelocity.y > 0)
                         inAirGravity *= _stats.JumpEndEarlyGravityModifier;
 
