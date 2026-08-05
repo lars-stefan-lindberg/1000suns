@@ -52,15 +52,12 @@ public class PlayerFlash : MonoBehaviour
     }
 
     public void AbortFlash() {
-        if(_isFlashing) {
-            _isFlashing = false;
-            _increaseFlash = false;
-            _decreaseFlash = false;
-            _startFlashing = false;
-            _totalElapsedTime = _flashDuration;
-            _flashDecreaseSpeed = 0.1f;
-            _material.SetFloat("_Contrast", 1);
-        }
+        _increaseFlash = false;
+        _decreaseFlash = false;
+        _isFlashing = false;
+        _totalElapsedTime = _flashDuration;
+        _material.SetFloat("_Contrast", 1);
+        _currentFlashIntensity = 1;
     }
 
     public void StartFullyChargedVfx() {
