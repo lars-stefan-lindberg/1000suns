@@ -7,8 +7,11 @@ public class ShockwaveCollider : MonoBehaviour
     public float radius = 10f;
     public float duration = 0.5f;
 
+    private PlayerManager.PlayerType _activePlayerType;
+
     private void Start()
     {
+        _activePlayerType = PlayerManager.obj.GetActivePlayerType();
         // Optionally expand the shockwave visually
         transform.localScale = Vector3.zero;
         StartCoroutine(ExpandShockwave());
@@ -35,7 +38,13 @@ public class ShockwaveCollider : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player")) {
             // Use the force value as the hit boost
-            PlayerBlobMovement.obj.OnHit(-1f, force);
+            if (_activePlayerType == PlayerManager.PlayerType.BLOB) {
+                PlayerBlobMovement.obj.OnHit(-1f, force);
+            } else if(_activePlayerType == PlayerManager.PlayerType.SHADOW_TWIN) { 
+                ShadowTwinMovement.obj.OnHit(1f, force);
+            } else if(_activePlayerType == PlayerManager.PlayerType.HUMAN) { 
+                //PlayerMovement.obj.OnHit(1f, force);
+            }
         }
     }
 }

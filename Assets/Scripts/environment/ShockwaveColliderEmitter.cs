@@ -1,4 +1,5 @@
 using DG.Tweening;
+using FMOD.Studio;
 using FMODUnity;
 using UnityEngine;
 
@@ -8,6 +9,8 @@ public class ShockwaveColliderEmitter : MonoBehaviour
 
     [SerializeField] private EventReference _statueShockWaveSfx;
     [SerializeField] private SpriteRenderer _ghostRenderer;
+    [SerializeField] private bool _isContinuous = true;
+    [SerializeField] private bool _isDynamic = true;
 
     [Header("Shockwave Settings")]
     public float shockwaveTime = 0.8f;
@@ -26,6 +29,15 @@ public class ShockwaveColliderEmitter : MonoBehaviour
     public float scaleMultiplier = 1.2f;
     public float scaleDuration = 0.15f;
     public Ease scaleEase = Ease.OutQuad;
+
+    private Transform _activePlayerTransform;
+    private GameObject _currentShockwave;
+    private EventInstance _statueShockWaveSfxInstance;
+
+    void Start() {
+        PlayerManager.PlayerType activePlayerType = PlayerManager.obj.GetActivePlayerType();
+        _activePlayerTransform = PlayerManager.obj.GetPlayerTransform(activePlayerType);
+    }
 
     private float GetDynamicInterval(float playerDist)
     {
@@ -48,11 +60,13 @@ public class ShockwaveColliderEmitter : MonoBehaviour
     }
 
     [ContextMenu("Trigger Shockwave")]
-    void TriggerShockwave(float playerDist)
+    public void TriggerShockwave(float playerDist)
     {
         ShockWaveManager.obj.CallBigShockWave(transform.position, shockwaveTime, startPosition, endPosition);
 
-        SoundFXManager.obj.Play2D(_statueShockWaveSfx);
+        _statueShockWaveSfxInstance = SoundFXManager.obj.CreateAttachedInstance(_statueShockWaveSfx, gameObject);
+        _statueShockWaveSfxInstance.start();
+        _statueShockWaveSfxInstance.release();
 
         CameraShakeManager.obj.ForcePushShake();
 
@@ -63,16 +77,32 @@ public class ShockwaveColliderEmitter : MonoBehaviour
                 .OnComplete(() => _ghostRenderer.transform.DOScale(Vector3.one, scaleDuration).SetEase(scaleEase));
         }
 
-        float force = GetDynamicForce(playerDist);
-        var shockwaveGameObject = Instantiate(shockwavePrefab, transform.position, Quaternion.identity);
-        var shockwave = shockwaveGameObject.GetComponent<ShockwaveCollider>();
+        float force = 0f;
+        if(_isDynamic)
+            force = GetDynamicForce(playerDist);
+        else
+            force = maxForce;
+
+        _currentShockwave = Instantiate(shockwavePrefab, transform.position, Quaternion.identity);
+        var shockwave = _currentShockwave.GetComponent<ShockwaveCollider>();
         if (shockwave != null)
             shockwave.force = force;
     }
 
+    public void AbortShockwave() {
+        if(_currentShockwave != null) 
+            Destroy(_currentShockwave);
+        CameraShakeManager.obj.ShakeCamera(0, 0, 0);
+        AudioUtils.SafeStop(ref _statueShockWaveSfxInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+        ShockWaveManager.obj.DestroyShockwave();
+    }
+
     void FixedUpdate()
     {
-        float playerDist = Vector3.Distance(transform.position, PlayerBlob.obj.transform.position);  //Assuming that this is only used with blob
+        if(!_isContinuous)
+            return;
+            
+        float playerDist = Vector3.Distance(transform.position, _activePlayerTransform.position);
         float dynamicInterval = GetDynamicInterval(playerDist);
         if (dynamicInterval == 0f)
         {
