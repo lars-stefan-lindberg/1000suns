@@ -14,7 +14,6 @@ public class C1FreeCaveAvatarManager : MonoBehaviour, ISkippable
     void Start()
     {
         _collider = GetComponent<BoxCollider2D>();
-        _conversationManager.OnConversationEnd += OnConversationCompleted;
     }
     void OnDestroy() {
         _conversationManager.OnConversationEnd -= OnConversationCompleted;
@@ -23,6 +22,7 @@ public class C1FreeCaveAvatarManager : MonoBehaviour, ISkippable
     void OnTriggerEnter2D(Collider2D collision) {
         if(collision.gameObject.CompareTag("Player")) {
             _collider.enabled = false;
+            _conversationManager.OnConversationEnd += OnConversationCompleted;
             _cutsceneCoroutine = StartCoroutine(StartCutscene());
         }
     }
@@ -35,7 +35,9 @@ public class C1FreeCaveAvatarManager : MonoBehaviour, ISkippable
         CaveAvatar.obj.SetPosition(_finalCaveAvatarFlyPosition.position);
         CaveAvatar.obj.SetFlipX(false);
         CaveAvatar.obj.SetFloatingEnabled(true);
+        _conversationManager.OnConversationEnd -= OnConversationCompleted;
         _conversationManager.HardStopConversation();
+        _conversationManager.CleanUp();
         Player.obj.transform.position = new Vector2(273f, -90.875f);
         PlayerMovement.obj.SetStartingOnGround();
         PlayerMovement.obj.isGrounded = true;

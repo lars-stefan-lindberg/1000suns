@@ -15,7 +15,6 @@ public class C1DialogueTrigger : MonoBehaviour, ISkippable
 
     void Start() {
         _collider = GetComponent<BoxCollider2D>();
-        _conversationManager.OnConversationEnd += OnConversationCompleted;
     }
 
     private void OnDestroy()
@@ -26,6 +25,8 @@ public class C1DialogueTrigger : MonoBehaviour, ISkippable
     void OnTriggerEnter2D(Collider2D other) {
         if(other.CompareTag("Player")) {
             _collider.enabled = false;
+            _conversationManager.OnConversationEnd += OnConversationCompleted;
+            _conversationManager.enabled = true;
             _cutsceneCoroutine = StartCoroutine(SetupDialogue());
         }
     }
@@ -73,6 +74,7 @@ public class C1DialogueTrigger : MonoBehaviour, ISkippable
         _cutsceneCamera.SetActive(false);
         PlayerMovement.obj.UnFreeze();
         _conversationManager.OnConversationEnd -= OnConversationCompleted;
+        _conversationManager.enabled = false;
         _nextConversationManager.enabled = true;
         PauseMenuManager.obj.UnregisterSkippable();
     }

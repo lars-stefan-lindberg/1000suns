@@ -6891,7 +6891,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1022743596}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 726327bf8f99b4dd3ab6135db8a15732, type: 3}
   m_Name: 
@@ -13407,6 +13407,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2023637207}
   - component: {fileID: 2023637206}
+  - component: {fileID: 2023637208}
   m_Layer: 0
   m_Name: RoomManager
   m_TagString: Untagged
@@ -13427,6 +13428,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cutsceneCompleted: {fileID: 11400000, guid: b1b4104473e6542f79dbe3f0d1e0a916, type: 2}
+  _deeConversationManager: {fileID: 2023637208}
 --- !u!4 &2023637207
 Transform:
   m_ObjectHideFlags: 0
@@ -13442,6 +13444,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2023637208
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2023637205}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 726327bf8f99b4dd3ab6135db8a15732, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _dialogueController: {fileID: 265707074}
+  conversationList:
+  - dialogueContent: {fileID: 11400000, guid: 5155460ee6d0a413198b33ab0bccb75c, type: 2}
+  - dialogueContent: {fileID: 11400000, guid: d995b10a182f04b76bfb48c7b89bfbf5, type: 2}
+  - dialogueContent: {fileID: 11400000, guid: 09b71a23f5aab49a4bf28ebfa5b9f859, type: 2}
+  - dialogueContent: {fileID: 11400000, guid: 4db647336eaed42348f3332944ee2f0d, type: 2}
+  _isLastConversationOfRoom: 1
 --- !u!1 &2127391947
 GameObject:
   m_ObjectHideFlags: 0
