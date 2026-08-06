@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 17237092}
   - component: {fileID: 17237091}
   m_Layer: 0
-  m_Name: ConversationTrigger
+  m_Name: BeforeShadowJumpConversation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9231,12 +9231,14 @@ MonoBehaviour:
   _floorBroken: {fileID: 11400000, guid: 38081100168164b5ab42b71bac1f2bff, type: 2}
   _hasShadowJump: {fileID: 11400000, guid: 94a90894674b14aee9c3479cd957b900, type: 2}
   _afterShadowJumpConversationCompleted: {fileID: 11400000, guid: b6775d64597ef477f9aa3aa83826dc50, type: 2}
+  _deeCutsceneCompleted: {fileID: 11400000, guid: 080412737442f416bb5deb98820c25fb, type: 2}
   _deesPathLeft: {fileID: 1045744840}
   _deesPathRight: {fileID: 1910105975}
   _rootPlatforms:
   - {fileID: 1066647203}
   - {fileID: 467801878}
   _afterShadowJumpConversation: {fileID: 1512077753}
+  _deeCutsceneConversation: {fileID: 1768161372}
   _caveMain: {fileID: 11400000, guid: 6475a932dfa8b47c89b448fbfee74692, type: 2}
   _eliBlockingFloor: {fileID: 2116225708}
   _deeBlockingFloor: {fileID: 1492147477}
@@ -15400,6 +15402,95 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5649949765483365222, guid: 0eb21d03a11684541a13d6c6e5b9b4bb, type: 3}
   m_PrefabInstance: {fileID: 1351714070}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1371634468
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 821690305994934905, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1375.875
+      objectReference: {fileID: 0}
+    - target: {fileID: 821690305994934905, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -166.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 821690305994934905, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 821690305994934905, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 821690305994934905, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 821690305994934905, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 821690305994934905, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 821690305994934905, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 821690305994934905, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 821690305994934905, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1103506649588628953, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: m_Name
+      value: PlayerTrigger (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6368901749949411461, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: m_Size.x
+      value: 3.720459
+      objectReference: {fileID: 0}
+    - target: {fileID: 6368901749949411461, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: m_Size.y
+      value: 3.1434326
+      objectReference: {fileID: 0}
+    - target: {fileID: 6368901749949411461, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: m_Offset.x
+      value: 0.13598633
+      objectReference: {fileID: 0}
+    - target: {fileID: 6368901749949411461, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: m_Offset.y
+      value: -1.4282837
+      objectReference: {fileID: 0}
+    - target: {fileID: 9050954829048252606, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: _deactivateOnTrigger
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9050954829048252606, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: OnPlayerEntered.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 581217626}
+    - target: {fileID: 9050954829048252606, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: OnPlayerEntered.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: DeeCutscene
+      objectReference: {fileID: 0}
+    - target: {fileID: 9050954829048252606, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: OnPlayerEntered.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: Cave33RoomManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
 --- !u!1001 &1395236807
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19855,6 +19946,59 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7007949607855692761, guid: 50610373a2d3a4524b62b9c872cafb8c, type: 3}
   m_PrefabInstance: {fileID: 1758625096}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1768161371
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1768161373}
+  - component: {fileID: 1768161372}
+  m_Layer: 0
+  m_Name: DeeConversation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1768161372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1768161371}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 726327bf8f99b4dd3ab6135db8a15732, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _dialogueController: {fileID: 1451908385}
+  conversationList:
+  - dialogueContent: {fileID: 11400000, guid: 4b8ffd286a91e4c488f74051f85af95a, type: 2}
+  - dialogueContent: {fileID: 11400000, guid: 2bf3ad14c19ac4aad8e622a5cb0c9511, type: 2}
+  - dialogueContent: {fileID: 11400000, guid: c68e65bbcc0b645a2b297249f0567fe4, type: 2}
+  - dialogueContent: {fileID: 11400000, guid: 6132fb17c0e9c4e239b5a075cd991ca4, type: 2}
+  - dialogueContent: {fileID: 11400000, guid: 8858f4d6c8ec14502a760ce48137081b, type: 2}
+  - dialogueContent: {fileID: 11400000, guid: 783f91a032b8445b08831228c697740f, type: 2}
+  _isLastConversationOfRoom: 1
+--- !u!4 &1768161373
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1768161371}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1791613384
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -20775,15 +20919,17 @@ SceneRoots:
   - {fileID: 1492147481}
   - {fileID: 442863649}
   - {fileID: 1064212270}
-  - {fileID: 17237094}
   - {fileID: 264728627}
   - {fileID: 562315727}
   - {fileID: 1910105977}
   - {fileID: 1045744842}
   - {fileID: 713979865}
+  - {fileID: 17237094}
   - {fileID: 1512077754}
   - {fileID: 446316377}
   - {fileID: 1994871448}
   - {fileID: 1484903834}
   - {fileID: 201374843}
   - {fileID: 382798014}
+  - {fileID: 1371634468}
+  - {fileID: 1768161373}

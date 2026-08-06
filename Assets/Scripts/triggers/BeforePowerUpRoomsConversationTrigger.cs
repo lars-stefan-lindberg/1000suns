@@ -15,10 +15,6 @@ public class BeforePowerUpRoomsConversationTrigger : MonoBehaviour, ISkippable
     {
         if(GameManager.obj.HasEvent(_cave33FirstEliSootConversationCompleted))
             gameObject.SetActive(false);
-        else {
-            _conversationManager.enabled = true;
-            _conversationManager.OnConversationEnd += OnConversationCompleted;
-        }
     }
 
     void OnDestroy()
@@ -31,6 +27,8 @@ public class BeforePowerUpRoomsConversationTrigger : MonoBehaviour, ISkippable
             return;
         if(other.gameObject.CompareTag("Player")) {
             _isTriggered = true;
+            _conversationManager.enabled = true;
+            _conversationManager.OnConversationEnd += OnConversationCompleted;
             _cutsceneCoroutine = StartCoroutine(StartCutscene());
         }
     }

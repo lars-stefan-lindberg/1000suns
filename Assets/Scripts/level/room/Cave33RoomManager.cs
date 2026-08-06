@@ -9,10 +9,12 @@ public class Cave33RoomManager : MonoBehaviour, ISkippable
     [SerializeField] private GameEventId _floorBroken;
     [SerializeField] private GameEventId _hasShadowJump;
     [SerializeField] private GameEventId _afterShadowJumpConversationCompleted;
+    [SerializeField] private GameEventId _deeCutsceneCompleted;
     [SerializeField] private GameObject _deesPathLeft;
     [SerializeField] private GameObject _deesPathRight;
     [SerializeField] private GameObject[] _rootPlatforms;
     [SerializeField] private ConversationManager _afterShadowJumpConversation;
+    [SerializeField] private ConversationManager _deeCutsceneConversation;
     [SerializeField] private AmbienceTrack _caveMain;
     [SerializeField] private GameObject _eliBlockingFloor;
     [SerializeField] private GameObject _deeBlockingFloor;
@@ -26,35 +28,41 @@ public class Cave33RoomManager : MonoBehaviour, ISkippable
 
     void Start() {
         CaveTimelineId.Id id = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
-        if(id == CaveTimelineId.Id.Eli)
+        if(id == CaveTimelineId.Id.Eli) {
             _deesPathLeft.SetActive(true);
-        else if(id == CaveTimelineId.Id.Both)
+
+            if(GameManager.obj.HasEvent(_hasShadowJump)) {
+                _deeBlockingFloor.SetActive(true);
+                _deeBreakableFloor.SetActive(false);
+            }
+            if(GameManager.obj.HasEvent(_hasShadowJump) && !GameManager.obj.HasEvent(_afterShadowJumpConversationCompleted)) {
+                _afterShadowJumpConversation.enabled = true;
+                _afterShadowJumpConversation.OnConversationEnd += OnAfterShadowJumpConversationCompleted;
+                foreach(GameObject platform in _rootPlatforms)
+                    platform.SetActive(true);
+            }
+
+            if(GameManager.obj.HasEvent(_afterShadowJumpConversationCompleted))
+                _eliBlockingFloor.SetActive(true);
+        }
+        else if(id == CaveTimelineId.Id.Both) {
+            //TODO
             _deesPathRight.SetActive(false);
+        }
         else if(id == CaveTimelineId.Id.Dee) {
             _blockDeePathBack.SetActive(true);
             CaveAvatar.obj.gameObject.SetActive(true);
             CaveAvatar.obj.SetStartingPositionInCaveRoom33(); 
+
         }
 
-        if(id == CaveTimelineId.Id.Eli && GameManager.obj.HasEvent(_hasShadowJump)) {
-            _deeBlockingFloor.SetActive(true);
-            _deeBreakableFloor.SetActive(false);
-        }
 
-        if(GameManager.obj.HasEvent(_hasShadowJump) && !GameManager.obj.HasEvent(_afterShadowJumpConversationCompleted)) {
-            _afterShadowJumpConversation.enabled = true;
-            _afterShadowJumpConversation.OnConversationEnd += OnAfterShadowJumpConversationCompleted;
-            foreach(GameObject platform in _rootPlatforms)
-                platform.SetActive(true);
-        }
-
-        if(GameManager.obj.HasEvent(_afterShadowJumpConversationCompleted))
-            _eliBlockingFloor.SetActive(true);
     }
 
     void OnDestroy()
     {
         _afterShadowJumpConversation.OnConversationEnd -= OnAfterShadowJumpConversationCompleted;
+        _deeCutsceneConversation.OnConversationEnd -= OnDeeCutsceneCompleted;
     }
 
     public void OnEliRoomEnter() {
@@ -82,31 +90,56 @@ public class Cave33RoomManager : MonoBehaviour, ISkippable
     public void RequestSkip() {
         if(_cutsceneCoroutine != null)
             StopCoroutine(_cutsceneCoroutine);
-        _afterShadowJumpConversation.HardStopConversation();
-        _afterShadowJumpConversation.CleanUp();
-        _afterShadowJumpConversation.OnConversationEnd -= OnAfterShadowJumpConversationCompleted;
-        _afterShadowJumpConversation.enabled = false;
 
-        CaveAvatar.obj.IsFollowingPlayer = true;
+        PlayerManager.PlayerType playerType = PlayerManager.obj.GetActivePlayerType();
 
-        SpriteRenderer spriteRenderer = _eliBlockingFloor.GetComponentInChildren<SpriteRenderer>();
-        spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 1);
-        _eliBlockingFloor.SetActive(true);
+        if(playerType == PlayerManager.PlayerType.HUMAN) {
+            _afterShadowJumpConversation.HardStopConversation();
+            _afterShadowJumpConversation.CleanUp();
+            _afterShadowJumpConversation.OnConversationEnd -= OnAfterShadowJumpConversationCompleted;
+            _afterShadowJumpConversation.enabled = false;
 
-        AudioUtils.SafeStop(ref _blockingFloorSfxInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+            CaveAvatar.obj.IsFollowingPlayer = true;
 
-        GameManager.obj.RegisterEvent(_afterShadowJumpConversationCompleted);
-        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
+            SpriteRenderer spriteRenderer = _eliBlockingFloor.GetComponentInChildren<SpriteRenderer>();
+            spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 1);
+            _eliBlockingFloor.SetActive(true);
 
-        StartCoroutine(ResumeGameplay());
+            AudioUtils.SafeStop(ref _blockingFloorSfxInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+
+            GameManager.obj.RegisterEvent(_afterShadowJumpConversationCompleted);
+            SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
+
+            StartCoroutine(ResumeGameplayEli());
+        } else if(playerType == PlayerManager.PlayerType.SHADOW_TWIN) {
+            _deeCutsceneConversation.HardStopConversation();
+            _deeCutsceneConversation.CleanUp();
+            _deeCutsceneConversation.OnConversationEnd -= OnDeeCutsceneCompleted;
+            _deeCutsceneConversation.enabled = false;
+
+            GameManager.obj.RegisterEvent(_deeCutsceneCompleted);
+            SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
+
+            StartCoroutine(ResumeGameplayDee());
+        }
     }
 
-    private IEnumerator ResumeGameplay() {
+    private IEnumerator ResumeGameplayEli() {
         SceneFadeManager.obj.StartFadeIn();
         while(SceneFadeManager.obj.IsFadingIn) {
             yield return null;
         }
         PlayerMovement.obj.UnFreeze();
+        GameManager.obj.IsPauseAllowed = true;
+        yield return null;
+    }
+
+    private IEnumerator ResumeGameplayDee() {
+        SceneFadeManager.obj.StartFadeIn();
+        while(SceneFadeManager.obj.IsFadingIn) {
+            yield return null;
+        }
+        ShadowTwinMovement.obj.UnFreeze();
         GameManager.obj.IsPauseAllowed = true;
         yield return null;
     }
@@ -140,5 +173,43 @@ public class Cave33RoomManager : MonoBehaviour, ISkippable
         _afterShadowJumpConversation.OnConversationEnd -= OnAfterShadowJumpConversationCompleted;
         _afterShadowJumpConversation.enabled = false;
         PauseMenuManager.obj.UnregisterSkippable();
+    }
+
+    private void OnDeeCutsceneCompleted() {
+        PauseMenuManager.obj.UnregisterSkippable();
+        _deeCutsceneConversation.CleanUp();
+        _deeCutsceneConversation.OnConversationEnd -= OnDeeCutsceneCompleted;
+        _deeCutsceneConversation.enabled = false;
+        PauseMenuManager.obj.UnregisterSkippable();
+        ShadowTwinMovement.obj.UnFreeze();
+        GameManager.obj.RegisterEvent(_deeCutsceneCompleted);
+        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
+    }
+
+    public void DeeCutscene() {
+        PlayerManager.PlayerType playerType = PlayerManager.obj.GetActivePlayerType();
+        if(playerType != PlayerManager.PlayerType.SHADOW_TWIN) {
+            return;
+        }
+        if(GameManager.obj.HasEvent(_deeCutsceneCompleted)) {
+            return;
+        }
+        ShadowTwinMovement.obj.Freeze();
+        PauseMenuManager.obj.RegisterSkippable(this);
+        _cutsceneCoroutine = StartCoroutine(PlayDeeCutscene());
+    }
+
+    private IEnumerator PlayDeeCutscene() {
+        yield return new WaitForSeconds(1f);
+        if(!ShadowTwinMovement.obj.IsFacingLeft()) {
+            ShadowTwinMovement.obj.FlipPlayer();
+        }
+        CaveAvatar.obj.SetFlipX(false);
+        yield return new WaitForSeconds(0.5f);
+        _deeCutsceneConversation.enabled = true;
+        _deeCutsceneConversation.OnConversationEnd += OnDeeCutsceneCompleted;
+        _deeCutsceneConversation.StartConversation();
+
+        yield return null;
     }
 }
