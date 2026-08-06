@@ -6,8 +6,10 @@ using UnityEngine;
 
 public class Cave4CutsceneManager : MonoBehaviour, ISkippable
 {
-    [SerializeField] private GameEventId _isCutsceneCompleted;
-    [SerializeField] private ConversationManager _conversationManager;
+    [SerializeField] private GameEventId _isCutsceneCompletedEli;
+    [SerializeField] private GameEventId _isCutsceneCompletedDee;
+    [SerializeField] private ConversationManager _conversationManagerEli;
+    [SerializeField] private ConversationManager _conversationManagerDee;
     [SerializeField] private Cave4SlabTrigger _slabTrigger;
     [SerializeField] private GameObject _cutsceneCamera;
     [SerializeField] private EventReference _stinger;
@@ -17,24 +19,34 @@ public class Cave4CutsceneManager : MonoBehaviour, ISkippable
     private EventInstance _stonesStartInstance;
     private EventInstance _stonesImpactInstance;
 
-    void Start() {
-        _conversationManager.OnConversationEnd += OnConversationCompleted;
-    }
-
     void OnDestroy() {
-        _conversationManager.OnConversationEnd -= OnConversationCompleted;
+        _conversationManagerEli.OnConversationEnd -= OnConversationCompletedEli;
+        _conversationManagerDee.OnConversationEnd -= OnConversationCompletedDee;
     }
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if(GameManager.obj.HasEvent(_isCutsceneCompleted))
-            return;
         if(!collision.CompareTag("Player"))
             return;
-        _cutsceneCoroutine = StartCoroutine(StartCutscene());
+        PlayerIdentity player = collision.gameObject.GetComponent<PlayerIdentity>();
+        if(player.id == 1) {
+            if(GameManager.obj.HasEvent(_isCutsceneCompletedEli)) {
+                return;
+            }
+            _conversationManagerEli.OnConversationEnd += OnConversationCompletedEli;
+            _conversationManagerEli.enabled = true;
+            _cutsceneCoroutine = StartCoroutine(StartCutsceneEli());
+        } else if(player.id == 2) {
+            if(GameManager.obj.HasEvent(_isCutsceneCompletedDee)) {
+                return;
+            }
+            _conversationManagerDee.OnConversationEnd += OnConversationCompletedDee;
+            _conversationManagerDee.enabled = true;
+            _cutsceneCoroutine = StartCoroutine(StartCutsceneDee());
+        }
     }
 
-    private IEnumerator StartCutscene() {
+    private IEnumerator StartCutsceneEli() {
         PauseMenuManager.obj.RegisterSkippable(this);
         PlayerMovement.obj.Freeze();
         _cutsceneCamera.SetActive(true);
@@ -50,30 +62,62 @@ public class Cave4CutsceneManager : MonoBehaviour, ISkippable
         _stonesImpactInstance = _slabTrigger.GetStonesImpactInstance();
         yield return new WaitForSeconds(1f);
 
-        _conversationManager.StartConversation();
+        _conversationManagerEli.StartConversation();
+        
+        yield return null;
+    }
+
+    private IEnumerator StartCutsceneDee() {
+        PauseMenuManager.obj.RegisterSkippable(this);
+        ShadowTwinMovement.obj.Freeze();
+        _cutsceneCamera.SetActive(true);
+        yield return new WaitForSeconds(0.3f);
+        _stingerInstance = SoundFXManager.obj.CreateAttachedInstance(_stinger, gameObject, null);
+        _stingerInstance.start();
+        _stingerInstance.release();
+        yield return new WaitForSeconds(1.7f);
+
+        _slabCoroutine = StartCoroutine(_slabTrigger.StartVfx());
+        yield return _slabCoroutine;
+        _stonesStartInstance = _slabTrigger.GetStonesStartInstance();
+        _stonesImpactInstance = _slabTrigger.GetStonesImpactInstance();
+        yield return new WaitForSeconds(1f);
+
+        _conversationManagerDee.StartConversation();
         
         yield return null;
     }
 
     public void RequestSkip() {
-        _cutsceneCamera.SetActive(false);
-        StopCoroutine(_cutsceneCoroutine);
-        if(_slabCoroutine != null)
+        if(_cutsceneCoroutine != null) {
+            StopCoroutine(_cutsceneCoroutine);
+        }
+        if(_slabCoroutine != null) {
             StopCoroutine(_slabCoroutine);
-        _conversationManager.HardStopConversation();
-        _conversationManager.OnConversationEnd -= OnConversationCompleted;
+        }
 
+        _cutsceneCamera.SetActive(false);
         AudioUtils.SafeStop(ref _stingerInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
         AudioUtils.SafeStop(ref _stonesStartInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
         AudioUtils.SafeStop(ref _stonesImpactInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
 
-        //Reset slab and stones
         _slabTrigger.Reset();
-        GameManager.obj.RegisterEvent(_isCutsceneCompleted);
-        StartCoroutine(ResumeGameplay());
+
+        PlayerManager.PlayerType activePlayerType = PlayerManager.obj.GetActivePlayerType();
+        if(activePlayerType == PlayerManager.PlayerType.HUMAN) {
+            _conversationManagerEli.HardStopConversation();
+            _conversationManagerEli.OnConversationEnd -= OnConversationCompletedEli;
+            GameManager.obj.RegisterEvent(_isCutsceneCompletedEli);
+            StartCoroutine(ResumeGameplayEli());
+        } else if(activePlayerType == PlayerManager.PlayerType.SHADOW_TWIN) {
+            _conversationManagerDee.HardStopConversation();
+            _conversationManagerDee.OnConversationEnd -= OnConversationCompletedDee;
+            GameManager.obj.RegisterEvent(_isCutsceneCompletedDee);
+            StartCoroutine(ResumeGameplayDee());
+        }
     }
 
-    private IEnumerator ResumeGameplay() {
+    private IEnumerator ResumeGameplayEli() {
         SceneFadeManager.obj.StartFadeIn();
         while(SceneFadeManager.obj.IsFadingIn) {
             yield return null;
@@ -83,12 +127,31 @@ public class Cave4CutsceneManager : MonoBehaviour, ISkippable
         yield return null;
     }
 
-    private void OnConversationCompleted() {
-        _conversationManager.CleanUp();
+    private IEnumerator ResumeGameplayDee() {
+        SceneFadeManager.obj.StartFadeIn();
+        while(SceneFadeManager.obj.IsFadingIn) {
+            yield return null;
+        }
+        ShadowTwinMovement.obj.UnFreeze();
+        GameManager.obj.IsPauseAllowed = true;
+        yield return null;
+    }
+
+    private void OnConversationCompletedEli() {
+        _conversationManagerEli.CleanUp();
         _cutsceneCamera.SetActive(false);
         PlayerMovement.obj.UnFreeze();
-        _conversationManager.OnConversationEnd -= OnConversationCompleted;
-        GameManager.obj.RegisterEvent(_isCutsceneCompleted);
+        _conversationManagerEli.OnConversationEnd -= OnConversationCompletedEli;
+        GameManager.obj.RegisterEvent(_isCutsceneCompletedEli);
+        PauseMenuManager.obj.UnregisterSkippable();
+    }
+
+    private void OnConversationCompletedDee() {
+        _conversationManagerDee.CleanUp();
+        _cutsceneCamera.SetActive(false);
+        ShadowTwinMovement.obj.UnFreeze();
+        _conversationManagerDee.OnConversationEnd -= OnConversationCompletedDee;
+        GameManager.obj.RegisterEvent(_isCutsceneCompletedDee);
         PauseMenuManager.obj.UnregisterSkippable();
     }
 }

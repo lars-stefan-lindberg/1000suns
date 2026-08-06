@@ -6,7 +6,8 @@ using UnityEngine;
 
 public class Cave4SlabTrigger : MonoBehaviour
 {
-    [SerializeField] private GameEventId _isCutsceneCompleted;
+    [SerializeField] private GameEventId _isCutsceneCompletedEli;
+    [SerializeField] private GameEventId _isCutsceneCompletedDee;
     [SerializeField] private SpriteFlash _spriteFlash;
     [SerializeField] private List<StoneFloat> _stones;
     [SerializeField] private EventReference _stonesStart;
@@ -21,14 +22,19 @@ public class Cave4SlabTrigger : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
-        if(caveTimeline != CaveTimelineId.Id.Eli)
-            return;
-        if(!GameManager.obj.HasEvent(_isCutsceneCompleted))
-            return;
-        if (Time.time < _nextAllowedTriggerTime)
-            return;
         if(!collision.CompareTag("Player"))
+            return;
+            
+        PlayerIdentity player = collision.gameObject.GetComponent<PlayerIdentity>();
+        if(player.id == 1) {
+            if(!GameManager.obj.HasEvent(_isCutsceneCompletedEli))
+                return;
+        } else if(player.id == 2) {
+            if(!GameManager.obj.HasEvent(_isCutsceneCompletedDee))
+                return;
+        }
+        
+        if (Time.time < _nextAllowedTriggerTime)
             return;
 
         _nextAllowedTriggerTime = Time.time + _coolDownTime;
