@@ -1135,6 +1135,7 @@ public class ShadowTwinMovement : MonoBehaviour
     private float _anchorPullStartTime;
     private float _currentAnchorSpeed;
     private bool _anchorReachedThisPull;
+    private bool _isHangingOnAnchor;
 
     public void StartAnchorPull()
     {
@@ -1155,6 +1156,7 @@ public class ShadowTwinMovement : MonoBehaviour
         anchorPosition = Vector2.zero;
         SetIsAnchorReached(false);
         UpdateAnimatorIsPulling(false);
+        _isHangingOnAnchor = false;
     }
 
     public void OnAnchorReached()
@@ -1163,6 +1165,12 @@ public class ShadowTwinMovement : MonoBehaviour
         _deeAudio.PlayAnchorReached();
         ShockWaveManager.obj.CallShockWave(anchorPosition, 0.2f, 0.05f, 0.15f);
         SetIsAnchorReached(true);
+        _isHangingOnAnchor = true;
+    }
+
+    public bool IsHangingOnAnchor()
+    {
+        return _isHangingOnAnchor;
     }
 
     private void HandleAnchorPullVelocity()

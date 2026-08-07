@@ -140,8 +140,12 @@ public class ShadowTwinPull : MonoBehaviour
     {
         if(PlayerPowersManager.obj.DeeCanForcePull && !_isPullDisabled) {
             if (context.performed)
-            {                
-                Pull();
+            {
+                if(ShadowTwinMovement.obj.IsHangingOnAnchor()) {
+                    CancelPulling();
+                } else {
+                    Pull();
+                }
             }
             if(context.canceled) {
                 OnShootButtonCanceled();
@@ -151,6 +155,8 @@ public class ShadowTwinPull : MonoBehaviour
 
     public void OnShootButtonCanceled() {
         if(HoldPull)
+            return;
+        if(ShadowTwinMovement.obj.IsHangingOnAnchor())
             return;
         CancelPulling();
         ShadowTwinPlayer.obj.RestorePlayerPullLight();
