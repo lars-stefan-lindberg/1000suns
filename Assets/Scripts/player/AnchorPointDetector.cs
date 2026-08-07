@@ -4,14 +4,14 @@ using UnityEngine;
 public class AnchorPointDetector : MonoBehaviour
 {
     public bool isAnchorPointDetected = false;
-    private HashSet<CircleCollider2D> _anchorPoints = new();
+    private HashSet<BoxCollider2D> _anchorPoints = new();
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.gameObject.CompareTag("AnchorPoint")) {
-            var circleCollider = collision.GetComponent<CircleCollider2D>();
-            if (circleCollider != null) {
-                _anchorPoints.Add(circleCollider);
+            var boxCollider = collision.GetComponent<BoxCollider2D>();
+            if (boxCollider != null) {
+                _anchorPoints.Add(boxCollider);
                 isAnchorPointDetected = true;
             }
         }
@@ -20,17 +20,17 @@ public class AnchorPointDetector : MonoBehaviour
     private void OnTriggerExit2D(Collider2D collision)
     {
         if(collision.gameObject.CompareTag("AnchorPoint")) {
-            _anchorPoints.Remove(collision.GetComponent<CircleCollider2D>());
+            _anchorPoints.Remove(collision.GetComponent<BoxCollider2D>());
             isAnchorPointDetected = _anchorPoints.Count > 0;
         }
     }
 
-    public CircleCollider2D GetClosestFacingAnchorPoint(Transform obj, bool isFacingLeft) {
+    public BoxCollider2D GetClosestFacingAnchorPoint(Transform obj, bool isFacingLeft) {
         if(_anchorPoints.Count == 0) return null;
         
-        CircleCollider2D closestAnchorPoint = null;
+        BoxCollider2D closestAnchorPoint = null;
         float closestDistanceSqr = float.MaxValue;
-        foreach (CircleCollider2D anchorPoint in _anchorPoints) {
+        foreach (BoxCollider2D anchorPoint in _anchorPoints) {
             if (anchorPoint == null) continue;
             
             Vector2 directionToAnchor = anchorPoint.transform.position - obj.position;

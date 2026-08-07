@@ -659,7 +659,7 @@ public class ShadowTwinPull : MonoBehaviour
 
     void Pull()
     {
-        CircleCollider2D closestFacingAnchorPoint = null;
+        BoxCollider2D closestFacingAnchorPoint = null;
         if(_anchorPointDetector.isAnchorPointDetected) {
             closestFacingAnchorPoint = _anchorPointDetector.GetClosestFacingAnchorPoint(transform, ShadowTwinMovement.obj.IsFacingLeft());
         }
