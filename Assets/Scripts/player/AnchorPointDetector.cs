@@ -5,6 +5,8 @@ public class AnchorPointDetector : MonoBehaviour
 {
     public bool isAnchorPointDetected = false;
     private HashSet<BoxCollider2D> _anchorPoints = new();
+    
+    [SerializeField] private LayerMask _blockingMask;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -39,6 +41,9 @@ public class AnchorPointDetector : MonoBehaviour
             bool isAnchorInFront = Vector2.Dot(directionToAnchor, isFacingLeft ? Vector2.left : Vector2.right) >= 0;
             if (!isAnchorInFront) continue;
             
+            // Early out: Check if the path to the anchor point is blocked
+            if (IsBlocked(obj.position, anchorPoint.transform.position)) continue;
+            
             // Use squared distance to avoid expensive sqrt
             float distanceSqr = directionToAnchor.sqrMagnitude;
             if (distanceSqr < closestDistanceSqr) {
@@ -47,5 +52,15 @@ public class AnchorPointDetector : MonoBehaviour
             }
         }
         return closestAnchorPoint;
+    }
+    
+    private bool IsBlocked(Vector2 fromPos, Vector2 toPos)
+    {
+        Vector2 direction = (toPos - fromPos).normalized;
+        float distance = Vector2.Distance(fromPos, toPos);
+        
+        RaycastHit2D hit = Physics2D.Raycast(fromPos, direction, distance, _blockingMask);
+        
+        return hit.collider != null;
     }
 }
