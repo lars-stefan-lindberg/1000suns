@@ -13,7 +13,6 @@ Design pattern:
 public class ShadowTwinPull : MonoBehaviour
 {
     public static ShadowTwinPull obj;
-    private AnchorPointDetector _anchorPointDetector;
     private PullableDetector _pullableDetector;
 
     private BoxCollider2D _collider;
@@ -116,7 +115,6 @@ public class ShadowTwinPull : MonoBehaviour
     {
         obj = this;
         _collider = GetComponent<BoxCollider2D>();
-        _anchorPointDetector = GetComponentInChildren<AnchorPointDetector>();
         _pullableDetector = GetComponentInChildren<PullableDetector>();
         _deeAudio = GetComponent<DeeAudio>();
 
@@ -141,11 +139,7 @@ public class ShadowTwinPull : MonoBehaviour
         if(PlayerPowersManager.obj.DeeCanForcePull && !_isPullDisabled) {
             if (context.performed)
             {
-                if(ShadowTwinMovement.obj.IsHangingOnAnchor()) {
-                    CancelPulling();
-                } else {
-                    Pull();
-                }
+                Pull();
             }
             if(context.canceled) {
                 OnShootButtonCanceled();
@@ -155,8 +149,6 @@ public class ShadowTwinPull : MonoBehaviour
 
     public void OnShootButtonCanceled() {
         if(HoldPull)
-            return;
-        if(ShadowTwinMovement.obj.IsHangingOnAnchor())
             return;
         CancelPulling();
         ShadowTwinPlayer.obj.RestorePlayerPullLight();
@@ -262,7 +254,6 @@ public class ShadowTwinPull : MonoBehaviour
 
         ShadowTwinMovement.obj.IsPulling = false;
         ShadowTwinMovement.obj.UpdateAnimatorIsPulling(false);
-        ShadowTwinMovement.obj.EndAnchorPull();
         ShadowTwinPlayer.obj.ResetGravity();
 
         //For instance tough prisoners can break themselves free and cancel pulling, resulting in no pulled pullable
@@ -659,41 +650,26 @@ public class ShadowTwinPull : MonoBehaviour
 
     void Pull()
     {
-        BoxCollider2D closestFacingAnchorPoint = null;
-        if(_anchorPointDetector.isAnchorPointDetected) {
-            closestFacingAnchorPoint = _anchorPointDetector.GetClosestFacingAnchorPoint(transform, ShadowTwinMovement.obj.IsFacingLeft());
+        _isPullingObject = true;
+        
+        // Start shadow pull loop (plays regardless of pullable)
+        _shadowPullLoopInstance = _deeAudio.StartShadowPullLoop();
+        
+        if(_highlightedPullable != null) {
+            CameraShakeManager.obj.ForcePushShake();
+            SetPullable(_highlightedPullable);
         }
-        if(closestFacingAnchorPoint != null && !ShadowTwinMovement.obj.isGrounded) {
-            Vector3 anchorPosition = closestFacingAnchorPoint.bounds.center;
-            anchorPosition.y -= closestFacingAnchorPoint.bounds.extents.y;
-            
-            ShadowTwinMovement.obj.anchorPosition = anchorPosition;
-            ShadowTwinMovement.obj.StartAnchorPull();
-            ShadowTwinPlayer.obj.DisableGravity();
-            //_ghostTrail.ShowGhosts();
-            _deeAudio.PlayShadowPullGrab(ref _forcePullStartSfxInstance);
-        } else {
-            _isPullingObject = true;
-            
-            // Start shadow pull loop (plays regardless of pullable)
-            _shadowPullLoopInstance = _deeAudio.StartShadowPullLoop();
-            
-            if(_highlightedPullable != null) {
-                CameraShakeManager.obj.ForcePushShake();
-                SetPullable(_highlightedPullable);
-            }
-            // Show the range guide whenever pull starts, even with no pullable grabbed
-            //ShowPullRangeGuide();
-            pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().HardCancel();
-            ShadowTwinPlayer.obj.StartChargeFlash();
-            ShadowTwinPlayer.obj.PlayerPullLight();
-            ShadowTwinPlayer.obj.StartFullyChargedVfx();
-            ShadowTwinMovement.obj.IsPulling = true;
-            ShadowTwinMovement.obj.UpdateAnimatorIsPulling(true);
-            ShadowTwinMovement.obj.TriggerForcePullAnimation();
-            PullPowerType chargePowerType = GetChargePowerType();
-            ExecuteForcePushVfx(chargePowerType);
-        }
+        // Show the range guide whenever pull starts, even with no pullable grabbed
+        //ShowPullRangeGuide();
+        pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().HardCancel();
+        ShadowTwinPlayer.obj.StartChargeFlash();
+        ShadowTwinPlayer.obj.PlayerPullLight();
+        ShadowTwinPlayer.obj.StartFullyChargedVfx();
+        ShadowTwinMovement.obj.IsPulling = true;
+        ShadowTwinMovement.obj.UpdateAnimatorIsPulling(true);
+        ShadowTwinMovement.obj.TriggerForcePullAnimation();
+        PullPowerType chargePowerType = GetChargePowerType();
+        ExecuteForcePushVfx(chargePowerType);
     }
 
     private PullPowerType GetChargePowerType() {

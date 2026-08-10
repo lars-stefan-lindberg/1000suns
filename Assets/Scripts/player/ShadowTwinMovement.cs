@@ -246,7 +246,6 @@ public class ShadowTwinMovement : MonoBehaviour
     public bool isFalling = false;
     public bool isMoving = false;
     public bool IsPulling = false;
-    public Vector2 anchorPosition;
 
     private void UpdateAnimator()
     {
@@ -540,10 +539,7 @@ public class ShadowTwinMovement : MonoBehaviour
             }
             else
             {
-                if(IsPulling && !isGrounded && Vector2.Distance(anchorPosition, GetTopMiddleColliderPosition()) < 0.5f) {
-                    _airJumpToConsume = true;
-                }
-                else if(_isLatchedToSurface && _latchSurfaceType == LatchSurfaceType.Wall) {
+                if(_isLatchedToSurface && _latchSurfaceType == LatchSurfaceType.Wall) {
                     _airJumpToConsume = true;
                 }
             }
@@ -1116,14 +1112,9 @@ public class ShadowTwinMovement : MonoBehaviour
     private void ExecuteAirJump()
     {
         ShadowTwinPull.obj.CancelPulling();
-        SetIsAnchorReached(false);
         ExecuteJump(_stats.JumpPower);
         _sharedPlayerAudio.PlayJump();
         _airJumpToConsume = false;
-    }
-
-    public void SetIsAnchorReached(bool isAnchorReached) {
-        _animator.SetBool("reachedAnchorPoint", isAnchorReached);
     }
 
     private void ExecuteJump(float jumpPower)
@@ -1152,18 +1143,6 @@ public class ShadowTwinMovement : MonoBehaviour
 
     #region Horizontal
 
-    [Header("Anchor Pull Tuning")]
-    [SerializeField] private float _anchorSlowMotionDuration = 0.15f;
-    [SerializeField] private float _anchorSlowMotionSpeedFactor = 0.35f;
-    [SerializeField] private float _anchorAcceleration = 100f;
-    [SerializeField] private float _anchorSnapDistance = 0.05f;
-    [SerializeField] private float initialAnchorPullSpeed = 30f;
-
-    private float _anchorPullStartTime;
-    private float _currentAnchorSpeed;
-    private bool _anchorReachedThisPull;
-    private bool _isHangingOnAnchor;
-
     [Header("Surface Latch Configuration")]
     [SerializeField] private float _latchBoxCastDistance = 20f;
     [SerializeField] private float _latchSpeed = 30f;
@@ -1183,85 +1162,8 @@ public class ShadowTwinMovement : MonoBehaviour
         Ceiling
     }
 
-    public void StartAnchorPull()
-    {
-        IsPulling = true;
-        UpdateAnimatorIsPulling(true);
-        _anchorPullStartTime = Time.time;
-        _currentAnchorSpeed = 0f;
-        _anchorReachedThisPull = false;
-        _animator.SetTrigger("anchorPull");
-    }
-
     public void UpdateAnimatorIsPulling(bool value) {
         _animator.SetBool("isPulling", value);
-    }
-
-    public void EndAnchorPull() {
-        IsPulling = false;
-        anchorPosition = Vector2.zero;
-        SetIsAnchorReached(false);
-        UpdateAnimatorIsPulling(false);
-        _isHangingOnAnchor = false;
-    }
-
-    public void OnAnchorReached()
-    {
-        CameraShakeManager.obj.ForcePushShake();
-        _deeAudio.PlayAnchorReached();
-        ShockWaveManager.obj.CallShockWave(anchorPosition, 0.2f, 0.05f, 0.15f);
-        SetIsAnchorReached(true);
-        _isHangingOnAnchor = true;
-    }
-
-    public bool IsHangingOnAnchor()
-    {
-        return _isHangingOnAnchor;
-    }
-
-    private void HandleAnchorPullVelocity()
-    {
-        Vector2 topPos = GetTopMiddleColliderPosition();
-        float distance = Vector2.Distance(anchorPosition, topPos);
-
-        // Snap to the anchor when close enough and fully stop movement
-        if (distance <= _anchorSnapDistance)
-        {
-            Vector2 offset = topPos - anchorPosition;
-            ShadowTwinPlayer.obj.rigidBody.position -= offset;
-            _frameVelocity = Vector2.zero;
-
-            if (!_anchorReachedThisPull)
-            {
-                _anchorReachedThisPull = true;
-                OnAnchorReached();
-            }
-
-            return;
-        }
-
-        float elapsed = Time.time - _anchorPullStartTime;
-        float targetSpeed = initialAnchorPullSpeed;
-
-        if (elapsed < _anchorSlowMotionDuration)
-        {
-            targetSpeed *= _anchorSlowMotionSpeedFactor;
-        }
-
-        _currentAnchorSpeed = Mathf.MoveTowards(
-            _currentAnchorSpeed,
-            targetSpeed,
-            _anchorAcceleration * Time.fixedDeltaTime
-        );
-
-        if (_currentAnchorSpeed <= 0f)
-        {
-            _frameVelocity = Vector2.zero;
-            return;
-        }
-
-        Vector2 direction = (anchorPosition - topPos).normalized;
-        _frameVelocity = direction * _currentAnchorSpeed;
     }
 
     #region Surface Latch
@@ -1452,10 +1354,7 @@ public class ShadowTwinMovement : MonoBehaviour
             return;
         }
 
-        if(IsPulling && anchorPosition != Vector2.zero) {
-            HandleAnchorPullVelocity();
-            return;
-        }
+
 
         //Apply ground deceleration even no matter if player is grounded or not, since ground deceleration "feels" better in the air
         if(IsPulling) {
@@ -1519,12 +1418,6 @@ public class ShadowTwinMovement : MonoBehaviour
             {
                 //Just keep horizontal movement
                 _frameVelocity.y = 0;
-            }
-            else if (IsPulling && anchorPosition != Vector2.zero)
-            {
-                // Vertical component is handled as part of the unified anchor pull velocity
-                HandleAnchorPullVelocity();
-                return;
             }
             else if (IsPulling && _latchPosition != Vector2.zero)
             {
