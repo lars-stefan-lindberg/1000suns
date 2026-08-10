@@ -58,6 +58,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Lash",
+                    "type": "Button",
+                    "id": "e8f666c3-d7cb-4512-b9d7-aa1c0ab7a4e5",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -218,7 +227,7 @@
                 {
                     "name": "",
                     "id": "ea938c54-8de9-480e-8a23-da0de6f04106",
-                    "path": "<Gamepad>/rightShoulder",
+                    "path": "<Gamepad>/leftShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
@@ -229,7 +238,7 @@
                 {
                     "name": "",
                     "id": "5e4b1231-b69f-422e-a860-b2500ae980b6",
-                    "path": "<Keyboard>/c",
+                    "path": "<Keyboard>/d",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard",
@@ -256,6 +265,28 @@
                     "processors": "",
                     "groups": ";Keyboard",
                     "action": "MergeSplit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3d496ef3-731e-40fd-9dbb-5e68592aeb17",
+                    "path": "<Gamepad>/rightShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Lash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8b5f0101-edd5-4820-9bc7-0e036f6d133c",
+                    "path": "<Keyboard>/c",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard",
+                    "action": "Lash",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

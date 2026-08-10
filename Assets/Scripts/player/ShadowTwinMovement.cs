@@ -68,6 +68,7 @@ public class ShadowTwinMovement : MonoBehaviour
         _animator = GetComponentInChildren<Animator>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         _ceilingLayerMasks = LayerMask.GetMask(new[] { "Ground", "Default", "Block" });
+        _latchLayerMask = LayerMask.GetMask(new[] { "Ground", "Block", "JumpThroughs", "Pullable" });
         _playerInput = GetComponent<PlayerInput>();
         _sharedPlayerAudio = GetComponent<SharedCharacterAudio>();
         _deeAudio = GetComponent<DeeAudio>();
@@ -111,6 +112,10 @@ public class ShadowTwinMovement : MonoBehaviour
         HandleGravity();
 
         if(_stopMovement) {
+            _frameVelocity = new Vector2(0,0);
+        }
+
+        if(_isPausedInAir) {
             _frameVelocity = new Vector2(0,0);
         }
 
@@ -266,6 +271,7 @@ public class ShadowTwinMovement : MonoBehaviour
     private bool _freezePlayer = false;
     private bool _stopMovement = false;
     private bool _stopCollisions = false;
+    private bool _isPausedInAir = false;
     public void Freeze(float freezeDuration) {
         DisablePlayerMovement();
         _freezePlayer = true;
@@ -288,6 +294,18 @@ public class ShadowTwinMovement : MonoBehaviour
     public void UnFreeze() {
         _freezePlayer = false;
         EnablePlayerMovement();
+    }
+
+    public void PauseInAir() {
+        _isPausedInAir = true;
+    }
+
+    public void UnpauseInAir() {
+        _isPausedInAir = false;
+    }
+
+    public bool IsPausedInAir() {
+        return _isPausedInAir;
     }
 
     private bool _isTransitioningBetweenLevels = false;
@@ -523,6 +541,9 @@ public class ShadowTwinMovement : MonoBehaviour
             else
             {
                 if(IsPulling && !isGrounded && Vector2.Distance(anchorPosition, GetTopMiddleColliderPosition()) < 0.5f) {
+                    _airJumpToConsume = true;
+                }
+                else if(_isLatchedToSurface && _latchSurfaceType == LatchSurfaceType.Wall) {
                     _airJumpToConsume = true;
                 }
             }
@@ -1032,6 +1053,12 @@ public class ShadowTwinMovement : MonoBehaviour
     {
         if (!_endedJumpEarly && !isGrounded && !_jumpHeldInput && ShadowTwinPlayer.obj.rigidBody.velocity.y > 0) _endedJumpEarly = true;
 
+        if (_isLatchedToSurface && (_jumpToConsume || _airJumpToConsume))
+        {
+            HandleLatchJump();
+            return;
+        }
+
         if (!_jumpToConsume && !CanUseAirJump && !HasBufferedJump) return;
 
         if(HasBufferedJump && isGrounded && !_jumpToConsume) {
@@ -1137,6 +1164,25 @@ public class ShadowTwinMovement : MonoBehaviour
     private bool _anchorReachedThisPull;
     private bool _isHangingOnAnchor;
 
+    [Header("Surface Latch Configuration")]
+    [SerializeField] private float _latchBoxCastDistance = 20f;
+    [SerializeField] private float _latchSpeed = 30f;
+    [SerializeField] private LayerMask _latchLayerMask;
+
+    private bool _isLatchedToSurface;
+    private Vector2 _latchPosition;
+    private Vector2 _latchDirection;
+    private bool _latchReachedThisPull;
+    private LatchSurfaceType _latchSurfaceType;
+
+    private enum LatchSurfaceType
+    {
+        None,
+        Ground,
+        Wall,
+        Ceiling
+    }
+
     public void StartAnchorPull()
     {
         IsPulling = true;
@@ -1217,6 +1263,152 @@ public class ShadowTwinMovement : MonoBehaviour
         Vector2 direction = (anchorPosition - topPos).normalized;
         _frameVelocity = direction * _currentAnchorSpeed;
     }
+
+    #region Surface Latch
+
+    public bool IsLatchedToSurface()
+    {
+        return _isLatchedToSurface;
+    }
+
+    public bool TryLatchToSurface(Vector2 direction)
+    {
+        if (_isLatchedToSurface || direction == Vector2.zero)
+            return false;
+
+        Vector2 boxSize = new Vector2(_collider.bounds.size.x, _collider.bounds.size.y);
+        Vector2 origin = (Vector2)transform.position;
+        
+        RaycastHit2D hit = Physics2D.BoxCast(origin, boxSize, 0f, direction, _latchBoxCastDistance, _latchLayerMask);
+        
+        if (hit.collider != null)
+        {
+            Vector2 playerPos = (Vector2)transform.position;
+            
+            // Align latch position to move purely horizontally or vertically
+            if (Mathf.Abs(direction.x) > 0)
+            {
+                // Horizontal movement - keep player's Y position
+                _latchPosition = new Vector2(hit.point.x, playerPos.y);
+            }
+            else
+            {
+                // Vertical movement - keep player's X position
+                _latchPosition = new Vector2(playerPos.x, hit.point.y);
+            }
+            
+            _latchDirection = direction;
+            _latchSurfaceType = DetermineLatchSurfaceType(direction, hit.normal);
+            StartLatchPull();
+            return true;
+        }
+        
+        return false;
+    }
+
+    private LatchSurfaceType DetermineLatchSurfaceType(Vector2 direction, Vector2 surfaceNormal)
+    {
+        float angle = Vector2.Angle(Vector2.up, surfaceNormal);
+        
+        if (angle < 45f)
+        {
+            return LatchSurfaceType.Ground;
+        }
+        else if (angle > 135f)
+        {
+            return LatchSurfaceType.Ceiling;
+        }
+        else
+        {
+            return LatchSurfaceType.Wall;
+        }
+    }
+
+    private void StartLatchPull()
+    {
+        _isLatchedToSurface = false;
+        _latchReachedThisPull = false;
+        IsPulling = true;
+        UpdateAnimatorIsPulling(true);
+        _animator.SetTrigger("anchorPull");
+        ShadowTwinPlayer.obj.DisableGravity();
+    }
+
+    public void EndLatchPull()
+    {
+        _isLatchedToSurface = false;
+        _latchPosition = Vector2.zero;
+        _latchDirection = Vector2.zero;
+        _latchSurfaceType = LatchSurfaceType.None;
+        _latchReachedThisPull = false;
+        IsPulling = false;
+        UpdateAnimatorIsPulling(false);
+        ShadowTwinPlayer.obj.ResetGravity();
+    }
+
+    private void OnLatchReached()
+    {
+        CameraShakeManager.obj.ForcePushShake();
+        _deeAudio.PlayAnchorReached();
+        //ShockWaveManager.obj.CallShockWave(_latchPosition, 0.2f, 0.05f, 0.15f);
+        _isLatchedToSurface = true;
+    }
+
+    private void HandleLatchPullVelocity()
+    {
+        bool hasReachedSurface = CheckLatchSurfaceCollision();
+
+        if (hasReachedSurface)
+        {
+            _frameVelocity = Vector2.zero;
+
+            if (!_latchReachedThisPull)
+            {
+                _latchReachedThisPull = true;
+                OnLatchReached();
+            }
+
+            return;
+        }
+
+        // Use constant speed in the latch direction
+        _frameVelocity = _latchDirection * _latchSpeed;
+    }
+
+    private bool CheckLatchSurfaceCollision()
+    {
+        Vector2 boxSize = new Vector2(_collider.bounds.size.x, _collider.bounds.size.y);
+        Vector2 origin = _collider.bounds.center;
+        
+        RaycastHit2D hit = Physics2D.BoxCast(origin, boxSize, 0f, _latchDirection, 0.01f, _latchLayerMask);
+        
+        return hit.collider != null;
+    }
+
+    public void HandleLatchJump()
+    {
+        if (!_isLatchedToSurface)
+            return;
+
+        if (_latchSurfaceType == LatchSurfaceType.Ceiling)
+        {
+            EndLatchPull();
+            _jumpToConsume = false;
+            _airJumpToConsume = false;
+        }
+        else if (_latchSurfaceType == LatchSurfaceType.Wall || _latchSurfaceType == LatchSurfaceType.Ground)
+        {
+            EndLatchPull();
+            ExecuteJump(_stats.JumpPower);
+            DustParticleMgr.obj.CreateDust(PlayerManager.PlayerType.SHADOW_TWIN);
+            _sharedPlayerAudio.PlayJump();
+            StartCoroutine(JumpSqueeze(_jumpSqueezeX, _jumpSqueezeY, _jumpSqueezeTime));
+            _jumpToConsume = false;
+            _airJumpToConsume = false;
+        }
+    }
+
+    #endregion
 
     private void HandleDirection()
     {
@@ -1332,6 +1524,18 @@ public class ShadowTwinMovement : MonoBehaviour
             {
                 // Vertical component is handled as part of the unified anchor pull velocity
                 HandleAnchorPullVelocity();
+                return;
+            }
+            else if (IsPulling && _latchPosition != Vector2.zero)
+            {
+                // Handle latch pull velocity
+                HandleLatchPullVelocity();
+                return;
+            }
+            else if (_isLatchedToSurface)
+            {
+                // When latched, no gravity
+                _frameVelocity.y = 0;
                 return;
             }
             else
