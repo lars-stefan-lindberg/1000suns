@@ -1247,7 +1247,8 @@ public class ShadowTwinMovement : MonoBehaviour
     #region Horizontal
 
     [Header("Surface Latch Configuration")]
-    [SerializeField] private float _latchBoxCastDistance = 20f;
+    [SerializeField] private float _latchBoxCastDistanceHorizontal = 20f;
+    [SerializeField] private float _latchBoxCastDistanceVertical = 20f;
     [SerializeField] private float _latchSpeed = 30f;
     [SerializeField] private LayerMask _latchLayerMask;
 
@@ -1299,7 +1300,10 @@ public class ShadowTwinMovement : MonoBehaviour
         Vector2 boxSize = new Vector2(_collider.bounds.size.x, _collider.bounds.size.y);
         Vector2 origin = (Vector2)transform.position;
         
-        RaycastHit2D hit = Physics2D.BoxCast(origin, boxSize, 0f, direction, _latchBoxCastDistance, _latchLayerMask);
+        // Use different cast distances for horizontal vs vertical lashing
+        float castDistance = Mathf.Abs(direction.x) > 0 ? _latchBoxCastDistanceHorizontal : _latchBoxCastDistanceVertical;
+        
+        RaycastHit2D hit = Physics2D.BoxCast(origin, boxSize, 0f, direction, castDistance, _latchLayerMask);
         
         if (hit.collider != null)
         {
