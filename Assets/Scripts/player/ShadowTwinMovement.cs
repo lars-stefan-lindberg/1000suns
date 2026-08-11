@@ -73,6 +73,21 @@ public class ShadowTwinMovement : MonoBehaviour
     private float _wallJumpDirection = 0f;
     private float _wallJumpBoostTimer = 0f;
 
+    // --- Floating platform propel variables ---
+    [Header("Floating Platform Propel Configuration")]
+    [SerializeField] private float _propelThroughPlatformDuration = 0.3f;
+    [SerializeField] private float _postPropelFloatyDuration = 0.5f;
+    [SerializeField] private float _postPropelGravityModifier = 0.4f; // Lower = more floaty
+    [SerializeField] private float _platformColliderDisableDuration = 0.6f; // How long to disable platform collider
+    
+    private bool _isPropellingThroughPlatform = false;
+    private float _propelTimer = 0f;
+    private Vector2 _propelVelocity = Vector2.zero;
+    private bool _isLatchingToFloatingPlatform = false;
+    private bool _isPostPropelFloaty = false;
+    private float _postPropelFloatyTimer = 0f;
+    private FloatyPlatform _targetFloatingPlatform = null;
+
     private void Awake()
     {
         obj = this;
@@ -213,6 +228,53 @@ public class ShadowTwinMovement : MonoBehaviour
                 {
                     _isWallJumping = false;
                     _wallJumpBoostTimer = 0f;
+                }
+            }
+        }
+        
+        // Update propel through platform timer
+        if (_isPropellingThroughPlatform)
+        {
+            // Cancel propel if player lands on ground
+            if (isGrounded)
+            {
+                _isPropellingThroughPlatform = false;
+                _propelTimer = 0f;
+                ShadowTwinPlayer.obj.ResetGravity();
+            }
+            else
+            {
+                _propelTimer -= Time.deltaTime;
+                
+                if (_propelTimer <= 0f)
+                {
+                    _isPropellingThroughPlatform = false;
+                    _propelTimer = 0f;
+                    // Transition to floaty state instead of immediately resetting gravity
+                    _isPostPropelFloaty = true;
+                    _postPropelFloatyTimer = _postPropelFloatyDuration;
+                    ShadowTwinPlayer.obj.ResetGravity();
+                }
+            }
+        }
+        
+        // Update post-propel floaty timer
+        if (_isPostPropelFloaty)
+        {
+            // Cancel floaty state if player lands on ground
+            if (isGrounded)
+            {
+                _isPostPropelFloaty = false;
+                _postPropelFloatyTimer = 0f;
+            }
+            else
+            {
+                _postPropelFloatyTimer -= Time.deltaTime;
+                
+                if (_postPropelFloatyTimer <= 0f)
+                {
+                    _isPostPropelFloaty = false;
+                    _postPropelFloatyTimer = 0f;
                 }
             }
         }
@@ -1243,6 +1305,24 @@ public class ShadowTwinMovement : MonoBehaviour
         {
             Vector2 playerPos = (Vector2)transform.position;
             
+            // Check if lashing upward to a floating platform ceiling
+            bool isFloatingPlatform = hit.collider.gameObject.layer == LayerMask.NameToLayer("JumpThroughs") 
+                                      && hit.collider.CompareTag("FloatingPlatform");
+            LatchSurfaceType surfaceType = DetermineLatchSurfaceType(direction, hit.normal);
+            
+            // Set flag if this is a floating platform ceiling we're lashing to
+            _isLatchingToFloatingPlatform = isFloatingPlatform && surfaceType == LatchSurfaceType.Ceiling && direction.y > 0;
+            
+            // Store reference to the floating platform if we're lashing to it
+            if (_isLatchingToFloatingPlatform)
+            {
+                _targetFloatingPlatform = hit.collider.GetComponentInParent<FloatyPlatform>();
+            }
+            else
+            {
+                _targetFloatingPlatform = null;
+            }
+            
             // Align latch position to move purely horizontally or vertically
             if (Mathf.Abs(direction.x) > 0)
             {
@@ -1256,7 +1336,7 @@ public class ShadowTwinMovement : MonoBehaviour
             }
             
             _latchDirection = direction;
-            _latchSurfaceType = DetermineLatchSurfaceType(direction, hit.normal);
+            _latchSurfaceType = surfaceType;
             StartLatchPull();
             return true;
         }
@@ -1299,6 +1379,8 @@ public class ShadowTwinMovement : MonoBehaviour
         _latchDirection = Vector2.zero;
         _latchSurfaceType = LatchSurfaceType.None;
         _latchReachedThisPull = false;
+        _isLatchingToFloatingPlatform = false;
+        _targetFloatingPlatform = null;
         IsPulling = false;
         UpdateAnimatorIsPulling(false);
         ShadowTwinPlayer.obj.ResetGravity();
@@ -1315,15 +1397,68 @@ public class ShadowTwinMovement : MonoBehaviour
         _isLatchedToSurface = true;
     }
 
+    private void StartPropelThroughPlatform()
+    {
+        _isPropellingThroughPlatform = true;
+        _propelTimer = _propelThroughPlatformDuration;
+        // Note: _propelVelocity is set before calling this method
+        ShadowTwinPlayer.obj.DisableGravity();
+        if (ShadowTwinLash.obj != null)
+        {
+            ShadowTwinLash.obj.UnlockFlipFromLash();
+        }
+        
+        // Temporarily disable the floating platform's collider to prevent grounded detection
+        if (_targetFloatingPlatform != null)
+        {
+            _targetFloatingPlatform.TemporarilyDisableCollider(_platformColliderDisableDuration);
+        }
+    }
+
+    private void HandlePropelThroughPlatform()
+    {
+        _frameVelocity = _propelVelocity;
+    }
+
     private void HandleLatchPullVelocity()
     {
-        bool hasReachedSurface = CheckLatchSurfaceCollision();
+        // For floating platforms, use distance check instead of collision check
+        // because the player can pass through them
+        bool hasReachedSurface;
+        if (_isLatchingToFloatingPlatform)
+        {
+            // Check if we're close to the latch position
+            float distanceToTarget = Vector2.Distance(transform.position, _latchPosition);
+            hasReachedSurface = distanceToTarget < 0.5f; // Threshold distance
+        }
+        else
+        {
+            hasReachedSurface = CheckLatchSurfaceCollision();
+        }
 
         if (hasReachedSurface)
         {
             if (!_latchReachedThisPull)
             {
                 _latchReachedThisPull = true;
+                
+                // Check if this is a floating platform - if so, start propelling instead of latching
+                if (_isLatchingToFloatingPlatform)
+                {
+                    // Capture the current lash velocity and start propelling
+                    _propelVelocity = _frameVelocity;
+                    StartPropelThroughPlatform();
+                    // End the latch pull state
+                    _latchPosition = Vector2.zero;
+                    _latchDirection = Vector2.zero;
+                    _latchReachedThisPull = false;
+                    IsPulling = false;
+                    UpdateAnimatorIsPulling(false);
+                    _isLatchingToFloatingPlatform = false;
+                    _targetFloatingPlatform = null; // Clear platform reference after starting propel
+                    return;
+                }
+                
                 OnLatchReached();
                 
                 // Check if lash button was released - if so, drop immediately after latching
@@ -1458,6 +1593,13 @@ public class ShadowTwinMovement : MonoBehaviour
             return;
         }
 
+        // During propel through platform, maintain horizontal velocity
+        if(_isPropellingThroughPlatform) {
+            // Horizontal velocity is already set in HandlePropelThroughPlatform
+            // Just return to skip normal horizontal movement logic
+            return;
+        }
+
         // During wall jump, apply boost phase then transition to normal air control
         if(_isWallJumping) {
             // Check if player is pressing the same direction as wall jump
@@ -1554,6 +1696,12 @@ public class ShadowTwinMovement : MonoBehaviour
                 //Just keep horizontal movement
                 _frameVelocity.y = 0;
             }
+            else if (_isPropellingThroughPlatform)
+            {
+                // Handle propel through platform - maintain velocity
+                HandlePropelThroughPlatform();
+                return;
+            }
             else if (IsPulling && _latchPosition != Vector2.zero)
             {
                 // Handle latch pull velocity
@@ -1574,6 +1722,10 @@ public class ShadowTwinMovement : MonoBehaviour
                     var inAirGravity = _stats.FallAcceleration;
                     if (_endedJumpEarly && _frameVelocity.y > 0)
                         inAirGravity *= _stats.JumpEndEarlyGravityModifier;
+                    
+                    // Apply floaty gravity modifier if in post-propel state
+                    if (_isPostPropelFloaty)
+                        inAirGravity *= _postPropelGravityModifier;
 
                     _frameVelocity.y = Mathf.MoveTowards(_frameVelocity.y, -_stats.MaxFallSpeed, inAirGravity * Time.fixedDeltaTime);
                 }

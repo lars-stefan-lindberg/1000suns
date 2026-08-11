@@ -403,6 +403,26 @@ public class FloatyPlatform : MonoBehaviour
         _spriteRenderer.color = new Color(_spriteRenderer.color.r, _spriteRenderer.color.g, _spriteRenderer.color.b, alpha);
     }
 
+    private Coroutine _disableColliderCoroutine;
+
+    public void TemporarilyDisableCollider(float duration)
+    {
+        // If already running, stop the previous coroutine
+        if (_disableColliderCoroutine != null)
+        {
+            StopCoroutine(_disableColliderCoroutine);
+        }
+        _disableColliderCoroutine = StartCoroutine(DisableColliderForDuration(duration));
+    }
+
+    private IEnumerator DisableColliderForDuration(float duration)
+    {
+        _childCollider.enabled = false;
+        yield return new WaitForSeconds(duration);
+        _childCollider.enabled = true;
+        _disableColliderCoroutine = null;
+    }
+
     // private void OnDrawGizmosSelected()
     // {
     //     Gizmos.color = Color.yellow;
