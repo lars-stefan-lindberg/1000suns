@@ -805,7 +805,7 @@ public class PlayerBlobMovement : MonoBehaviour
     }
 
     private float _transitionDistanceX = 1;
-    private float _transitionDistanceUp = 2.5f;
+    private float _transitionDistanceUp = 3f;
     private float _transitionDistanceDown = 1.5f;
     private IEnumerator TransitionToNextRoomCoroutine(PlayerManager.PlayerDirection direction) {
         float target = 0;

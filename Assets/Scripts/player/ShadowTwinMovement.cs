@@ -61,6 +61,18 @@ public class ShadowTwinMovement : MonoBehaviour
     [SerializeField] private float _hitBoostRiseTime = 0.12f;
     [SerializeField] private float _hitBoostFallTime = 0.3f;
 
+    // --- Wall jump variables ---
+    [Header("Wall Jump Configuration")]
+    [SerializeField] private float _wallJumpVerticalPower = 12f;
+    [SerializeField] private float _wallJumpHorizontalPower = 15f;
+    [SerializeField] private float _wallJumpDirectionLockDuration = 0.2f;
+    [SerializeField] private float _wallJumpBoostDuration = 0.1f;
+    
+    private bool _isWallJumping = false;
+    private float _wallJumpTimer = 0f;
+    private float _wallJumpDirection = 0f;
+    private float _wallJumpBoostTimer = 0f;
+
     private void Awake()
     {
         obj = this;
@@ -128,27 +140,48 @@ public class ShadowTwinMovement : MonoBehaviour
         UpdateAnimator();
         
         // Handle player flip based on controlled object or movement input
-        if (ShadowTwinPull.obj != null && ShadowTwinPull.obj.IsControllingObject)
+        // Don't flip during: wall jump, wall latch, or shadow lash
+        bool isLashing = ShadowTwinLash.obj.IsLashing();
+        
+        if (!_isWallJumping && !(_isLatchedToSurface && _latchSurfaceType == LatchSurfaceType.Wall) && !isLashing)
         {
-            Rigidbody2D controlledObject = ShadowTwinPull.obj.GetControlledObject();
-            if (controlledObject != null)
+            if (ShadowTwinPull.obj != null && ShadowTwinPull.obj.IsControllingObject)
             {
-                // Face the controlled object
-                float objectX = controlledObject.position.x;
-                float playerX = transform.position.x;
-                if (objectX < playerX - 0.1f)
+                Rigidbody2D controlledObject = ShadowTwinPull.obj.GetControlledObject();
+                if (controlledObject != null)
                 {
-                    spriteRenderer.flipX = true;
-                }
-                else if (objectX > playerX + 0.1f)
-                {
-                    spriteRenderer.flipX = false;
+                    // Face the controlled object
+                    float objectX = controlledObject.position.x;
+                    float playerX = transform.position.x;
+                    if (objectX < playerX - 0.1f)
+                    {
+                        spriteRenderer.flipX = true;
+                    }
+                    else if (objectX > playerX + 0.1f)
+                    {
+                        spriteRenderer.flipX = false;
+                    }
                 }
             }
+            else
+            {
+                FlipPlayer(_movementInput.x);
+            }
         }
-        else
+        // When latched to a wall, face away from the wall
+        else if (_isLatchedToSurface && _latchSurfaceType == LatchSurfaceType.Wall)
         {
-            FlipPlayer(_movementInput.x);
+            // _latchDirection.x tells us which way we're facing the wall
+            // If latchDirection.x is positive (1), we latched to the right, so face left (flipX = true)
+            // If latchDirection.x is negative (-1), we latched to the left, so face right (flipX = false)
+            if (_latchDirection.x > 0)
+            {
+                spriteRenderer.flipX = true; // Face left (away from wall on the right)
+            }
+            else if (_latchDirection.x < 0)
+            {
+                spriteRenderer.flipX = false; // Face right (away from wall on the left)
+            }
         }
         
         if (_mergeSplitHeld)
@@ -161,6 +194,29 @@ public class ShadowTwinMovement : MonoBehaviour
                 PerformMergeSplit();
             }
         }
+        
+        // Update wall jump timer
+        if (_isWallJumping)
+        {
+            // Cancel wall jump if player lands on ground
+            if (isGrounded)
+            {
+                _isWallJumping = false;
+                _wallJumpBoostTimer = 0f;
+            }
+            else
+            {
+                _wallJumpTimer -= Time.deltaTime;
+                _wallJumpBoostTimer -= Time.deltaTime;
+                
+                if (_wallJumpTimer <= 0f)
+                {
+                    _isWallJumping = false;
+                    _wallJumpBoostTimer = 0f;
+                }
+            }
+        }
+        
         // Update jump kick timer
         // if (_isJumpKickActive)
         // {
@@ -373,7 +429,7 @@ public class ShadowTwinMovement : MonoBehaviour
     }
 
     private float _transitionDistanceX = 1;
-    private float _transitionDistanceUp = 2.5f;
+    private float _transitionDistanceUp = 3f;
     private float _transitionDistanceDown = 1.5f;
     [SerializeField] private float _levelTransitionMaxMoveTime = 1.25f; // safety timeout in seconds for move loops
     private IEnumerator TransitionToNextRoomCoroutine(PlayerManager.PlayerDirection direction) {
@@ -539,8 +595,8 @@ public class ShadowTwinMovement : MonoBehaviour
             }
             else
             {
-                if(_isLatchedToSurface && _latchSurfaceType == LatchSurfaceType.Wall) {
-                    _airJumpToConsume = true;
+                if(_isLatchedToSurface && (_latchSurfaceType == LatchSurfaceType.Wall || _latchSurfaceType == LatchSurfaceType.Ceiling)) {
+                    _latchedJumpToConsume = true;
                 }
             }
             _jumpHeldInput = true;
@@ -933,7 +989,7 @@ public class ShadowTwinMovement : MonoBehaviour
             isGrounded = true;
             _coyoteUsable = true;
             _endedJumpEarly = false;
-            _airJumpToConsume = false;
+            _latchedJumpToConsume = false;
             _landed = true;
             isFalling = false;
 
@@ -1034,28 +1090,24 @@ public class ShadowTwinMovement : MonoBehaviour
     private float _timeJumpWasPressed = -100;  //To avoid having buffered jump from the start
     private bool _endedJumpEarly;
     private bool _coyoteUsable;
-    private bool _airJumpToConsume = false;
+    private bool _latchedJumpToConsume = false;
     private bool _previousJumpHeld = false;
 
     private bool CanUseJump => (isGrounded || CanUseCoyote) && _jumpToConsume;
     private bool HasBufferedJump => _time < _timeJumpWasPressed + _stats.JumpBuffer;
     private bool CanUseCoyote => _coyoteUsable && !isGrounded && _time < _frameLeftGrounded + _stats.CoyoteTime;
-    private bool CanUseAirJump =>
-        !isGrounded &&
-        _time > _frameLeftGrounded + _stats.CoyoteTime &&
-        _airJumpToConsume;
 
     private void HandleJump()
     {
         if (!_endedJumpEarly && !isGrounded && !_jumpHeldInput && ShadowTwinPlayer.obj.rigidBody.velocity.y > 0) _endedJumpEarly = true;
 
-        if (_isLatchedToSurface && (_jumpToConsume || _airJumpToConsume))
+        if (_isLatchedToSurface && _latchedJumpToConsume)
         {
             HandleLatchJump();
             return;
         }
 
-        if (!_jumpToConsume && !CanUseAirJump && !HasBufferedJump) return;
+        if (!_jumpToConsume && !HasBufferedJump) return;
 
         if(HasBufferedJump && isGrounded && !_jumpToConsume) {
             ExecuteRegularJump();
@@ -1063,8 +1115,6 @@ public class ShadowTwinMovement : MonoBehaviour
         }
 
         if (CanUseJump) ExecuteRegularJump();
-
-        if (CanUseAirJump) ExecuteAirJump();
     }
 
     private float _jumpSqueezeX = 0.8f;
@@ -1108,15 +1158,6 @@ public class ShadowTwinMovement : MonoBehaviour
     public void JumpSqueeze() {
         StartCoroutine(JumpSqueeze(_jumpSqueezeX, _jumpSqueezeY, _jumpSqueezeTime));
     }
-
-    private void ExecuteAirJump()
-    {
-        ShadowTwinPull.obj.CancelPulling();
-        ExecuteJump(_stats.JumpPower);
-        _sharedPlayerAudio.PlayJump();
-        _airJumpToConsume = false;
-    }
-
     private void ExecuteJump(float jumpPower)
     {
         isOnMoveable = false;
@@ -1154,7 +1195,7 @@ public class ShadowTwinMovement : MonoBehaviour
     private bool _latchReachedThisPull;
     private LatchSurfaceType _latchSurfaceType;
 
-    private enum LatchSurfaceType
+    public enum LatchSurfaceType
     {
         None,
         Ground,
@@ -1171,6 +1212,21 @@ public class ShadowTwinMovement : MonoBehaviour
     public bool IsLatchedToSurface()
     {
         return _isLatchedToSurface;
+    }
+
+    public bool IsWallJumping()
+    {
+        return _isWallJumping;
+    }
+
+    public float GetWallJumpDirection()
+    {
+        return _wallJumpDirection;
+    }
+
+    public LatchSurfaceType GetLatchSurfaceType()
+    {
+        return _latchSurfaceType;
     }
 
     public bool TryLatchToSurface(Vector2 direction)
@@ -1246,6 +1302,9 @@ public class ShadowTwinMovement : MonoBehaviour
         IsPulling = false;
         UpdateAnimatorIsPulling(false);
         ShadowTwinPlayer.obj.ResetGravity();
+        
+        // Unlock flip player when ending latch pull
+        ShadowTwinLash.obj.UnlockFlipFromLash();
     }
 
     private void OnLatchReached()
@@ -1262,14 +1321,21 @@ public class ShadowTwinMovement : MonoBehaviour
 
         if (hasReachedSurface)
         {
-            _frameVelocity = Vector2.zero;
-
             if (!_latchReachedThisPull)
             {
                 _latchReachedThisPull = true;
                 OnLatchReached();
+                
+                // Check if lash button was released - if so, drop immediately after latching
+                if (ShadowTwinLash.obj.WasLashButtonReleased())
+                {
+                    // Button was released - end the latch and drop
+                    EndLatchPull();
+                    return;
+                }
             }
-
+            
+            _frameVelocity = Vector2.zero;
             return;
         }
 
@@ -1296,9 +1362,13 @@ public class ShadowTwinMovement : MonoBehaviour
         {
             EndLatchPull();
             _jumpToConsume = false;
-            _airJumpToConsume = false;
+            _latchedJumpToConsume = false;
         }
-        else if (_latchSurfaceType == LatchSurfaceType.Wall || _latchSurfaceType == LatchSurfaceType.Ground)
+        else if (_latchSurfaceType == LatchSurfaceType.Wall)
+        {
+            ExecuteWallJump();
+        }
+        else if (_latchSurfaceType == LatchSurfaceType.Ground)
         {
             EndLatchPull();
             ExecuteJump(_stats.JumpPower);
@@ -1306,8 +1376,42 @@ public class ShadowTwinMovement : MonoBehaviour
             _sharedPlayerAudio.PlayJump();
             StartCoroutine(JumpSqueeze(_jumpSqueezeX, _jumpSqueezeY, _jumpSqueezeTime));
             _jumpToConsume = false;
-            _airJumpToConsume = false;
+            _latchedJumpToConsume = false;
         }
+    }
+
+    private void ExecuteWallJump()
+    {
+        // Determine which direction to jump away from the wall
+        // The latch direction tells us which way we pulled towards the wall
+        float horizontalDirection = -_latchDirection.x; // Jump opposite to the wall direction
+        
+        EndLatchPull();
+        
+        // Set wall jump state
+        _isWallJumping = true;
+        _wallJumpTimer = _wallJumpDirectionLockDuration;
+        _wallJumpBoostTimer = _wallJumpBoostDuration;
+        _wallJumpDirection = horizontalDirection;
+        
+        // Apply vertical jump power (reduced compared to regular jump)
+        _frameVelocity.y = _wallJumpVerticalPower;
+        
+        // Apply horizontal jump power away from the wall
+        _frameVelocity.x = horizontalDirection * _wallJumpHorizontalPower;
+        
+        // Reset jump state
+        isOnMoveable = false;
+        _endedJumpEarly = false;
+        _timeJumpWasPressed = 0;
+        _coyoteUsable = false;
+        
+        // Visual and audio feedback
+        //DustParticleMgr.obj.CreateDust(PlayerManager.PlayerType.SHADOW_TWIN);  //TODO need to create vertical dust close to the wall
+        _sharedPlayerAudio.PlayJump();
+        
+        _jumpToConsume = false;
+        _latchedJumpToConsume = false;
     }
 
     #endregion
@@ -1354,7 +1458,38 @@ public class ShadowTwinMovement : MonoBehaviour
             return;
         }
 
-
+        // During wall jump, apply boost phase then transition to normal air control
+        if(_isWallJumping) {
+            // Check if player is pressing the same direction as wall jump
+            bool pressingSameDirection = (_wallJumpDirection > 0 && _movementInput.x > 0) || 
+                                        (_wallJumpDirection < 0 && _movementInput.x < 0);
+            bool pressingOpposite = (_wallJumpDirection > 0 && _movementInput.x < 0) || 
+                                   (_wallJumpDirection < 0 && _movementInput.x > 0);
+            
+            // During boost phase, always maintain full horizontal power
+            if (_wallJumpBoostTimer > 0f)
+            {
+                // Boost phase - maintain wall jump power regardless of input
+                _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, _wallJumpDirection * _wallJumpHorizontalPower, _stats.Acceleration * Time.fixedDeltaTime);
+            }
+            // After boost phase, apply normal air control
+            else if (pressingSameDirection)
+            {
+                // Maintain the wall jump horizontal velocity when pressing same direction
+                _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, _wallJumpDirection * _stats.MaxSpeed, _stats.Acceleration * Time.fixedDeltaTime);
+            }
+            else if (pressingOpposite)
+            {
+                // Pressing opposite - use acceleration towards zero (like regular jump with input)
+                _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, _movementInput.x * _stats.MaxSpeed, _stats.AirDeceleration * Time.fixedDeltaTime);
+            }
+            else
+            {
+                // No input - use air deceleration (like regular jump without input)
+                _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, _stats.AirDeceleration * Time.fixedDeltaTime);
+            }
+            return;
+        }
 
         //Apply ground deceleration even no matter if player is grounded or not, since ground deceleration "feels" better in the air
         if(IsPulling) {
