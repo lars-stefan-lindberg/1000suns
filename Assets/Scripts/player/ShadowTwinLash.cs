@@ -209,6 +209,7 @@ public class ShadowTwinLash : MonoBehaviour
         {
             ShadowTwinMovement.obj.EndLatchPull();
             ShadowTwinPlayer.obj.rigidBody.velocity = _pausedVelocity;
+            ShadowLashBeamManager.obj.StopBeam();
         }
 
         // Coroutine finished - clear reference

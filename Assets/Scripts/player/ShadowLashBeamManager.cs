@@ -48,4 +48,16 @@ public class ShadowLashBeamManager : MonoBehaviour
         _activeBeamObject = shadowLashBeamPrefab;
         _isTrackingBeam = true;
     }
+    
+    public void StopBeam() {
+        _isTrackingBeam = false;
+        if (_activeBeam != null) {
+            StartCoroutine(StopBeamCoroutine(_activeBeam, _activeBeamObject));
+        }
+    }
+
+    private IEnumerator StopBeamCoroutine(ShadowLashBeam beam, GameObject beamObject) {
+        yield return beam.FadeOut();
+        Destroy(beamObject);
+    }
 }

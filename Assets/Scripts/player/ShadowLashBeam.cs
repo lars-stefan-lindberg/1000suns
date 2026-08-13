@@ -14,6 +14,7 @@ public class ShadowLashBeam : MonoBehaviour
     [SerializeField] private float _lashDistance = 10f;
     [SerializeField] private LayerMask _collisionLayerMask;
     [SerializeField] private float _raycastDistance = 0.5f;
+    [SerializeField] private float _fadeOutDuration = 0.5f;
 
     private Coroutine _lashCoroutine;
     private Vector3 _headMaskStartPosition;
@@ -71,9 +72,51 @@ public class ShadowLashBeam : MonoBehaviour
         _tailMask.localPosition = new Vector3(newTailLocalPosition.x, _tailMask.localPosition.y, _tailMask.localPosition.z);
     }
 
-    public void FadeOut()
+    public IEnumerator FadeOut()
     {
-        Destroy(gameObject);
+        if(_lashCoroutine != null)
+            yield return _lashCoroutine;
+        
+        float elapsedTime = 0f;
+        Color beamStartColor = _beamRenderer != null ? _beamRenderer.color : Color.white;
+        Color beamHeadStartColor = _beamHeadRenderer != null ? _beamHeadRenderer.color : Color.white;
+        
+        while (elapsedTime < _fadeOutDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float alpha = Mathf.Lerp(1f, 0f, elapsedTime / _fadeOutDuration);
+            
+            if (_beamRenderer != null)
+            {
+                Color beamColor = beamStartColor;
+                beamColor.a = alpha;
+                _beamRenderer.color = beamColor;
+            }
+            
+            if (_beamHeadRenderer != null)
+            {
+                Color beamHeadColor = beamHeadStartColor;
+                beamHeadColor.a = alpha;
+                _beamHeadRenderer.color = beamHeadColor;
+            }
+            
+            yield return null;
+        }
+        
+        // Ensure final alpha is exactly 0
+        if (_beamRenderer != null)
+        {
+            Color beamColor = beamStartColor;
+            beamColor.a = 0f;
+            _beamRenderer.color = beamColor;
+        }
+        
+        if (_beamHeadRenderer != null)
+        {
+            Color beamHeadColor = beamHeadStartColor;
+            beamHeadColor.a = 0f;
+            _beamHeadRenderer.color = beamHeadColor;
+        }
     }
 
     private void HandleSurfaceHit()
