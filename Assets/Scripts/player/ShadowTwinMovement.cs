@@ -376,6 +376,7 @@ public class ShadowTwinMovement : MonoBehaviour
         _animator.SetBool("isMoving", isMoving);
         isFalling = _frameVelocity.y < -_stats.MinimumFallAnimationSpeed;
         _animator.SetBool("isFalling", isFalling);
+        _animator.SetBool("isLatched", _isLatchedToSurface);
         if (_landed)
         {
             DustParticleMgr.obj.CreateDust(PlayerManager.PlayerType.SHADOW_TWIN);
@@ -415,6 +416,8 @@ public class ShadowTwinMovement : MonoBehaviour
 
     public void PauseInAir() {
         _isPausedInAir = true;
+        _animator.SetTrigger("anchorPull");
+        UpdateAnimatorIsPulling(true);
     }
 
     public void UnpauseInAir() {
@@ -1371,8 +1374,6 @@ public class ShadowTwinMovement : MonoBehaviour
         _isLatchedToSurface = false;
         _latchReachedThisPull = false;
         IsPulling = true;
-        UpdateAnimatorIsPulling(true);
-        _animator.SetTrigger("anchorPull");
         ShadowTwinPlayer.obj.DisableGravity();
     }
 

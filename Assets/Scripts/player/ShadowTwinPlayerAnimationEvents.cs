@@ -24,4 +24,8 @@ public class ShadowTwinPlayerAnimationEvents : MonoBehaviour
     public void ToTwinBlob() {
         ShadowTwinMovement.obj.ToBlob();
     }
+
+    public void ShootShadowLashBeam() {
+        ShadowTwinLash.obj.ShootShadowLashBeam();
+    }
 }

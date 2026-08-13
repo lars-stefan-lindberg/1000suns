@@ -86,7 +86,7 @@ public class ShadowTwinLash : MonoBehaviour
                     ShadowTwinPlayer.obj.DisableGravity();
                     _isLashing = true;
                     _lashButtonReleased = false;
-                    
+
                     // Start directional input buffer
                     _activeDirectionalBufferCoroutine = StartCoroutine(DirectionalInputBuffer());
                 }
@@ -96,6 +96,11 @@ public class ShadowTwinLash : MonoBehaviour
                 OnLashButtonCanceled();
             }
         }
+    }
+
+    public void ShootShadowLashBeam() {
+        int direction = ShadowTwinMovement.obj.IsFacingLeft() ? -1 : 1;
+        ShadowLashBeamManager.obj.ShootBeam(transform.position + new Vector3(0, 0.125f, 0), direction);
     }
 
     private IEnumerator DirectionalInputBuffer()
