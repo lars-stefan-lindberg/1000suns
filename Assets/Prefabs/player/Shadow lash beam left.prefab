@@ -5006,6 +5006,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4191006943271982283}
   - component: {fileID: 113259924279596611}
+  - component: {fileID: 5961551942801529028}
   m_Layer: 0
   m_Name: Beam sprite
   m_TagString: Untagged
@@ -5080,6 +5081,27 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 2
   m_SpriteSortPoint: 0
+--- !u!95 &5961551942801529028
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6624310426611915936}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 1d37715b5479046e39d8c1a57e4bb8c2, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &6932512562893763059
 GameObject:
   m_ObjectHideFlags: 0
