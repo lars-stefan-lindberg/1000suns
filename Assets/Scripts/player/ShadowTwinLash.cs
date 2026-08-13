@@ -292,4 +292,13 @@ public class ShadowTwinLash : MonoBehaviour
     {
         return _lashButtonReleased;
     }
+
+    public bool ShouldTreatPlayerAsAirborne()
+    {
+        // Player should be treated as airborne during the entire shadow lash sequence:
+        // - While shadow lashing (paused in air)
+        // - While pulling towards a surface
+        // This ensures consistent air movement behavior even when grounded
+        return _isShadowLashing || (_activeLashCoroutine != null);
+    }
 }

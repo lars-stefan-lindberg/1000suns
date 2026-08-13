@@ -171,7 +171,7 @@ public class ShadowTwinMovement : MonoBehaviour
         if (_isWallJumping)
         {
             // Cancel wall jump if player lands on ground
-            if (isGrounded)
+            if (IsEffectivelyGrounded())
             {
                 _isWallJumping = false;
                 _wallJumpBoostTimer = 0f;
@@ -639,7 +639,7 @@ public class ShadowTwinMovement : MonoBehaviour
         _jumpHeldInput = jumpHeld;
         
         if (jumpHeld && !_previousJumpHeld) {
-            if (isGrounded || CanUseCoyote) {
+            if (IsEffectivelyGrounded() || CanUseCoyote) {
                 _jumpToConsume = true;
             }
             _timeJumpWasPressed = currentTime;
@@ -658,7 +658,7 @@ public class ShadowTwinMovement : MonoBehaviour
                 return;
             }
 
-            if (isGrounded || CanUseCoyote) {
+            if (IsEffectivelyGrounded() || CanUseCoyote) {
                 _jumpToConsume = true;
             }
             else
@@ -995,6 +995,17 @@ public class ShadowTwinMovement : MonoBehaviour
     private float _frameLeftGrounded = float.MinValue;
     public bool isGrounded;
     public bool startingOnGround = true;
+
+    // Helper method to get effective grounded state considering shadow lash
+    private bool IsEffectivelyGrounded()
+    {
+        // During shadow lash, always treat player as airborne even if physically grounded
+        if (ShadowTwinLash.obj != null && ShadowTwinLash.obj.ShouldTreatPlayerAsAirborne())
+        {
+            return false;
+        }
+        return isGrounded;
+    }
     private float _landedSqueezeX = 1.25f;
     private float _landedSqueezeY = 0.65f;
     private float _landedSqueezeTime = 0.08f;
@@ -1161,13 +1172,13 @@ public class ShadowTwinMovement : MonoBehaviour
     private bool _latchedJumpToConsume = false;
     private bool _previousJumpHeld = false;
 
-    private bool CanUseJump => (isGrounded || CanUseCoyote) && _jumpToConsume;
+    private bool CanUseJump => (IsEffectivelyGrounded() || CanUseCoyote) && _jumpToConsume;
     private bool HasBufferedJump => _time < _timeJumpWasPressed + _stats.JumpBuffer;
-    private bool CanUseCoyote => _coyoteUsable && !isGrounded && _time < _frameLeftGrounded + _stats.CoyoteTime;
+    private bool CanUseCoyote => _coyoteUsable && !IsEffectivelyGrounded() && _time < _frameLeftGrounded + _stats.CoyoteTime;
 
     private void HandleJump()
     {
-        if (!_endedJumpEarly && !isGrounded && !_jumpHeldInput && ShadowTwinPlayer.obj.rigidBody.velocity.y > 0) _endedJumpEarly = true;
+        if (!_endedJumpEarly && !IsEffectivelyGrounded() && !_jumpHeldInput && ShadowTwinPlayer.obj.rigidBody.velocity.y > 0) _endedJumpEarly = true;
 
         if (_isLatchedToSurface && _latchedJumpToConsume)
         {
@@ -1177,7 +1188,7 @@ public class ShadowTwinMovement : MonoBehaviour
 
         if (!_jumpToConsume && !HasBufferedJump) return;
 
-        if(HasBufferedJump && isGrounded && !_jumpToConsume) {
+        if(HasBufferedJump && IsEffectivelyGrounded() && !_jumpToConsume) {
             ExecuteRegularJump();
             return;
         }
@@ -1541,6 +1552,7 @@ public class ShadowTwinMovement : MonoBehaviour
         
         // Reset jump state
         isOnMoveable = false;
+        isGrounded = false;
         _endedJumpEarly = false;
         _timeJumpWasPressed = 0;
         _coyoteUsable = false;
@@ -1652,7 +1664,7 @@ public class ShadowTwinMovement : MonoBehaviour
                 if(boost > 0) {
                     _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, (_hitBoostDirection * _stats.MaxSpeed) + boost, _stats.Acceleration * Time.fixedDeltaTime);    
                 } else {    
-                    var deceleration = isGrounded ? _stats.GroundDeceleration : _stats.AirDeceleration;
+                    var deceleration = IsEffectivelyGrounded() ? _stats.GroundDeceleration : _stats.AirDeceleration;
                     _frameVelocity.x = isOnMoveable && moveableRigidbody != null ?
                         moveableRigidbody.velocity.x :
                         Mathf.MoveTowards(_frameVelocity.x, 0, deceleration * Time.fixedDeltaTime);
@@ -1681,7 +1693,7 @@ public class ShadowTwinMovement : MonoBehaviour
             _frameVelocity.y = moveableRigidbody.velocity.y;
             return;
         }
-        if (isGrounded && _frameVelocity.y <= 0f)
+        if (IsEffectivelyGrounded() && _frameVelocity.y <= 0f)
         {
             // Don't apply grounding force if we just bounced
             if (!_justBounced)
