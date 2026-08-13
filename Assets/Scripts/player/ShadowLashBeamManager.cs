@@ -66,4 +66,8 @@ public class ShadowLashBeamManager : MonoBehaviour
         yield return beam.FadeOut();
         Destroy(beamObject);
     }
+
+    public void TriggerHitSurfaceAnimation() {
+        _activeBeam?.TriggerHitSurfaceAnimation();
+    }
 }

@@ -17,6 +17,7 @@ public class ShadowLashBeam : MonoBehaviour
     [SerializeField] private float _raycastDistance = 0.5f;
     [SerializeField] private float _fadeOutDuration = 0.5f;
     [SerializeField] private float _particleSystemDurationAfterDestroy = 1.0f;
+    [SerializeField] private Animator _beamHeadAnimator;
 
     private Coroutine _lashCoroutine;
     private Vector3 _headMaskStartPosition;
@@ -136,6 +137,7 @@ public class ShadowLashBeam : MonoBehaviour
 
     public IEnumerator FadeOut()
     {
+        TriggerNoHitSurfaceAnimation();
         if(_lashCoroutine != null)
             yield return _lashCoroutine;
         
@@ -269,6 +271,18 @@ public class ShadowLashBeam : MonoBehaviour
             {
                 _beamHeadRenderer.transform.localPosition = headTargetPosition;
             }
+        }
+    }
+
+    public void TriggerHitSurfaceAnimation() {
+        if (_beamHeadAnimator != null) {
+            _beamHeadAnimator.SetTrigger("hitSurface");
+        }
+    }
+
+    private void TriggerNoHitSurfaceAnimation() {
+        if (_beamHeadAnimator != null) {
+            _beamHeadAnimator.SetTrigger("noHitSurface");
         }
     }
 }

@@ -1329,6 +1329,8 @@ public class ShadowTwinMovement : MonoBehaviour
         if (hit.collider != null)
         {
             Vector2 playerPos = (Vector2)transform.position;
+
+            ShadowLashBeamManager.obj.TriggerHitSurfaceAnimation();
             
             // Check if lashing upward to a floating platform ceiling
             bool isFloatingPlatform = hit.collider.gameObject.layer == LayerMask.NameToLayer("JumpThroughs") 

@@ -4926,6 +4926,7 @@ GameObject:
   - component: {fileID: 1452257104166202997}
   - component: {fileID: 2385152219262291304}
   - component: {fileID: 9195233149317975652}
+  - component: {fileID: 8684002588750428045}
   m_Layer: 10
   m_Name: Beam head sprite
   m_TagString: Untagged
@@ -4989,7 +4990,7 @@ SpriteRenderer:
   m_SortingLayerID: 163644049
   m_SortingLayer: -2
   m_SortingOrder: -1
-  m_Sprite: {fileID: 21300000, guid: a8acf61e0f6354f29a48367e0eedb451, type: 3}
+  m_Sprite: {fileID: -1321753116, guid: f880affdec58549468772b5c40a74241, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -5084,6 +5085,27 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 0
+--- !u!95 &8684002588750428045
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2096514452499068387}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 0c097ce887dae456f9d38d47639d0e17, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &4783406525658471561
 GameObject:
   m_ObjectHideFlags: 0
@@ -5249,7 +5271,7 @@ SpriteRenderer:
   m_Size: {x: 8, y: 0.875}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 2
   m_SpriteSortPoint: 0
 --- !u!95 &3641800400765185561
@@ -5333,6 +5355,7 @@ MonoBehaviour:
   _collisionLayerMask:
     serializedVersion: 2
     m_Bits: 968
-  _raycastDistance: 0.375
+  _raycastDistance: 0.25
   _fadeOutDuration: 0.25
   _particleSystemDurationAfterDestroy: 1
+  _beamHeadAnimator: {fileID: 8684002588750428045}
