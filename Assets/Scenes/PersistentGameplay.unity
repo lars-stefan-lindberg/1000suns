@@ -10498,10 +10498,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _renderer: {fileID: 8611899175694005967}
   _mainTransform: {fileID: 8240633124138664367}
-  _trailColors: []
+  _trailColors:
+  - {r: 0, g: 0, b: 0, a: 1}
+  - {r: 0.39607844, g: 0.39607844, b: 0.39607844, a: 1}
+  - {r: 0.6039216, g: 0.6039216, b: 0.6039216, a: 1}
   _fadeColor: {r: 0, g: 0, b: 0, a: 0}
-  _fadeTime: 0.6
-  _ghostInterval: 0.17
+  _fadeTime: 0.4
+  _ghostInterval: 0.1
 --- !u!1 &1090564901
 GameObject:
   m_ObjectHideFlags: 0
@@ -25153,7 +25156,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99ce6f2d562e5401f8cfa0e973f3753f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _shadowLashBeamPrefab: {fileID: 6710449552976774092, guid: d6260cfbce6164a32aef35c08c6a39a3, type: 3}
   _lashPauseDuration: 0.2
   _directionalInputBufferWindow: 0.1
 --- !u!4 &8483464538774111224

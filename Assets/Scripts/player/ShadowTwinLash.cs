@@ -169,6 +169,7 @@ public class ShadowTwinLash : MonoBehaviour
 
     private IEnumerator PerformLashWithPause(Vector2 latchDirection, bool alreadyFrozen = false)
     {
+        ShadowTwinPlayer.obj.ForcePushFlash();
         // Set facing direction based on lash direction (for horizontal lashes)
         if (latchDirection.x != 0)
         {

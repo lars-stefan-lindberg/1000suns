@@ -1389,6 +1389,7 @@ public class ShadowTwinMovement : MonoBehaviour
         _latchReachedThisPull = false;
         _isLatchPulling = true;
         ShadowTwinPlayer.obj.DisableGravity();
+        _ghostTrail.ShowGhosts();
     }
 
     public void EndLatchPull()

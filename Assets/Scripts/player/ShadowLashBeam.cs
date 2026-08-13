@@ -10,11 +10,13 @@ public class ShadowLashBeam : MonoBehaviour
     [SerializeField] private SpriteRenderer _beamRenderer;
     [SerializeField] private SpriteRenderer _beamHeadRenderer;
     [SerializeField] private ShadowLashBeamCollider _beamHeadCollider;
+    [SerializeField] private ParticleSystem _particles;
     [SerializeField] private float _lashSpeed = 10f;
     [SerializeField] private float _lashDistance = 10f;
     [SerializeField] private LayerMask _collisionLayerMask;
     [SerializeField] private float _raycastDistance = 0.5f;
     [SerializeField] private float _fadeOutDuration = 0.5f;
+    [SerializeField] private float _particleSystemDurationAfterDestroy = 1.0f;
 
     private Coroutine _lashCoroutine;
     private Vector3 _headMaskStartPosition;
@@ -23,6 +25,7 @@ public class ShadowLashBeam : MonoBehaviour
     private bool _tailOffsetInitialized;
     private bool _hasHitSurface;
     private int _direction = 1; // 1 for right, -1 for left
+    private Vector3 _previousTailLocalPosition;
 
     void Awake()
     {
@@ -31,7 +34,12 @@ public class ShadowLashBeam : MonoBehaviour
         if (_beamHeadCollider != null)
         {
             _beamHeadCollider.OnSurfaceHit += HandleSurfaceHit;
-        }    
+        }
+
+        if (_particles != null)
+        {
+            _particles.Stop();
+        }
     }
 
     void OnDestroy() {
@@ -64,12 +72,66 @@ public class ShadowLashBeam : MonoBehaviour
             float tailWorldX = transform.TransformPoint(_tailMask.localPosition).x;
             _tailOffsetX = tailWorldX - playerPosition.x;
             _tailOffsetInitialized = true;
+            _previousTailLocalPosition = _tailMask.localPosition;
         }
 
         // Update tail position maintaining the initial offset
         float newTailWorldX = playerPosition.x + _tailOffsetX;
         Vector3 newTailLocalPosition = transform.InverseTransformPoint(new Vector3(newTailWorldX, playerPosition.y, playerPosition.z));
-        _tailMask.localPosition = new Vector3(newTailLocalPosition.x, _tailMask.localPosition.y, _tailMask.localPosition.z);
+        Vector3 newTailPosition = new Vector3(newTailLocalPosition.x, _tailMask.localPosition.y, _tailMask.localPosition.z);
+        
+        // Calculate the delta movement of the tail
+        Vector3 tailDelta = newTailPosition - _previousTailLocalPosition;
+        
+        // Start playing particles when tail starts moving
+        if (tailDelta.magnitude > 0.001f && _particles != null && !_particles.isPlaying)
+        {
+            _particles.Play();
+        }
+        
+        // Move particles by the same delta
+        if (_particles != null)
+        {
+            Vector3 particlesLocalPosition = _particles.transform.localPosition;
+            _particles.transform.localPosition = particlesLocalPosition + tailDelta;
+        }
+        
+        // Update tail mask position
+        _tailMask.localPosition = newTailPosition;
+        _previousTailLocalPosition = newTailPosition;
+    }
+
+    public IEnumerator DisableBeamAndWaitForParticles()
+    {
+        // Disable beam visual components immediately
+        if (_headMask != null)
+        {
+            _headMask.gameObject.SetActive(false);
+        }
+        
+        if (_tailMask != null)
+        {
+            _tailMask.gameObject.SetActive(false);
+        }
+        
+        if (_beamRenderer != null)
+        {
+            _beamRenderer.gameObject.SetActive(false);
+        }
+        
+        if (_beamHeadRenderer != null)
+        {
+            _beamHeadRenderer.gameObject.SetActive(false);
+        }
+        
+        // Stop emitting new particles but let existing ones finish
+        if (_particles != null)
+        {
+            _particles.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+        }
+        
+        // Wait for the specified duration to let particles finish
+        yield return new WaitForSeconds(_particleSystemDurationAfterDestroy);
     }
 
     public IEnumerator FadeOut()

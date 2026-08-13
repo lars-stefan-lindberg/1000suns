@@ -31,11 +31,17 @@ public class ShadowLashBeamManager : MonoBehaviour
             if (ShadowTwinMovement.obj.IsLatchedToSurface())
             {
                 _isTrackingBeam = false;
-                Destroy(_activeBeamObject);
+                StartCoroutine(DestroyBeamAfterParticles(_activeBeam, _activeBeamObject));
                 _activeBeam = null;
                 _activeBeamObject = null;
             }
         }
+    }
+
+    private IEnumerator DestroyBeamAfterParticles(ShadowLashBeam beam, GameObject beamObject)
+    {
+        yield return beam.DisableBeamAndWaitForParticles();
+        Destroy(beamObject);
     }
 
     public void ShootBeam(Vector3 spawnLocation, int direction) {
