@@ -7,7 +7,7 @@ public class ShadowTwinLash : MonoBehaviour
 {
     public static ShadowTwinLash obj;
     private bool _isLashDisabled = false;
-    private bool _isLashing = false;
+    private bool _isShadowLashing = false;
     private bool _lashButtonReleased = false;
 
     [Header("Lash Pause Configuration")]
@@ -52,7 +52,7 @@ public class ShadowTwinLash : MonoBehaviour
         }
 
         // Reset state
-        _isLashing = false;
+        _isShadowLashing = false;
         _lashButtonReleased = false;
 
         // Restore gravity if it was disabled
@@ -84,7 +84,7 @@ public class ShadowTwinLash : MonoBehaviour
                     _pausedVelocity = ShadowTwinPlayer.obj.rigidBody.velocity;
                     ShadowTwinMovement.obj.PauseInAir();
                     ShadowTwinPlayer.obj.DisableGravity();
-                    _isLashing = true;
+                    _isShadowLashing = true;
                     _lashButtonReleased = false;
 
                     // Start directional input buffer
@@ -161,7 +161,7 @@ public class ShadowTwinLash : MonoBehaviour
             // No valid direction - unfreeze player
             ShadowTwinPlayer.obj.ResetGravity();
             ShadowTwinPlayer.obj.rigidBody.velocity = _pausedVelocity;
-            _isLashing = false;
+            _isShadowLashing = false;
         }
         
         _activeDirectionalBufferCoroutine = null;
@@ -187,7 +187,6 @@ public class ShadowTwinLash : MonoBehaviour
         if (!alreadyFrozen)
         {
             // Start lashing - lock flip player and reset button released flag
-            _isLashing = true;
             _lashButtonReleased = false;
             
             // Pause the player in the air
@@ -208,20 +207,8 @@ public class ShadowTwinLash : MonoBehaviour
         // If no surface was found, restore gravity and velocity and unlock flip
         if (!surfaceFound)
         {
-            ShadowTwinPlayer.obj.ResetGravity();
+            ShadowTwinMovement.obj.EndLatchPull();
             ShadowTwinPlayer.obj.rigidBody.velocity = _pausedVelocity;
-            _isLashing = false; // Unlock flip player
-        }
-        else
-        {
-            // Surface found - check surface type to determine if we should unlock flip
-            // Wall latching keeps flip locked (handled by wall latch logic)
-            // Ground and ceiling latching unlocks flip
-            if (ShadowTwinMovement.obj.GetLatchSurfaceType() != ShadowTwinMovement.LatchSurfaceType.Wall)
-            {
-                _isLashing = false; // Unlock flip player for ground/ceiling
-            }
-            // For walls, keep _isLashing = true until EndLatchPull is called
         }
 
         // Coroutine finished - clear reference
@@ -290,14 +277,14 @@ public class ShadowTwinLash : MonoBehaviour
         _isLashDisabled = false;
     }
 
-    public bool IsLashing()
+    public bool IsShadowLashing()
     {
-        return _isLashing;
+        return _isShadowLashing;
     }
 
-    public void UnlockFlipFromLash()
+    public void SetIsShadowLashing(bool value)
     {
-        _isLashing = false;
+        _isShadowLashing = value;
     }
 
     public bool WasLashButtonReleased()

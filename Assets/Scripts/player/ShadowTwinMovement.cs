@@ -154,50 +154,7 @@ public class ShadowTwinMovement : MonoBehaviour
         _time += Time.deltaTime;
         UpdateAnimator();
         
-        // Handle player flip based on controlled object or movement input
-        // Don't flip during: wall jump, wall latch, or shadow lash
-        bool isLashing = ShadowTwinLash.obj.IsLashing();
-        
-        if (!_isWallJumping && !(_isLatchedToSurface && _latchSurfaceType == LatchSurfaceType.Wall) && !isLashing)
-        {
-            if (ShadowTwinPull.obj != null && ShadowTwinPull.obj.IsControllingObject)
-            {
-                Rigidbody2D controlledObject = ShadowTwinPull.obj.GetControlledObject();
-                if (controlledObject != null)
-                {
-                    // Face the controlled object
-                    float objectX = controlledObject.position.x;
-                    float playerX = transform.position.x;
-                    if (objectX < playerX - 0.1f)
-                    {
-                        spriteRenderer.flipX = true;
-                    }
-                    else if (objectX > playerX + 0.1f)
-                    {
-                        spriteRenderer.flipX = false;
-                    }
-                }
-            }
-            else
-            {
-                FlipPlayer(_movementInput.x);
-            }
-        }
-        // When latched to a wall, face away from the wall
-        else if (_isLatchedToSurface && _latchSurfaceType == LatchSurfaceType.Wall)
-        {
-            // _latchDirection.x tells us which way we're facing the wall
-            // If latchDirection.x is positive (1), we latched to the right, so face left (flipX = true)
-            // If latchDirection.x is negative (-1), we latched to the left, so face right (flipX = false)
-            if (_latchDirection.x > 0)
-            {
-                spriteRenderer.flipX = true; // Face left (away from wall on the right)
-            }
-            else if (_latchDirection.x < 0)
-            {
-                spriteRenderer.flipX = false; // Face right (away from wall on the left)
-            }
-        }
+        HandleFlipPlayer();
         
         if (_mergeSplitHeld)
         {
@@ -292,6 +249,51 @@ public class ShadowTwinMovement : MonoBehaviour
         // }
     }
 
+    private void HandleFlipPlayer() {
+        if (ShadowTwinPull.obj != null && ShadowTwinPull.obj.IsControllingObject)
+        {
+            Rigidbody2D controlledObject = ShadowTwinPull.obj.GetControlledObject();
+            if (controlledObject != null)
+            {
+                // Face the controlled object
+                float objectX = controlledObject.position.x;
+                float playerX = transform.position.x;
+                if (objectX < playerX - 0.1f)
+                {
+                    spriteRenderer.flipX = true;
+                }
+                else if (objectX > playerX + 0.1f)
+                {
+                    spriteRenderer.flipX = false;
+                }
+            }
+            return;
+        }
+        
+        if(_isWallJumping) {
+            return;
+        }
+        
+        // When latched to a wall, face away from the wall
+        if (_isLatchedToSurface && _latchSurfaceType == LatchSurfaceType.Wall)
+        {
+            // _latchDirection.x tells us which way we're facing the wall
+            // If latchDirection.x is positive (1), we latched to the right, so face left (flipX = true)
+            // If latchDirection.x is negative (-1), we latched to the left, so face right (flipX = false)
+            if (_latchDirection.x > 0)
+            {
+                spriteRenderer.flipX = true; // Face left (away from wall on the right)
+            }
+            else if (_latchDirection.x < 0)
+            {
+                spriteRenderer.flipX = false; // Face right (away from wall on the left)
+            }
+            return;
+        }
+
+        FlipPlayer(_movementInput.x);
+    }
+
     public float baseProjectilePushPower = 7f;
     private void OnTriggerEnter2D(Collider2D collision) {
         if(collision.transform.CompareTag("Projectile")) {  
@@ -364,6 +366,7 @@ public class ShadowTwinMovement : MonoBehaviour
     public bool isFalling = false;
     public bool isMoving = false;
     public bool IsPulling = false;
+    private bool _isLatchPulling = false;
 
     private void UpdateAnimator()
     {
@@ -417,7 +420,7 @@ public class ShadowTwinMovement : MonoBehaviour
     public void PauseInAir() {
         _isPausedInAir = true;
         _animator.SetTrigger("anchorPull");
-        UpdateAnimatorIsPulling(true);
+        UpdateAnimatorIsLatchPulling(true);
     }
 
     public void UnpauseInAir() {
@@ -1269,8 +1272,8 @@ public class ShadowTwinMovement : MonoBehaviour
         Ceiling
     }
 
-    public void UpdateAnimatorIsPulling(bool value) {
-        _animator.SetBool("isPulling", value);
+    public void UpdateAnimatorIsLatchPulling(bool value) {
+        _animator.SetBool("isLatchPulling", value);
     }
 
     #region Surface Latch
@@ -1373,7 +1376,7 @@ public class ShadowTwinMovement : MonoBehaviour
     {
         _isLatchedToSurface = false;
         _latchReachedThisPull = false;
-        IsPulling = true;
+        _isLatchPulling = true;
         ShadowTwinPlayer.obj.DisableGravity();
     }
 
@@ -1386,12 +1389,11 @@ public class ShadowTwinMovement : MonoBehaviour
         _latchReachedThisPull = false;
         _isLatchingToFloatingPlatform = false;
         _targetFloatingPlatform = null;
-        IsPulling = false;
-        UpdateAnimatorIsPulling(false);
+        _isLatchPulling = false;
+        UpdateAnimatorIsLatchPulling(false);
         ShadowTwinPlayer.obj.ResetGravity();
         
-        // Unlock flip player when ending latch pull
-        ShadowTwinLash.obj.UnlockFlipFromLash();
+        ShadowTwinLash.obj.SetIsShadowLashing(false);
     }
 
     private void OnLatchReached()
@@ -1408,10 +1410,7 @@ public class ShadowTwinMovement : MonoBehaviour
         _propelTimer = _propelThroughPlatformDuration;
         // Note: _propelVelocity is set before calling this method
         ShadowTwinPlayer.obj.DisableGravity();
-        if (ShadowTwinLash.obj != null)
-        {
-            ShadowTwinLash.obj.UnlockFlipFromLash();
-        }
+        ShadowTwinLash.obj.SetIsShadowLashing(false);
         
         // Temporarily disable the floating platform's collider to prevent grounded detection
         if (_targetFloatingPlatform != null)
@@ -1457,8 +1456,8 @@ public class ShadowTwinMovement : MonoBehaviour
                     _latchPosition = Vector2.zero;
                     _latchDirection = Vector2.zero;
                     _latchReachedThisPull = false;
-                    IsPulling = false;
-                    UpdateAnimatorIsPulling(false);
+                    _isLatchPulling = false;
+                    UpdateAnimatorIsLatchPulling(false);
                     _isLatchingToFloatingPlatform = false;
                     _targetFloatingPlatform = null; // Clear platform reference after starting propel
                     return;
@@ -1639,7 +1638,7 @@ public class ShadowTwinMovement : MonoBehaviour
         }
 
         //Apply ground deceleration even no matter if player is grounded or not, since ground deceleration "feels" better in the air
-        if(IsPulling) {
+        if(_isLatchPulling) {
             _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, _stats.GroundDeceleration * Time.fixedDeltaTime);
             return;
         }
@@ -1707,7 +1706,7 @@ public class ShadowTwinMovement : MonoBehaviour
                 HandlePropelThroughPlatform();
                 return;
             }
-            else if (IsPulling && _latchPosition != Vector2.zero)
+            else if (_isLatchPulling && _latchPosition != Vector2.zero)
             {
                 // Handle latch pull velocity
                 HandleLatchPullVelocity();
