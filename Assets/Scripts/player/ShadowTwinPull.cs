@@ -253,7 +253,7 @@ public class ShadowTwinPull : MonoBehaviour
         _isOutOfRange = false;
 
         ShadowTwinMovement.obj.IsPulling = false;
-        ShadowTwinMovement.obj.UpdateAnimatorIsLatchPulling(false);
+        ShadowTwinMovement.obj.UpdateAnimatorIsPulling(false);
         ShadowTwinPlayer.obj.ResetGravity();
 
         //For instance tough prisoners can break themselves free and cancel pulling, resulting in no pulled pullable
@@ -666,7 +666,7 @@ public class ShadowTwinPull : MonoBehaviour
         ShadowTwinPlayer.obj.PlayerPullLight();
         ShadowTwinPlayer.obj.StartFullyChargedVfx();
         ShadowTwinMovement.obj.IsPulling = true;
-        ShadowTwinMovement.obj.UpdateAnimatorIsLatchPulling(true);
+        ShadowTwinMovement.obj.UpdateAnimatorIsPulling(true);
         ShadowTwinMovement.obj.TriggerForcePullAnimation();
         PullPowerType chargePowerType = GetChargePowerType();
         ExecuteForcePushVfx(chargePowerType);

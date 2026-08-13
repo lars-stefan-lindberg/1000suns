@@ -1287,6 +1287,10 @@ public class ShadowTwinMovement : MonoBehaviour
         _animator.SetBool("isLatchPulling", value);
     }
 
+    public void UpdateAnimatorIsPulling(bool value) {
+        _animator.SetBool("isPulling", value);
+    }
+
     #region Surface Latch
 
     public bool IsLatchedToSurface()
