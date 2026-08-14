@@ -1400,6 +1400,9 @@ public class ShadowTwinMovement : MonoBehaviour
 
     public void EndLatchPull()
     {
+        // Only stop the beam if we were actually pulling (not when called after no surface found)
+        bool wasActuallyPulling = _isLatchPulling;
+        
         _isLatchedToSurface = false;
         _latchPosition = Vector2.zero;
         _latchDirection = Vector2.zero;
@@ -1413,8 +1416,8 @@ public class ShadowTwinMovement : MonoBehaviour
         
         ShadowTwinLash.obj.SetIsShadowLashing(false);
         
-        // Stop and destroy the beam when ending latch pull
-        if (ShadowLashBeamManager.obj != null)
+        // Stop and destroy the beam only if we were actually pulling towards a surface
+        if (wasActuallyPulling && ShadowLashBeamManager.obj != null)
         {
             ShadowLashBeamManager.obj.ForceStopBeam();
         }
