@@ -192,26 +192,16 @@ public class ShadowTwinMovement : MonoBehaviour
         // Update propel through platform timer
         if (_isPropellingThroughPlatform)
         {
-            // Cancel propel if player lands on ground
-            if (isGrounded)
+            _propelTimer -= Time.deltaTime;
+            
+            if (_propelTimer <= 0f)
             {
                 _isPropellingThroughPlatform = false;
                 _propelTimer = 0f;
+                // Transition to floaty state instead of immediately resetting gravity
+                _isPostPropelFloaty = true;
+                _postPropelFloatyTimer = _postPropelFloatyDuration;
                 ShadowTwinPlayer.obj.ResetGravity();
-            }
-            else
-            {
-                _propelTimer -= Time.deltaTime;
-                
-                if (_propelTimer <= 0f)
-                {
-                    _isPropellingThroughPlatform = false;
-                    _propelTimer = 0f;
-                    // Transition to floaty state instead of immediately resetting gravity
-                    _isPostPropelFloaty = true;
-                    _postPropelFloatyTimer = _postPropelFloatyDuration;
-                    ShadowTwinPlayer.obj.ResetGravity();
-                }
             }
         }
         
@@ -1072,6 +1062,9 @@ public class ShadowTwinMovement : MonoBehaviour
                 _latchedJumpToConsume = false;
                 _landed = true;
                 isFalling = false;
+                _isPropellingThroughPlatform = false;
+                _propelTimer = 0f;
+                ShadowTwinPlayer.obj.ResetGravity();
 
                 //To avoid "double grounded". Sometimes when player barely reaches up on edge it gets grounded, but still has upwards velocity, and lands again.
                 _frameVelocity.y = 0; 
@@ -1534,6 +1527,7 @@ public class ShadowTwinMovement : MonoBehaviour
                     UpdateAnimatorIsLatchPulling(false);
                     _isLatchingToFloatingPlatform = false;
                     _targetFloatingPlatform = null; // Clear platform reference after starting propel
+                    ShadowLashBeamManager.obj.ForceStopBeam();
                     return;
                 }
                 
