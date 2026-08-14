@@ -1412,6 +1412,12 @@ public class ShadowTwinMovement : MonoBehaviour
         ShadowTwinPlayer.obj.ResetGravity();
         
         ShadowTwinLash.obj.SetIsShadowLashing(false);
+        
+        // Stop and destroy the beam when ending latch pull
+        if (ShadowLashBeamManager.obj != null)
+        {
+            ShadowLashBeamManager.obj.ForceStopBeam();
+        }
     }
 
     private void OnLatchReached()
@@ -1487,6 +1493,8 @@ public class ShadowTwinMovement : MonoBehaviour
                 if (ShadowTwinLash.obj.WasLashButtonReleased())
                 {
                     // Button was released - end the latch and drop
+                    // Reset horizontal velocity to prevent unwanted horizontal movement
+                    _frameVelocity.x = 0;
                     EndLatchPull();
                     return;
                 }

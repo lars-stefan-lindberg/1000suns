@@ -38,6 +38,15 @@ public class ShadowLashBeamManager : MonoBehaviour
         }
     }
 
+    public void ForceStopBeam() {
+        if (_activeBeam != null) {
+            _isTrackingBeam = false;
+            StartCoroutine(DestroyBeamAfterParticles(_activeBeam, _activeBeamObject));
+            _activeBeam = null;
+            _activeBeamObject = null;
+        }
+    }
+
     private IEnumerator DestroyBeamAfterParticles(ShadowLashBeam beam, GameObject beamObject)
     {
         yield return beam.DisableBeamAndWaitForParticles();

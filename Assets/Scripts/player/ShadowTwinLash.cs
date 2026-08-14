@@ -68,28 +68,21 @@ public class ShadowTwinLash : MonoBehaviour
         {
             if (context.performed)
             {
-                if(ShadowTwinMovement.obj.IsLatchedToSurface())
+                // Cancel any existing directional buffer coroutine
+                if (_activeDirectionalBufferCoroutine != null)
                 {
-                    ShadowTwinMovement.obj.EndLatchPull();
+                    StopCoroutine(_activeDirectionalBufferCoroutine);
                 }
-                else
-                {
-                    // Cancel any existing directional buffer coroutine
-                    if (_activeDirectionalBufferCoroutine != null)
-                    {
-                        StopCoroutine(_activeDirectionalBufferCoroutine);
-                    }
-                    
-                    // Immediately freeze the player for instant response
-                    _pausedVelocity = ShadowTwinPlayer.obj.rigidBody.velocity;
-                    ShadowTwinMovement.obj.PauseInAir();
-                    ShadowTwinPlayer.obj.DisableGravity();
-                    _isShadowLashing = true;
-                    _lashButtonReleased = false;
+                
+                // Immediately freeze the player for instant response
+                _pausedVelocity = ShadowTwinPlayer.obj.rigidBody.velocity;
+                ShadowTwinMovement.obj.PauseInAir();
+                ShadowTwinPlayer.obj.DisableGravity();
+                _isShadowLashing = true;
+                _lashButtonReleased = false;
 
-                    // Start directional input buffer
-                    _activeDirectionalBufferCoroutine = StartCoroutine(DirectionalInputBuffer());
-                }
+                // Start directional input buffer
+                _activeDirectionalBufferCoroutine = StartCoroutine(DirectionalInputBuffer());
             }
             if(context.canceled)
             {
