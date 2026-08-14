@@ -19,6 +19,7 @@ public class ShadowTwinLash : MonoBehaviour
     private Vector2 _pausedVelocity;
     private Coroutine _activeDirectionalBufferCoroutine;
     private Coroutine _activeLashCoroutine;
+    private Vector2 _currentLashDirection;
 
     private void Awake()
     {
@@ -92,8 +93,7 @@ public class ShadowTwinLash : MonoBehaviour
     }
 
     public void ShootShadowLashBeam() {
-        int direction = ShadowTwinMovement.obj.IsFacingLeft() ? -1 : 1;
-        ShadowLashBeamManager.obj.ShootBeam(transform.position + new Vector3(0, 0.125f, 0), direction);
+        ShadowLashBeamManager.obj.ShootBeam(transform.position + new Vector3(0, 0.125f, 0), _currentLashDirection);
     }
 
     private IEnumerator DirectionalInputBuffer()
@@ -102,17 +102,17 @@ public class ShadowTwinLash : MonoBehaviour
         Vector2 bufferedDirection = Vector2.zero;
         float elapsedTime = 0f;
         
-        // Wait for the buffer window, continuously checking for vertical input
+        // Wait for the buffer window, continuously checking for directional input
         // Note: Player is already frozen at this point for instant response
         while (elapsedTime < _directionalInputBufferWindow)
         {
             Vector2 currentInput = ShadowTwinMovement.obj.GetMovementInput();
             
-            // If we detect vertical input during the buffer, prioritize it
+            // If we detect vertical input during the buffer, store it but don't break early
+            // This ensures consistent timing with horizontal lashes
             if (currentInput.y != 0)
             {
                 bufferedDirection = new Vector2(0, Mathf.Sign(currentInput.y));
-                break; // Exit early if vertical input detected
             }
             
             elapsedTime += Time.deltaTime;
@@ -162,6 +162,9 @@ public class ShadowTwinLash : MonoBehaviour
 
     private IEnumerator PerformLashWithPause(Vector2 latchDirection, bool alreadyFrozen = false)
     {
+        // Store the lash direction for the animation event to use
+        _currentLashDirection = latchDirection;
+        
         ShadowTwinPlayer.obj.ForcePushFlash();
         // Set facing direction based on lash direction (for horizontal lashes)
         if (latchDirection.x != 0)

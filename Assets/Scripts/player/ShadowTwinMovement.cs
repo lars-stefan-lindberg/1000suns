@@ -1396,7 +1396,15 @@ public class ShadowTwinMovement : MonoBehaviour
             else
             {
                 // Vertical movement - keep player's X position
-                _latchPosition = new Vector2(playerPos.x, hit.point.y);
+                // For upward lashes (ceiling), adjust position so player's top is at the ceiling
+                // For downward lashes (ground), keep player's center at hit point
+                float yPosition = hit.point.y;
+                if (direction.y > 0)
+                {
+                    // Lashing upward to ceiling - offset by half collider height so top touches ceiling
+                    yPosition -= _collider.bounds.extents.y;
+                }
+                _latchPosition = new Vector2(playerPos.x, yPosition);
             }
             
             _latchDirection = direction;

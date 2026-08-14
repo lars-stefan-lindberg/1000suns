@@ -23,9 +23,10 @@ public class ShadowLashBeam : MonoBehaviour
     private Vector3 _headMaskStartPosition;
     private Vector3 _beamHeadStartPosition;
     private float _tailOffsetX;
+    private float _tailOffsetY;
     private bool _tailOffsetInitialized;
     private bool _hasHitSurface;
-    private int _direction = 1; // 1 for right, -1 for left
+    private Vector2 _lashDirection = Vector2.right; // Direction of the lash (horizontal or vertical)
     private Vector3 _previousTailLocalPosition;
 
     void Awake()
@@ -67,22 +68,35 @@ public class ShadowLashBeam : MonoBehaviour
     {
         if (_tailMask == null) return;
 
-        // Initialize the offset on first call
+        // Initialize the offsets on first call
         if (!_tailOffsetInitialized)
         {
-            float tailWorldX = transform.TransformPoint(_tailMask.localPosition).x;
-            _tailOffsetX = tailWorldX - playerPosition.x;
+            Vector3 tailWorldPos = transform.TransformPoint(_tailMask.localPosition);
+            _tailOffsetX = tailWorldPos.x - playerPosition.x;
+            _tailOffsetY = tailWorldPos.y - playerPosition.y;
             _tailOffsetInitialized = true;
             _previousTailLocalPosition = _tailMask.localPosition;
         }
 
-        // Update tail position maintaining the initial offset
-        float newTailWorldX = playerPosition.x + _tailOffsetX;
-        Vector3 newTailLocalPosition = transform.InverseTransformPoint(new Vector3(newTailWorldX, playerPosition.y, playerPosition.z));
-        Vector3 newTailPosition = new Vector3(newTailLocalPosition.x, _tailMask.localPosition.y, _tailMask.localPosition.z);
+        // Update tail position based on lash direction
+        Vector3 newTailLocalPosition;
+        if (Mathf.Abs(_lashDirection.y) > 0)
+        {
+            // Vertical lash - keep X position fixed, update Y to follow player movement
+            float newTailWorldY = playerPosition.y + _tailOffsetY;
+            newTailLocalPosition = transform.InverseTransformPoint(new Vector3(playerPosition.x, newTailWorldY, playerPosition.z));
+            newTailLocalPosition = new Vector3(_tailMask.localPosition.x, newTailLocalPosition.y, _tailMask.localPosition.z);
+        }
+        else
+        {
+            // Horizontal lash - keep Y position fixed, update X to follow player movement
+            float newTailWorldX = playerPosition.x + _tailOffsetX;
+            newTailLocalPosition = transform.InverseTransformPoint(new Vector3(newTailWorldX, playerPosition.y, playerPosition.z));
+            newTailLocalPosition = new Vector3(newTailLocalPosition.x, _tailMask.localPosition.y, _tailMask.localPosition.z);
+        }
         
         // Calculate the delta movement of the tail
-        Vector3 tailDelta = newTailPosition - _previousTailLocalPosition;
+        Vector3 tailDelta = newTailLocalPosition - _previousTailLocalPosition;
         
         // Start playing particles when tail starts moving
         if (tailDelta.magnitude > 0.001f && _particles != null && !_particles.isPlaying)
@@ -98,8 +112,8 @@ public class ShadowLashBeam : MonoBehaviour
         }
         
         // Update tail mask position
-        _tailMask.localPosition = newTailPosition;
-        _previousTailLocalPosition = newTailPosition;
+        _tailMask.localPosition = newTailLocalPosition;
+        _previousTailLocalPosition = newTailLocalPosition;
     }
 
     public IEnumerator DisableBeamAndWaitForParticles()
@@ -190,11 +204,11 @@ public class ShadowLashBeam : MonoBehaviour
 
     [ContextMenu("Lash")]
     public void Lash() {
-        Lash(1); // Default to right direction for context menu
+        Lash(Vector2.right); // Default to right direction for context menu
     }
 
-    public void Lash(int direction) {
-        _direction = direction;
+    public void Lash(Vector2 direction) {
+        _lashDirection = direction.normalized;
         if (_headMaskStartPosition == Vector3.zero && _headMask != null)
         {
             InitializeStartPositions();
@@ -221,9 +235,10 @@ public class ShadowLashBeam : MonoBehaviour
             _beamHeadRenderer.transform.localPosition = _beamHeadStartPosition;
         }
 
-        float directionMultiplier = _direction;
-        Vector3 maskTargetPosition = new Vector3(_headMaskStartPosition.x + (_lashDistance * directionMultiplier), _headMaskStartPosition.y, _headMaskStartPosition.z);
-        Vector3 headTargetPosition = new Vector3(_beamHeadStartPosition.x + (_lashDistance * directionMultiplier), _beamHeadStartPosition.y, _beamHeadStartPosition.z);
+        // Calculate target positions based on lash direction
+        Vector3 lashOffset = new Vector3(_lashDirection.x * _lashDistance, _lashDirection.y * _lashDistance, 0);
+        Vector3 maskTargetPosition = _headMaskStartPosition + lashOffset;
+        Vector3 headTargetPosition = _beamHeadStartPosition + lashOffset;
 
         while (Vector3.Distance(_headMask.localPosition, maskTargetPosition) > 0.01f && !_hasHitSurface)
         {
@@ -235,7 +250,19 @@ public class ShadowLashBeam : MonoBehaviour
             if (_beamHeadCollider != null)
             {
                 Vector3 currentWorldPos = _beamHeadCollider.transform.position;
-                Vector3 rayDirection = _direction > 0 ? transform.right : -transform.right;
+                
+                // Convert lash direction to world space for raycasting
+                Vector3 rayDirection;
+                if (Mathf.Abs(_lashDirection.y) > 0)
+                {
+                    // Vertical lash
+                    rayDirection = _lashDirection.y > 0 ? transform.up : -transform.up;
+                }
+                else
+                {
+                    // Horizontal lash
+                    rayDirection = _lashDirection.x > 0 ? transform.right : -transform.right;
+                }
                 
                 RaycastHit2D hit = Physics2D.Raycast(currentWorldPos, rayDirection, moveDistance + _raycastDistance, _collisionLayerMask);
                 

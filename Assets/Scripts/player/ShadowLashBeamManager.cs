@@ -8,6 +8,7 @@ public class ShadowLashBeamManager : MonoBehaviour
     
     [SerializeField] private GameObject _shadowLashBeamPrefabRight;
     [SerializeField] private GameObject _shadowLashBeamPrefabLeft;
+    [SerializeField] private GameObject _shadowLashBeamPrefabUp;
 
     private ShadowLashBeam _activeBeam;
     private GameObject _activeBeamObject;
@@ -53,11 +54,24 @@ public class ShadowLashBeamManager : MonoBehaviour
         Destroy(beamObject);
     }
 
-    public void ShootBeam(Vector3 spawnLocation, int direction) {
-        GameObject prefabToUse = direction > 0 ? _shadowLashBeamPrefabRight : _shadowLashBeamPrefabLeft;
+    public void ShootBeam(Vector3 spawnLocation, Vector2 lashDirection) {
+        GameObject prefabToUse;
+        
+        // Determine which prefab to use based on lash direction
+        if (Mathf.Abs(lashDirection.y) > 0)
+        {
+            // Vertical lash (up or down)
+            prefabToUse = _shadowLashBeamPrefabUp;
+        }
+        else
+        {
+            // Horizontal lash (left or right)
+            prefabToUse = lashDirection.x > 0 ? _shadowLashBeamPrefabRight : _shadowLashBeamPrefabLeft;
+        }
+        
         GameObject shadowLashBeamPrefab = Instantiate(prefabToUse, spawnLocation, transform.rotation);
         ShadowLashBeam shadowLashBeamComponent = shadowLashBeamPrefab.GetComponent<ShadowLashBeam>();
-        shadowLashBeamComponent.Lash(direction);
+        shadowLashBeamComponent.Lash(lashDirection);
         
         _activeBeam = shadowLashBeamComponent;
         _activeBeamObject = shadowLashBeamPrefab;
