@@ -1318,11 +1318,25 @@ public class ShadowTwinMovement : MonoBehaviour
         if (_isLatchedToSurface || direction == Vector2.zero)
             return false;
 
-        Vector2 boxSize = new Vector2(_collider.bounds.size.x, _collider.bounds.size.y);
         Vector2 origin = (Vector2)transform.position;
         
         // Use different cast distances for horizontal vs vertical lashing
         float castDistance = Mathf.Abs(direction.x) > 0 ? _latchBoxCastDistanceHorizontal : _latchBoxCastDistanceVertical;
+        
+        // Adjust box size based on lash direction
+        // For horizontal lashes, use a thin vertical box (4 pixels = 0.5 units)
+        // For vertical lashes, use the full collider size
+        Vector2 boxSize;
+        if (Mathf.Abs(direction.x) > 0)
+        {
+            // Horizontal lash - thin vertical box
+            boxSize = new Vector2(_collider.bounds.size.x, 0.5f);
+        }
+        else
+        {
+            // Vertical lash - full collider size
+            boxSize = new Vector2(_collider.bounds.size.x, _collider.bounds.size.y);
+        }
         
         RaycastHit2D hit = Physics2D.BoxCast(origin, boxSize, 0f, direction, castDistance, _latchLayerMask);
         
