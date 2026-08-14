@@ -1453,25 +1453,25 @@ public class ShadowTwinMovement : MonoBehaviour
 
     private void HandleLatchPullVelocity()
     {
-        // For floating platforms, use distance check instead of collision check
-        // because the player can pass through them
-        bool hasReachedSurface;
-        if (_isLatchingToFloatingPlatform)
-        {
-            // Check if we're close to the latch position
-            float distanceToTarget = Vector2.Distance(transform.position, _latchPosition);
-            hasReachedSurface = distanceToTarget < 0.5f; // Threshold distance
-        }
-        else
-        {
-            hasReachedSurface = CheckLatchSurfaceCollision();
-        }
+        // Use distance check for all surfaces to make latching more robust
+        // At high speeds, collision detection with tiny distances can miss the surface
+        float distanceToTarget = Vector2.Distance(transform.position, _latchPosition);
+        
+        // Also check if we've overshot the target by checking if we're moving away from it
+        Vector2 directionToTarget = (_latchPosition - (Vector2)transform.position).normalized;
+        float dotProduct = Vector2.Dot(directionToTarget, _latchDirection);
+        bool hasOvershot = dotProduct < 0.5f; // If direction to target is opposite to latch direction, we've overshot
+        
+        bool hasReachedSurface = distanceToTarget < 0.5f || hasOvershot; // Threshold distance or overshot
 
         if (hasReachedSurface)
         {
             if (!_latchReachedThisPull)
             {
                 _latchReachedThisPull = true;
+                
+                // Snap player to the exact latch position for precision
+                transform.position = _latchPosition;
                 
                 // Check if this is a floating platform - if so, start propelling instead of latching
                 if (_isLatchingToFloatingPlatform)
