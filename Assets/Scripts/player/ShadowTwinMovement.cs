@@ -131,7 +131,7 @@ public class ShadowTwinMovement : MonoBehaviour
     {
         _roundedCeilingCornerThisFrame = false;
         
-        if(!_stopCollisions && !_isLatchPulling && !_isLatchedToSurface)
+        if(!_stopCollisions)
             CheckCollisions();
 
         HandleJump();
@@ -1030,58 +1030,60 @@ public class ShadowTwinMovement : MonoBehaviour
     {
         Physics2D.queriesStartInColliders = false;
 
-        RaycastHit2D groundRaycastResult = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, _groundLayerMasks);
-        bool groundHit = groundRaycastResult.collider != null;
+        if(!_isLatchPulling && !_isLatchedToSurface) {
+            RaycastHit2D groundRaycastResult = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, _groundLayerMasks);
+            bool groundHit = groundRaycastResult.collider != null;
 
-        if(groundHit) {
-            surface = SurfaceTypeManager.GetSurfaceType(groundRaycastResult.collider.gameObject.tag);
-            if(!isOnMoveable) {
-                Moveable moveable = groundRaycastResult.collider.GetComponent<Moveable>();
-                if(moveable != null) {
-                    isOnMoveable = true;
-                    moveableRigidbody = moveable.GetRigidbody();
+            if(groundHit) {
+                surface = SurfaceTypeManager.GetSurfaceType(groundRaycastResult.collider.gameObject.tag);
+                if(!isOnMoveable) {
+                    Moveable moveable = groundRaycastResult.collider.GetComponent<Moveable>();
+                    if(moveable != null) {
+                        isOnMoveable = true;
+                        moveableRigidbody = moveable.GetRigidbody();
+                    }
                 }
             }
-        }
-        
-        //Corner case when spawning
-        if(startingOnGround) {
-            groundHit = true;
-            if(!_startingOnGroundFalseCoroutineStarted) {
-                _startingOnGroundFalseCoroutineStarted = true;
-                StartCoroutine(SetStartingOnGroundToFalse());
+            
+            //Corner case when spawning
+            if(startingOnGround) {
+                groundHit = true;
+                if(!_startingOnGroundFalseCoroutineStarted) {
+                    _startingOnGroundFalseCoroutineStarted = true;
+                    StartCoroutine(SetStartingOnGroundToFalse());
+                }
             }
-        }
 
-        if(!isGrounded) {
-            bool ceilingHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
-            // Hit a Ceiling - only handle if moving upward
-            if (ceilingHit && !groundHit && _frameVelocity.y > 0)
+            if(!isGrounded) {
+                bool ceilingHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.up, _stats.RoofDistance, _ceilingLayerMasks);
+                // Hit a Ceiling - only handle if moving upward
+                if (ceilingHit && !groundHit && _frameVelocity.y > 0)
+                {
+                    HandleCeilingCollisions();
+                }
+            }
+
+            // Landed on the Ground
+            if (!isGrounded && groundHit && ShadowTwinPlayer.obj.rigidBody.velocity.y <= 0.05f)
             {
-                HandleCeilingCollisions();
+                isGrounded = true;
+                _coyoteUsable = true;
+                _endedJumpEarly = false;
+                _latchedJumpToConsume = false;
+                _landed = true;
+                isFalling = false;
+
+                //To avoid "double grounded". Sometimes when player barely reaches up on edge it gets grounded, but still has upwards velocity, and lands again.
+                _frameVelocity.y = 0; 
             }
-        }
-
-        // Landed on the Ground
-        if (!isGrounded && groundHit && ShadowTwinPlayer.obj.rigidBody.velocity.y <= 0.05f)
-        {
-            isGrounded = true;
-            _coyoteUsable = true;
-            _endedJumpEarly = false;
-            _latchedJumpToConsume = false;
-            _landed = true;
-            isFalling = false;
-
-            //To avoid "double grounded". Sometimes when player barely reaches up on edge it gets grounded, but still has upwards velocity, and lands again.
-            _frameVelocity.y = 0; 
-        }
-        // Left the Ground
-        else if (isGrounded && !groundHit)
-        {
-            isGrounded = false;
-            isOnMoveable = false;
-            moveableRigidbody = null;
-            _frameLeftGrounded = _time;
+            // Left the Ground
+            else if (isGrounded && !groundHit)
+            {
+                isGrounded = false;
+                isOnMoveable = false;
+                moveableRigidbody = null;
+                _frameLeftGrounded = _time;
+            }
         }
 
         HandleMicroLedges();
@@ -1089,27 +1091,48 @@ public class ShadowTwinMovement : MonoBehaviour
         Physics2D.queriesStartInColliders = _cachedQueryStartInColliders;
     }
 
-    public float stepHeight = 0.02f;
-    public float stepSmooth = 0.02f;
-    public float feetCastOffset = 0.05f; //Sometimes player collider hovers slightly above ground. If casting from feet we need to do it lower down than expected
+    public float stepHeight = 0.04f;
+    public float stepSmooth = 0.04f;
+    public float feetCastOffset = 0; //Sometimes player collider hovers slightly above ground. If casting from feet we need to do it lower down than expected
     public float microLedgeForwardCastDistance = 0.1f;
     private void HandleMicroLedges() {
-        if(!isGrounded) return;
+        if(!isGrounded && !_isLatchPulling) return;
         
-        if(_movementInput.x > 0) {
-            bool wallHit = Physics2D.Raycast(_collider.bounds.center + new Vector3(_collider.size.x / 2, -_collider.size.y / 2 - feetCastOffset), Vector2.right, microLedgeForwardCastDistance, _groundLayerMasks);
-            if(wallHit) {
-                bool stepHeightWallHit = Physics2D.Raycast(_collider.bounds.center + new Vector3(_collider.size.x / 2, -_collider.size.y / 2 + stepHeight), Vector2.right, microLedgeForwardCastDistance, _groundLayerMasks);
-                if(!stepHeightWallHit) {
-                    ShadowTwinPlayer.obj.rigidBody.position += Vector2.up * stepSmooth;
+        if(!_isLatchPulling) {
+            if(_movementInput.x > 0) {
+                bool wallHit = Physics2D.Raycast(_collider.bounds.center + new Vector3(_collider.size.x / 2, -_collider.size.y / 2 - feetCastOffset), Vector2.right, microLedgeForwardCastDistance, _groundLayerMasks);
+                if(wallHit) {
+                    bool stepHeightWallHit = Physics2D.Raycast(_collider.bounds.center + new Vector3(_collider.size.x / 2, -_collider.size.y / 2 + stepHeight), Vector2.right, microLedgeForwardCastDistance, _groundLayerMasks);
+                    if(!stepHeightWallHit) {
+                        ShadowTwinPlayer.obj.rigidBody.position += Vector2.up * stepSmooth;
+                    }
+                }
+            } else if(_movementInput.x < 0) {
+                bool wallHit = Physics2D.Raycast(_collider.bounds.center + new Vector3(-_collider.size.x / 2, -_collider.size.y / 2 - feetCastOffset), Vector2.left, microLedgeForwardCastDistance, _groundLayerMasks);
+                if(wallHit) {
+                    bool stepHeightWallHit = Physics2D.Raycast(_collider.bounds.center + new Vector3(-_collider.size.x / 2, -_collider.size.y / 2 + stepHeight), Vector2.left, microLedgeForwardCastDistance, _groundLayerMasks);
+                    if(!stepHeightWallHit) {
+                        ShadowTwinPlayer.obj.rigidBody.position += Vector2.up * stepSmooth;
+                    }
                 }
             }
-        } else if(_movementInput.x < 0) {
-            bool wallHit = Physics2D.Raycast(_collider.bounds.center + new Vector3(-_collider.size.x / 2, -_collider.size.y / 2 - feetCastOffset), Vector2.left, microLedgeForwardCastDistance, _groundLayerMasks);
-            if(wallHit) {
-                bool stepHeightWallHit = Physics2D.Raycast(_collider.bounds.center + new Vector3(-_collider.size.x / 2, -_collider.size.y / 2 + stepHeight), Vector2.left, microLedgeForwardCastDistance, _groundLayerMasks);
-                if(!stepHeightWallHit) {
-                    ShadowTwinPlayer.obj.rigidBody.position += Vector2.up * stepSmooth;
+        } else {
+            //Might not be any movement input so have to check the player facing direction
+            if(!IsFacingLeft()) {
+                bool wallHit = Physics2D.Raycast(_collider.bounds.center + new Vector3(_collider.size.x / 2, -_collider.size.y / 2 - feetCastOffset), Vector2.right, microLedgeForwardCastDistance, _groundLayerMasks);
+                if(wallHit) {
+                    bool stepHeightWallHit = Physics2D.Raycast(_collider.bounds.center + new Vector3(_collider.size.x / 2, -_collider.size.y / 2 + stepHeight), Vector2.right, microLedgeForwardCastDistance, _groundLayerMasks);
+                    if(!stepHeightWallHit) {
+                        ShadowTwinPlayer.obj.rigidBody.position += Vector2.up * stepSmooth;
+                    }
+                }
+            } else {
+                bool wallHit = Physics2D.Raycast(_collider.bounds.center + new Vector3(-_collider.size.x / 2, -_collider.size.y / 2 - feetCastOffset), Vector2.left, microLedgeForwardCastDistance, _groundLayerMasks);
+                if(wallHit) {
+                    bool stepHeightWallHit = Physics2D.Raycast(_collider.bounds.center + new Vector3(-_collider.size.x / 2, -_collider.size.y / 2 + stepHeight), Vector2.left, microLedgeForwardCastDistance, _groundLayerMasks);
+                    if(!stepHeightWallHit) {
+                        ShadowTwinPlayer.obj.rigidBody.position += Vector2.up * stepSmooth;
+                    }
                 }
             }
         }

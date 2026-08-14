@@ -553,9 +553,9 @@ public class PlayerBlobMovement : MonoBehaviour
         Physics2D.queriesStartInColliders = _cachedQueryStartInColliders;
     }
 
-    private float stepHeight = 0.02f;
-    private float stepSmooth = 0.02f;
-    private float feetCastOffset = 0.05f; //Sometimes player collider hovers slightly above ground. If casting from feet we need to do it lower down than expected
+    private float stepHeight = 0.04f;
+    private float stepSmooth = 0.04f;
+    private float feetCastOffset = 0; //Sometimes player collider hovers slightly above ground. If casting from feet we need to do it lower down than expected
     private float microLedgeForwardCastDistance = 0.1f;
     private void HandleMicroLedges() {
         if(_movementInput.x > 0) {
