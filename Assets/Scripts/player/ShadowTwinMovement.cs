@@ -131,7 +131,7 @@ public class ShadowTwinMovement : MonoBehaviour
     {
         _roundedCeilingCornerThisFrame = false;
         
-        if(!_stopCollisions)
+        if(!_stopCollisions && !_isLatchPulling && !_isLatchedToSurface)
             CheckCollisions();
 
         HandleJump();
@@ -1408,6 +1408,8 @@ public class ShadowTwinMovement : MonoBehaviour
         _isLatchedToSurface = false;
         _latchReachedThisPull = false;
         _isLatchPulling = true;
+        isOnMoveable = false;
+        moveableRigidbody = null;
         ShadowTwinPlayer.obj.DisableGravity();
         _ghostTrail.ShowGhosts();
     }
@@ -1721,6 +1723,26 @@ public class ShadowTwinMovement : MonoBehaviour
 
     private void HandleGravity()
     {
+        // Check latch pulling first, before moveable logic
+        if (_isPropellingThroughPlatform)
+        {
+            // Handle propel through platform - maintain velocity
+            HandlePropelThroughPlatform();
+            return;
+        }
+        else if (_isLatchPulling && _latchPosition != Vector2.zero)
+        {
+            // Handle latch pull velocity
+            HandleLatchPullVelocity();
+            return;
+        }
+        else if (_isLatchedToSurface)
+        {
+            // When latched, no gravity
+            _frameVelocity.y = 0;
+            return;
+        }
+        
         if(isOnMoveable && moveableRigidbody != null) {
             _frameVelocity.y = moveableRigidbody.velocity.y;
             return;
@@ -1743,24 +1765,6 @@ public class ShadowTwinMovement : MonoBehaviour
             {
                 //Just keep horizontal movement
                 _frameVelocity.y = 0;
-            }
-            else if (_isPropellingThroughPlatform)
-            {
-                // Handle propel through platform - maintain velocity
-                HandlePropelThroughPlatform();
-                return;
-            }
-            else if (_isLatchPulling && _latchPosition != Vector2.zero)
-            {
-                // Handle latch pull velocity
-                HandleLatchPullVelocity();
-                return;
-            }
-            else if (_isLatchedToSurface)
-            {
-                // When latched, no gravity
-                _frameVelocity.y = 0;
-                return;
             }
             else
             {
