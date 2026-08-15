@@ -87,7 +87,7 @@ public class ShadowLashBeamManager : MonoBehaviour
 
     private IEnumerator StopBeamCoroutine(ShadowLashBeam beam, GameObject beamObject) {
         yield return beam.FadeOut();
-        Destroy(beamObject);
+        Destroy(beamObject, 1f); //Allow time for eventual particles to fade out
     }
 
     public void TriggerHitSurfaceAnimation() {

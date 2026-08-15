@@ -1340,13 +1340,18 @@ public class ShadowTwinMovement : MonoBehaviour
         float castDistance = Mathf.Abs(direction.x) > 0 ? _latchBoxCastDistanceHorizontal : _latchBoxCastDistanceVertical;
         
         // Adjust box size based on lash direction
-        // For horizontal lashes, use a thin vertical box (4 pixels = 0.5 units)
-        // For vertical lashes, use the full collider size
+        // For horizontal lashes, use a thin vertical box (1 pixels = 0.125 units)
+        // For vertical lashes, use the full collider size (6 pixels)
         Vector2 boxSize;
         if (Mathf.Abs(direction.x) > 0)
         {
             // Horizontal lash - thin vertical box
-            boxSize = new Vector2(_collider.bounds.size.x, 0.5f);
+            boxSize = new Vector2(_collider.bounds.size.x, 0.1875f);
+            
+            // For horizontal casts, adjust origin to be at the 6th pixel from the top of the collider
+            // Collider height is 14 pixels, so 6 pixels from top = 8 pixels from center (14/2 - 6 = 1)
+            // 1 pixel = 0.125 units, so offset is 1 * 0.125 = 0.125 units upward. Adjust half pixel, 0.0625 -> 0.1875
+            origin.y += 0.1875f;
         }
         else
         {
@@ -1438,7 +1443,7 @@ public class ShadowTwinMovement : MonoBehaviour
         _ghostTrail.ShowGhosts();
     }
 
-    public void EndLatchPull()
+    public void EndLatchPull(bool fadeOutBeam = false)
     {
         // Only stop the beam if we were actually pulling (not when called after no surface found)
         bool wasActuallyPulling = _isLatchPulling;
@@ -1459,7 +1464,14 @@ public class ShadowTwinMovement : MonoBehaviour
         // Stop and destroy the beam only if we were actually pulling towards a surface
         if (wasActuallyPulling && ShadowLashBeamManager.obj != null)
         {
-            ShadowLashBeamManager.obj.ForceStopBeam();
+            if (fadeOutBeam)
+            {
+                ShadowLashBeamManager.obj.StopBeam();
+            }
+            else
+            {
+                ShadowLashBeamManager.obj.ForceStopBeam();
+            }
         }
     }
 
@@ -1493,9 +1505,40 @@ public class ShadowTwinMovement : MonoBehaviour
 
     private void HandleLatchPullVelocity()
     {
+        // Check if the player's collider will hit something during the pull
+        // This prevents the player from continuing to pull when their full 14px collider hits an obstacle
+        // even though the thin BoxCast from the 6th pixel found a valid surface
+        float distanceToTarget = Vector2.Distance(transform.position, _latchPosition);
+        float checkDistance = Mathf.Min(distanceToTarget, _latchSpeed * Time.fixedDeltaTime * 1.5f);
+        
+        RaycastHit2D obstacleHit = Physics2D.BoxCast(
+            _collider.bounds.center, 
+            _collider.bounds.size, 
+            0f, 
+            _latchDirection, 
+            checkDistance, 
+            _latchLayerMask
+        );
+        
+        // If we hit something that's not our target surface, end the latch pull
+        if (obstacleHit.collider != null)
+        {
+            // Check if this is an obstacle (not the target surface)
+            // We hit an obstacle if the hit point is significantly closer than our target
+            float hitDistance = Vector2.Distance(transform.position, obstacleHit.point);
+            if (hitDistance < distanceToTarget - 0.3f) // 0.3f tolerance for the target surface itself
+            {
+                CameraShakeManager.obj.ForcePushShake();
+                //TODO impact SFX. Use temporary:
+                _deeAudio.PlayAnchorReached();
+                EndLatchPull(fadeOutBeam: true);
+                _frameVelocity.x *= 0.5f;
+                return;
+            }
+        }
+        
         // Use distance check for all surfaces to make latching more robust
         // At high speeds, collision detection with tiny distances can miss the surface
-        float distanceToTarget = Vector2.Distance(transform.position, _latchPosition);
         
         // Also check if we've overshot the target by checking if we're moving away from it
         Vector2 directionToTarget = (_latchPosition - (Vector2)transform.position).normalized;

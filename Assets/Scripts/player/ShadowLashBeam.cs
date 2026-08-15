@@ -152,6 +152,7 @@ public class ShadowLashBeam : MonoBehaviour
     public IEnumerator FadeOut()
     {
         TriggerNoHitSurfaceAnimation();
+        _particles.Stop(true, ParticleSystemStopBehavior.StopEmitting);
         if(_lashCoroutine != null)
             yield return _lashCoroutine;
         

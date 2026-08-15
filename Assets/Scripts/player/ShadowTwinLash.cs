@@ -93,7 +93,7 @@ public class ShadowTwinLash : MonoBehaviour
     }
 
     public void ShootShadowLashBeam() {
-        ShadowLashBeamManager.obj.ShootBeam(transform.position + new Vector3(0, 0.125f, 0), _currentLashDirection);
+        ShadowLashBeamManager.obj.ShootBeam(transform.position + new Vector3(0, 0.25f, 0), _currentLashDirection);
     }
 
     private IEnumerator DirectionalInputBuffer()
