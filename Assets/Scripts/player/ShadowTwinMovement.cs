@@ -1340,18 +1340,18 @@ public class ShadowTwinMovement : MonoBehaviour
         float castDistance = Mathf.Abs(direction.x) > 0 ? _latchBoxCastDistanceHorizontal : _latchBoxCastDistanceVertical;
         
         // Adjust box size based on lash direction
-        // For horizontal lashes, use a thin vertical box (1 pixels = 0.125 units)
+        // For horizontal lashes, use a thin vertical box (2 pixels = 0.25 units)
         // For vertical lashes, use the full collider size (6 pixels)
         Vector2 boxSize;
         if (Mathf.Abs(direction.x) > 0)
         {
             // Horizontal lash - thin vertical box
-            boxSize = new Vector2(_collider.bounds.size.x, 0.1875f);
+            boxSize = new Vector2(_collider.bounds.size.x, 0.25f);
             
-            // For horizontal casts, adjust origin to be at the 6th pixel from the top of the collider
-            // Collider height is 14 pixels, so 6 pixels from top = 8 pixels from center (14/2 - 6 = 1)
-            // 1 pixel = 0.125 units, so offset is 1 * 0.125 = 0.125 units upward. Adjust half pixel, 0.0625 -> 0.1875
-            origin.y += 0.1875f;
+            // For horizontal casts, adjust origin to be at the 5th pixel from the top of the collider
+            // Collider height is 14 pixels, so 5 pixels from top = 9 pixels from center (14/2 - 5 = 2)
+            // 2 pixels = 0.25 units, so offset is 2 * 0.125 = 0.25 units upward
+            origin.y += 0.25f;
         }
         else
         {
@@ -1434,6 +1434,13 @@ public class ShadowTwinMovement : MonoBehaviour
 
     private void StartLatchPull()
     {
+        // Change collider size during latch pull only if it's horizontal
+        if (Mathf.Abs(_latchDirection.x) > 0)
+        {
+            _collider.offset = new Vector2(0, -0.125f);
+            _collider.size = new Vector2(0.75f, 1.5f);
+        }
+        
         _isLatchedToSurface = false;
         _latchReachedThisPull = false;
         _isLatchPulling = true;
@@ -1461,6 +1468,10 @@ public class ShadowTwinMovement : MonoBehaviour
         
         ShadowTwinLash.obj.SetIsShadowLashing(false);
         
+        // Reset collider to default values
+        _collider.offset = new Vector2(0, 0);
+        _collider.size = new Vector2(0.75f, 1.75f);
+        
         // Stop and destroy the beam only if we were actually pulling towards a surface
         if (wasActuallyPulling && ShadowLashBeamManager.obj != null)
         {
@@ -1481,6 +1492,9 @@ public class ShadowTwinMovement : MonoBehaviour
         _deeAudio.PlayAnchorReached();
         //ShockWaveManager.obj.CallShockWave(_latchPosition, 0.2f, 0.05f, 0.15f);
         _isLatchedToSurface = true;
+        // Reset collider to default values
+        _collider.offset = new Vector2(0, 0);
+        _collider.size = new Vector2(0.75f, 1.75f);
     }
 
     private void StartPropelThroughPlatform()
@@ -1520,7 +1534,7 @@ public class ShadowTwinMovement : MonoBehaviour
             _latchLayerMask
         );
         
-        // If we hit something that's not our target surface, end the latch pull
+        // If we hit something that's not our target surface, handle the collision
         if (obstacleHit.collider != null)
         {
             // Check if this is an obstacle (not the target surface)
@@ -1528,12 +1542,33 @@ public class ShadowTwinMovement : MonoBehaviour
             float hitDistance = Vector2.Distance(transform.position, obstacleHit.point);
             if (hitDistance < distanceToTarget - 0.3f) // 0.3f tolerance for the target surface itself
             {
-                CameraShakeManager.obj.ForcePushShake();
-                //TODO impact SFX. Use temporary:
-                _deeAudio.PlayAnchorReached();
-                EndLatchPull(fadeOutBeam: true);
-                _frameVelocity.x *= 0.5f;
-                return;
+                // Check if this is a horizontal lash
+                if (Mathf.Abs(_latchDirection.x) > 0)
+                {
+                    // Raycast 2.5 pixels (0.3125 units) below the top of the collider
+                    // Top of collider is at bounds.center.y + (bounds.size.y / 2)
+                    // 2.5 pixels = 2.5 * 0.125 = 0.3125 units
+                    float raycastYPosition = _collider.bounds.center.y + (_collider.bounds.size.y / 2) - 0.3125f;
+                    Vector2 raycastOrigin = new Vector2(_collider.bounds.center.x, raycastYPosition);
+                    
+                    // Raycast in the direction of movement with a small distance
+                    RaycastHit2D rayHit = Physics2D.Raycast(
+                        raycastOrigin, 
+                        new Vector2(_latchDirection.x, 0), 
+                        checkDistance, 
+                        _latchLayerMask
+                    );
+                    
+                    // If nothing is hit, push the player down 2 pixels (0.25 units) and continue
+                    if (rayHit.collider == null)
+                    {
+                        transform.position = new Vector2(transform.position.x, transform.position.y - 0.25f);
+                        // Update the latch position to match the new vertical position
+                        _latchPosition = new Vector2(_latchPosition.x, _latchPosition.y - 0.25f);
+                        // Continue the latch pull movement
+                        return;
+                    }
+                }
             }
         }
         
