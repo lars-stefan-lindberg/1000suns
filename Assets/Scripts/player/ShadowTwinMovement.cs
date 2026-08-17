@@ -433,11 +433,7 @@ public class ShadowTwinMovement : MonoBehaviour
 
     private bool _isTransitioningBetweenLevels = false;
     public void SetTransitioningBetweenLevels() {
-        //Special case since we want to handle "shoot" action separately. You should still be able to charge, but not release in between levels
-        if(_playerInput != null && _playerInput.currentActionMap != null) {
-            _playerInput.currentActionMap.FindAction("Movement").Disable();
-            _playerInput.currentActionMap.FindAction("Jump").Disable();
-        }
+        DisablePlayerMovement();
         _freezePlayer = true;
         _movementInput = new Vector2(0,0);
         
@@ -563,6 +559,7 @@ public class ShadowTwinMovement : MonoBehaviour
             _playerInput.currentActionMap.FindAction("Movement").Disable();
             _playerInput.currentActionMap.FindAction("Jump").Disable();
             _playerInput.currentActionMap.FindAction("Shoot").Disable();
+            _playerInput.currentActionMap.FindAction("Lash").Disable();
         }
     }
 
@@ -571,6 +568,7 @@ public class ShadowTwinMovement : MonoBehaviour
             _playerInput.currentActionMap.FindAction("Movement").Enable();
             _playerInput.currentActionMap.FindAction("Jump").Enable();
             _playerInput.currentActionMap.FindAction("Shoot").Enable();
+            _playerInput.currentActionMap.FindAction("Lash").Enable();
         }
     }
 
