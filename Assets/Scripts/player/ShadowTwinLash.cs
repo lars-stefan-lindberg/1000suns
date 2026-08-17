@@ -16,10 +16,14 @@ public class ShadowTwinLash : MonoBehaviour
     [Header("Directional Input Buffer")]
     [SerializeField] private float _directionalInputBufferWindow = 0.1f;
     
+    [Header("Cooldown Configuration")]
+    [SerializeField] private float _lashCooldownDuration = 0.2f;
+    
     private Vector2 _pausedVelocity;
     private Coroutine _activeDirectionalBufferCoroutine;
     private Coroutine _activeLashCoroutine;
     private Vector2 _currentLashDirection;
+    private float _lashCooldownTimer = 0f;
 
     private void Awake()
     {
@@ -29,6 +33,15 @@ public class ShadowTwinLash : MonoBehaviour
     private void OnDestroy()
     {
         obj = null;
+    }
+
+    private void Update()
+    {
+        // Update cooldown timer
+        if (_lashCooldownTimer > 0f)
+        {
+            _lashCooldownTimer -= Time.deltaTime;
+        }
     }
 
     private void OnDisable()
@@ -75,6 +88,11 @@ public class ShadowTwinLash : MonoBehaviour
         {
             if (context.performed)
             {
+                // Prevent shadow lash during cooldown
+                if (_lashCooldownTimer > 0f)
+                {
+                    return;
+                }
                 
                 // Cancel any existing directional buffer coroutine
                 if (_activeDirectionalBufferCoroutine != null)
@@ -88,6 +106,9 @@ public class ShadowTwinLash : MonoBehaviour
                 ShadowTwinPlayer.obj.DisableGravity();
                 _isShadowLashing = true;
                 _lashButtonReleased = false;
+
+                // Start cooldown
+                _lashCooldownTimer = _lashCooldownDuration;
 
                 // Start directional input buffer
                 _activeDirectionalBufferCoroutine = StartCoroutine(DirectionalInputBuffer());
