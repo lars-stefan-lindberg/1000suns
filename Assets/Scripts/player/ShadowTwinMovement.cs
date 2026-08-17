@@ -1578,7 +1578,7 @@ public class ShadowTwinMovement : MonoBehaviour
         
         RaycastHit2D obstacleHit = Physics2D.BoxCast(
             _collider.bounds.center, 
-            _collider.bounds.size, 
+            _collider.bounds.size - new Vector3(0, 0.125f, 0),  //Small size reduction due to micro ledges like blocks
             0f, 
             _latchDirection, 
             checkDistance, 
@@ -1593,9 +1593,42 @@ public class ShadowTwinMovement : MonoBehaviour
             float hitDistance = Vector2.Distance(transform.position, obstacleHit.point);
             if (hitDistance < distanceToTarget - 0.3f) // 0.3f tolerance for the target surface itself
             {
-                // Check if this is a horizontal lash
-                if (Mathf.Abs(_latchDirection.x) > 0)
-                {
+                //Note: this scenario should only occur for horizontal shadow lashes
+
+                //Firstly, check upper and lower bounds of _collider
+                // Cast from the leading edge of the collider (in the direction of movement)
+                // Offset slightly inward to avoid starting inside the obstacle
+                float verticalOffset = 0.01f;
+                float horizontalOffset = 0.01f;
+                float leadingEdgeX = _collider.bounds.center.x + (_latchDirection.x > 0 ? (_collider.bounds.size.x / 2) - horizontalOffset : -(_collider.bounds.size.x / 2) + horizontalOffset);
+                
+                Vector2 upperOrigin = new Vector2(leadingEdgeX, _collider.bounds.center.y + (_collider.bounds.size.y / 2) - verticalOffset);
+                Vector2 lowerOrigin = new Vector2(leadingEdgeX, _collider.bounds.center.y - (_collider.bounds.size.y / 2) + verticalOffset);
+                RaycastHit2D upperHit = Physics2D.Raycast(upperOrigin, new Vector2(_latchDirection.x, 0), checkDistance, _latchLayerMask);
+                RaycastHit2D lowerHit = Physics2D.Raycast(lowerOrigin, new Vector2(_latchDirection.x, 0), checkDistance, _latchLayerMask);
+
+                //If both hits and they're hitting the same surface, latch here
+                //If they're hitting different surfaces (or different points far apart), it's a corner - try to push down
+                if(upperHit.collider != null && lowerHit.collider != null) {
+                    // Check if both rays hit approximately the same point (same surface)
+                    float hitPointDistance = Vector2.Distance(upperHit.point, lowerHit.point);
+                    
+                    // If the hit points are close together (within the collider height), it's the same surface
+                    if (hitPointDistance < _collider.bounds.size.y * 0.5f) {
+                        //Make sure to offset the latch point by half the _colliders size depending on direction
+                        if(_latchDirection.x > 0) {
+                            _latchPosition = new Vector2(transform.position.x + (_collider.bounds.size.x / 2) + 0.125f, transform.position.y);
+                        } else {
+                            _latchPosition = new Vector2(transform.position.x - (_collider.bounds.size.x / 2) - 0.125f, transform.position.y);
+                        }
+                        return;
+                    }
+                    // Otherwise, treat it as a corner case and fall through to the upperHit logic
+                }
+                
+                if(upperHit.collider != null) {
+                    //Try to push the player down to clear the corner
+
                     // Raycast 2.5 pixels (0.3125 units) below the top of the collider
                     // Top of collider is at bounds.center.y + (bounds.size.y / 2)
                     // 2.5 pixels = 2.5 * 0.125 = 0.3125 units
@@ -1619,6 +1652,14 @@ public class ShadowTwinMovement : MonoBehaviour
                         // Continue the latch pull movement
                         return;
                     }
+                } else {
+                    CameraShakeManager.obj.ForcePushShake();
+                    //TODO impact SFX. Use temporary:
+                    _deeAudio.PlayAnchorReached();
+                    EndLatchPull(fadeOutBeam: true);
+                    _frameVelocity.x *= 0.5f;
+                    _frameVelocity.y *= 0;
+                    return;
                 }
             }
         }
