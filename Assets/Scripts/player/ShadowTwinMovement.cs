@@ -1883,6 +1883,12 @@ public class ShadowTwinMovement : MonoBehaviour
             _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, _stats.GroundDeceleration * Time.fixedDeltaTime);
             return;
         }
+        
+        // Prevent horizontal movement during shadow pull
+        if(IsPulling) {
+            _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, _stats.GroundDeceleration * Time.fixedDeltaTime);
+            return;
+        }
              
         if(_isDashing) {
             _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, _movementInput.x * _stats.MaxSpeed, dashDecelerationTime * Time.fixedDeltaTime);

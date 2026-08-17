@@ -65,10 +65,17 @@ public class ShadowTwinLash : MonoBehaviour
 
     public void OnLash(InputAction.CallbackContext context)
     {
+        // Prevent shadow lash during shadow pull
+        if (ShadowTwinMovement.obj != null && ShadowTwinMovement.obj.IsPulling)
+        {
+            return;
+        }
+        
         if(PlayerPowersManager.obj.DeeCanShadowLash && !_isLashDisabled)
         {
             if (context.performed)
             {
+                
                 // Cancel any existing directional buffer coroutine
                 if (_activeDirectionalBufferCoroutine != null)
                 {

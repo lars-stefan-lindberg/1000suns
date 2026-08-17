@@ -136,6 +136,11 @@ public class ShadowTwinPull : MonoBehaviour
 
     public void OnShoot(InputAction.CallbackContext context)
     {
+        // Prevent shadow pull during shadow lash
+        if (ShadowTwinLash.obj != null && ShadowTwinLash.obj.IsShadowLashing())
+        {
+            return;
+        }
         if(PlayerPowersManager.obj.DeeCanForcePull && !_isPullDisabled) {
             if (context.performed)
             {
