@@ -280,6 +280,9 @@ public class ShadowTwinMovement : MonoBehaviour
             }
             return;
         }
+        //Don't allow flip x if latched to ceiling
+        if (_isLatchedToSurface && _latchSurfaceType == LatchSurfaceType.Ceiling)
+            return;
 
         FlipPlayer(_movementInput.x);
     }
@@ -409,8 +412,15 @@ public class ShadowTwinMovement : MonoBehaviour
 
     public void PauseInAir() {
         _isPausedInAir = true;
-        _animator.SetTrigger("anchorPull");
         UpdateAnimatorIsLatchPulling(true);
+    }
+
+    public void StartShadowLashAnimator(Vector2 direction) {
+        if(Mathf.Abs(direction.x) > 0) {
+            _animator.SetTrigger("anchorPull");
+        } else {
+            _animator.SetTrigger("shadowLashUpwards");
+        }
     }
 
     public void UnpauseInAir() {
@@ -1495,6 +1505,47 @@ public class ShadowTwinMovement : MonoBehaviour
         // Reset collider to default values
         _collider.offset = new Vector2(0, 0);
         _collider.size = new Vector2(0.75f, 1.75f);
+        
+        // If latching to ceiling, check if we need to flip the player
+        if (_latchSurfaceType == LatchSurfaceType.Ceiling)
+        {
+            // Use the latch position directly since collider bounds may not be updated yet
+            // Collider is 6 pixels (0.75 units) wide
+            // Check at 0.5 pixels from the appropriate edge based on facing direction
+            // 0.5 pixels = 0.0625 units
+            float raycastXOffset;
+            float colliderHalfWidth = 0.75f / 2; // 0.375 units
+            
+            if (IsFacingLeft())
+            {
+                // Facing left, hand is at 1st pixel from right (pixel 5.5)
+                // 0.5 pixels from right edge = -0.0625 from right edge
+                raycastXOffset = colliderHalfWidth - 0.0625f;
+            }
+            else
+            {
+                // Facing right, hand is at 1st pixel from left (pixel 0.5)
+                // 0.5 pixels from left edge = +0.0625 from left edge
+                raycastXOffset = -colliderHalfWidth + 0.0625f;
+            }
+            
+            // Raycast from the latch position (where player was just snapped to)
+            Vector2 raycastOrigin = new Vector2(_latchPosition.x + raycastXOffset, _latchPosition.y + 0.875f);
+            
+            // Raycast upward a short distance to check if there's ceiling at the hand position
+            RaycastHit2D hit = Physics2D.Raycast(
+                raycastOrigin,
+                Vector2.up,
+                0.2f, // Short raycast distance to check just above the hand position
+                _latchLayerMask
+            );
+            
+            // If no hit at the hand position, flip the player
+            if (hit.collider == null)
+            {
+                spriteRenderer.flipX = !spriteRenderer.flipX;
+            }
+        }
     }
 
     private void StartPropelThroughPlatform()

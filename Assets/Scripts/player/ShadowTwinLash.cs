@@ -93,7 +93,16 @@ public class ShadowTwinLash : MonoBehaviour
     }
 
     public void ShootShadowLashBeam() {
-        ShadowLashBeamManager.obj.ShootBeam(transform.position + new Vector3(0, 0.25f, 0), _currentLashDirection);
+        if(Mathf.Abs(_currentLashDirection.x) > 0) {
+            ShadowLashBeamManager.obj.ShootBeam(transform.position + new Vector3(0, 0.25f, 0), _currentLashDirection);
+        } else {
+            bool isFacingLeft = ShadowTwinMovement.obj.IsFacingLeft();
+            if(isFacingLeft) {
+                ShadowLashBeamManager.obj.ShootBeam(transform.position + new Vector3(-0.125f, 0.875f, 0), _currentLashDirection);
+            } else {
+                ShadowLashBeamManager.obj.ShootBeam(transform.position + new Vector3(0, 0.875f, 0), _currentLashDirection);
+            }
+        }
     }
 
     private IEnumerator DirectionalInputBuffer()
@@ -162,6 +171,7 @@ public class ShadowTwinLash : MonoBehaviour
 
     private IEnumerator PerformLashWithPause(Vector2 latchDirection, bool alreadyFrozen = false)
     {
+        ShadowTwinMovement.obj.StartShadowLashAnimator(latchDirection);
         // Store the lash direction for the animation event to use
         _currentLashDirection = latchDirection;
         

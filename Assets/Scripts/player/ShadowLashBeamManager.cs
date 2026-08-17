@@ -8,7 +8,8 @@ public class ShadowLashBeamManager : MonoBehaviour
     
     [SerializeField] private GameObject _shadowLashBeamPrefabRight;
     [SerializeField] private GameObject _shadowLashBeamPrefabLeft;
-    [SerializeField] private GameObject _shadowLashBeamPrefabUp;
+    [SerializeField] private GameObject _shadowLashBeamPrefabUpRight;
+    [SerializeField] private GameObject _shadowLashBeamPrefabUpLeft;
 
     private ShadowLashBeam _activeBeam;
     private GameObject _activeBeamObject;
@@ -58,10 +59,11 @@ public class ShadowLashBeamManager : MonoBehaviour
         GameObject prefabToUse;
         
         // Determine which prefab to use based on lash direction
-        if (Mathf.Abs(lashDirection.y) > 0)
+        if (lashDirection.y > 0)
         {
-            // Vertical lash (up or down)
-            prefabToUse = _shadowLashBeamPrefabUp;
+            // Vertical lash upwards
+
+            prefabToUse = ShadowTwinMovement.obj.IsFacingLeft() ? _shadowLashBeamPrefabUpLeft : _shadowLashBeamPrefabUpRight;
         }
         else
         {
