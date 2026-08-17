@@ -28,6 +28,7 @@ public class ShadowLashBeam : MonoBehaviour
     private bool _hasHitSurface;
     private Vector2 _lashDirection = Vector2.right; // Direction of the lash (horizontal or vertical)
     private Vector3 _previousTailLocalPosition;
+    private Vector3 _previousHeadLocalPosition;
 
     void Awake()
     {
@@ -95,22 +96,6 @@ public class ShadowLashBeam : MonoBehaviour
             newTailLocalPosition = new Vector3(newTailLocalPosition.x, _tailMask.localPosition.y, _tailMask.localPosition.z);
         }
         
-        // Calculate the delta movement of the tail
-        Vector3 tailDelta = newTailLocalPosition - _previousTailLocalPosition;
-        
-        // Start playing particles when tail starts moving
-        if (tailDelta.magnitude > 0.001f && _particles != null && !_particles.isPlaying)
-        {
-            _particles.Play();
-        }
-        
-        // Move particles by the same delta
-        if (_particles != null)
-        {
-            Vector3 particlesLocalPosition = _particles.transform.localPosition;
-            _particles.transform.localPosition = particlesLocalPosition + tailDelta;
-        }
-        
         // Update tail mask position
         _tailMask.localPosition = newTailLocalPosition;
         _previousTailLocalPosition = newTailLocalPosition;
@@ -152,7 +137,6 @@ public class ShadowLashBeam : MonoBehaviour
     public IEnumerator FadeOut()
     {
         TriggerNoHitSurfaceAnimation();
-        _particles.Stop(true, ParticleSystemStopBehavior.StopEmitting);
         if(_lashCoroutine != null)
             yield return _lashCoroutine;
         
@@ -181,6 +165,8 @@ public class ShadowLashBeam : MonoBehaviour
             
             yield return null;
         }
+
+        _particles.Stop(true, ParticleSystemStopBehavior.StopEmitting);
         
         // Ensure final alpha is exactly 0
         if (_beamRenderer != null)
@@ -196,6 +182,8 @@ public class ShadowLashBeam : MonoBehaviour
             beamHeadColor.a = 0f;
             _beamHeadRenderer.color = beamHeadColor;
         }
+        _headMask.gameObject.SetActive(false);
+        _tailMask.gameObject.SetActive(false);
     }
 
     private void HandleSurfaceHit()
@@ -234,6 +222,13 @@ public class ShadowLashBeam : MonoBehaviour
         if (_beamHeadRenderer != null)
         {
             _beamHeadRenderer.transform.localPosition = _beamHeadStartPosition;
+        }
+
+        // Start particles at the beginning of the lash
+        if (_particles != null)
+        {
+            _particles.Play();
+            _previousHeadLocalPosition = _headMask.localPosition;
         }
 
         // Calculate target positions based on lash direction
@@ -278,16 +273,33 @@ public class ShadowLashBeam : MonoBehaviour
                     else
                     {
                         _hasHitSurface = true;
+                        // Stop particles when hitting a surface
+                        if (_particles != null)
+                        {
+                            _particles.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+                        }
                         break;
                     }
                 }
             }
+            
+            // Calculate the delta movement of the head
+            Vector3 currentHeadLocalPosition = _headMask.localPosition;
             
             _headMask.localPosition = Vector3.MoveTowards(_headMask.localPosition, maskTargetPosition, moveDistance);
             
             if (_beamHeadRenderer != null)
             {
                 _beamHeadRenderer.transform.localPosition = Vector3.MoveTowards(_beamHeadRenderer.transform.localPosition, headTargetPosition, moveDistance);
+            }
+            
+            // Move particles by the same delta as the head
+            if (_particles != null)
+            {
+                Vector3 headDelta = _headMask.localPosition - _previousHeadLocalPosition;
+                Vector3 particlesLocalPosition = _particles.transform.localPosition;
+                _particles.transform.localPosition = particlesLocalPosition + headDelta;
+                _previousHeadLocalPosition = _headMask.localPosition;
             }
         }
 
@@ -298,6 +310,12 @@ public class ShadowLashBeam : MonoBehaviour
             if (_beamHeadRenderer != null)
             {
                 _beamHeadRenderer.transform.localPosition = headTargetPosition;
+            }
+            
+            // Stop particles when beam reaches full length without hitting anything
+            if (_particles != null)
+            {
+                _particles.Stop(true, ParticleSystemStopBehavior.StopEmitting);
             }
         }
     }
