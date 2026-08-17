@@ -124,11 +124,12 @@ public class ShadowTwinLash : MonoBehaviour
         {
             Vector2 currentInput = ShadowTwinMovement.obj.GetMovementInput();
             
-            // If we detect vertical input during the buffer, store it but don't break early
+            // If we detect upward vertical input during the buffer, store it but don't break early
             // This ensures consistent timing with horizontal lashes
-            if (currentInput.y != 0)
+            // Note: Down input is NOT buffered here - it will be handled in GetLatchDirection
+            if (currentInput.y > 0)
             {
-                bufferedDirection = new Vector2(0, Mathf.Sign(currentInput.y));
+                bufferedDirection = new Vector2(0, 1);
             }
             
             elapsedTime += Time.deltaTime;
@@ -232,10 +233,25 @@ public class ShadowTwinLash : MonoBehaviour
 
     private Vector2 GetLatchDirection(Vector2 movementInput)
     {
-        // Prioritize vertical input over horizontal
-        if (movementInput.y != 0)
+        // Handle down input specially - never allow pure down lash
+        if (movementInput.y < 0)
         {
-            return new Vector2(0, Mathf.Sign(movementInput.y));
+            // If pressing down + horizontal, use the horizontal direction
+            if (movementInput.x != 0)
+            {
+                return new Vector2(Mathf.Sign(movementInput.x), 0);
+            }
+            // If only pressing down, use facing direction
+            else
+            {
+                bool isFacingLeft = ShadowTwinMovement.obj.IsFacingLeft();
+                return isFacingLeft ? Vector2.left : Vector2.right;
+            }
+        }
+        // Prioritize vertical input (up only) over horizontal
+        else if (movementInput.y > 0)
+        {
+            return new Vector2(0, 1);
         }
         else if (movementInput.x != 0)
         {
@@ -246,10 +262,17 @@ public class ShadowTwinLash : MonoBehaviour
 
     private Vector2 GetLatchDirectionDuringWallJump(Vector2 movementInput)
     {
-        // During wall jump, vertical input works normally
-        if (movementInput.y != 0)
+        // Handle down input specially - never allow pure down lash
+        if (movementInput.y < 0)
         {
-            return new Vector2(0, Mathf.Sign(movementInput.y));
+            // During wall jump with down input (with or without horizontal), use wall jump direction
+            float wallJumpDir = ShadowTwinMovement.obj.GetWallJumpDirection();
+            return new Vector2(Mathf.Sign(wallJumpDir), 0);
+        }
+        // During wall jump, up input works normally
+        else if (movementInput.y > 0)
+        {
+            return new Vector2(0, 1);
         }
         // For horizontal input, force it to match the wall jump direction
         else if (movementInput.x != 0)
