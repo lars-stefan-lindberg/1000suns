@@ -27,6 +27,36 @@ public class Cave40RoomManager : MonoBehaviour, ISkippable
         _cutsceneCoroutine = StartCoroutine(StartElevatorCoroutine());
     }
 
+    public void StartDeeCutscene() {
+        _cutsceneCoroutine = StartCoroutine(DeeCutsceneCoroutine());
+    }
+
+    private IEnumerator DeeCutsceneCoroutine() {
+        ShadowTwinMovement.obj.Freeze();
+        yield return new WaitForSeconds(1f);
+        SceneFadeManager.obj.StartFadeOut(0.8f);
+        while(SceneFadeManager.obj.IsFadingOut)
+            yield return null;
+        
+        //Switch backgrounds
+        yield return StartCoroutine(BackgroundLoaderManager.obj.RemoveBackgroundLayers());
+        yield return StartCoroutine(BackgroundLoaderManager.obj.LoadAndSetBackground("CaveBg2"));
+
+        //Load next scene
+        AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(_skipElevatorScene, LoadSceneMode.Additive);
+        while(!asyncOperation.isDone)
+            yield return null;
+
+        InitRoom initRoomData = LevelManager.obj.GetInitRoomData(SceneManager.GetSceneByName(_skipElevatorScene));
+        LevelManager.obj.LoadAdjacentRooms(initRoomData);
+
+        yield return new WaitForSeconds(2f);
+        
+        //Unload this scene
+        SceneManager.UnloadSceneAsync(_thisScene);
+
+    }
+
     private IEnumerator StartElevatorCoroutine() {
         PauseMenuManager.obj.RegisterSkippable(this);
         PlayerMovement.obj.Freeze();

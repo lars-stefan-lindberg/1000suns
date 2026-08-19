@@ -14,6 +14,7 @@ public class Cave42RoomManager : MonoBehaviour
     [SerializeField] private Transform _elevatorStopPosition;
     [SerializeField] private CaveElevator _elevator;
     [SerializeField] private GameEventId _elevatorCompleted;
+    [SerializeField] private GameEventId _elevatorCompletedDee;
     [SerializeField] private MusicTrack _caveMain;
     
     [Header("Elevator Sound Settings")]
@@ -24,33 +25,70 @@ public class Cave42RoomManager : MonoBehaviour
 
     void Start()
     {
-        if(GameManager.obj.HasEvent(_elevatorCompleted)) {
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+
+        if(GameManager.obj.HasEvent(_elevatorCompleted) && caveTimeline == CaveTimelineId.Id.Eli) {
+            _elevator.transform.position = new Vector2(_elevator.transform.position.x, _elevatorStopPosition.position.y);
+            _elevator.GetComponentInChildren<LightSprite2D>().enabled = true;
+            return;
+        }
+        if(GameManager.obj.HasEvent(_elevatorCompletedDee) && caveTimeline == CaveTimelineId.Id.Dee) {
             _elevator.transform.position = new Vector2(_elevator.transform.position.x, _elevatorStopPosition.position.y);
             _elevator.GetComponentInChildren<LightSprite2D>().enabled = true;
             return;
         }
         SceneFadeManager.obj.SetFadedOutState();
-        PlayerMovement.obj.isOnMoveable = true;
-        PlayerMovement.obj.moveableRigidbody = _elevator.GetComponent<Rigidbody2D>();
-        Player.obj.transform.position = _eliStartPosition.transform.position;
-        Player.obj.gameObject.SetActive(true);
-        PlayerMovement.obj.SetStartingOnGround();
-        PlayerMovement.obj.isGrounded = true;
-        PlayerMovement.obj.Freeze();
-
-        CaveAvatar.obj.SetPosition(_sootStartPosition.position);
-        CaveAvatar.obj.IsFollowingPlayer = true;
-
-        GameObject[] sceneGameObjects = gameObject.scene.GetRootGameObjects();
-        GameObject mainCamera = sceneGameObjects.First(gameObject => gameObject.CompareTag("MainCamera"));
-        RoomCameraController cameraController = mainCamera.GetComponent<RoomCameraController>();
-        GameObject room = sceneGameObjects.First(gameObject => gameObject.CompareTag("Room"));
-        Collider2D roomCollider = room.GetComponent<Collider2D>();
-        CameraManager.obj.EnterRoom(cameraController, roomCollider, PlayerManager.obj.GetPlayerTransform(PlayerManager.PlayerType.HUMAN), _eliStartPosition.transform.position);
-
         SceneManager.SetActiveScene(gameObject.scene);
 
-        StartCoroutine(StartScene());
+        if(caveTimeline == CaveTimelineId.Id.Eli) {
+            PlayerMovement.obj.isOnMoveable = true;
+            PlayerMovement.obj.moveableRigidbody = _elevator.GetComponent<Rigidbody2D>();
+            Player.obj.transform.position = _eliStartPosition.transform.position;
+            Player.obj.gameObject.SetActive(true);
+            PlayerMovement.obj.SetStartingOnGround();
+            PlayerMovement.obj.isGrounded = true;
+            PlayerMovement.obj.Freeze();
+
+            CaveAvatar.obj.SetPosition(_sootStartPosition.position);
+            CaveAvatar.obj.IsFollowingPlayer = true;
+
+            GameObject[] sceneGameObjects = gameObject.scene.GetRootGameObjects();
+            GameObject mainCamera = sceneGameObjects.First(gameObject => gameObject.CompareTag("MainCamera"));
+            RoomCameraController cameraController = mainCamera.GetComponent<RoomCameraController>();
+            GameObject room = sceneGameObjects.First(gameObject => gameObject.CompareTag("Room"));
+            Collider2D roomCollider = room.GetComponent<Collider2D>();
+            CameraManager.obj.EnterRoom(cameraController, roomCollider, PlayerManager.obj.GetPlayerTransform(PlayerManager.PlayerType.HUMAN), _eliStartPosition.transform.position);
+
+
+            StartCoroutine(StartScene());
+        } else if(caveTimeline == CaveTimelineId.Id.Dee) {
+            ShadowTwinMovement.obj.isOnMoveable = false;
+            ShadowTwinPlayer.obj.transform.position = _afterElevatorSpawnPoint.transform.position;
+            ShadowTwinMovement.obj.SetStartingOnGround();
+            ShadowTwinMovement.obj.isGrounded = true;
+
+            GameObject[] sceneGameObjects = gameObject.scene.GetRootGameObjects();
+            GameObject mainCamera = sceneGameObjects.First(gameObject => gameObject.CompareTag("MainCamera"));
+            RoomCameraController cameraController = mainCamera.GetComponent<RoomCameraController>();
+            GameObject room = sceneGameObjects.First(gameObject => gameObject.CompareTag("Room"));
+            Collider2D roomCollider = room.GetComponent<Collider2D>();
+            CameraManager.obj.EnterRoom(cameraController, roomCollider, PlayerManager.obj.GetPlayerTransform(PlayerManager.PlayerType.SHADOW_TWIN), _afterElevatorSpawnPoint.transform.position);
+            
+            StartCoroutine(StartSceneDee());
+        }
+    }
+
+    private IEnumerator StartSceneDee() {
+        yield return new WaitForSeconds(1f);
+        SceneFadeManager.obj.StartFadeIn(0.8f);
+        while(SceneFadeManager.obj.IsFadingIn)
+            yield return null;
+
+        AmbienceManager.obj.Stop();
+        MusicManager.obj.Play(_caveMain);
+        GameManager.obj.SetCurrentSpawnPointId(_afterElevatorSpawnPoint.SpawnPointID);
+        ShadowTwinMovement.obj.UnFreeze();
+        GameManager.obj.IsPauseAllowed = true;
     }
 
     private IEnumerator StartScene() {
@@ -69,6 +107,7 @@ public class Cave42RoomManager : MonoBehaviour
         while(SceneFadeManager.obj.IsFadingIn)
             yield return null;
 
+        AmbienceManager.obj.Stop();
         MusicManager.obj.Play(_caveMain);
 
         while(!_elevator.HasReachedStop())
