@@ -413,6 +413,13 @@ public class ShadowTwinMovement : MonoBehaviour
     public void PauseInAir() {
         _isPausedInAir = true;
         UpdateAnimatorIsLatchPulling(true);
+        
+        // Snap player's vertical position to the closest pixel grid point
+        // One pixel is 0.125 in world units
+        float pixelSize = 0.125f;
+        Vector3 currentPosition = transform.position;
+        float snappedY = Mathf.Round(currentPosition.y / pixelSize) * pixelSize;
+        transform.position = new Vector3(currentPosition.x, snappedY, currentPosition.z);
     }
 
     public void StartShadowLashAnimator(Vector2 direction) {
@@ -1028,7 +1035,7 @@ public class ShadowTwinMovement : MonoBehaviour
     {
         Physics2D.queriesStartInColliders = false;
 
-        if(!_isLatchPulling && !_isLatchedToSurface) {
+        if(!_isLatchPulling && !_isLatchedToSurface && !ShadowTwinLash.obj.ShouldTreatPlayerAsAirborne()) {
             RaycastHit2D groundRaycastResult = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, _groundLayerMasks);
             bool groundHit = groundRaycastResult.collider != null;
 
