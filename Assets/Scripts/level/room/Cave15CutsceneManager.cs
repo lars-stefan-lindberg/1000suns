@@ -28,6 +28,8 @@ public class Cave15CutsceneManager : MonoBehaviour, ISkippable
         ShadowTwinMovement.obj.SetStartingOnGround();
         ShadowTwinPlayer.obj.ResetAnimator();
         ShadowTwinPlayer.obj.StartAnimator();
+        if(!ShadowTwinMovement.obj.IsFacingLeft())
+            ShadowTwinMovement.obj.FlipPlayer();
         ShadowTwinPlayer.obj.transform.position = _deeCutsceneStartingPosition.position;
     }
 
