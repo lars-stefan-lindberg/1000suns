@@ -84,6 +84,8 @@ public class ShadowLashBeamManager : MonoBehaviour
         _isTrackingBeam = false;
         if (_activeBeam != null) {
             StartCoroutine(StopBeamCoroutine(_activeBeam, _activeBeamObject));
+            _activeBeam = null;
+            _activeBeamObject = null;
         }
     }
 

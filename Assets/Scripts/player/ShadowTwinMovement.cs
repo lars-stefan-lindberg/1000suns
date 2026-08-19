@@ -1378,9 +1378,15 @@ public class ShadowTwinMovement : MonoBehaviour
         
         if (hit.collider != null)
         {
-            Vector2 playerPos = (Vector2)transform.position;
-
             ShadowLashBeamManager.obj.TriggerHitSurfaceAnimation();
+            
+            // Check if hit is in the Spikes layer - if so, return false without latching
+            if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Spikes"))
+            {
+                return false;
+            }
+            
+            Vector2 playerPos = (Vector2)transform.position;
             
             // Check if lashing upward to a floating platform ceiling
             bool isFloatingPlatform = hit.collider.gameObject.layer == LayerMask.NameToLayer("JumpThroughs") 
@@ -1452,8 +1458,8 @@ public class ShadowTwinMovement : MonoBehaviour
         // Change collider size during latch pull only if it's horizontal
         if (Mathf.Abs(_latchDirection.x) > 0)
         {
-            _collider.offset = new Vector2(0, -0.125f);
-            _collider.size = new Vector2(0.75f, 1.5f);
+            _collider.offset = new Vector2(0, -0.0625f);
+            _collider.size = new Vector2(0.75f, 1.375f);
         }
         
         _isLatchedToSurface = false;
@@ -1657,14 +1663,40 @@ public class ShadowTwinMovement : MonoBehaviour
                         // Continue the latch pull movement
                         return;
                     }
-                } else {
-                    CameraShakeManager.obj.ForcePushShake();
-                    //TODO impact SFX. Use temporary:
-                    _deeAudio.PlayAnchorReached();
-                    EndLatchPull(fadeOutBeam: true);
-                    _frameVelocity.x *= 0.5f;
-                    _frameVelocity.y *= 0;
-                    return;
+                } else if(lowerHit.collider != null) {
+                    //Try to push the player up to clear the corner
+
+                    // Raycast 1.5 pixels above the bottom of the collider
+                    // Bottom of collider is at bounds.center.y - (bounds.size.y / 2)
+                    // 1.5 pixels = 1.5 * 0.125 = 0.1875 units
+                    float raycastYPosition = _collider.bounds.center.y - (_collider.bounds.size.y / 2) + 0.1875f;
+                    Vector2 raycastOrigin = new Vector2(_collider.bounds.center.x, raycastYPosition);
+                    
+                    // Raycast in the direction of movement with a small distance
+                    RaycastHit2D rayHit = Physics2D.Raycast(
+                        raycastOrigin, 
+                        new Vector2(_latchDirection.x, 0), 
+                        checkDistance, 
+                        _latchLayerMask
+                    );
+                    
+                    // If nothing is hit, push the player up 1 pixel (0.125 units) and continue
+                    if (rayHit.collider == null)
+                    {
+                        transform.position = new Vector2(transform.position.x, transform.position.y + 0.125f);
+                        // Update the latch position to match the new vertical position
+                        _latchPosition = new Vector2(_latchPosition.x, _latchPosition.y + 0.125f);
+                        // Continue the latch pull movement
+                        return;
+                    } else {
+                        CameraShakeManager.obj.ForcePushShake();
+                        //TODO impact SFX. Use temporary:
+                        _deeAudio.PlayAnchorReached();
+                        EndLatchPull(fadeOutBeam: true);
+                        _frameVelocity.x *= 0.5f;
+                        _frameVelocity.y *= 0;
+                        return;
+                    }
                 }
             }
         }
