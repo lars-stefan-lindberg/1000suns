@@ -46,6 +46,8 @@ public class Cave35DeeRoomManager : MonoBehaviour
         AmbienceManager.obj.Play(_caveMain);
         yield return new WaitForSeconds(2);
 
+        //TODO change event registration after dream rooms have been created
+        GameManager.obj.RegisterEvent(_hasShadowLash);
         GameManager.obj.RegisterEvent(_postDreamSequenceCompleted);
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
 

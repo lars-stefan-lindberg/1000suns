@@ -22,18 +22,22 @@ public class FadeOutTilemap : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other) {
         if(other.gameObject.CompareTag("Player")) {
-            if(_visibleLayerAnimator != null)
-                _visibleLayerAnimator.SetTrigger("reveal");
-            else {
-                DOTween.To(() => _tilemap.color.a, x => _tilemap.color = new Color(_tilemap.color.r, _tilemap.color.g, _tilemap.color.b, x), 0, 1);
-            }
-            if(_playRevealSound)
-                SoundFXManager.obj.Play2D(_revealSecretStinger);
-            if(_playRevealTilemapSound)
-                SoundFXManager.obj.PlayAtPosition(_revealTilemapSfx, _collider.bounds.center);
-            _collider.enabled = false;
-            OnTilemapRevealed?.Invoke();
-            Destroy(gameObject, 5);
+            Reveal();
         }
+    }
+
+    public void Reveal() {
+        if(_visibleLayerAnimator != null)
+            _visibleLayerAnimator.SetTrigger("reveal");
+        else {
+            DOTween.To(() => _tilemap.color.a, x => _tilemap.color = new Color(_tilemap.color.r, _tilemap.color.g, _tilemap.color.b, x), 0, 1);
+        }
+        if(_playRevealSound)
+            SoundFXManager.obj.Play2D(_revealSecretStinger);
+        if(_playRevealTilemapSound)
+            SoundFXManager.obj.PlayAtPosition(_revealTilemapSfx, _collider.bounds.center);
+        _collider.enabled = false;
+        OnTilemapRevealed?.Invoke();
+        Destroy(gameObject, 5);
     }
 }

@@ -45,6 +45,8 @@ public class BreakableFloor : MonoBehaviour
 
     private readonly float _collisionMargin = 0.3f;
     void OnTriggerEnter2D(Collider2D other) {
+        if(unbreakable) 
+            return;
         if(other.gameObject.CompareTag("Player")) {
             //Check if player is landing on top
             Bounds playerCollisionBounds = other.bounds;

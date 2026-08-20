@@ -130,6 +130,7 @@ public class PowerUpRoomCutSceneDee : MonoBehaviour, ISkippable
 
         //PlayerMovement.obj.SetNewPowerReceived();
         PlayerPowersManager.obj.DeeCanShadowLash = true;
+        GameManager.obj.RegisterEvent(_shadowLashReceived);
 
         ShadowTwinMovement.obj.SetNewPowerRecevied();
         yield return new WaitForSeconds(2f);

@@ -8,8 +8,11 @@ public class Cave33RoomManager : MonoBehaviour, ISkippable
 {
     [SerializeField] private GameEventId _floorBroken;
     [SerializeField] private GameEventId _hasShadowJump;
+    [SerializeField] private GameEventId _hasShadowLash;
     [SerializeField] private GameEventId _afterShadowJumpConversationCompleted;
+    [SerializeField] private GameEventId _afterShadowLashCompleted;
     [SerializeField] private GameEventId _deeCutsceneCompleted;
+    [SerializeField] private GameEventId _floorBrokenDee;
     [SerializeField] private GameObject _deesPathLeft;
     [SerializeField] private GameObject _deesPathRight;
     [SerializeField] private GameObject[] _rootPlatforms;
@@ -19,6 +22,7 @@ public class Cave33RoomManager : MonoBehaviour, ISkippable
     [SerializeField] private GameObject _eliBlockingFloor;
     [SerializeField] private GameObject _deeBlockingFloor;
     [SerializeField] private GameObject _deeBreakableFloor;
+    [SerializeField] private GameObject _deeFloatingPlatform;
     [SerializeField] private EventReference _blockingFloorSfx;
     [SerializeField] private GameObject _blockDeePathBack;
 
@@ -29,6 +33,7 @@ public class Cave33RoomManager : MonoBehaviour, ISkippable
     void Start() {
         CaveTimelineId.Id id = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
         if(id == CaveTimelineId.Id.Eli) {
+            _deeFloatingPlatform.SetActive(false);
             _deesPathLeft.SetActive(true);
 
             if(GameManager.obj.HasEvent(_hasShadowJump)) {
@@ -48,15 +53,31 @@ public class Cave33RoomManager : MonoBehaviour, ISkippable
         else if(id == CaveTimelineId.Id.Both) {
             //TODO
             _deesPathRight.SetActive(false);
+            _deesPathLeft.SetActive(false);
         }
         else if(id == CaveTimelineId.Id.Dee) {
             _blockDeePathBack.SetActive(true);
             CaveAvatar.obj.gameObject.SetActive(true);
             CaveAvatar.obj.SetStartingPositionInCaveRoom33(); 
 
+            if(GameManager.obj.HasEvent(_floorBrokenDee))
+                _deeBreakableFloor.SetActive(false);
+            if(!GameManager.obj.HasEvent(_afterShadowLashCompleted))
+                _deeFloatingPlatform.SetActive(false);
+
+            if(!GameManager.obj.HasEvent(_hasShadowLash) && !GameManager.obj.HasEvent(_afterShadowLashCompleted) && !GameManager.obj.HasEvent(_floorBrokenDee)) {
+                _deeBreakableFloor.GetComponentInChildren<BreakableFloor>().unbreakable = false;
+            } else if(GameManager.obj.HasEvent(_afterShadowLashCompleted)) {
+                _deeBreakableFloor.SetActive(false);
+                _deeBlockingFloor.SetActive(true);
+                _deesPathRight.SetActive(false);
+            }
         }
+    }
 
-
+    public void SetDeeFloorBroken() {
+        GameManager.obj.RegisterEvent(_floorBrokenDee);
+        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
     }
 
     void OnDestroy()
@@ -76,6 +97,7 @@ public class Cave33RoomManager : MonoBehaviour, ISkippable
 
     public void OnFloorBroken() {
         GameManager.obj.RegisterEvent(_floorBroken);
+        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
     }
 
     public void OnReturnFromShadowJumpRooms() {
@@ -85,6 +107,21 @@ public class Cave33RoomManager : MonoBehaviour, ISkippable
         PlayerMovement.obj.Freeze();
         CaveAvatar.obj.SetFlipX(true);
         _cutsceneCoroutine = StartCoroutine(StartConversation());
+    }
+
+    public void OnReturnFromShadowLashRooms() {
+        Debug.Log("here");
+        CaveTimelineId.Id id = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(id == CaveTimelineId.Id.Eli)
+            return;
+        Debug.Log("here fff");
+        if(!GameManager.obj.HasEvent(_hasShadowLash) || GameManager.obj.HasEvent(_afterShadowLashCompleted))
+            return;
+
+        Debug.Log("here awega");
+        
+        ShadowTwinMovement.obj.Freeze();
+        StartCoroutine(AfterShadowLashRoomsCoroutine());
     }
 
     public void RequestSkip() {
@@ -152,6 +189,20 @@ public class Cave33RoomManager : MonoBehaviour, ISkippable
         StartCoroutine(FadeInBlockingFloor(_eliBlockingFloor));
         yield return new WaitForSeconds(1.5f);
         _afterShadowJumpConversation.StartConversation();
+    }
+
+    private IEnumerator AfterShadowLashRoomsCoroutine() {
+        _deeFloatingPlatform.SetActive(true);
+        _blockingFloorSfxInstance = SoundFXManager.obj.CreateAttachedInstance(_blockingFloorSfx, _deeBlockingFloor.gameObject);
+        _blockingFloorSfxInstance.start();
+        _blockingFloorSfxInstance.release();
+        StartCoroutine(FadeInBlockingFloor(_deeBlockingFloor));
+        yield return new WaitForSeconds(1.5f);
+        _deesPathRight.GetComponent<FadeOutTilemap>().Reveal();
+        yield return new WaitForSeconds(1.5f);
+        GameManager.obj.RegisterEvent(_afterShadowLashCompleted);
+        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
+        ShadowTwinMovement.obj.UnFreeze();
     }
 
     private IEnumerator FadeInBlockingFloor(GameObject blockingFloor) {
