@@ -84,6 +84,7 @@ public class ShadowTwinMovement : MonoBehaviour
     [Header("Horizontal Propel Configuration")]
     [SerializeField] private float _horizontalPropelDecelerationTime = 160f; // Same as dash deceleration
     [SerializeField] private float _horizontalPlatformColliderDisableDuration = 0.6f;
+    [SerializeField] private float _horizontalPropelDirectionLockDuration = 0.3f; // How long to lock direction/flip
     
     private bool _isPropellingThroughPlatform = false;
     private float _propelTimer = 0f;
@@ -96,6 +97,8 @@ public class ShadowTwinMovement : MonoBehaviour
     private FloatingPlatformRotated _targetHorizontalPropellingPlatform = null;
     
     private bool _isHorizontalPropelling = false;
+    private float _horizontalPropelDirectionLockTimer = 0f;
+    private float _horizontalPropelDirection = 0f;
     
     private bool _isFlipLocked = false;
 
@@ -197,6 +200,18 @@ public class ShadowTwinMovement : MonoBehaviour
                     _isWallJumping = false;
                     _wallJumpBoostTimer = 0f;
                 }
+            }
+        }
+        
+        // Update horizontal propel direction lock timer
+        if (_isHorizontalPropelling && _horizontalPropelDirectionLockTimer > 0f)
+        {
+            _horizontalPropelDirectionLockTimer -= Time.deltaTime;
+            
+            if (_horizontalPropelDirectionLockTimer <= 0f)
+            {
+                // Direction lock expired - unlock flip
+                UnlockFlip();
             }
         }
         
@@ -1108,6 +1123,7 @@ public class ShadowTwinMovement : MonoBehaviour
                 if (_isHorizontalPropelling)
                 {
                     _isHorizontalPropelling = false;
+                    _horizontalPropelDirectionLockTimer = 0f;
                     UnlockFlip(); // Unlock flip when landing ends horizontal propelling
                 }
                 _propelTimer = 0f;
@@ -1371,6 +1387,11 @@ public class ShadowTwinMovement : MonoBehaviour
         return _wallJumpDirection;
     }
 
+    public bool IsHorizontalPropelling()
+    {
+        return _isHorizontalPropelling;
+    }
+
     public LatchSurfaceType GetLatchSurfaceType()
     {
         return _latchSurfaceType;
@@ -1630,11 +1651,29 @@ public class ShadowTwinMovement : MonoBehaviour
     private void StartHorizontalPropelThroughPlatform()
     {
         _isHorizontalPropelling = true;
+        
+        // Determine propel direction from player's facing direction (set during lash)
+        _horizontalPropelDirection = IsFacingLeft() ? -1f : 1f;
+        
+        // Set direction lock timer
+        _horizontalPropelDirectionLockTimer = _horizontalPropelDirectionLockDuration;
+        
         // Velocity is set from the lash velocity before calling this method
+        // Ensure minimum velocity for horizontal propelling (use latch speed as minimum)
+        float currentHorizontalSpeed = Mathf.Abs(_frameVelocity.x);
+        if (currentHorizontalSpeed < _latchSpeed)
+        {
+            // Boost to latch speed to ensure good propelling feel even when very close to platform
+            _frameVelocity.x = _horizontalPropelDirection * _latchSpeed;
+        }
+        
         ShadowTwinLash.obj.SetIsShadowLashing(false);
         // Reset collider to default values
         _collider.offset = new Vector2(0, 0);
         _collider.size = new Vector2(0.75f, 1.75f);
+        
+        // Disable gravity during horizontal propelling
+        ShadowTwinPlayer.obj.DisableGravity();
         
         // Temporarily disable the horizontal propelling platform's collider
         if (_targetHorizontalPropellingPlatform != null)
@@ -1753,6 +1792,7 @@ public class ShadowTwinMovement : MonoBehaviour
                         // Continue the latch pull movement
                         return;
                     } else {
+                        UnlockFlip();
                         CameraShakeManager.obj.ForcePushShake();
                         //TODO impact SFX. Use temporary:
                         _deeAudio.PlayAnchorReached();
@@ -1966,26 +2006,54 @@ public class ShadowTwinMovement : MonoBehaviour
             return;
         }
 
-        // During horizontal propel, handle like dash deceleration
+        // During horizontal propel, handle like dash deceleration with direction locking
         if(_isHorizontalPropelling) {
-            // Decelerate from high lash speed to max speed, like dash
-            if (_movementInput.x == 0)
+            // Check if player is pressing the same direction as propel
+            bool pressingSameDirection = (_horizontalPropelDirection > 0 && _movementInput.x > 0) || 
+                                        (_horizontalPropelDirection < 0 && _movementInput.x < 0);
+            bool pressingOpposite = (_horizontalPropelDirection > 0 && _movementInput.x < 0) || 
+                                   (_horizontalPropelDirection < 0 && _movementInput.x > 0);
+            
+            // During direction lock, maintain propel direction regardless of opposite input
+            if (_horizontalPropelDirectionLockTimer > 0f)
             {
-                _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, _horizontalPropelDecelerationTime * Time.fixedDeltaTime);
-                if(_frameVelocity.x == 0)
+                // Direction is locked - always move in propel direction
+                if (pressingSameDirection || _movementInput.x == 0)
                 {
-                    _isHorizontalPropelling = false;
-                    UnlockFlip(); // Unlock flip when horizontal propelling ends
+                    // Pressing same direction or no input - decelerate to max speed
+                    _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, _horizontalPropelDirection * _stats.MaxSpeed, _horizontalPropelDecelerationTime * Time.fixedDeltaTime);
+                }
+                else
+                {
+                    // Pressing opposite - still maintain propel direction but decelerate faster
+                    _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, _horizontalPropelDirection * _stats.MaxSpeed, _horizontalPropelDecelerationTime * Time.fixedDeltaTime);
                 }
             }
             else
             {
-                _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, _movementInput.x * _stats.MaxSpeed, _horizontalPropelDecelerationTime * Time.fixedDeltaTime);
-                if(Mathf.Abs(_frameVelocity.x) <= _stats.MaxSpeed)
+                // Direction lock expired - allow normal input control
+                if (_movementInput.x == 0)
                 {
-                    _isHorizontalPropelling = false;
-                    UnlockFlip(); // Unlock flip when horizontal propelling ends
+                    _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, _horizontalPropelDecelerationTime * Time.fixedDeltaTime);
                 }
+                else if (pressingSameDirection)
+                {
+                    _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, _movementInput.x * _stats.MaxSpeed, _horizontalPropelDecelerationTime * Time.fixedDeltaTime);
+                }
+                else if (pressingOpposite)
+                {
+                    // Pressing opposite - decelerate using air deceleration
+                    _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, _movementInput.x * _stats.MaxSpeed, _stats.AirDeceleration * Time.fixedDeltaTime);
+                }
+            }
+            
+            // End horizontal propelling when velocity is low enough
+            if (Mathf.Abs(_frameVelocity.x) <= _stats.MaxSpeed)
+            {
+                _isHorizontalPropelling = false;
+                _horizontalPropelDirectionLockTimer = 0f;
+                UnlockFlip(); // Unlock flip when horizontal propelling ends
+                ShadowTwinPlayer.obj.ResetGravity(); // Restore gravity
             }
             return;
         }

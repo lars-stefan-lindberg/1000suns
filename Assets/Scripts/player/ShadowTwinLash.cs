@@ -84,6 +84,12 @@ public class ShadowTwinLash : MonoBehaviour
             return;
         }
         
+        // Prevent shadow lash during horizontal propelling
+        if (ShadowTwinMovement.obj != null && ShadowTwinMovement.obj.IsHorizontalPropelling())
+        {
+            return;
+        }
+        
         if(PlayerPowersManager.obj.DeeCanShadowLash && !_isLashDisabled)
         {
             if (context.performed)
