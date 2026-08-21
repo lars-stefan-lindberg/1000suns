@@ -219,6 +219,9 @@ public class ShadowTwinLash : MonoBehaviour
             }
         }
         
+        // Lock flip after setting the direction
+        ShadowTwinMovement.obj.LockFlip();
+        
         // Only freeze if not already frozen (for instant response)
         if (!alreadyFrozen)
         {
@@ -246,6 +249,7 @@ public class ShadowTwinLash : MonoBehaviour
             ShadowTwinMovement.obj.EndLatchPull();
             ShadowTwinPlayer.obj.rigidBody.velocity = _pausedVelocity;
             ShadowLashBeamManager.obj.StopBeam();
+            ShadowTwinMovement.obj.UnlockFlip();
         }
 
         // Coroutine finished - clear reference

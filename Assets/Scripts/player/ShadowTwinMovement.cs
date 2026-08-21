@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Cinemachine;
 using FMOD.Studio;
@@ -80,13 +81,23 @@ public class ShadowTwinMovement : MonoBehaviour
     [SerializeField] private float _postPropelGravityModifier = 0.4f; // Lower = more floaty
     [SerializeField] private float _platformColliderDisableDuration = 0.6f; // How long to disable platform collider
     
+    [Header("Horizontal Propel Configuration")]
+    [SerializeField] private float _horizontalPropelDecelerationTime = 160f; // Same as dash deceleration
+    [SerializeField] private float _horizontalPlatformColliderDisableDuration = 0.6f;
+    
     private bool _isPropellingThroughPlatform = false;
     private float _propelTimer = 0f;
     private Vector2 _propelVelocity = Vector2.zero;
     private bool _isLatchingToFloatingPlatform = false;
+    private bool _isLatchingToHorizontalPropellingPlatform = false;
     private bool _isPostPropelFloaty = false;
     private float _postPropelFloatyTimer = 0f;
     private FloatyPlatform _targetFloatingPlatform = null;
+    private FloatingPlatformRotated _targetHorizontalPropellingPlatform = null;
+    
+    private bool _isHorizontalPropelling = false;
+    
+    private bool _isFlipLocked = false;
 
     private void Awake()
     {
@@ -240,6 +251,12 @@ public class ShadowTwinMovement : MonoBehaviour
     }
 
     private void HandleFlipPlayer() {
+        // Don't allow flipping when flip is locked (during shadow lash)
+        if (_isFlipLocked)
+        {
+            return;
+        }
+        
         if (ShadowTwinPull.obj != null && ShadowTwinPull.obj.IsControllingObject)
         {
             Rigidbody2D controlledObject = ShadowTwinPull.obj.GetControlledObject();
@@ -326,6 +343,16 @@ public class ShadowTwinMovement : MonoBehaviour
     public bool IsFacingLeft()
     {
         return spriteRenderer.flipX;
+    }
+
+    public void LockFlip()
+    {
+        _isFlipLocked = true;
+    }
+
+    public void UnlockFlip()
+    {
+        _isFlipLocked = false;
     }
 
     //May be used by moveables, like floating platforms, to unregister themselves
@@ -1078,6 +1105,11 @@ public class ShadowTwinMovement : MonoBehaviour
                 _landed = true;
                 isFalling = false;
                 _isPropellingThroughPlatform = false;
+                if (_isHorizontalPropelling)
+                {
+                    _isHorizontalPropelling = false;
+                    UnlockFlip(); // Unlock flip when landing ends horizontal propelling
+                }
                 _propelTimer = 0f;
                 ShadowTwinPlayer.obj.ResetGravity();
 
@@ -1392,6 +1424,7 @@ public class ShadowTwinMovement : MonoBehaviour
             bool isFloatingPlatform = hit.collider.gameObject.layer == LayerMask.NameToLayer("JumpThroughs") 
                                       && hit.collider.CompareTag("FloatingPlatform");
             LatchSurfaceType surfaceType = DetermineLatchSurfaceType(direction, hit.normal);
+
             
             // Set flag if this is a floating platform ceiling we're lashing to
             _isLatchingToFloatingPlatform = isFloatingPlatform && surfaceType == LatchSurfaceType.Ceiling && direction.y > 0;
@@ -1404,6 +1437,16 @@ public class ShadowTwinMovement : MonoBehaviour
             else
             {
                 _targetFloatingPlatform = null;
+
+                bool isHorizontalPropellingPlatform = hit.collider.gameObject.layer == LayerMask.NameToLayer("JumpThroughs") 
+                                      && hit.collider.CompareTag("HorizontalPropeller");
+                _isLatchingToHorizontalPropellingPlatform = isHorizontalPropellingPlatform && surfaceType == LatchSurfaceType.Wall && MathF.Abs(direction.x) > 0;
+
+                if(_isLatchingToHorizontalPropellingPlatform) {
+                    _targetHorizontalPropellingPlatform = hit.collider.GetComponentInParent<FloatingPlatformRotated>();
+                } else {
+                    _targetHorizontalPropellingPlatform = null;
+                }
             }
             
             // Align latch position to move purely horizontally or vertically
@@ -1483,6 +1526,8 @@ public class ShadowTwinMovement : MonoBehaviour
         _latchReachedThisPull = false;
         _isLatchingToFloatingPlatform = false;
         _targetFloatingPlatform = null;
+        _isLatchingToHorizontalPropellingPlatform = false;
+        _targetHorizontalPropellingPlatform = null;
         _isLatchPulling = false;
         UpdateAnimatorIsLatchPulling(false);
         ShadowTwinPlayer.obj.ResetGravity();
@@ -1516,6 +1561,9 @@ public class ShadowTwinMovement : MonoBehaviour
         // Reset collider to default values
         _collider.offset = new Vector2(0, 0);
         _collider.size = new Vector2(0.75f, 1.75f);
+        
+        // Unlock flip when latching to a surface (not propelling)
+        UnlockFlip();
         
         // If latching to ceiling, check if we need to flip the player
         if (_latchSurfaceType == LatchSurfaceType.Ceiling)
@@ -1577,6 +1625,22 @@ public class ShadowTwinMovement : MonoBehaviour
     private void HandlePropelThroughPlatform()
     {
         _frameVelocity = _propelVelocity;
+    }
+
+    private void StartHorizontalPropelThroughPlatform()
+    {
+        _isHorizontalPropelling = true;
+        // Velocity is set from the lash velocity before calling this method
+        ShadowTwinLash.obj.SetIsShadowLashing(false);
+        // Reset collider to default values
+        _collider.offset = new Vector2(0, 0);
+        _collider.size = new Vector2(0.75f, 1.75f);
+        
+        // Temporarily disable the horizontal propelling platform's collider
+        if (_targetHorizontalPropellingPlatform != null)
+        {
+            _targetHorizontalPropellingPlatform.TemporarilyDisableCollider(_horizontalPlatformColliderDisableDuration);
+        }
     }
 
     private void HandleLatchPullVelocity()
@@ -1735,6 +1799,26 @@ public class ShadowTwinMovement : MonoBehaviour
                     _isLatchingToFloatingPlatform = false;
                     _targetFloatingPlatform = null; // Clear platform reference after starting propel
                     ShadowLashBeamManager.obj.ForceStopBeam();
+                    // Unlock flip for vertical propelling - player can flip while propelling upwards
+                    UnlockFlip();
+                    return;
+                }
+                
+                // Check if this is a horizontal propelling platform - if so, start horizontal propelling instead of latching
+                if (_isLatchingToHorizontalPropellingPlatform)
+                {
+                    // Start horizontal propelling (velocity is already in _frameVelocity from lash)
+                    StartHorizontalPropelThroughPlatform();
+                    // End the latch pull state
+                    _latchPosition = Vector2.zero;
+                    _latchDirection = Vector2.zero;
+                    _latchReachedThisPull = false;
+                    _isLatchPulling = false;
+                    UpdateAnimatorIsLatchPulling(false);
+                    _isLatchingToHorizontalPropellingPlatform = false;
+                    _targetHorizontalPropellingPlatform = null; // Clear platform reference after starting propel
+                    ShadowLashBeamManager.obj.ForceStopBeam();
+                    // Keep flip locked during horizontal propelling - will unlock when _isHorizontalPropelling becomes false
                     return;
                 }
                 
@@ -1882,6 +1966,30 @@ public class ShadowTwinMovement : MonoBehaviour
             return;
         }
 
+        // During horizontal propel, handle like dash deceleration
+        if(_isHorizontalPropelling) {
+            // Decelerate from high lash speed to max speed, like dash
+            if (_movementInput.x == 0)
+            {
+                _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, _horizontalPropelDecelerationTime * Time.fixedDeltaTime);
+                if(_frameVelocity.x == 0)
+                {
+                    _isHorizontalPropelling = false;
+                    UnlockFlip(); // Unlock flip when horizontal propelling ends
+                }
+            }
+            else
+            {
+                _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, _movementInput.x * _stats.MaxSpeed, _horizontalPropelDecelerationTime * Time.fixedDeltaTime);
+                if(Mathf.Abs(_frameVelocity.x) <= _stats.MaxSpeed)
+                {
+                    _isHorizontalPropelling = false;
+                    UnlockFlip(); // Unlock flip when horizontal propelling ends
+                }
+            }
+            return;
+        }
+
         // During wall jump, apply boost phase then transition to normal air control
         if(_isWallJumping) {
             // Check if player is pressing the same direction as wall jump
@@ -1961,8 +2069,15 @@ public class ShadowTwinMovement : MonoBehaviour
 
     private void HandleGravity()
     {
-        // Check latch pulling first, before moveable logic
-        if (_isPropellingThroughPlatform)
+        // Check horizontal propelling first - set vertical velocity to 0 like dash
+        if (_isHorizontalPropelling)
+        {
+            // Just keep horizontal movement, no vertical velocity (like dash)
+            _frameVelocity.y = 0;
+            return;
+        }
+        // Check latch pulling, before moveable logic
+        else if (_isPropellingThroughPlatform)
         {
             // Handle propel through platform - maintain velocity
             HandlePropelThroughPlatform();

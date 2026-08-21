@@ -143,6 +143,15 @@ public class FloatingPlatformRotated : MonoBehaviour
 
     private Coroutine _disableColliderCoroutine;
 
+    public void DisableCollider()
+    {
+        _collider.enabled = false;
+    }
+
+    public void EnableCollider() {
+        _collider.enabled = true;
+    }
+
     public void TemporarilyDisableCollider(float duration)
     {
         // If already running, stop the previous coroutine
