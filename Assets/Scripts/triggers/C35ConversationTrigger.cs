@@ -34,6 +34,8 @@ public class C35ConversationTrigger : MonoBehaviour, ISkippable
             ShadowTwinPlayer.obj.ResetAnimator();
             ShadowTwinPlayer.obj.StartAnimator();
             ShadowTwinPlayer.obj.transform.position = _deeCutsceneStartingPosition.position;
+            if(!ShadowTwinMovement.obj.IsFacingLeft())
+                ShadowTwinMovement.obj.FlipPlayer();
         }
     }
 
