@@ -1431,6 +1431,11 @@ public class ShadowTwinMovement : MonoBehaviour
         
         if (hit.collider != null)
         {
+            if (!IsPointWithinCurrentRoom(hit.point))
+            {
+                return false;
+            }
+            
             ShadowLashBeamManager.obj.TriggerHitSurfaceAnimation();
             
             // Check if hit is in the Spikes layer - if so, return false without latching
@@ -2213,6 +2218,15 @@ public class ShadowTwinMovement : MonoBehaviour
             ShadowTwinPlayer.obj.rigidBody.velocity = _frameVelocity;
         }
     } 
+
+    public static bool IsPointWithinCurrentRoom(Vector2 point)
+    {
+        PolygonCollider2D roomCollider = CameraManager.GetCurrentRoomCollider();
+        if (roomCollider == null)
+            return true;
+
+        return roomCollider.OverlapPoint(point);
+    }
 
     private void OnDrawGizmos()
     {

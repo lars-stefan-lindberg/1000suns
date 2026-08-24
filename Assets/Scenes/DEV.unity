@@ -417,7 +417,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5784290060718543960, guid: a0e73d062e410485895676a224d0eb99, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6243255895628590305, guid: a0e73d062e410485895676a224d0eb99, type: 3}
       propertyPath: m_LocalPosition.x
@@ -555,6 +555,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 32287694096923361, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 39985905909828514, guid: 681e618cc4d84440da9934c23736f209, type: 3}
       propertyPath: m_LocalPosition.x
       value: 192.03127
@@ -598,6 +602,10 @@ PrefabInstance:
     - target: {fileID: 2576842243526084596, guid: 681e618cc4d84440da9934c23736f209, type: 3}
       propertyPath: m_Name
       value: MainVCam static
+      objectReference: {fileID: 0}
+    - target: {fileID: 2576842243526084596, guid: 681e618cc4d84440da9934c23736f209, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -11033,11 +11041,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1975522229898990927, guid: 97caebb36b7df4895a595d2740614fcf, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 186.5
+      value: 198.875
       objectReference: {fileID: 0}
     - target: {fileID: 1975522229898990927, guid: 97caebb36b7df4895a595d2740614fcf, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 164.5
+      value: 157.5
       objectReference: {fileID: 0}
     - target: {fileID: 1975522229898990927, guid: 97caebb36b7df4895a595d2740614fcf, type: 3}
       propertyPath: m_LocalPosition.z
@@ -11085,7 +11093,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5873467829969753878, guid: 97caebb36b7df4895a595d2740614fcf, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -12436,6 +12444,10 @@ PrefabInstance:
     - target: {fileID: 6292842456412273408, guid: 62146dad13bfb42abaec07e3d9a5cc96, type: 3}
       propertyPath: m_Name
       value: Floating platform rotated
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292842456412273408, guid: 62146dad13bfb42abaec07e3d9a5cc96, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8718299447916375729, guid: 62146dad13bfb42abaec07e3d9a5cc96, type: 3}
       propertyPath: m_LocalPosition.x
