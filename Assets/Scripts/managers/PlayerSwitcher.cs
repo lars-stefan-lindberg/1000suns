@@ -14,6 +14,8 @@ public class PlayerSwitcher : MonoBehaviour
     public string keyboardControlSchemeName;
     public string gamepadControlSchemeName;
 
+    private bool _isSwitchingDisabled = false;
+
     void Awake()
     {
         obj = this;
@@ -56,6 +58,8 @@ public class PlayerSwitcher : MonoBehaviour
 
     public void SwitchToBlob()
     {
+        if(_isSwitchingDisabled)
+            return;
         eliInput.enabled = false;
         deeInput.enabled = false;
         blobInput.enabled = true;
@@ -89,6 +93,14 @@ public class PlayerSwitcher : MonoBehaviour
 
     public bool IsDeeActive() {
         return deeInput.enabled;
+    }
+
+    public void DisableSwitching() {
+        _isSwitchingDisabled = true;
+    }
+
+    public void EnableSwitching() {
+        _isSwitchingDisabled = false;
     }
 
     private void OnInputDeviceChange(InputDeviceListener.Device device)

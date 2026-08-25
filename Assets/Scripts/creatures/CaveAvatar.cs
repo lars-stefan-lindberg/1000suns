@@ -225,7 +225,7 @@ public class CaveAvatar : MonoBehaviour
         SetFlipX(true);
     }
 
-    private void SetRedEyes() {
+    public void SetRedEyes() {
         _headSpriteRenderer.color = Color.white;
         _animator.SetLayerWeight(1, 1);
     }

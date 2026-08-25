@@ -44,6 +44,10 @@ public class PlayerBlob : MonoBehaviour
         _animator.SetTrigger("newPowerReceived");
     }
 
+    public void ResetAnimator() {
+        _animator.Play("player_blob_animator", 0, 0);
+    }
+
     public void ForcePushFlash() {
         _playerFlash.FlashFor(0.1f, 0.17f);
     }
