@@ -636,6 +636,19 @@ public class PlayerMovement : MonoBehaviour
         return _jumpHeldInput;
     }
 
+    public void SimulateJumpInput(bool jumpHeld, float currentTime) {
+        _jumpHeldInput = jumpHeld;
+        
+        if (jumpHeld && !_previousJumpHeld) {
+            if (isGrounded || CanUseCoyote) {
+                _jumpToConsume = true;
+            }
+            _timeJumpWasPressed = currentTime;
+        }
+        
+        _previousJumpHeld = jumpHeld;
+    }
+
     public void OnJump(InputAction.CallbackContext context)
     {
         if (context.performed)
@@ -808,6 +821,7 @@ public class PlayerMovement : MonoBehaviour
     public void CancelJumping() {
         _jumpToConsume = false;
         _isShadowJumping = false;
+        _previousJumpHeld = false;
     }
 
     private IEnumerator JumpSqueeze(float xSqueeze, float ySqueeze, float seconds)
@@ -1051,6 +1065,7 @@ public class PlayerMovement : MonoBehaviour
     private float _timeJumpWasPressed = -100;  //To avoid having buffered jump from the start
     private bool _endedJumpEarly;
     private bool _coyoteUsable;
+    private bool _previousJumpHeld = false;
     private bool _airJumpToConsume = false;
     private int _numberOfAirJumps = 0;
     private const int MAX_NUMBER_OF_AIR_JUMPS = 1;
