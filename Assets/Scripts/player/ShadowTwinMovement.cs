@@ -2219,6 +2219,14 @@ public class ShadowTwinMovement : MonoBehaviour
         }
     } 
 
+    public void StopMovement() {
+        _stopMovement = true;
+    }
+
+    public void EnableMovement() {
+        _stopMovement = false;
+    }
+
     public static bool IsPointWithinCurrentRoom(Vector2 point)
     {
         PolygonCollider2D roomCollider = CameraManager.GetCurrentRoomCollider();

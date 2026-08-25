@@ -13,6 +13,9 @@ public class Cave40RoomManager : MonoBehaviour, ISkippable
     [SerializeField] private SceneField _thisScene;
     [SerializeField] private EventReference _elevatorBuzzSfx;
     [SerializeField] private EventReference _elevatorCrystalSfx;
+    [SerializeField] private Transform _deeBehindElevatorPosition;
+    [SerializeField] private Transform _deeCutsceneEliStartPosition;
+    [SerializeField] private Transform _deeCutsceneEliEndPosition;
     
     [Header("Sound Settings")]
     [SerializeField] [Range(0.1f, 1f)] private float _soundMaxIntensityAtSpeedPercent = 0.5f;
@@ -32,12 +35,94 @@ public class Cave40RoomManager : MonoBehaviour, ISkippable
     }
 
     private IEnumerator DeeCutsceneCoroutine() {
+        PauseMenuManager.obj.RegisterSkippable(this);
         ShadowTwinMovement.obj.Freeze();
         yield return new WaitForSeconds(1f);
+
+        //Play back Eli sfx
+
+        ShadowTwinMovement.obj.FlipPlayer();
+
+        yield return new WaitForSeconds(1f);
+
+        SpriteRenderer deeRenderer = ShadowTwinMovement.obj.spriteRenderer;
+        deeRenderer.sortingLayerName = "Background props";
+        deeRenderer.sortingOrder = 0;
+
+        ShadowTwinMovement.obj.SetMovementInput(new Vector2(1, 0));
+        while(ShadowTwinMovement.obj.transform.position.x < _deeBehindElevatorPosition.position.x) {
+            yield return null;
+        }
+        ShadowTwinMovement.obj.SetMovementInput(Vector2.zero);
+        ShadowTwinPlayer.obj.FadeOutPlayerLight();
+        yield return new WaitForSeconds(1f);
+        //Make Dee invisible and set position out of Eli's way (collider collision), but still remin in room to not unload room objects
+        deeRenderer.enabled = false;
+        ShadowTwinMovement.obj.StopMovement();
+        ShadowTwinPlayer.obj.DisableGravity();
+        ShadowTwinPlayer.obj.transform.position = _deeBehindElevatorPosition.position + new Vector3(0, 9f, 0f);
+
+        yield return new WaitForSeconds(1f);
+
+        //Setup Eli position
+        Player.obj.gameObject.SetActive(true);
+        Player.obj.SetAnimatorLayerAndHasCape(true);
+        PlayerMovement.obj.isGrounded = true;
+        PlayerMovement.obj.SetStartingOnGround();
+        Player.obj.ResetAnimator();
+        Player.obj.StartAnimator();
+        if(PlayerMovement.obj.IsFacingLeft())
+            PlayerMovement.obj.FlipPlayer();
+        Player.obj.transform.position = _deeCutsceneEliStartPosition.position;
+
+        //Set cave avatar start position, and follow Eli
+        CaveAvatar.obj.gameObject.SetActive(true);
+        CaveAvatar.obj.transform.position = _deeCutsceneEliStartPosition.position;
+        CaveAvatar.obj.OverriddenPlayerType = PlayerManager.PlayerType.HUMAN;
+        CaveAvatar.obj.IsFollowingPlayer = true;
+
+        //Steer Eli to designated position
+        PlayerMovement.obj.SetMovementInput(new Vector2(1, 0));
+        yield return new WaitForSeconds(0.1f);
+        PlayerMovement.obj.SimulateJumpInput(true, Time.time);
+        yield return new WaitForSeconds(0.1f);
+        PlayerMovement.obj.SimulateJumpInput(false, Time.time);
+        yield return new WaitForSeconds(0.8f);
+        PlayerMovement.obj.SimulateJumpInput(true, Time.time);
+        yield return new WaitForSeconds(0.1f);
+        PlayerMovement.obj.SimulateJumpInput(false, Time.time);
+        while(PlayerMovement.obj.transform.position.x < _deeCutsceneEliEndPosition.position.x) {
+            yield return null;
+        }
+        PlayerMovement.obj.SetMovementInput(Vector2.zero);
+        yield return new WaitForSeconds(1f);
+
+        //Start elevator
+        _elevatorCrystalSfxInstance = SoundFXManager.obj.CreateAttachedInstance(_elevatorCrystalSfx, _elevator.gameObject);
+        _elevatorCrystalSfxInstance.start();
+        _elevatorCrystalSfxInstance.release();
+
+        yield return new WaitForSeconds(1.4f);
+        _elevatorFlash.Flash();
+        yield return new WaitForSeconds(2.5f);
+        
+        SoundFXManager.obj.StartNamedPersistent2DSound(ELEVATOR_SOUND_NAME, _elevatorBuzzSfx);
+        _elevator.StartMoving();
+        
+        _updateElevatorSoundCoroutine = StartCoroutine(UpdateElevatorSoundCoroutine());
+
+        yield return new WaitForSeconds(3f);
+
+        PauseMenuManager.obj.UnregisterSkippable();
+        GameManager.obj.IsPauseAllowed = false;
+
         SceneFadeManager.obj.StartFadeOut(0.8f);
         while(SceneFadeManager.obj.IsFadingOut)
             yield return null;
-        
+
+        Player.obj.gameObject.SetActive(false);
+        CaveAvatar.obj.gameObject.SetActive(false);
+
         //Switch backgrounds
         yield return StartCoroutine(BackgroundLoaderManager.obj.RemoveBackgroundLayers());
         yield return StartCoroutine(BackgroundLoaderManager.obj.LoadAndSetBackground("CaveBg2"));
@@ -46,7 +131,6 @@ public class Cave40RoomManager : MonoBehaviour, ISkippable
         AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(_skipElevatorScene, LoadSceneMode.Additive);
         while(!asyncOperation.isDone)
             yield return null;
-
         InitRoom initRoomData = LevelManager.obj.GetInitRoomData(SceneManager.GetSceneByName(_skipElevatorScene));
         LevelManager.obj.LoadAdjacentRooms(initRoomData);
 
@@ -54,7 +138,6 @@ public class Cave40RoomManager : MonoBehaviour, ISkippable
         
         //Unload this scene
         SceneManager.UnloadSceneAsync(_thisScene);
-
     }
 
     private IEnumerator StartElevatorCoroutine() {
@@ -107,6 +190,27 @@ public class Cave40RoomManager : MonoBehaviour, ISkippable
         _elevatorFlash.AbortFlash();
         _elevator.StopAbruptly();
         Destroy(_elevator.gameObject);
+
+        var caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(caveTimeline == CaveTimelineId.Id.Dee) {
+            Player.obj.gameObject.SetActive(false);
+            PlayerMovement.obj.SetMovementInput(Vector2.zero);
+            PlayerMovement.obj.CancelJumping();
+            CaveAvatar.obj.gameObject.SetActive(false);
+
+            SpriteRenderer deeRenderer = ShadowTwinMovement.obj.spriteRenderer;
+            deeRenderer.sortingLayerName = "Background props";
+            deeRenderer.sortingOrder = 0;
+
+            ShadowTwinPlayer.obj.FadeOutPlayerLight();
+            deeRenderer.enabled = false;
+            ShadowTwinMovement.obj.StopMovement();
+            ShadowTwinPlayer.obj.DisableGravity();
+            ShadowTwinMovement.obj.SetMovementInput(Vector2.zero);
+            if(ShadowTwinMovement.obj.IsFacingLeft()) {
+                ShadowTwinMovement.obj.FlipPlayer();
+            }
+        }
 
         StartCoroutine(ResumeGameplay());
     }

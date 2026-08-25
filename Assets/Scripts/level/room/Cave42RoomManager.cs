@@ -16,6 +16,9 @@ public class Cave42RoomManager : MonoBehaviour
     [SerializeField] private GameEventId _elevatorCompleted;
     [SerializeField] private GameEventId _elevatorCompletedDee;
     [SerializeField] private MusicTrack _caveMain;
+    [SerializeField] private Transform _deeStartPosition;
+    [SerializeField] private Transform _deeElevatorStartPosition;
+    [SerializeField] private Transform _deactivateEliPosition;
     
     [Header("Elevator Sound Settings")]
     [SerializeField] private float _elevatorSoundFadeDuration = 5f;
@@ -59,34 +62,100 @@ public class Cave42RoomManager : MonoBehaviour
             Collider2D roomCollider = room.GetComponent<Collider2D>();
             CameraManager.obj.EnterRoom(cameraController, roomCollider, PlayerManager.obj.GetPlayerTransform(PlayerManager.PlayerType.HUMAN), _eliStartPosition.transform.position);
 
-
             StartCoroutine(StartScene());
         } else if(caveTimeline == CaveTimelineId.Id.Dee) {
-            ShadowTwinMovement.obj.isOnMoveable = false;
-            ShadowTwinPlayer.obj.transform.position = _afterElevatorSpawnPoint.transform.position;
-            ShadowTwinMovement.obj.SetStartingOnGround();
-            ShadowTwinMovement.obj.isGrounded = true;
+            //Setup Dee
+            ShadowTwinPlayer.obj.transform.position = _deeStartPosition.position;
+            //Setup Eli and Soot
+            PlayerMovement.obj.gameObject.tag = "Untagged"; //Hack to avoid player triggers to activate like RoomMgr and LevelEntry
+            PlayerMovement.obj.isOnMoveable = true;
+            PlayerMovement.obj.moveableRigidbody = _elevator.GetComponent<Rigidbody2D>();
+            Player.obj.transform.position = _eliStartPosition.transform.position;
+            Player.obj.SetAnimatorLayerAndHasCape(true);
+            Player.obj.ResetAnimator();
+            Player.obj.StartAnimator();
+            if(PlayerMovement.obj.IsFacingLeft())
+                PlayerMovement.obj.FlipPlayer();
+            Player.obj.gameObject.SetActive(true);
+            PlayerMovement.obj.SetStartingOnGround();
+            PlayerMovement.obj.isGrounded = true;
+
+            CaveAvatar.obj.SetPosition(_sootStartPosition.position);
+            CaveAvatar.obj.IsFollowingPlayer = true;
+            CaveAvatar.obj.gameObject.SetActive(true);
+            CaveAvatar.obj.OverriddenPlayerType = PlayerManager.PlayerType.HUMAN;
 
             GameObject[] sceneGameObjects = gameObject.scene.GetRootGameObjects();
             GameObject mainCamera = sceneGameObjects.First(gameObject => gameObject.CompareTag("MainCamera"));
             RoomCameraController cameraController = mainCamera.GetComponent<RoomCameraController>();
             GameObject room = sceneGameObjects.First(gameObject => gameObject.CompareTag("Room"));
             Collider2D roomCollider = room.GetComponent<Collider2D>();
-            CameraManager.obj.EnterRoom(cameraController, roomCollider, PlayerManager.obj.GetPlayerTransform(PlayerManager.PlayerType.SHADOW_TWIN), _afterElevatorSpawnPoint.transform.position);
+            CameraManager.obj.EnterRoom(cameraController, roomCollider, PlayerManager.obj.GetPlayerTransform(PlayerManager.PlayerType.SHADOW_TWIN), _deeStartPosition.transform.position);
             
             StartCoroutine(StartSceneDee());
         }
     }
 
     private IEnumerator StartSceneDee() {
+        //Give some time to transition from previous scene
         yield return new WaitForSeconds(1f);
+        _elevator.SetStopPosition(_elevatorStopPosition.position.y);
+        _elevator.StartMoving();
+        _elevator.GetComponentInChildren<LightSprite2D>().enabled = true;
+
+        yield return new WaitForSeconds(2f);
+
         SceneFadeManager.obj.StartFadeIn(0.8f);
+        StartCoroutine(FadeElevatorSoundBack());
+        StartCoroutine(UpdateElevatorSoundDeceleration());
+        
         while(SceneFadeManager.obj.IsFadingIn)
             yield return null;
 
         AmbienceManager.obj.Stop();
         MusicManager.obj.Play(_caveMain);
+
+        while(!_elevator.HasReachedStop())
+            yield return null;
+
+        yield return new WaitForSeconds(1f);
+
+        //Have Eli run off
+        PlayerMovement.obj.SetMovementInput(new Vector2(1f, 0f));
+        while(PlayerMovement.obj.transform.position.x < _deactivateEliPosition.position.x) {
+            yield return null;
+        }
+        PlayerMovement.obj.SetMovementInput(Vector2.zero);
+        yield return new WaitForSeconds(0.5f);
+        Player.obj.gameObject.SetActive(false);
+        PlayerMovement.obj.gameObject.tag = "Player";
+        CaveAvatar.obj.gameObject.SetActive(false);
+        CaveAvatar.obj.OverriddenPlayerType = PlayerManager.PlayerType.NONE;
+
+        yield return new WaitForSeconds(1f);
+
+        //Have Dee come out of his hiding place
+        ShadowTwinPlayer.obj.transform.position = _deeElevatorStartPosition.position;
+        ShadowTwinMovement.obj.SetStartingOnGround();
+        ShadowTwinMovement.obj.isGrounded = true;
+        ShadowTwinPlayer.obj.ResetAnimator();
+        ShadowTwinPlayer.obj.StartAnimator();
+        ShadowTwinPlayer.obj.FadeInPlayerLight();
+        ShadowTwinPlayer.obj.ResetGravity();
+        ShadowTwinMovement.obj.EnableMovement();
+        SpriteRenderer deeRenderer = ShadowTwinMovement.obj.spriteRenderer;
+        deeRenderer.enabled = true;
+        yield return new WaitForSeconds(2f);
+
+        ShadowTwinMovement.obj.SetMovementInput(new Vector2(1f, 0f));
+        yield return new WaitForSeconds(0.7f);
+        ShadowTwinMovement.obj.SetMovementInput(Vector2.zero);
+        deeRenderer.sortingLayerName = "Player";
+        deeRenderer.sortingOrder = 0;
+        
+        GameManager.obj.RegisterEvent(_elevatorCompletedDee);
         GameManager.obj.SetCurrentSpawnPointId(_afterElevatorSpawnPoint.SpawnPointID);
+        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         ShadowTwinMovement.obj.UnFreeze();
         GameManager.obj.IsPauseAllowed = true;
     }

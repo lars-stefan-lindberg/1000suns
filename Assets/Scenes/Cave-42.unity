@@ -709,6 +709,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4557110039581730200, guid: 882baef20c169468e8e0e5087c0d8add, type: 3}
   m_PrefabInstance: {fileID: 437344820}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &494717939
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 494717940}
+  m_Layer: 2
+  m_Name: Dee start position
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &494717940
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 494717939}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1670, y: -227.25, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &578086412
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1611,6 +1642,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4557110039581730200, guid: 882baef20c169468e8e0e5087c0d8add, type: 3}
   m_PrefabInstance: {fileID: 1432027829}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1487054578
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1487054579}
+  m_Layer: 2
+  m_Name: Deactivate Eli position
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1487054579
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1487054578}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1694.75, y: -224.375, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1510371874
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1970,6 +2032,37 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c92a3868d632b43469f1c50ea759eb95, type: 3}
+--- !u!1 &1907853100
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1907853101}
+  m_Layer: 2
+  m_Name: Dee elevator start position
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1907853101
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1907853100}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1670, y: -222.875, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1933112156
 GameObject:
   m_ObjectHideFlags: 0
@@ -2007,6 +2100,9 @@ MonoBehaviour:
   _elevatorCompleted: {fileID: 11400000, guid: b2e0fa06199a5402fa260dd008d83230, type: 2}
   _elevatorCompletedDee: {fileID: 11400000, guid: d0b44d68e33a54b3cbb423b95ec810d2, type: 2}
   _caveMain: {fileID: 11400000, guid: f430c39f8a18a4401a474609c2d7a41a, type: 2}
+  _deeStartPosition: {fileID: 494717940}
+  _deeElevatorStartPosition: {fileID: 1907853101}
+  _deactivateEliPosition: {fileID: 1487054579}
   _elevatorSoundFadeDuration: 3
   _soundMaxIntensityAtSpeedPercent: 0.5
 --- !u!4 &1933112158
@@ -2046,7 +2142,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7590543534495886062, guid: f7c100f37d5b649f3897d46ae37a75a0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1660
+      value: 1670
       objectReference: {fileID: 0}
     - target: {fileID: 7590543534495886062, guid: f7c100f37d5b649f3897d46ae37a75a0, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2359,3 +2455,6 @@ SceneRoots:
   - {fileID: 2013867419}
   - {fileID: 1547271249}
   - {fileID: 2119889798}
+  - {fileID: 494717940}
+  - {fileID: 1907853101}
+  - {fileID: 1487054579}
