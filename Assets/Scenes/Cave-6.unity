@@ -457,6 +457,78 @@ Transform:
   - {fileID: 99408977}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &89180527
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3658160454134421921, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 460.125
+      objectReference: {fileID: 0}
+    - target: {fileID: 3658160454134421921, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -88
+      objectReference: {fileID: 0}
+    - target: {fileID: 3658160454134421921, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3658160454134421921, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3658160454134421921, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3658160454134421921, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3658160454134421921, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3658160454134421921, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3658160454134421921, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3658160454134421921, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6921377242360237166, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
+      propertyPath: m_Name
+      value: Dee return SpawnPoint
+      objectReference: {fileID: 0}
+    - target: {fileID: 7339979703855284144, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
+      propertyPath: spawnPointID
+      value: Cave-6_cb4ef4b7-fdf1-45e6-9afc-0887521bdfa8
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
+--- !u!114 &89180528 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7339979703855284144, guid: 8800a9c7197374defb29bbd609404ff1, type: 3}
+  m_PrefabInstance: {fileID: 89180527}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d79aa31c8820f42b984ed14fbe6b5120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &99408976
 GameObject:
   m_ObjectHideFlags: 0
@@ -2756,6 +2828,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _capePicked: {fileID: 11400000, guid: 10453c8b9ee784b93b482e4f84817ea7, type: 2}
   _crownPicked: {fileID: 11400000, guid: 4a13801326fb64012bf6fc9aa443c3dc, type: 2}
+  _deePostDreamRoomsCompleted: {fileID: 11400000, guid: 1766514a359ce41b1b29201e9f5e781d, type: 2}
   _cape: {fileID: 1203035367}
   _crown: {fileID: 2046121791}
   _blobs:
@@ -2782,6 +2855,7 @@ MonoBehaviour:
   _powerUpScreen: {fileID: 1015008455}
   _powerUpScreenDee: {fileID: 1124164430}
   _finalPlayerPosition: {fileID: 1251989885}
+  _afterDeeDreamRoomsSpawnPoint: {fileID: 89180528}
   _blobsContainer: {fileID: 79239952}
   _pickCapeTrigger: {fileID: 442311284}
   _pickCrownTrigger: {fileID: 1859377000}
@@ -2802,6 +2876,22 @@ MonoBehaviour:
     Path: event:/game/01_cave/cape_room_take_cape_roar
   _lightFadeInSpeed: 1.5
   _lightFadeOutSpeed: 3
+  _dreamRoomSceneDee:
+    _sceneAsset: {fileID: 102900000, guid: d94a57902f88245b6a84b22d98065840, type: 3}
+    _sceneName: Cave-6-Dee-D1
+  _secondDreamRoomSceneDee:
+    _sceneAsset: {fileID: 102900000, guid: 13f2ae2e52c4444a7ac198f1692d7e8d, type: 3}
+    _sceneName: Cave-6-Dee-D2
+  _thisScene:
+    _sceneAsset: {fileID: 102900000, guid: 2648387fb18f546ffb12d70d22ffcf7c, type: 3}
+    _sceneName: Cave-6
+  _teleportSfx:
+    Guid:
+      Data1: 2016255071
+      Data2: 1306818322
+      Data3: 235933584
+      Data4: -895535784
+    Path: event:/game/01_cave/space_room/teleport
 --- !u!4 &802567876
 Transform:
   m_ObjectHideFlags: 0
@@ -6128,3 +6218,4 @@ SceneRoots:
   - {fileID: 111043468}
   - {fileID: 9177994822411645446}
   - {fileID: 1124164429}
+  - {fileID: 89180527}

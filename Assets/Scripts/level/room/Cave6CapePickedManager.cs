@@ -4,17 +4,20 @@ using FMOD.Studio;
 using FMODUnity;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class Cave6CapePickedManager : MonoBehaviour, ISkippable
 {
     [SerializeField] private GameEventId _capePicked;
     [SerializeField] private GameEventId _crownPicked;
+    [SerializeField] private GameEventId _deePostDreamRoomsCompleted;
     [SerializeField] private GameObject _cape;
     [SerializeField] private GameObject _crown;
     [SerializeField] private List<GameObject> _blobs;
     [SerializeField] private PowerUpScreen _powerUpScreen;
     [SerializeField] private PowerUpScreen _powerUpScreenDee;
     [SerializeField] private Transform _finalPlayerPosition;
+    [SerializeField] private SpawnPoint _afterDeeDreamRoomsSpawnPoint;
     [SerializeField] private GameObject _blobsContainer;
     [SerializeField] private GameObject _pickCapeTrigger;
     [SerializeField] private GameObject _pickCrownTrigger;
@@ -23,9 +26,29 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
     [SerializeField] private EventReference _capePickedRoarSfx;
     [SerializeField] private float _lightFadeInSpeed = 1.5f;
     [SerializeField] private float _lightFadeOutSpeed = 2f;
+    [SerializeField] private SceneField _dreamRoomSceneDee;
+    [SerializeField] private SceneField _secondDreamRoomSceneDee;
+    [SerializeField] private SceneField _thisScene;
+    [SerializeField] private EventReference _teleportSfx;
     
     private EventInstance _capePickedRoarInstance;
     private Coroutine _cutsceneCoroutine;
+
+    void Start() {
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(caveTimeline == CaveTimelineId.Id.Dee && GameManager.obj.HasEvent(_crownPicked)) {
+            _blobsContainer.SetActive(false);
+        } else if(caveTimeline == CaveTimelineId.Id.Eli && GameManager.obj.HasEvent(_capePicked)) {
+            _blobsContainer.SetActive(false);
+        }
+        
+        //If coming back from dream room, load room state
+        if(caveTimeline == CaveTimelineId.Id.Dee) {
+            if(GameManager.obj.HasEvent(_crownPicked) && !GameManager.obj.HasEvent(_deePostDreamRoomsCompleted)) {
+                StartCoroutine(AfterDeeDreamRoom());
+            }
+        }
+    }
 
     public void RequestSkip() {
         StopCoroutine(_cutsceneCoroutine);
@@ -261,25 +284,79 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
             yield return null;
         }
         Time.timeScale = 1;
-        GameManager.obj.IsPauseAllowed = true;
 
-        ShadowTwinMovement.obj.SetNewPowerReceived();
-        yield return new WaitForSeconds(2);
-        ShadowTwinMovement.obj.UnFreeze();
-
-        MusicManager.obj.Play(_musicTrack);
-        
-        GameManager.obj.RegisterEvent(_crownPicked);
-
-        //Clean up Soot, it's safe from this point since you can't backtrack
+        yield return new WaitForSeconds(1f);
+        //Teleport to dream room
+        SoundFXManager.obj.Play2D(_teleportSfx);
         CaveAvatar.obj.gameObject.SetActive(false);
-
-        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
+        StartCoroutine(TeleportToDreamRoomRoutine());
 
         yield return null;
     }
 
+    private IEnumerator TeleportToDreamRoomRoutine() {
+        WhiteSceneFadeManager.obj.StartFadeOut(0.5f);
+
+        while(WhiteSceneFadeManager.obj.IsFadingOut)
+            yield return null;
+
+        AmbienceManager.obj.Stop();
+
+        //Load dream room
+        AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(_dreamRoomSceneDee, LoadSceneMode.Additive);
+        while(!asyncOperation.isDone) {
+            yield return null;
+        }
+        AsyncOperation asyncOperation2 = SceneManager.LoadSceneAsync(_secondDreamRoomSceneDee, LoadSceneMode.Additive);
+        while(!asyncOperation2.isDone) {
+            yield return null;
+        }
+
+        //Give some time for dream room to load until unloading current room
+        yield return new WaitForSeconds(2f);
+
+        //Unload current room
+        SceneManager.UnloadSceneAsync(_thisScene.SceneName);
+    }
+
     public void FadeOutAndStopAmbience() {
         AmbienceManager.obj.Stop();
+    }
+
+    private IEnumerator AfterDeeDreamRoom() {
+        ShadowTwinMovement.obj.isGrounded = true;
+        ShadowTwinMovement.obj.SetStartingOnGround();
+        ShadowTwinPlayer.obj.transform.position = _afterDeeDreamRoomsSpawnPoint.transform.position;
+        ShadowTwinMovement.obj.SetNewPower();
+        if(ShadowTwinMovement.obj.IsFacingLeft())
+            ShadowTwinMovement.obj.FlipPlayer();
+
+        GameObject[] sceneGameObjects = gameObject.scene.GetRootGameObjects();
+        GameObject mainCamera = sceneGameObjects.First(gameObject => gameObject.CompareTag("MainCamera"));
+        RoomCameraController cameraController = mainCamera.GetComponent<RoomCameraController>();
+        GameObject room = sceneGameObjects.First(gameObject => gameObject.CompareTag("Room"));
+        Collider2D roomCollider = room.GetComponent<Collider2D>();
+        CameraManager.obj.EnterRoom(cameraController, roomCollider, PlayerManager.obj.GetPlayerTransform(PlayerManager.PlayerType.SHADOW_TWIN), _afterDeeDreamRoomsSpawnPoint.transform.position);
+
+        SceneManager.SetActiveScene(gameObject.scene);
+
+        //Give things some time to properly load
+        yield return new WaitForSeconds(1f);
+
+        WhiteSceneFadeManager.obj.StartFadeIn(0.5f);
+        while(WhiteSceneFadeManager.obj.IsFadingIn)
+            yield return null;
+
+        ShadowTwinMovement.obj.SetNewPowerReceived();
+        MusicManager.obj.Play(_musicTrack);
+        yield return new WaitForSeconds(2);
+
+        GameManager.obj.SetCurrentSpawnPointId(_afterDeeDreamRoomsSpawnPoint.SpawnPointID);
+        GameManager.obj.RegisterEvent(_deePostDreamRoomsCompleted);
+        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
+
+        GameManager.obj.IsPauseAllowed = true;
+
+        ShadowTwinMovement.obj.UnFreeze();
     }
 }
