@@ -24113,6 +24113,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ba546279efae1410bb4292d130d9d24d, type: 3}
+--- !u!1 &1692360432 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3898464922500168640, guid: ba546279efae1410bb4292d130d9d24d, type: 3}
+  m_PrefabInstance: {fileID: 1692360431}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1710754910
 GameObject:
   m_ObjectHideFlags: 0
@@ -24348,11 +24353,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c92a3868d632b43469f1c50ea759eb95, type: 3}
---- !u!1 &1716827591 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 561888594793146214, guid: c92a3868d632b43469f1c50ea759eb95, type: 3}
-  m_PrefabInstance: {fileID: 1716827590}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1752425810
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -24680,7 +24680,7 @@ PrefabInstance:
     - target: {fileID: 5469460401231062988, guid: 550eeccd691734285bd9830178b5b140, type: 3}
       propertyPath: defaultSpawnPoint
       value: 
-      objectReference: {fileID: 1716827591}
+      objectReference: {fileID: 1692360432}
     - target: {fileID: 5469460401231062988, guid: 550eeccd691734285bd9830178b5b140, type: 3}
       propertyPath: adjacentRooms.Array.size
       value: 6

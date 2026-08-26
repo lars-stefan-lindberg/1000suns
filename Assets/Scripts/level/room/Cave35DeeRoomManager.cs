@@ -9,6 +9,7 @@ public class Cave35DeeRoomManager : MonoBehaviour
     [SerializeField] private GameEventId _postDreamSequenceCompleted;
     [SerializeField] private SpawnPoint _deeReturnFromDreamRoomPosition;
     [SerializeField] private AmbienceTrack _caveMain;
+    [SerializeField] private GameObject _bgBlobs;
 
     void Start()
     {
@@ -16,6 +17,7 @@ public class Cave35DeeRoomManager : MonoBehaviour
         // if(GameManager.obj.HasEvent(_hasShadowLash) && !GameManager.obj.HasEvent(_postDreamSequenceCompleted)) {
         //     StartCoroutine(AfterEliDreamRoom());
         // }
+        //TODO check if dream rooms have been completed. If so set bg blobs inactive
     }
 
     private IEnumerator AfterEliDreamRoom() {
