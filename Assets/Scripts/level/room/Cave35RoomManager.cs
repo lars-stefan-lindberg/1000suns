@@ -47,6 +47,7 @@ public class Cave35RoomManager : MonoBehaviour
         AmbienceManager.obj.Play(_caveMain);
         yield return new WaitForSeconds(2);
 
+        GameManager.obj.SetCurrentSpawnPointId(_eliReturnFromDreamRoomPosition.SpawnPointID);
         GameManager.obj.RegisterEvent(_postDreamSequenceCompleted);
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
 

@@ -129,12 +129,7 @@ public class PowerUpRoomCutScene : MonoBehaviour, ISkippable
         }
         Time.timeScale = 1;
 
-        //PlayerMovement.obj.SetNewPowerReceived();
         PlayerPowersManager.obj.EliCanShadowJump = true;
-
-        // yield return new WaitForSeconds(2f);
-        // SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
-        // PlayerMovement.obj.UnFreeze();
 
         yield return new WaitForSeconds(1f);
         //Teleport to dream room

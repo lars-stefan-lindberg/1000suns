@@ -14,13 +14,14 @@ public class Cave35DeeRoomManager : MonoBehaviour
     void Start()
     {
         //If coming back from dream room, load room state
-        // if(GameManager.obj.HasEvent(_hasShadowLash) && !GameManager.obj.HasEvent(_postDreamSequenceCompleted)) {
-        //     StartCoroutine(AfterEliDreamRoom());
-        // }
-        //TODO check if dream rooms have been completed. If so set bg blobs inactive
+        if(GameManager.obj.HasEvent(_hasShadowLash) && !GameManager.obj.HasEvent(_postDreamSequenceCompleted)) {
+            StartCoroutine(AfterDeeDreamRoom());
+        }
+        if(GameManager.obj.HasEvent(_hasShadowLash))
+            _bgBlobs.SetActive(false);
     }
 
-    private IEnumerator AfterEliDreamRoom() {
+    private IEnumerator AfterDeeDreamRoom() {
         ShadowTwinMovement.obj.isGrounded = true;
         ShadowTwinMovement.obj.SetStartingOnGround();
         ShadowTwinPlayer.obj.transform.position = _deeReturnFromDreamRoomPosition.transform.position;
@@ -44,12 +45,11 @@ public class Cave35DeeRoomManager : MonoBehaviour
         while(WhiteSceneFadeManager.obj.IsFadingIn)
             yield return null;
 
-        ShadowTwinMovement.obj.SetNewPowerRecevied();
+        ShadowTwinMovement.obj.SetNewPowerReceived();
         AmbienceManager.obj.Play(_caveMain);
         yield return new WaitForSeconds(2);
 
-        //TODO change event registration after dream rooms have been created
-        GameManager.obj.RegisterEvent(_hasShadowLash);
+        GameManager.obj.SetCurrentSpawnPointId(_deeReturnFromDreamRoomPosition.SpawnPointID);
         GameManager.obj.RegisterEvent(_postDreamSequenceCompleted);
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
 

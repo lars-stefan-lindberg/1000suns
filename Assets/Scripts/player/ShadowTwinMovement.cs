@@ -599,7 +599,7 @@ public class ShadowTwinMovement : MonoBehaviour
     }
 
     [ContextMenu("New power received")]
-    public void SetNewPowerRecevied() {
+    public void SetNewPowerReceived() {
         _animator.SetTrigger("newPowerReceived");
     }
 
@@ -1071,6 +1071,14 @@ public class ShadowTwinMovement : MonoBehaviour
     public void SetStartingOnGround() {
         startingOnGround = true;
         _startingOnGroundFalseCoroutineStarted = false;
+    }
+
+    public void DisableCollider() {
+        _collider.enabled = false;
+    }
+
+    public void EnableCollider() {
+        _collider.enabled = true;
     }
 
     private void CheckCollisions()

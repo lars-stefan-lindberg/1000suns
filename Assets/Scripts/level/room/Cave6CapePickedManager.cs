@@ -263,7 +263,7 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
         Time.timeScale = 1;
         GameManager.obj.IsPauseAllowed = true;
 
-        ShadowTwinMovement.obj.SetNewPowerRecevied();
+        ShadowTwinMovement.obj.SetNewPowerReceived();
         yield return new WaitForSeconds(2);
         ShadowTwinMovement.obj.UnFreeze();
 

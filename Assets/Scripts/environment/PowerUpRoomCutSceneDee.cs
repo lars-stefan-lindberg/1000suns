@@ -128,20 +128,12 @@ public class PowerUpRoomCutSceneDee : MonoBehaviour, ISkippable
         }
         Time.timeScale = 1;
 
-        //PlayerMovement.obj.SetNewPowerReceived();
         PlayerPowersManager.obj.DeeCanShadowLash = true;
-        GameManager.obj.RegisterEvent(_shadowLashReceived);
 
-        ShadowTwinMovement.obj.SetNewPowerRecevied();
-        yield return new WaitForSeconds(2f);
-        AmbienceManager.obj.Play(_caveMain);
-        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
-        ShadowTwinMovement.obj.UnFreeze();
-
-        //yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(1f);
         //Teleport to dream room
-        //SoundFXManager.obj.Play2D(_teleportSfx);
-        //StartCoroutine(TeleportToDreamRoomRoutine());
+        SoundFXManager.obj.Play2D(_teleportSfx);
+        StartCoroutine(TeleportToDreamRoomRoutine());
 
         _cutsceneFinished = true;
     }
