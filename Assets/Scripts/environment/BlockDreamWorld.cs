@@ -3,7 +3,7 @@ using FMOD.Studio;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Block : MonoBehaviour
+public class BlockDreamWorld : MonoBehaviour
 {
     public LayerMask groundLayer;
     public LayerMask playerLayer;
@@ -13,10 +13,9 @@ public class Block : MonoBehaviour
     [SerializeField] private float _wallDetectionDistance = 0.2f;
     [SerializeField] private float _wallDetectionBoxWidthMultiplier = 0.5f;
     [SerializeField] private bool _showWallDetectionGizmo = true;
-    [SerializeField] private float _killDetectionDistance = 0.5f;
-    [SerializeField] private float _minKillVelocity = 0.05f;
-    [SerializeField] private float _killDetectionWidthMultiplier = 0.9f;
     [SerializeField] private float _minLandingVelocity = 1f;
+    [SerializeField] private float _killDetectionDistance = 0.5f;
+    [SerializeField] private float _killDetectionWidthMultiplier = 0.9f;
     public float basePushPower = 7f;
     public float deceleration = 1f;
     public float _blockSizeOffSet = 1.002f; //To dial in the landing sound
@@ -40,8 +39,8 @@ public class Block : MonoBehaviour
     private Pullable _pullable;
     private int _adjacentBlockCount = 0;
     private int _adjacentBlockCountWhenMovementStarted = 0;
-    private Vector2 _killBoxSize;
     private float _velocityBeforeLanding = 0f;
+    private Vector2 _killBoxSize;
 
     private void Awake()
     {
@@ -202,7 +201,7 @@ public class Block : MonoBehaviour
     }
 
     private void FixedUpdate() {
-        if(!_isGrounded && _rigidBody.velocity.y < -_minKillVelocity && !_pullable.IsPulled) {
+        if(!_isGrounded && !_pullable.IsPulled) {
             RaycastHit2D playerHit = Physics2D.BoxCast(
                 _childCollider.bounds.center,
                 _killBoxSize,
@@ -213,24 +212,7 @@ public class Block : MonoBehaviour
             );
 
             if(playerHit.collider != null) {
-                PlayerManager.PlayerType playerType = PlayerManager.obj.GetPlayerTypeFromCollider(playerHit.collider);
                 _rigidBody.bodyType = RigidbodyType2D.Static;
-                Reaper.obj.KillPlayerGeneric(playerType);
-            }
-
-            RaycastHit2D enemyHit = Physics2D.BoxCast(
-                _childCollider.bounds.center,
-                _killBoxSize,
-                0f,
-                Vector2.down,
-                _killDetectionDistance,
-                enemyLayer
-            );
-
-            if(enemyHit.collider != null) {
-                Prisoner prisoner = enemyHit.collider.GetComponent<Prisoner>();
-                _rigidBody.bodyType = RigidbodyType2D.Static;
-                Reaper.obj.KillPrisoner(prisoner);
             }
         }
     }
