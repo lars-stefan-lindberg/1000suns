@@ -24,7 +24,11 @@ public class Cave6DeeD3RoomManager : MonoBehaviour
 
         yield return new WaitForSeconds(0.3f);
         ShadowTwinMovement.obj.SetNewPower();
-        yield return new WaitForSeconds(0.2f);
+        
+        yield return new WaitForSeconds(1f);
+
+        ShadowTwinPull.obj.SetPullRangeGuideMode(ShadowTwinPull.PullRangeGuideMode.Off);
+
         AmbienceManager.obj.Stop();
         SoundFXManager.obj.Play2D(_teleport);
         WhiteSceneFadeManager.obj.StartFadeOut(0.8f);

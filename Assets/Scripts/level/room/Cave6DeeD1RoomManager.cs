@@ -7,8 +7,11 @@ public class Cave6DeeD1RoomManager : MonoBehaviour
 {
     [SerializeField] private SpawnPoint _deeSpawnPoint;
     [SerializeField] private AmbienceTrack _capeRoomAmbience;
+    [SerializeField] private GameEventId _roomStarted;
 
     void Start() {
+        if(GameManager.obj.HasEvent(_roomStarted))
+            return;
         ShadowTwinMovement.obj.isGrounded = true;
         ShadowTwinMovement.obj.SetStartingOnGround();
         if(ShadowTwinMovement.obj.IsFacingLeft())
@@ -35,8 +38,13 @@ public class Cave6DeeD1RoomManager : MonoBehaviour
         WhiteSceneFadeManager.obj.StartFadeIn(0.5f);
         yield return new WaitForSeconds(3f);
         ShadowTwinMovement.obj.SetNewPowerReceived();
+        
         yield return new WaitForSeconds(2);
+
+        ShadowTwinPull.obj.SetPullRangeGuideMode(ShadowTwinPull.PullRangeGuideMode.OnlyOnGrab);
+
         ShadowTwinMovement.obj.UnFreeze();
         GameManager.obj.IsPauseAllowed = true;
+        GameManager.obj.RegisterEvent(_roomStarted);
     }
 }

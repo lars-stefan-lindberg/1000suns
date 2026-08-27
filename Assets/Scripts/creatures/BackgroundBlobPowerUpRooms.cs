@@ -5,7 +5,7 @@ public class BackgroundBlobPowerUpRooms : MonoBehaviour
     [SerializeField] private GameEventId _shadowJumpReceived;
 
     private bool _isDestroyed = false;
-    void Awake() {
+    void Start() {
         if(GameManager.obj.HasEvent(_shadowJumpReceived)) {
             _isDestroyed = true;
             Destroy(gameObject);

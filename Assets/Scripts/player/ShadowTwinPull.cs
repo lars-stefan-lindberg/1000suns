@@ -68,8 +68,16 @@ public class ShadowTwinPull : MonoBehaviour
     [SerializeField] private SpriteRenderer _pullRangeGuide;
     [SerializeField] private float _pullRangeGuideMaxAlpha = 1f;
     [SerializeField] private float _pullRangeGuideFadeSpeed = 4f;
-    [SerializeField] private float _pullRangeGuideMinScale = 0.5f;
     private Coroutine _pullRangeGuideFadeCoroutine;
+    
+    public enum PullRangeGuideMode
+    {
+        Off,
+        AlwaysOn,
+        OnlyOnGrab
+    }
+    
+    private PullRangeGuideMode _pullRangeGuideMode = PullRangeGuideMode.Off;
 
     [Header("Controllable Object Movement")]
     public float controlledObjectAcceleration = 15f;
@@ -118,13 +126,12 @@ public class ShadowTwinPull : MonoBehaviour
         _pullableDetector = GetComponentInChildren<PullableDetector>();
         _deeAudio = GetComponent<DeeAudio>();
 
-        // if (_pullRangeGuide != null)
-        // {
-        //     Color c = _pullRangeGuide.color;
-        //     c.a = 0f;
-        //     _pullRangeGuide.color = c;
-        //     _pullRangeGuide.transform.localScale = new Vector3(_pullRangeGuideMinScale, _pullRangeGuideMinScale, 1f);
-        // }
+        if (_pullRangeGuide != null)
+        {
+            Color c = _pullRangeGuide.color;
+            c.a = 0f;
+            _pullRangeGuide.color = c;
+        }
     }
     
     private void OnValidate()
@@ -284,7 +291,7 @@ public class ShadowTwinPull : MonoBehaviour
         
         ResetPullableObject();
 
-        //HidePullRangeGuide();
+        HidePullRangeGuide();
     }
 
     private void ResetPullableObject() {
@@ -343,62 +350,103 @@ public class ShadowTwinPull : MonoBehaviour
 
             // Reset loop tracking
             _isObectMovingLoopPlaying = false;
-
-            //ShowPullRangeGuide();
         }
     }
 
     private void ShowPullRangeGuide()
     {
-        // if (_pullRangeGuide == null)
-        //     return;
+        if (_pullRangeGuide == null)
+            return;
 
-        // if (_pullRangeGuideFadeCoroutine != null)
-        //     StopCoroutine(_pullRangeGuideFadeCoroutine);
-        // _pullRangeGuideFadeCoroutine = StartCoroutine(FadePullRangeGuide(_pullRangeGuideMaxAlpha));
+        // Only show/hide during pull if mode is OnlyOnGrab
+        if (_pullRangeGuideMode != PullRangeGuideMode.OnlyOnGrab)
+            return;
+
+        if (_pullRangeGuideFadeCoroutine != null)
+            StopCoroutine(_pullRangeGuideFadeCoroutine);
+        _pullRangeGuideFadeCoroutine = StartCoroutine(FadePullRangeGuide(_pullRangeGuideMaxAlpha, _pullRangeGuideFadeSpeed));
     }
 
     private void HidePullRangeGuide()
     {
-        // if (_pullRangeGuide == null)
-        //     return;
+        if (_pullRangeGuide == null)
+            return;
 
-        // if (_pullRangeGuideFadeCoroutine != null)
-        //     StopCoroutine(_pullRangeGuideFadeCoroutine);
-        // _pullRangeGuideFadeCoroutine = StartCoroutine(FadePullRangeGuide(0f));
+        // Only show/hide during pull if mode is OnlyOnGrab
+        if (_pullRangeGuideMode != PullRangeGuideMode.OnlyOnGrab)
+            return;
+
+        if (_pullRangeGuideFadeCoroutine != null)
+            StopCoroutine(_pullRangeGuideFadeCoroutine);
+        _pullRangeGuideFadeCoroutine = StartCoroutine(FadePullRangeGuide(0f, _pullRangeGuideFadeSpeed));
     }
 
-    private IEnumerator FadePullRangeGuide(float targetAlpha)
+    // Public methods for tutorial control
+    public void SetPullRangeGuideMode(PullRangeGuideMode mode)
+    {
+        _pullRangeGuideMode = mode;
+        
+        if (_pullRangeGuide == null)
+            return;
+        
+        // Stop any ongoing fade
+        if (_pullRangeGuideFadeCoroutine != null)
+        {
+            StopCoroutine(_pullRangeGuideFadeCoroutine);
+            _pullRangeGuideFadeCoroutine = null;
+        }
+        
+        // Instantly set alpha based on mode
+        Color color = _pullRangeGuide.color;
+        if (mode == PullRangeGuideMode.Off)
+        {
+            color.a = 0f;
+        }
+        else if (mode == PullRangeGuideMode.AlwaysOn)
+        {
+            color.a = _pullRangeGuideMaxAlpha;
+        }
+        // OnlyOnGrab mode doesn't change the current state
+        _pullRangeGuide.color = color;
+    }
+
+    public void FadeInPullRangeGuide(float duration)
+    {
+        if (_pullRangeGuide == null)
+            return;
+
+        if (_pullRangeGuideFadeCoroutine != null)
+            StopCoroutine(_pullRangeGuideFadeCoroutine);
+        
+        float fadeSpeed = duration > 0f ? _pullRangeGuideMaxAlpha / duration : _pullRangeGuideFadeSpeed;
+        _pullRangeGuideFadeCoroutine = StartCoroutine(FadePullRangeGuide(_pullRangeGuideMaxAlpha, fadeSpeed));
+    }
+
+    public void FadeOutPullRangeGuide(float duration)
+    {
+        if (_pullRangeGuide == null)
+            return;
+
+        if (_pullRangeGuideFadeCoroutine != null)
+            StopCoroutine(_pullRangeGuideFadeCoroutine);
+        
+        float fadeSpeed = duration > 0f ? _pullRangeGuideMaxAlpha / duration : _pullRangeGuideFadeSpeed;
+        _pullRangeGuideFadeCoroutine = StartCoroutine(FadePullRangeGuide(0f, fadeSpeed));
+    }
+
+    private IEnumerator FadePullRangeGuide(float targetAlpha, float fadeSpeed)
     {
         Color color = _pullRangeGuide.color;
-        Transform guideTransform = _pullRangeGuide.transform;
-        bool fadingIn = targetAlpha > 0f;
         while (!Mathf.Approximately(color.a, targetAlpha))
         {
-            color.a = Mathf.MoveTowards(color.a, targetAlpha, _pullRangeGuideFadeSpeed * Time.deltaTime);
+            color.a = Mathf.MoveTowards(color.a, targetAlpha, fadeSpeed * Time.deltaTime);
             _pullRangeGuide.color = color;
-            // Only scale up while fading in; leave scale untouched while fading out
-            if (fadingIn)
-                ApplyPullRangeGuideScale(guideTransform, color.a);
             yield return null;
         }
         color.a = targetAlpha;
         _pullRangeGuide.color = color;
 
-        if (fadingIn)
-            ApplyPullRangeGuideScale(guideTransform, color.a);
-        else
-            // After fully fading out, reset scale to minimum (hidden, so no pop visible)
-            guideTransform.localScale = new Vector3(_pullRangeGuideMinScale, _pullRangeGuideMinScale, 1f);
-
         _pullRangeGuideFadeCoroutine = null;
-    }
-
-    private void ApplyPullRangeGuideScale(Transform guideTransform, float alpha)
-    {
-        // float t = _pullRangeGuideMaxAlpha > 0f ? Mathf.Clamp01(alpha / _pullRangeGuideMaxAlpha) : 1f;
-        // float scale = Mathf.Lerp(_pullRangeGuideMinScale, 1f, t);
-        // guideTransform.localScale = new Vector3(scale, scale, 1f);
     }
 
     private void FixedUpdate()
@@ -665,7 +713,7 @@ public class ShadowTwinPull : MonoBehaviour
             SetPullable(_highlightedPullable);
         }
         // Show the range guide whenever pull starts, even with no pullable grabbed
-        //ShowPullRangeGuide();
+        ShowPullRangeGuide();
         pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().HardCancel();
         ShadowTwinPlayer.obj.StartChargeFlash();
         ShadowTwinPlayer.obj.PlayerPullLight();
