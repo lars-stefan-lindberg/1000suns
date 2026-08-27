@@ -72,8 +72,8 @@ public class Cave15RoomManager : MonoBehaviour, ISkippable
 
         //Set cave avatar start position, and follow Eli
         CaveAvatar.obj.gameObject.SetActive(true);
-        CaveAvatar.obj.transform.position = _deeCutsceneEliStartPosition.position;
         CaveAvatar.obj.OverriddenPlayerType = PlayerManager.PlayerType.HUMAN;
+        CaveAvatar.obj.SetFollowPlayerStartingPosition();
         CaveAvatar.obj.IsFollowingPlayer = true;
 
         yield return new WaitForSeconds(1f);
