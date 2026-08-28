@@ -2011,76 +2011,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 681e618cc4d84440da9934c23736f209, type: 3}
---- !u!1 &1265799396
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1265799397}
-  - component: {fileID: 1265799398}
-  m_Layer: 2
-  m_Name: Water light
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1265799397
+--- !u!4 &1265799397 stripped
 Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 1914065774190023287, guid: d15f3ede3f90e499d935ba4efa9133f4, type: 3}
+  m_PrefabInstance: {fileID: 4791957606476887175}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1265799396}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 8.375, y: -7.5, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6328258575824579854}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1265799398
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1265799396}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d62ac029b1017974ead8b6ad01623c82, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lightLayer: 0
-  type: 0
-  spriteMode: 0
-  sprite: {fileID: 21300000, guid: 6f10e9e5cfc97429794282ad7cd81bb0, type: 3}
-  color: {r: 0.36430502, g: 0.745, b: 0.3697827, a: 1}
-  flipX: 0
-  flipY: 0
-  lightSpriteTransform:
-    applyRotation: 1
-    scale: {x: 2.92, y: 0.64}
-    rotation: 0
-    position: {x: 0, y: 0}
-  lightSpriteShape:
-    update: 0
-  meshMode:
-    enable: 0
-    alpha: 0.5
-    shader: 0
-    materials:
-    - {fileID: 0}
-    sortingLayer:
-      name: Default
-      Order: 0
-  glowMode:
-    enable: 0
-    glowRadius: 1
 --- !u!1001 &1501243886
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2785,6 +2720,63 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5649949765483365222, guid: 0eb21d03a11684541a13d6c6e5b9b4bb, type: 3}
   m_PrefabInstance: {fileID: 795838953}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &4791957606476887175
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 6328258575824579854}
+    m_Modifications:
+    - target: {fileID: 1914065774190023287, guid: d15f3ede3f90e499d935ba4efa9133f4, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 8.375
+      objectReference: {fileID: 0}
+    - target: {fileID: 1914065774190023287, guid: d15f3ede3f90e499d935ba4efa9133f4, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -7.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1914065774190023287, guid: d15f3ede3f90e499d935ba4efa9133f4, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1914065774190023287, guid: d15f3ede3f90e499d935ba4efa9133f4, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1914065774190023287, guid: d15f3ede3f90e499d935ba4efa9133f4, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1914065774190023287, guid: d15f3ede3f90e499d935ba4efa9133f4, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1914065774190023287, guid: d15f3ede3f90e499d935ba4efa9133f4, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1914065774190023287, guid: d15f3ede3f90e499d935ba4efa9133f4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1914065774190023287, guid: d15f3ede3f90e499d935ba4efa9133f4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1914065774190023287, guid: d15f3ede3f90e499d935ba4efa9133f4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6830651996235696065, guid: d15f3ede3f90e499d935ba4efa9133f4, type: 3}
+      propertyPath: m_Name
+      value: Water light
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: d15f3ede3f90e499d935ba4efa9133f4, type: 3}
 --- !u!4 &6328258575824579854
 Transform:
   m_ObjectHideFlags: 0
