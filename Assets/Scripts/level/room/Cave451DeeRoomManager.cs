@@ -1,15 +1,15 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class Cave18RoomManager : MonoBehaviour
+public class Cave451DeeRoomManager : MonoBehaviour
 {
     [SerializeField] private GameEventId _secretRevealed;
     [SerializeField] private GameObject _secretWall;
 
     void Start()
     {
-        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
-        if(GameManager.obj.HasEvent(_secretRevealed) && (caveTimeline == CaveTimelineId.Id.Eli || caveTimeline == CaveTimelineId.Id.Both)) {
+        if(GameManager.obj.HasEvent(_secretRevealed)) {
             _secretWall.SetActive(false);
         }
     }
