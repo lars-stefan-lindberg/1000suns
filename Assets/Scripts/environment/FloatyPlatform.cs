@@ -53,8 +53,8 @@ public class FloatyPlatform : MonoBehaviour
     {
         _collider = GetComponent<BoxCollider2D>();
         _rigidBody = GetComponent<Rigidbody2D>();
-        _blockingCastLayerMask = LayerMask.GetMask(new[] { "Ground", "Default", "JumpThroughs", "Enemies", "Block", "Spikes" });
-        _soundTriggeringLayerMask = LayerMask.GetMask(new[] { "Ground", "JumpThroughs", "Block", "Spikes" });
+        _blockingCastLayerMask = LayerMask.GetMask(new[] { "Ground", "Default", "JumpThroughs", "Enemies", "Block", "HazardCollider" });
+        _soundTriggeringLayerMask = LayerMask.GetMask(new[] { "Ground", "JumpThroughs", "Block", "HazardCollider" });
         startingVerticalPosition = transform.position.y;
         //_idleVerticalTargetPosition = startingVerticalPosition - idleVerticalDistance;
         _fallingPlatformFlash = GetComponentInChildren<FallingPlatformFlash>();

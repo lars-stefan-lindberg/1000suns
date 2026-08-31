@@ -109,7 +109,7 @@ public class ShadowTwinMovement : MonoBehaviour
         _animator = GetComponentInChildren<Animator>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         _ceilingLayerMasks = LayerMask.GetMask(new[] { "Ground", "Default", "Block" });
-        _latchLayerMask = LayerMask.GetMask(new[] { "Ground", "Block", "JumpThroughs", "Pullable", "Spikes" });
+        _latchLayerMask = LayerMask.GetMask(new[] { "Ground", "Block", "JumpThroughs", "Pullable"});
         _playerInput = GetComponent<PlayerInput>();
         _sharedPlayerAudio = GetComponent<SharedCharacterAudio>();
         _deeAudio = GetComponent<DeeAudio>();
@@ -1445,12 +1445,6 @@ public class ShadowTwinMovement : MonoBehaviour
             }
             
             ShadowLashBeamManager.obj.TriggerHitSurfaceAnimation();
-            
-            // Check if hit is in the Spikes layer - if so, return false without latching
-            if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Spikes"))
-            {
-                return false;
-            }
             
             Vector2 playerPos = (Vector2)transform.position;
             
