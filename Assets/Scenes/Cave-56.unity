@@ -6775,7 +6775,7 @@ PrefabInstance:
       objectReference: {fileID: 1005119925}
     - target: {fileID: 5469460401231062988, guid: 550eeccd691734285bd9830178b5b140, type: 3}
       propertyPath: adjacentRooms.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5469460401231062988, guid: 550eeccd691734285bd9830178b5b140, type: 3}
       propertyPath: backgroundScene._sceneName
@@ -6798,9 +6798,17 @@ PrefabInstance:
       value: Cave-55
       objectReference: {fileID: 0}
     - target: {fileID: 5469460401231062988, guid: 550eeccd691734285bd9830178b5b140, type: 3}
+      propertyPath: adjacentRooms.Array.data[1]._sceneName
+      value: Cave-57
+      objectReference: {fileID: 0}
+    - target: {fileID: 5469460401231062988, guid: 550eeccd691734285bd9830178b5b140, type: 3}
       propertyPath: adjacentRooms.Array.data[0]._sceneAsset
       value: 
       objectReference: {fileID: 102900000, guid: 2c31d5b0db4794057bcb1fe8cbfb9cb6, type: 3}
+    - target: {fileID: 5469460401231062988, guid: 550eeccd691734285bd9830178b5b140, type: 3}
+      propertyPath: adjacentRooms.Array.data[1]._sceneAsset
+      value: 
+      objectReference: {fileID: 102900000, guid: 1ada8d01a692649be88550e478836da2, type: 3}
     - target: {fileID: 7238864598812726562, guid: 550eeccd691734285bd9830178b5b140, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2346.6846
@@ -7198,6 +7206,75 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &2125399090
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2716770511063437488, guid: 811ff78b2e26c4de6b02e99d281f7837, type: 3}
+      propertyPath: m_Size.y
+      value: 6.913971
+      objectReference: {fileID: 0}
+    - target: {fileID: 2716770511063437488, guid: 811ff78b2e26c4de6b02e99d281f7837, type: 3}
+      propertyPath: m_Offset.y
+      value: 1.5819855
+      objectReference: {fileID: 0}
+    - target: {fileID: 3536638975505804595, guid: 811ff78b2e26c4de6b02e99d281f7837, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 2399.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3536638975505804595, guid: 811ff78b2e26c4de6b02e99d281f7837, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -233.875
+      objectReference: {fileID: 0}
+    - target: {fileID: 3536638975505804595, guid: 811ff78b2e26c4de6b02e99d281f7837, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3536638975505804595, guid: 811ff78b2e26c4de6b02e99d281f7837, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3536638975505804595, guid: 811ff78b2e26c4de6b02e99d281f7837, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3536638975505804595, guid: 811ff78b2e26c4de6b02e99d281f7837, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3536638975505804595, guid: 811ff78b2e26c4de6b02e99d281f7837, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3536638975505804595, guid: 811ff78b2e26c4de6b02e99d281f7837, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3536638975505804595, guid: 811ff78b2e26c4de6b02e99d281f7837, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3536638975505804595, guid: 811ff78b2e26c4de6b02e99d281f7837, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4827412482857357012, guid: 811ff78b2e26c4de6b02e99d281f7837, type: 3}
+      propertyPath: spawnPointID
+      value: Cave-56_19464075-5611-4e54-9865-30c6364e009e
+      objectReference: {fileID: 0}
+    - target: {fileID: 8127749258032587711, guid: 811ff78b2e26c4de6b02e99d281f7837, type: 3}
+      propertyPath: m_Name
+      value: LevelEntry right
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 811ff78b2e26c4de6b02e99d281f7837, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -7207,6 +7284,7 @@ SceneRoots:
   - {fileID: 668649007}
   - {fileID: 335304235}
   - {fileID: 1005119924}
+  - {fileID: 2125399090}
   - {fileID: 258570556}
   - {fileID: 2068023723}
   - {fileID: 1321668285}

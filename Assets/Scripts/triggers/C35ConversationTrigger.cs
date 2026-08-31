@@ -1,5 +1,4 @@
 using System.Collections;
-using Cinemachine;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -22,6 +21,11 @@ public class C35ConversationTrigger : MonoBehaviour, ISkippable
     private Coroutine _breakFloorCoroutine;
 
     void Start() {
+        var caveTimelineId = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(caveTimelineId != CaveTimelineId.Id.Eli) {
+            return;
+        }
+
         _collider = GetComponent<BoxCollider2D>();
         _conversationManager.OnConversationEnd += OnConversationCompleted;
 
