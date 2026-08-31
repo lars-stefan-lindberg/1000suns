@@ -1,0 +1,20 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Cave56DeeRoomManager : MonoBehaviour
+{
+    [SerializeField] private GameEventId _secretRevealed;
+    [SerializeField] private GameObject _secretWall;
+
+    void Start()
+    {
+        if(GameManager.obj.HasEvent(_secretRevealed)) {
+            _secretWall.SetActive(false);
+        }
+    }
+
+    public void SetSecretRevealed() {
+        GameManager.obj.RegisterEvent(_secretRevealed);
+    }
+}
