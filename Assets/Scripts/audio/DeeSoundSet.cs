@@ -9,4 +9,6 @@ public class DeeSoundSet : ScriptableObject
     public EventReference shadowPullLoop;
     public EventReference shadowPullRelease;
     public EventReference anchorReached;
+    public EventReference shadowLashExecute;
+    public EventReference shadowLashPropel;
 }

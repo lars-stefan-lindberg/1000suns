@@ -19,6 +19,14 @@ public class DeeAudio : MonoBehaviour
         SoundFXManager.obj.PlayAtPosition(_sounds.anchorReached, transform.position);
     }
 
+    public void PlayShadowLashExecute() {
+        SoundFXManager.obj.PlayAtPosition(_sounds.shadowLashExecute, transform.position);
+    }
+
+    public void PlayShadowLashPropel() {
+        SoundFXManager.obj.PlayAtPosition(_sounds.shadowLashPropel, transform.position);
+    }
+
     public void StopInstanceWithFadeOut(ref EventInstance instance) {
         if (instance.isValid()) {
             instance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);

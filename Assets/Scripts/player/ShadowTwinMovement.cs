@@ -1834,6 +1834,7 @@ public class ShadowTwinMovement : MonoBehaviour
                 // Check if this is a floating platform - if so, start propelling instead of latching
                 if (_isLatchingToFloatingPlatform)
                 {
+                    _deeAudio.PlayShadowLashPropel();
                     // Capture the current lash velocity and start propelling
                     _propelVelocity = _frameVelocity;
                     StartPropelThroughPlatform();
@@ -1854,6 +1855,7 @@ public class ShadowTwinMovement : MonoBehaviour
                 // Check if this is a horizontal propelling platform - if so, start horizontal propelling instead of latching
                 if (_isLatchingToHorizontalPropellingPlatform)
                 {
+                    _deeAudio.PlayShadowLashPropel();
                     // Start horizontal propelling (velocity is already in _frameVelocity from lash)
                     StartHorizontalPropelThroughPlatform();
                     // End the latch pull state

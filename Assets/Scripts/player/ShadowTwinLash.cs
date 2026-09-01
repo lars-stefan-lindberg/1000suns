@@ -24,10 +24,13 @@ public class ShadowTwinLash : MonoBehaviour
     private Coroutine _activeLashCoroutine;
     private Vector2 _currentLashDirection;
     private float _lashCooldownTimer = 0f;
+    private DeeAudio _deeAudio;
 
     private void Awake()
     {
         obj = this;
+
+        _deeAudio = GetComponent<DeeAudio>();
     }
 
     private void OnDestroy()
@@ -207,6 +210,7 @@ public class ShadowTwinLash : MonoBehaviour
     private IEnumerator PerformLashWithPause(Vector2 latchDirection, bool alreadyFrozen = false)
     {
         ShadowTwinMovement.obj.StartShadowLashAnimator(latchDirection);
+        _deeAudio.PlayShadowLashExecute();
         // Store the lash direction for the animation event to use
         _currentLashDirection = latchDirection;
         
