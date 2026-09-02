@@ -86,7 +86,7 @@ public class CaveCollectibleCreature : MonoBehaviour
         } else if(IsPermanentlyCollected) {
             headTargetPosition = _targetTransform.position;
         } else { //Follow
-            if(CaveAvatar.obj.IsFollowingPlayer) {
+            if(CaveAvatar.obj != null && CaveAvatar.obj.gameObject.activeSelf && CaveAvatar.obj.IsFollowingPlayer) {
                 //Follow cave avatar
                 bool isCaveAvatarFacingLeft = CaveAvatar.obj.IsFacingLeft();
                 Transform target;   
