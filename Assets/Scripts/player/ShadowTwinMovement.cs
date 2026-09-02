@@ -1535,10 +1535,12 @@ public class ShadowTwinMovement : MonoBehaviour
     private void StartLatchPull()
     {
         // Change collider size during latch pull only if it's horizontal
+        //Make it a little bit smaller than pixel perfect to avoid weird collision issues
+        //where the collider should pass under a surface, but doesn't (due to Unity collider handling?)
         if (Mathf.Abs(_latchDirection.x) > 0)
         {
-            _collider.offset = new Vector2(0, -0.0625f);
-            _collider.size = new Vector2(0.75f, 1.375f);
+            _collider.offset = new Vector2(0, -0.06369781f);
+            _collider.size = new Vector2(0.75f, 1.358261f);
         }
         
         _isLatchedToSurface = false;
