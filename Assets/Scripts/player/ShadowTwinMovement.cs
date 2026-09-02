@@ -109,7 +109,7 @@ public class ShadowTwinMovement : MonoBehaviour
         _animator = GetComponentInChildren<Animator>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         _ceilingLayerMasks = LayerMask.GetMask(new[] { "Ground", "Default", "Block" });
-        _latchLayerMask = LayerMask.GetMask(new[] { "Ground", "Block", "JumpThroughs", "Pullable"});
+        _latchLayerMask = LayerMask.GetMask(new[] { "Ground", "Block", "JumpThroughs", "Pullable", "HazardCollider", "HazardTrigger"});
         _playerInput = GetComponent<PlayerInput>();
         _sharedPlayerAudio = GetComponent<SharedCharacterAudio>();
         _deeAudio = GetComponent<DeeAudio>();
@@ -1445,6 +1445,14 @@ public class ShadowTwinMovement : MonoBehaviour
             }
             
             ShadowLashBeamManager.obj.TriggerHitSurfaceAnimation();
+
+                        
+            // Check if hit is in the Hazard layers - if so, return false without latching
+            if (hit.collider.gameObject.layer == LayerMask.NameToLayer("HazardCollider") || 
+                hit.collider.gameObject.layer == LayerMask.NameToLayer("HazardTrigger"))
+            {
+                return false;
+            }
             
             Vector2 playerPos = (Vector2)transform.position;
             
