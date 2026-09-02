@@ -75,6 +75,12 @@ public class SaveManager : MonoBehaviour
 
             if(GameManager.obj != null) {
                 GameManager.obj.SetCaveTimeline(new CaveTimeline(data.caveTimeline));
+                var caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+                if(caveTimeline == CaveTimelineId.Id.Eli) {
+                    PlayerSwitcher.obj.SwitchToEli();
+                } else if(caveTimeline == CaveTimelineId.Id.Dee) {
+                    PlayerSwitcher.obj.SwitchToDee();
+                }
             }
 
             // Apply saved player powers back into the manager

@@ -33,10 +33,28 @@ public class PlayerSwitcher : MonoBehaviour
 
     void Start()
     {
+        // Load saved rebindings into all PlayerInput instances
+        LoadRebindsIntoPlayerInputs();
+        
         if(isDeeDevMode) {
             SwitchToDee();
         } else {
             SwitchToEli();
+        }
+    }
+    
+    private void LoadRebindsIntoPlayerInputs() {
+        var rebinds = PlayerPrefs.GetString("rebinds");
+        if (!string.IsNullOrEmpty(rebinds)) {
+            if(eliInput != null && eliInput.actions != null) {
+                eliInput.actions.LoadBindingOverridesFromJson(rebinds);
+            }
+            if(deeInput != null && deeInput.actions != null) {
+                deeInput.actions.LoadBindingOverridesFromJson(rebinds);
+            }
+            if(blobInput != null && blobInput.actions != null) {
+                blobInput.actions.LoadBindingOverridesFromJson(rebinds);
+            }
         }
     }
 

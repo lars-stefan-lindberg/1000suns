@@ -38,6 +38,7 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject _glitchKeyStudios;
     [SerializeField] private GameObject _fmod;
     [SerializeField] private InputActionReference _cancelActionReference;
+    [SerializeField] private InputActionAsset actions;
  
     private Sequence _menuTransitionSequence;
     private bool _isTransitioning = false;
@@ -96,9 +97,9 @@ public class MainMenuManager : MonoBehaviour
 
         // _optionsButtonColor = _optionsButton.GetComponentInChildren<TextMeshProUGUI>().color;
         
-        // var rebinds = PlayerPrefs.GetString("rebinds");
-        // if (!string.IsNullOrEmpty(rebinds))
-        //     actions.LoadBindingOverridesFromJson(rebinds);
+        var rebinds = PlayerPrefs.GetString("rebinds");
+        if (!string.IsNullOrEmpty(rebinds))
+            actions.LoadBindingOverridesFromJson(rebinds);
         // confirmActionKeyboardDisplayString = confirmActionReference.action.GetBindingDisplayString(InputBinding.MaskByGroup("Keyboard"));
 
         // InputDeviceListener.OnInputDeviceStream += HandleInputDeviceChanged;
