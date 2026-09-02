@@ -115,6 +115,11 @@ public class ShadowTwinLash : MonoBehaviour
                 ShadowTwinPlayer.obj.DisableGravity();
                 _isShadowLashing = true;
                 _lashButtonReleased = false;
+                
+                // Clear any buffered jump inputs when starting shadow lash
+                // This prevents jump inputs from being "saved" and executed later
+                ShadowTwinMovement.obj.ClearLatchedJumpInput();
+                ShadowTwinMovement.obj.CancelJumping();
 
                 // Start cooldown
                 _lashCooldownTimer = _lashCooldownDuration;

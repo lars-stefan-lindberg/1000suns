@@ -1017,6 +1017,10 @@ public class ShadowTwinMovement : MonoBehaviour
         _jumpToConsume = false;
     }
 
+    public void ClearLatchedJumpInput() {
+        _latchedJumpToConsume = false;
+    }
+
     private IEnumerator JumpSqueeze(float xSqueeze, float ySqueeze, float seconds)
     {
         Vector3 originalSize = Vector3.one;
