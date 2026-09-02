@@ -226,7 +226,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -42822521
   m_SortingLayer: -3
-  m_SortingOrder: -1
+  m_SortingOrder: -2
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
   m_MaxChunkCount: 16
@@ -3164,6 +3164,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerTriggerDee
       objectReference: {fileID: 0}
+    - target: {fileID: 1103506649588628953, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6368901749949411461, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
       propertyPath: m_Size.x
       value: 3.8186035
@@ -3402,7 +3406,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7090768856709869111, guid: 7ca200c3d78bc4c9997df72fa9041b38, type: 3}
       propertyPath: m_SortingOrder
-      value: 1
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 7090768856709869111, guid: 7ca200c3d78bc4c9997df72fa9041b38, type: 3}
       propertyPath: m_SortingLayerID
@@ -3532,7 +3536,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6170004573156491102, guid: 75c16f916a78f4131969f7b08bd595a6, type: 3}
       propertyPath: m_SortingOrder
-      value: 1
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 6170004573156491102, guid: 75c16f916a78f4131969f7b08bd595a6, type: 3}
       propertyPath: m_SortingLayerID
@@ -3968,7 +3972,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6170004573156491102, guid: 75c16f916a78f4131969f7b08bd595a6, type: 3}
       propertyPath: m_SortingOrder
-      value: 1
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 6170004573156491102, guid: 75c16f916a78f4131969f7b08bd595a6, type: 3}
       propertyPath: m_SortingLayerID
@@ -4222,7 +4226,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7090768856709869111, guid: 7ca200c3d78bc4c9997df72fa9041b38, type: 3}
       propertyPath: m_SortingOrder
-      value: 1
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 7090768856709869111, guid: 7ca200c3d78bc4c9997df72fa9041b38, type: 3}
       propertyPath: m_SortingLayerID
@@ -5986,6 +5990,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1506225882}
     m_Modifications:
+    - target: {fileID: 1633766325728623248, guid: 122069d98019e4ae0a2b1eb7b4155ec1, type: 3}
+      propertyPath: m_Size.x
+      value: 7.9798584
+      objectReference: {fileID: 0}
+    - target: {fileID: 1633766325728623248, guid: 122069d98019e4ae0a2b1eb7b4155ec1, type: 3}
+      propertyPath: m_Offset.x
+      value: -0.0033569336
+      objectReference: {fileID: 0}
     - target: {fileID: 3942263846256276528, guid: 122069d98019e4ae0a2b1eb7b4155ec1, type: 3}
       propertyPath: m_LocalPosition.x
       value: 6.2661133
