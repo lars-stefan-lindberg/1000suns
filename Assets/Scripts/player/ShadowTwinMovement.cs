@@ -1361,6 +1361,7 @@ public class ShadowTwinMovement : MonoBehaviour
     private Vector2 _latchDirection;
     private bool _latchReachedThisPull;
     private LatchSurfaceType _latchSurfaceType;
+    private Collider2D _latchTargetCollider;
 
     public enum LatchSurfaceType
     {
@@ -1507,6 +1508,7 @@ public class ShadowTwinMovement : MonoBehaviour
             
             _latchDirection = direction;
             _latchSurfaceType = surfaceType;
+            _latchTargetCollider = hit.collider;
             StartLatchPull();
             return true;
         }
@@ -1561,6 +1563,7 @@ public class ShadowTwinMovement : MonoBehaviour
         _latchPosition = Vector2.zero;
         _latchDirection = Vector2.zero;
         _latchSurfaceType = LatchSurfaceType.None;
+        _latchTargetCollider = null;
         _latchReachedThisPull = false;
         _isLatchingToFloatingPlatform = false;
         _targetFloatingPlatform = null;
@@ -1720,9 +1723,28 @@ public class ShadowTwinMovement : MonoBehaviour
         if (obstacleHit.collider != null)
         {
             // Check if this is an obstacle (not the target surface)
-            // We hit an obstacle if the hit point is significantly closer than our target
-            float hitDistance = Vector2.Distance(transform.position, obstacleHit.point);
-            if (hitDistance < distanceToTarget - 0.3f) // 0.3f tolerance for the target surface itself
+            // Two cases:
+            // 1. Different collider = definitely an obstacle
+            // 2. Same collider = use distance check (for large surfaces like tilemaps)
+            bool isObstacle = false;
+            
+            if (obstacleHit.collider != _latchTargetCollider)
+            {
+                // Different collider - this is an obstacle
+                isObstacle = true;
+            }
+            else
+            {
+                // Same collider - check distance to determine if we hit an obstacle part
+                // or if we're just approaching the target point
+                float hitDistance = Vector2.Distance(transform.position, obstacleHit.point);
+                if (hitDistance < distanceToTarget - 0.1f) // 0.1f tolerance for the target surface itself
+                {
+                    isObstacle = true;
+                }
+            }
+            
+            if (isObstacle)
             {
                 //Note: this scenario should only occur for horizontal shadow lashes
 
@@ -1758,6 +1780,7 @@ public class ShadowTwinMovement : MonoBehaviour
                 }
                 
                 if(upperHit.collider != null) {
+                    Debug.Log("upper hit");
                     //Try to push the player down to clear the corner
 
                     // Raycast 2.5 pixels (0.3125 units) below the top of the collider
@@ -2170,7 +2193,7 @@ public class ShadowTwinMovement : MonoBehaviour
             HandlePropelThroughPlatform();
             return;
         }
-        else if (_isLatchPulling && _latchPosition != Vector2.zero)
+        else if (!_isLatchedToSurface && _isLatchPulling && _latchPosition != Vector2.zero)
         {
             // Handle latch pull velocity
             HandleLatchPullVelocity();
