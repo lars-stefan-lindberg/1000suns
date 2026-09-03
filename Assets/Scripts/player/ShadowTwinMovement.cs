@@ -1866,6 +1866,8 @@ public class ShadowTwinMovement : MonoBehaviour
                 if (_isLatchingToUpwardsPropellingPlatform)
                 {
                     _deeAudio.PlayShadowLashPropel();
+                    _animator.SetTrigger("propelUpwards");
+                    ShadowTwinPlayer.obj.ForcePushFlash();
                     // Set consistent propel velocity regardless of distance to platform
                     // This ensures the player always propels the same height
                     _propelVelocity = _frameVelocity;
@@ -1891,6 +1893,8 @@ public class ShadowTwinMovement : MonoBehaviour
                 if (_isLatchingToHorizontalPropellingPlatform)
                 {
                     _deeAudio.PlayShadowLashPropel();
+                    _animator.SetTrigger("propelHorizontal");
+                    ShadowTwinPlayer.obj.ForcePushFlash();
                     // Start horizontal propelling (velocity is already in _frameVelocity from lash)
                     StartHorizontalPropelThroughPlatform();
                     _targetHorizontalPropellingPlatform.TriggerVfx(_latchDirection);

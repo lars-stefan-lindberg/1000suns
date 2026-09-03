@@ -11,6 +11,7 @@ public class PropellingPlatform : MonoBehaviour
     [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private EventReference _impactSfx;
     [SerializeField] private LightSprite2D _lightSprite;
+    [SerializeField] private ParticleSystem _propelParticles;
     private Rigidbody2D _rigidBody;
     private Pullable _pullable;
     public float blockingCastDistance = 0.1f;
@@ -27,8 +28,14 @@ public class PropellingPlatform : MonoBehaviour
     [SerializeField] private Ease _vfxMoveEase = Ease.OutQuad;
     [SerializeField] private Ease _vfxReturnEase = Ease.InOutQuad;
     
+    [Header("Particle System")]
+    [SerializeField] private float _particleFollowDuration = 0.3f;
+    [SerializeField] private float _particleFadeOutDelay = 0.2f;
+    
     private Transform _spriteTransform;
     private Vector3 _originalSpritePosition;
+    private Vector3 _originalParticlePosition;
+    private Coroutine _particleCoroutine;
 
     private void Awake()
     {
@@ -39,6 +46,11 @@ public class PropellingPlatform : MonoBehaviour
         _propellingPlatformFlash = GetComponentInChildren<PropellingPlatformFlash>();
         _spriteTransform = _spriteRenderer.transform;
         _originalSpritePosition = _spriteTransform.localPosition;
+        
+        if (_propelParticles != null)
+        {
+            _originalParticlePosition = _propelParticles.transform.localPosition;
+        }
     }
 
     void Start() {
@@ -59,6 +71,19 @@ public class PropellingPlatform : MonoBehaviour
 
     public void TriggerVfx(Vector2 direction) {
         _propellingPlatformFlash.TriggerVfxFlash();
+
+        // Handle particle system
+        if (_propelParticles != null)
+        {
+            // Stop any existing particle coroutine
+            if (_particleCoroutine != null)
+            {
+                StopCoroutine(_particleCoroutine);
+            }
+            
+            // Start new particle behavior
+            _particleCoroutine = StartCoroutine(ParticleFollowCoroutine());
+        }
         
         // Kill any existing tweens on the sprite transform
         _spriteTransform.DOKill();
@@ -192,4 +217,35 @@ public class PropellingPlatform : MonoBehaviour
     }
 
     private Coroutine _disableColliderCoroutine;
+    
+    private IEnumerator ParticleFollowCoroutine()
+    {
+        // Start playing particles
+        _propelParticles.Play();
+        
+        // Follow the player for the specified duration
+        float elapsedTime = 0f;
+        while (elapsedTime < _particleFollowDuration)
+        {
+            if (ShadowTwinPlayer.obj != null)
+            {
+                // Set particle system position to follow player (in world space)
+                _propelParticles.transform.position = ShadowTwinPlayer.obj.transform.position;
+            }
+            
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+        
+        // Stop emitting new particles
+        _propelParticles.Stop();
+        
+        // Wait for particles to fade out
+        yield return new WaitForSeconds(_particleFadeOutDelay);
+        
+        // Return particle system to original position
+        _propelParticles.transform.localPosition = _originalParticlePosition;
+        
+        _particleCoroutine = null;
+    }
 }
