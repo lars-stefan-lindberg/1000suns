@@ -48,6 +48,10 @@ public class C35ConversationTrigger : MonoBehaviour, ISkippable
     }
 
     void OnTriggerEnter2D(Collider2D other) {
+        var caveTimelineId = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(caveTimelineId != CaveTimelineId.Id.Eli) {
+            return;
+        }
         if(other.CompareTag("Player")) {
             _collider.enabled = false;
             PlayerMovement.obj.SetMovementInput(Vector2.zero);
