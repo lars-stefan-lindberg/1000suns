@@ -3,8 +3,9 @@ using System.Collections;
 using FMODUnity;
 using FunkyCode;
 using UnityEngine;
+using DG.Tweening;
 
-public class FloatingPlatformRotated : MonoBehaviour
+public class PropellingPlatform : MonoBehaviour
 {
     [SerializeField] private BoxCollider2D _collider;
     [SerializeField] private SpriteRenderer _spriteRenderer;
@@ -17,6 +18,17 @@ public class FloatingPlatformRotated : MonoBehaviour
     private LayerMask _blockingCastLayerMask;
     private LayerMask _soundTriggeringLayerMask;
     private bool movePlatform = false;
+    private PropellingPlatformFlash _propellingPlatformFlash;
+    
+    [Header("VFX Movement")]
+    [SerializeField] private float _vfxMoveDistance = 0.2f;
+    [SerializeField] private float _vfxMoveDuration = 0.1f;
+    [SerializeField] private float _vfxReturnDuration = 0.3f;
+    [SerializeField] private Ease _vfxMoveEase = Ease.OutQuad;
+    [SerializeField] private Ease _vfxReturnEase = Ease.InOutQuad;
+    
+    private Transform _spriteTransform;
+    private Vector3 _originalSpritePosition;
 
     private void Awake()
     {
@@ -24,10 +36,44 @@ public class FloatingPlatformRotated : MonoBehaviour
         _blockingCastLayerMask = LayerMask.GetMask(new[] { "Ground", "Default", "JumpThroughs", "Enemies", "Block", "HazardCollider" });
         _soundTriggeringLayerMask = LayerMask.GetMask(new[] { "Ground", "JumpThroughs", "Block", "HazardCollider" });
         _pullable = GetComponentInChildren<Pullable>();
+        _propellingPlatformFlash = GetComponentInChildren<PropellingPlatformFlash>();
+        _spriteTransform = _spriteRenderer.transform;
+        _originalSpritePosition = _spriteTransform.localPosition;
+    }
+
+    void Start() {
+        _propellingPlatformFlash.StartIdleFlashing();
+    }
+
+    private void StopIdleFlashing() {
+        _propellingPlatformFlash.StopIdleFlashing();
+    }
+
+    private void StartIdleFlashing() {
+        _propellingPlatformFlash.StartIdleFlashing();
     }
 
     public void PlayImpactSfx() {
         SoundFXManager.obj.PlayAtPosition(_impactSfx, transform.position);
+    }
+
+    public void TriggerVfx(Vector2 direction) {
+        _propellingPlatformFlash.TriggerVfxFlash();
+        
+        // Kill any existing tweens on the sprite transform
+        _spriteTransform.DOKill();
+        _spriteTransform.localPosition = _originalSpritePosition;
+        
+        // Calculate target position based on direction
+        Vector3 targetPosition = _originalSpritePosition + (Vector3)(direction.normalized * _vfxMoveDistance);
+        
+        // Move to target position, then return to original
+        _spriteTransform.DOLocalMove(targetPosition, _vfxMoveDuration)
+            .SetEase(_vfxMoveEase)
+            .OnComplete(() => {
+                _spriteTransform.DOLocalMove(_originalSpritePosition, _vfxReturnDuration)
+                    .SetEase(_vfxReturnEase);
+            });
     }
 
     private bool somethingToTheRight = false;
@@ -45,14 +91,18 @@ public class FloatingPlatformRotated : MonoBehaviour
         if(wasJustPulled) {
             _isBeingPulled = true;
             movePlatform = true;
+            StopIdleFlashing();
         } else if(wasJustReleased) {
             _isBeingPulled = false;
+            StartIdleFlashing();
         }
 
         if(wasJustPulled) {
+            _collider.isTrigger = false;
             _rigidBody.bodyType = RigidbodyType2D.Dynamic;
         }
         else if(wasJustReleased) {
+            _collider.isTrigger = true;
             _rigidBody.bodyType = RigidbodyType2D.Kinematic;
         }
 
@@ -142,31 +192,4 @@ public class FloatingPlatformRotated : MonoBehaviour
     }
 
     private Coroutine _disableColliderCoroutine;
-
-    public void DisableCollider()
-    {
-        _collider.enabled = false;
-    }
-
-    public void EnableCollider() {
-        _collider.enabled = true;
-    }
-
-    public void TemporarilyDisableCollider(float duration)
-    {
-        // If already running, stop the previous coroutine
-        if (_disableColliderCoroutine != null)
-        {
-            StopCoroutine(_disableColliderCoroutine);
-        }
-        _disableColliderCoroutine = StartCoroutine(DisableColliderForDuration(duration));
-    }
-
-    private IEnumerator DisableColliderForDuration(float duration)
-    {
-        _collider.enabled = false;
-        yield return new WaitForSeconds(duration);
-        _collider.enabled = true;
-        _disableColliderCoroutine = null;
-    }
 }

@@ -89,12 +89,12 @@ public class ShadowTwinMovement : MonoBehaviour
     private bool _isPropellingThroughPlatform = false;
     private float _propelTimer = 0f;
     private Vector2 _propelVelocity = Vector2.zero;
-    private bool _isLatchingToFloatingPlatform = false;
+    private bool _isLatchingToUpwardsPropellingPlatform = false;
     private bool _isLatchingToHorizontalPropellingPlatform = false;
     private bool _isPostPropelFloaty = false;
     private float _postPropelFloatyTimer = 0f;
-    private FloatyPlatform _targetFloatingPlatform = null;
-    private FloatingPlatformRotated _targetHorizontalPropellingPlatform = null;
+    private PropellingPlatform _targetUpwardsPropellingPlatform = null;
+    private PropellingPlatform _targetHorizontalPropellingPlatform = null;
     
     private bool _isHorizontalPropelling = false;
     private float _horizontalPropelDirectionLockTimer = 0f;
@@ -109,7 +109,7 @@ public class ShadowTwinMovement : MonoBehaviour
         _animator = GetComponentInChildren<Animator>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         _ceilingLayerMasks = LayerMask.GetMask(new[] { "Ground", "Default", "Block" });
-        _latchLayerMask = LayerMask.GetMask(new[] { "Ground", "Block", "JumpThroughs", "Pullable", "HazardCollider", "HazardTrigger"});
+        _latchLayerMask = LayerMask.GetMask(new[] { "Ground", "Block", "JumpThroughs", "Propeller", "HazardCollider", "HazardTrigger"});
         _playerInput = GetComponent<PlayerInput>();
         _sharedPlayerAudio = GetComponent<SharedCharacterAudio>();
         _deeAudio = GetComponent<DeeAudio>();
@@ -1416,15 +1416,17 @@ public class ShadowTwinMovement : MonoBehaviour
             return false;
 
         Vector2 origin = (Vector2)transform.position;
+
+        bool isHorizontalLash = Mathf.Abs(direction.x) > 0;
         
         // Use different cast distances for horizontal vs vertical lashing
-        float castDistance = Mathf.Abs(direction.x) > 0 ? _latchBoxCastDistanceHorizontal : _latchBoxCastDistanceVertical;
+        float castDistance = isHorizontalLash ? _latchBoxCastDistanceHorizontal : _latchBoxCastDistanceVertical;
         
         // Adjust box size based on lash direction
         // For horizontal lashes, use a thin vertical box (2 pixels = 0.25 units)
         // For vertical lashes, use the full collider size (6 pixels)
         Vector2 boxSize;
-        if (Mathf.Abs(direction.x) > 0)
+        if (isHorizontalLash)
         {
             // Horizontal lash - thin vertical box
             boxSize = new Vector2(_collider.bounds.size.x, 0.25f);
@@ -1451,7 +1453,6 @@ public class ShadowTwinMovement : MonoBehaviour
             
             ShadowLashBeamManager.obj.TriggerHitSurfaceAnimation();
 
-                        
             // Check if hit is in the Hazard layers - if so, return false without latching
             if (hit.collider.gameObject.layer == LayerMask.NameToLayer("HazardCollider") || 
                 hit.collider.gameObject.layer == LayerMask.NameToLayer("HazardTrigger"))
@@ -1461,37 +1462,43 @@ public class ShadowTwinMovement : MonoBehaviour
             
             Vector2 playerPos = (Vector2)transform.position;
             
-            // Check if lashing upward to a floating platform ceiling
-            bool isFloatingPlatform = hit.collider.gameObject.layer == LayerMask.NameToLayer("JumpThroughs") 
-                                      && hit.collider.CompareTag("FloatingPlatform");
+            // Check if lashing upward to an upwards propelling platform ceiling
+            bool isUpwardsPropellingPlatform = hit.collider.gameObject.layer == LayerMask.NameToLayer("Propeller") 
+                                      && hit.collider.CompareTag("UpwardsPropeller");
             LatchSurfaceType surfaceType = DetermineLatchSurfaceType(direction, hit.normal);
+            if(isUpwardsPropellingPlatform && surfaceType != LatchSurfaceType.Ceiling) {
+                return false;
+            }
 
             
-            // Set flag if this is a floating platform ceiling we're lashing to
-            _isLatchingToFloatingPlatform = isFloatingPlatform && surfaceType == LatchSurfaceType.Ceiling && direction.y > 0;
+            // Set flag if this is an upwards propelling platform ceiling we're lashing to
+            _isLatchingToUpwardsPropellingPlatform = isUpwardsPropellingPlatform && surfaceType == LatchSurfaceType.Ceiling && direction.y > 0;
             
-            // Store reference to the floating platform if we're lashing to it
-            if (_isLatchingToFloatingPlatform)
+            // Store reference to the propelling platform if we're lashing to it
+            if (_isLatchingToUpwardsPropellingPlatform)
             {
-                _targetFloatingPlatform = hit.collider.GetComponentInParent<FloatyPlatform>();
+                _targetUpwardsPropellingPlatform = hit.collider.GetComponentInParent<PropellingPlatform>();
             }
             else
             {
-                _targetFloatingPlatform = null;
+                _targetUpwardsPropellingPlatform = null;
 
-                bool isHorizontalPropellingPlatform = hit.collider.gameObject.layer == LayerMask.NameToLayer("JumpThroughs") 
+                bool isHorizontalPropellingPlatform = hit.collider.gameObject.layer == LayerMask.NameToLayer("Propeller") 
                                       && hit.collider.CompareTag("HorizontalPropeller");
-                _isLatchingToHorizontalPropellingPlatform = isHorizontalPropellingPlatform && surfaceType == LatchSurfaceType.Wall && MathF.Abs(direction.x) > 0;
+                if(isHorizontalPropellingPlatform && surfaceType != LatchSurfaceType.Wall)
+                    return false;
+                    
+                _isLatchingToHorizontalPropellingPlatform = isHorizontalPropellingPlatform && surfaceType == LatchSurfaceType.Wall && isHorizontalLash;
 
                 if(_isLatchingToHorizontalPropellingPlatform) {
-                    _targetHorizontalPropellingPlatform = hit.collider.GetComponentInParent<FloatingPlatformRotated>();
+                    _targetHorizontalPropellingPlatform = hit.collider.GetComponentInParent<PropellingPlatform>();
                 } else {
                     _targetHorizontalPropellingPlatform = null;
                 }
             }
             
             // Align latch position to move purely horizontally or vertically
-            if (Mathf.Abs(direction.x) > 0)
+            if (isHorizontalLash)
             {
                 // Horizontal movement - keep player's Y position
                 _latchPosition = new Vector2(hit.point.x, playerPos.y);
@@ -1569,8 +1576,8 @@ public class ShadowTwinMovement : MonoBehaviour
         _latchSurfaceType = LatchSurfaceType.None;
         _latchTargetCollider = null;
         _latchReachedThisPull = false;
-        _isLatchingToFloatingPlatform = false;
-        _targetFloatingPlatform = null;
+        _isLatchingToUpwardsPropellingPlatform = false;
+        _targetUpwardsPropellingPlatform = null;
         _isLatchingToHorizontalPropellingPlatform = false;
         _targetHorizontalPropellingPlatform = null;
         _isLatchPulling = false;
@@ -1659,12 +1666,6 @@ public class ShadowTwinMovement : MonoBehaviour
         // Note: _propelVelocity is set before calling this method
         ShadowTwinPlayer.obj.DisableGravity();
         ShadowTwinLash.obj.SetIsShadowLashing(false);
-        
-        // Temporarily disable the floating platform's collider to prevent grounded detection
-        if (_targetFloatingPlatform != null)
-        {
-            _targetFloatingPlatform.TemporarilyDisableCollider(_platformColliderDisableDuration);
-        }
     }
 
     private void HandlePropelThroughPlatform()
@@ -1698,12 +1699,6 @@ public class ShadowTwinMovement : MonoBehaviour
         
         // Disable gravity during horizontal propelling
         ShadowTwinPlayer.obj.DisableGravity();
-        
-        // Temporarily disable the horizontal propelling platform's collider
-        if (_targetHorizontalPropellingPlatform != null)
-        {
-            _targetHorizontalPropellingPlatform.TemporarilyDisableCollider(_horizontalPlatformColliderDisableDuration);
-        }
     }
 
     private void HandleLatchPullVelocity()
@@ -1784,7 +1779,6 @@ public class ShadowTwinMovement : MonoBehaviour
                 }
                 
                 if(upperHit.collider != null) {
-                    Debug.Log("upper hit");
                     //Try to push the player down to clear the corner
 
                     // Raycast 2.5 pixels (0.3125 units) below the top of the collider
@@ -1869,20 +1863,24 @@ public class ShadowTwinMovement : MonoBehaviour
                 transform.position = _latchPosition;
                 
                 // Check if this is a floating platform - if so, start propelling instead of latching
-                if (_isLatchingToFloatingPlatform)
+                if (_isLatchingToUpwardsPropellingPlatform)
                 {
                     _deeAudio.PlayShadowLashPropel();
-                    // Capture the current lash velocity and start propelling
+                    // Set consistent propel velocity regardless of distance to platform
+                    // This ensures the player always propels the same height
                     _propelVelocity = _frameVelocity;
+                    _propelVelocity.y = _latchSpeed; // Always use latch speed for consistent propel height
+                    
                     StartPropelThroughPlatform();
+                    _targetUpwardsPropellingPlatform.TriggerVfx(_latchDirection);
                     // End the latch pull state
                     _latchPosition = Vector2.zero;
                     _latchDirection = Vector2.zero;
                     _latchReachedThisPull = false;
                     _isLatchPulling = false;
                     UpdateAnimatorIsLatchPulling(false);
-                    _isLatchingToFloatingPlatform = false;
-                    _targetFloatingPlatform = null; // Clear platform reference after starting propel
+                    _isLatchingToUpwardsPropellingPlatform = false;
+                    _targetUpwardsPropellingPlatform = null; // Clear platform reference after starting propel
                     ShadowLashBeamManager.obj.ForceStopBeam();
                     // Unlock flip for vertical propelling - player can flip while propelling upwards
                     UnlockFlip();
@@ -1895,6 +1893,7 @@ public class ShadowTwinMovement : MonoBehaviour
                     _deeAudio.PlayShadowLashPropel();
                     // Start horizontal propelling (velocity is already in _frameVelocity from lash)
                     StartHorizontalPropelThroughPlatform();
+                    _targetHorizontalPropellingPlatform.TriggerVfx(_latchDirection);
                     // End the latch pull state
                     _latchPosition = Vector2.zero;
                     _latchDirection = Vector2.zero;

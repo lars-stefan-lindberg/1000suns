@@ -33,7 +33,7 @@ public class Pullable : MonoBehaviour
     [SerializeField] private float _velocityThreshold = 0.1f;
     
     public bool IsPulled {get; set;}
-    public bool IsImmune {get; private set;}
+    public bool IsImmune = false;
     
     private Material _material;
     private Transform _spriteTransform;
@@ -65,7 +65,6 @@ public class Pullable : MonoBehaviour
 
     private void Start() {
         IsPulled = false;
-        IsImmune = false;
         _material = _renderer.material;
         _material.SetFloat("_SineGlowFade", 0f);
         _material.SetFloat("_PixelOutlineFade", 0f);
@@ -128,7 +127,7 @@ public class Pullable : MonoBehaviour
 
         //VFX
         TriggerGrabShake();
-        ShockWaveManager.obj.CallShockWave(transform.position, 0.2f, 0.05f, 0.15f);
+        TriggerShockwave();
         StartCoroutine(DelayedSfx());
         //EmitEvenCircle(_grabbedParticles, _grabbedNumberOfParticles, _grabbedParticlesRadius, _grabbedParticlesSpeed);
         // _trailingParticles.Play();
@@ -188,11 +187,15 @@ public class Pullable : MonoBehaviour
         }
     }
     
-    private void TriggerGrabShake() {
+    public void TriggerGrabShake() {
         _spriteTransform.DOKill();
         _spriteTransform.localPosition = _originalSpritePosition;
         _spriteTransform.DOShakePosition(_shakeDuration, new Vector3(_shakeDistance, 0f, 0f), _shakeVibrato, 0, false, false)
             .OnComplete(() => _spriteTransform.localPosition = _originalSpritePosition);
+    }
+
+    public void TriggerShockwave() {
+        ShockWaveManager.obj.CallShockWave(transform.position, 0.2f, 0.05f, 0.15f);
     }
     
     private void Update() {
