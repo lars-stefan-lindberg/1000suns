@@ -24,6 +24,7 @@ public class PropellingPlatform : MonoBehaviour
     [Header("VFX Movement")]
     [SerializeField] private float _vfxMoveDistance = 0.2f;
     [SerializeField] private float _vfxMoveDuration = 0.1f;
+    [SerializeField] private float _vfxPauseDuration = 0.1f;
     [SerializeField] private float _vfxReturnDuration = 0.3f;
     [SerializeField] private Ease _vfxMoveEase = Ease.OutQuad;
     [SerializeField] private Ease _vfxReturnEase = Ease.InOutQuad;
@@ -92,13 +93,11 @@ public class PropellingPlatform : MonoBehaviour
         // Calculate target position based on direction
         Vector3 targetPosition = _originalSpritePosition + (Vector3)(direction.normalized * _vfxMoveDistance);
         
-        // Move to target position, then return to original
-        _spriteTransform.DOLocalMove(targetPosition, _vfxMoveDuration)
-            .SetEase(_vfxMoveEase)
-            .OnComplete(() => {
-                _spriteTransform.DOLocalMove(_originalSpritePosition, _vfxReturnDuration)
-                    .SetEase(_vfxReturnEase);
-            });
+        // Move to target position, pause, then return to original
+        Sequence vfxSequence = DOTween.Sequence();
+        vfxSequence.Append(_spriteTransform.DOLocalMove(targetPosition, _vfxMoveDuration).SetEase(_vfxMoveEase));
+        vfxSequence.AppendInterval(_vfxPauseDuration);
+        vfxSequence.Append(_spriteTransform.DOLocalMove(_originalSpritePosition, _vfxReturnDuration).SetEase(_vfxReturnEase));
     }
 
     private bool somethingToTheRight = false;
