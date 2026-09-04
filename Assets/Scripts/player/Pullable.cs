@@ -104,6 +104,7 @@ public class Pullable : MonoBehaviour
         _isOutlineFadingOut = false;
         // Start from current fade value to avoid jumps
         _outlineElapsedTime = _currentOutlineFade * _outlineFadeSpeed;
+        _renderer.sortingOrder += 1;  //Make sure the outline is on top of other pullables, like blocks
     }
     
     public void StopHighlight() {
@@ -111,6 +112,7 @@ public class Pullable : MonoBehaviour
         _isOutlineFadingOut = true;
         // Start from current fade value to avoid jumps
         _outlineElapsedTime = (1f - _currentOutlineFade) * _outlineFadeSpeed;
+        _renderer.sortingOrder -= 1;
     }
     
     public void StartGrabbed() {
