@@ -1492,6 +1492,26 @@ public class ShadowTwinMovement : MonoBehaviour
 
                 if(_isLatchingToHorizontalPropellingPlatform) {
                     _targetHorizontalPropellingPlatform = hit.collider.GetComponentInParent<PropellingPlatform>();
+                    
+                    // Check if the platform direction matches the player's propel direction
+                    if (_targetHorizontalPropellingPlatform != null)
+                    {
+                        PropellingPlatform.PlatformDirection platformDir = _targetHorizontalPropellingPlatform.GetDirection();
+                        
+                        // Determine player's propel direction from the lash direction
+                        bool playerPropellingRight = direction.x > 0;
+                        bool playerPropellingLeft = direction.x < 0;
+                        
+                        // Check if platform direction is opposite to player's propel direction
+                        if ((platformDir == PropellingPlatform.PlatformDirection.Left && playerPropellingRight) ||
+                            (platformDir == PropellingPlatform.PlatformDirection.Right && playerPropellingLeft))
+                        {
+                            // Platform is facing opposite direction - cannot latch
+                            _targetHorizontalPropellingPlatform = null;
+                            _isLatchingToHorizontalPropellingPlatform = false;
+                            return false;
+                        }
+                    }
                 } else {
                     _targetHorizontalPropellingPlatform = null;
                 }
@@ -1911,6 +1931,10 @@ public class ShadowTwinMovement : MonoBehaviour
                     // Start horizontal propelling (velocity is already in _frameVelocity from lash)
                     StartHorizontalPropelThroughPlatform();
                     _targetHorizontalPropellingPlatform.TriggerVfx(_latchDirection);
+                    
+                    // Flip the platform direction if it's flippable
+                    _targetHorizontalPropellingPlatform.FlipDirection();
+                    
                     // End the latch pull state
                     _latchPosition = Vector2.zero;
                     _latchDirection = Vector2.zero;

@@ -7,6 +7,13 @@ using DG.Tweening;
 
 public class PropellingPlatform : MonoBehaviour
 {
+    public enum PlatformDirection
+    {
+        Up,
+        Left,
+        Right
+    }
+
     [SerializeField] private BoxCollider2D _collider;
     [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private EventReference _impactSfx;
@@ -20,6 +27,11 @@ public class PropellingPlatform : MonoBehaviour
     private LayerMask _soundTriggeringLayerMask;
     private bool movePlatform = false;
     private PropellingPlatformFlash _propellingPlatformFlash;
+    
+    [Header("Direction Settings")]
+    [SerializeField] private PlatformDirection _direction = PlatformDirection.Up;
+    [SerializeField] private bool _flippable = false;
+    [SerializeField] private float _flipDuration = 0.3f;
     
     [Header("VFX Movement")]
     [SerializeField] private float _vfxMoveDistance = 0.2f;
@@ -56,6 +68,73 @@ public class PropellingPlatform : MonoBehaviour
 
     void Start() {
         _propellingPlatformFlash.StartIdleFlashing();
+    }
+
+    private void OnEnable()
+    {
+        if (_flippable && (_direction == PlatformDirection.Left || _direction == PlatformDirection.Right))
+        {
+            // Adjust direction based on player position
+            if (ShadowTwinPlayer.obj != null)
+            {
+                float playerX = ShadowTwinPlayer.obj.transform.position.x;
+                float platformX = transform.position.x;
+                
+                if (playerX < platformX)
+                {
+                    // Player is on the left, platform should face right
+                    SetDirection(PlatformDirection.Right);
+                }
+                else
+                {
+                    // Player is on the right, platform should face left
+                    SetDirection(PlatformDirection.Left);
+                }
+            }
+        }
+        else if (!_flippable && (_direction == PlatformDirection.Left || _direction == PlatformDirection.Right))
+        {
+            // Non-flippable horizontal platform should have correct Y rotation
+            UpdateSpriteRotation();
+        }
+    }
+
+    private void SetDirection(PlatformDirection newDirection)
+    {
+        _direction = newDirection;
+        UpdateSpriteRotation();
+    }
+
+    private void UpdateSpriteRotation()
+    {
+        if (_direction == PlatformDirection.Left)
+        {
+            _spriteRenderer.transform.localRotation = Quaternion.Euler(0, 180, 270);
+        }
+        else if (_direction == PlatformDirection.Right)
+        {
+            _spriteRenderer.transform.localRotation = Quaternion.Euler(0, 0, 270);
+        }
+        // Up direction doesn't need rotation change
+    }
+
+    public PlatformDirection GetDirection()
+    {
+        return _direction;
+    }
+
+    public void FlipDirection()
+    {
+        if (!_flippable || _direction == PlatformDirection.Up)
+            return;
+
+        // Flip the direction
+        PlatformDirection newDirection = _direction == PlatformDirection.Left ? PlatformDirection.Right : PlatformDirection.Left;
+        _direction = newDirection;
+
+        // Animate the rotation change
+        float targetRotation = _direction == PlatformDirection.Left ? 180f : 0f;
+        _spriteRenderer.transform.DOLocalRotate(new Vector3(0, targetRotation, 270), _flipDuration);
     }
 
     private void StopIdleFlashing() {
