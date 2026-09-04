@@ -1707,7 +1707,7 @@ public class ShadowTwinMovement : MonoBehaviour
         // This prevents the player from continuing to pull when their full 14px collider hits an obstacle
         // even though the thin BoxCast from the 6th pixel found a valid surface
         float distanceToTarget = Vector2.Distance(transform.position, _latchPosition);
-        float checkDistance = Mathf.Min(distanceToTarget, _latchSpeed * Time.fixedDeltaTime * 1.5f);
+        float checkDistance = 0.0625f;
         
         RaycastHit2D obstacleHit = Physics2D.BoxCast(
             _collider.bounds.center, 
@@ -1719,7 +1719,7 @@ public class ShadowTwinMovement : MonoBehaviour
         );
         
         // If we hit something that's not our target surface, handle the collision
-        if (obstacleHit.collider != null)
+        if (obstacleHit.collider != null && !obstacleHit.collider.isTrigger)
         {
             // Check if this is an obstacle (not the target surface)
             // Two cases:
@@ -1762,6 +1762,7 @@ public class ShadowTwinMovement : MonoBehaviour
                 //If both hits and they're hitting the same surface, latch here
                 //If they're hitting different surfaces (or different points far apart), it's a corner - try to push down
                 if(upperHit.collider != null && lowerHit.collider != null) {
+                    Debug.Log("upper and lower hit");
                     // Check if both rays hit approximately the same point (same surface)
                     float hitPointDistance = Vector2.Distance(upperHit.point, lowerHit.point);
                     
@@ -1779,65 +1780,77 @@ public class ShadowTwinMovement : MonoBehaviour
                 }
                 
                 if(upperHit.collider != null) {
-                    //Try to push the player down to clear the corner
 
-                    // Raycast 2.5 pixels (0.3125 units) below the top of the collider
-                    // Top of collider is at bounds.center.y + (bounds.size.y / 2)
-                    // 2.5 pixels = 2.5 * 0.125 = 0.3125 units
-                    float raycastYPosition = _collider.bounds.center.y + (_collider.bounds.size.y / 2) - 0.3125f;
-                    Vector2 raycastOrigin = new Vector2(_collider.bounds.center.x, raycastYPosition);
-                    
-                    // Raycast in the direction of movement with a small distance
-                    RaycastHit2D rayHit = Physics2D.Raycast(
-                        raycastOrigin, 
-                        new Vector2(_latchDirection.x, 0), 
-                        checkDistance, 
-                        _latchLayerMask
-                    );
-                    
-                    // If nothing is hit, push the player down 2 pixels (0.25 units) and continue
-                    if (rayHit.collider == null)
-                    {
-                        transform.position = new Vector2(transform.position.x, transform.position.y - 0.25f);
-                        // Update the latch position to match the new vertical position
-                        _latchPosition = new Vector2(_latchPosition.x, _latchPosition.y - 0.25f);
-                        // Continue the latch pull movement
-                        return;
+                    //Check if upper hit horizontal position is closer to the player than the lower hit. Then treat the obstacle as an upper corner
+                    bool isUpperHitCloserToPlayer = Mathf.Abs(upperHit.point.x - transform.position.x) < Mathf.Abs(lowerHit.point.x - transform.position.x);
+                    if(isUpperHitCloserToPlayer) {
+                        //Treat as upper corner - fall through to upperHit logic
+                        //Try to push the player down to clear the corner
+
+                        // Raycast 2.5 pixels (0.3125 units) below the top of the collider
+                        // Top of collider is at bounds.center.y + (bounds.size.y / 2)
+                        // 2.5 pixels = 2.5 * 0.125 = 0.3125 units
+                        float raycastYPosition = _collider.bounds.center.y + (_collider.bounds.size.y / 2) - 0.3125f;
+                        Vector2 raycastOrigin = new Vector2(_collider.bounds.center.x, raycastYPosition);
+                        
+                        // Raycast in the direction of movement with a small distance
+                        RaycastHit2D rayHit = Physics2D.Raycast(
+                            raycastOrigin, 
+                            new Vector2(_latchDirection.x, 0), 
+                            checkDistance, 
+                            _latchLayerMask
+                        );
+                        
+                        // If nothing is hit, push the player down 2 pixels (0.25 units) and continue
+                        if (rayHit.collider == null)
+                        {
+                            transform.position = new Vector2(transform.position.x, transform.position.y - 0.25f);
+                            // Update the latch position to match the new vertical position
+                            _latchPosition = new Vector2(_latchPosition.x, _latchPosition.y - 0.25f);
+                            // Continue the latch pull movement
+                            return;
+                        }
                     }
                 } else if(lowerHit.collider != null) {
-                    //Try to push the player up to clear the corner
 
-                    // Raycast 1.5 pixels above the bottom of the collider
-                    // Bottom of collider is at bounds.center.y - (bounds.size.y / 2)
-                    // 1.5 pixels = 1.5 * 0.125 = 0.1875 units
-                    float raycastYPosition = _collider.bounds.center.y - (_collider.bounds.size.y / 2) + 0.1875f;
-                    Vector2 raycastOrigin = new Vector2(_collider.bounds.center.x, raycastYPosition);
-                    
-                    // Raycast in the direction of movement with a small distance
-                    RaycastHit2D rayHit = Physics2D.Raycast(
-                        raycastOrigin, 
-                        new Vector2(_latchDirection.x, 0), 
-                        checkDistance, 
-                        _latchLayerMask
-                    );
-                    
-                    // If nothing is hit, push the player up 1 pixel (0.125 units) and continue
-                    if (rayHit.collider == null)
-                    {
-                        transform.position = new Vector2(transform.position.x, transform.position.y + 0.125f);
-                        // Update the latch position to match the new vertical position
-                        _latchPosition = new Vector2(_latchPosition.x, _latchPosition.y + 0.125f);
-                        // Continue the latch pull movement
-                        return;
-                    } else {
-                        UnlockFlip();
-                        CameraShakeManager.obj.ForcePushShake();
-                        //TODO impact SFX. Use temporary:
-                        _deeAudio.PlayAnchorReached();
-                        EndLatchPull(fadeOutBeam: true);
-                        _frameVelocity.x *= 0.5f;
-                        _frameVelocity.y *= 0;
-                        return;
+                    //First check if lower hit x position is close to latch point x
+                    bool isLowerHitCloseEnoughToLatchPoint = Mathf.Abs(lowerHit.point.x - _latchPosition.x) < 0.1f;
+                     
+                    if(!isLowerHitCloseEnoughToLatchPoint) {
+                        //Try to push the player up to clear the corner
+
+                        // Raycast 2.5 pixels above the bottom of the collider
+                        // Bottom of collider is at bounds.center.y - (bounds.size.y / 2)
+                        // 2.5 pixels = 2.5 * 0.125 = 0.3125 units
+                        float raycastYPosition = _collider.bounds.center.y - (_collider.bounds.size.y / 2) + 0.3125f;
+                        Vector2 raycastOrigin = new Vector2(_collider.bounds.center.x, raycastYPosition);
+                        
+                        // Raycast in the direction of movement with a small distance
+                        RaycastHit2D rayHit = Physics2D.Raycast(
+                            raycastOrigin, 
+                            new Vector2(_latchDirection.x, 0), 
+                            checkDistance, 
+                            _latchLayerMask
+                        );
+                        
+                        // If nothing is hit, push the player up 2 pixels (0.25 units) and continue
+                        if (rayHit.collider == null)
+                        {
+                            transform.position = new Vector2(transform.position.x, transform.position.y + 0.25f);
+                            // Update the latch position to match the new vertical position
+                            _latchPosition = new Vector2(_latchPosition.x, _latchPosition.y + 0.25f);
+                            // Continue the latch pull movement
+                            return;
+                        } else {
+                            UnlockFlip();
+                            CameraShakeManager.obj.ForcePushShake();
+                            //TODO impact SFX. Use temporary:
+                            _deeAudio.PlayAnchorReached();
+                            EndLatchPull(fadeOutBeam: true);
+                            _frameVelocity.x *= 0.5f;
+                            _frameVelocity.y *= 0;
+                            return;
+                        }
                     }
                 }
             }
