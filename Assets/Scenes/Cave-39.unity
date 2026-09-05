@@ -631,6 +631,67 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &554280905
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1368522024}
+    m_Modifications:
+    - target: {fileID: 1914065774190023287, guid: d15f3ede3f90e499d935ba4efa9133f4, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.6081543
+      objectReference: {fileID: 0}
+    - target: {fileID: 1914065774190023287, guid: d15f3ede3f90e499d935ba4efa9133f4, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.5763855
+      objectReference: {fileID: 0}
+    - target: {fileID: 1914065774190023287, guid: d15f3ede3f90e499d935ba4efa9133f4, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1914065774190023287, guid: d15f3ede3f90e499d935ba4efa9133f4, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1914065774190023287, guid: d15f3ede3f90e499d935ba4efa9133f4, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1914065774190023287, guid: d15f3ede3f90e499d935ba4efa9133f4, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1914065774190023287, guid: d15f3ede3f90e499d935ba4efa9133f4, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1914065774190023287, guid: d15f3ede3f90e499d935ba4efa9133f4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1914065774190023287, guid: d15f3ede3f90e499d935ba4efa9133f4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1914065774190023287, guid: d15f3ede3f90e499d935ba4efa9133f4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3987208392439082700, guid: d15f3ede3f90e499d935ba4efa9133f4, type: 3}
+      propertyPath: lightSpriteTransform.scale.x
+      value: 10.45
+      objectReference: {fileID: 0}
+    - target: {fileID: 6830651996235696065, guid: d15f3ede3f90e499d935ba4efa9133f4, type: 3}
+      propertyPath: m_Name
+      value: Toxic water light
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: d15f3ede3f90e499d935ba4efa9133f4, type: 3}
 --- !u!1001 &584566477
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1517,6 +1578,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1600733566929813044, guid: 5c0dc4586589146d7a32b749382010bb, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1180719763}
+    - targetCorrespondingSourceObject: {fileID: 1600733566929813044, guid: 5c0dc4586589146d7a32b749382010bb, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1629520962}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5c0dc4586589146d7a32b749382010bb, type: 3}
 --- !u!1 &1368522023 stripped
@@ -2334,6 +2398,11 @@ SpriteMask:
   m_BackSortingOrder: 0
   m_IsCustomRangeActive: 0
   m_SpriteSortPoint: 0
+--- !u!4 &1629520962 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1914065774190023287, guid: d15f3ede3f90e499d935ba4efa9133f4, type: 3}
+  m_PrefabInstance: {fileID: 554280905}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1649616985
 PrefabInstance:
   m_ObjectHideFlags: 0
