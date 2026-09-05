@@ -365,6 +365,14 @@ public class PlayerMovement : MonoBehaviour
         StartCoroutine(TransitionToNextRoomCoroutine(direction));
     }
 
+    public void StopMovement() {
+        _stopMovement = true;
+    }
+
+    public void EnableMovement() {
+        _stopMovement = false;
+    }
+
     private float _transitionDistanceX = 1;
     private float _transitionDistanceUp = 3f;
     private float _transitionDistanceDown = 1.5f;

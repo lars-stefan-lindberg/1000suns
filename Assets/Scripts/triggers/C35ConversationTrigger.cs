@@ -143,7 +143,9 @@ public class C35ConversationTrigger : MonoBehaviour, ISkippable
         yield return new WaitForSeconds(0.8f);
         _breakableFloor.Break();
 
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(1f);
+        PlayerMovement.obj.StopMovement();
+        yield return new WaitForSeconds(2f);
 
         PauseMenuManager.obj.UnregisterSkippable();
 
@@ -162,6 +164,7 @@ public class C35ConversationTrigger : MonoBehaviour, ISkippable
     private IEnumerator LoadNextScene() {
         //Set player objects inactive
         Player.obj.gameObject.SetActive(false);
+        PlayerMovement.obj.EnableMovement();
         CaveAvatar.obj.gameObject.SetActive(false);
         ShadowTwinPlayer.obj.gameObject.SetActive(false);
 
