@@ -9,6 +9,7 @@ public class Cave9SRoomManager : MonoBehaviour, ISkippable
     [SerializeField] private Transform _sootFlyOffTarget;
 
     private CaveTimelineId.Id _caveTimelineId;
+    private Coroutine _cutsceneCoroutine;
 
     void Start()
     {
@@ -22,6 +23,15 @@ public class Cave9SRoomManager : MonoBehaviour, ISkippable
     }
 
     public void RequestSkip() {
+        if(_cutsceneCoroutine != null) {
+            StopCoroutine(_cutsceneCoroutine);
+        }
+        _conversationManager.HardStopConversation();
+        _conversationManager.CleanUp();
+        _conversationManager.OnConversationEnd -= OnConversationCompleted;
+
+        CaveAvatar.obj.IsFollowingPlayer = true;
+
         StartCoroutine(ResumeGameplay());
     }
 
@@ -38,8 +48,8 @@ public class Cave9SRoomManager : MonoBehaviour, ISkippable
     public void StartConversation() {
         if(GameManager.obj.HasEvent(_conversationCompleted) || _caveTimelineId != CaveTimelineId.Id.Eli)
             return;
-        //PauseMenuManager.obj.RegisterSkippable(this);
         PlayerMovement.obj.Freeze();
+        PauseMenuManager.obj.RegisterSkippable(this);
         StartCoroutine(DelayedStartConversation());
     }
 
@@ -54,11 +64,11 @@ public class Cave9SRoomManager : MonoBehaviour, ISkippable
     }
 
     private void OnConversationCompleted() {
+        PauseMenuManager.obj.UnregisterSkippable();
         CaveAvatar.obj.IsFollowingPlayer = true;
         PlayerMovement.obj.UnFreeze();
         _conversationManager.OnConversationEnd -= OnConversationCompleted;
         GameManager.obj.RegisterEvent(_conversationCompleted);
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
-        //PauseMenuManager.obj.UnregisterSkippable();
     }
 }
