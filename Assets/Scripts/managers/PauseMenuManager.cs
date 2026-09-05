@@ -207,7 +207,8 @@ public class PauseMenuManager : MonoBehaviour
     public void OnSkipCutsceneButtonClick() {
         UISoundPlayer.obj.PlaySelect();
         Time.timeScale = 1f;
-        StartCoroutine(SkipCutsceneCoroutine());
+        //Send reference to skippable. In some rare cases where cutscene is skipped in "the last frame" skippable can later be null since it can be unregistered by the client
+        StartCoroutine(SkipCutsceneCoroutine(_skippable)); 
     }
 
     public void OnOptionsButtonClick() {
@@ -287,14 +288,14 @@ public class PauseMenuManager : MonoBehaviour
         }
     }
 
-    private IEnumerator SkipCutsceneCoroutine() {
+    private IEnumerator SkipCutsceneCoroutine(ISkippable skippable) {
         GameManager.obj.IsPauseAllowed = false;
         SceneFadeManager.obj.StartFadeOut();
         while(SceneFadeManager.obj.IsFadingOut) {
             yield return null;
         }   
         yield return new WaitForSeconds(0.3f);
-        _skippable.RequestSkip();
+        skippable.RequestSkip();
         UnregisterSkippable();
         ResumeGame(true);
         yield return null;
