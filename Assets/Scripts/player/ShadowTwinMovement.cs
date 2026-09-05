@@ -1729,147 +1729,150 @@ public class ShadowTwinMovement : MonoBehaviour
         float distanceToTarget = Vector2.Distance(transform.position, _latchPosition);
         float checkDistance = 0.0625f;
         
-        RaycastHit2D obstacleHit = Physics2D.BoxCast(
-            _collider.bounds.center, 
-            _collider.bounds.size - new Vector3(0, 0.125f, 0),  //Small size reduction due to micro ledges like blocks
-            0f, 
-            _latchDirection, 
-            checkDistance, 
-            _latchLayerMask
-        );
-        
-        // If we hit something that's not our target surface, handle the collision
-        if (obstacleHit.collider != null && !obstacleHit.collider.isTrigger)
-        {
-            // Check if this is an obstacle (not the target surface)
-            // Two cases:
-            // 1. Different collider = definitely an obstacle
-            // 2. Same collider = use distance check (for large surfaces like tilemaps)
-            bool isObstacle = false;
+        //Only check for obstacles if horizontal pull
+        if(Mathf.Abs(_latchDirection.x) > 0) {
+            RaycastHit2D obstacleHit = Physics2D.BoxCast(
+                _collider.bounds.center, 
+                _collider.bounds.size - new Vector3(0, 0.125f, 0),  //Small size reduction due to micro ledges like blocks
+                0f, 
+                _latchDirection, 
+                checkDistance, 
+                _latchLayerMask
+            );
             
-            if (obstacleHit.collider != _latchTargetCollider)
+            // If we hit something that's not our target surface, handle the collision
+            if (obstacleHit.collider != null && !obstacleHit.collider.isTrigger)
             {
-                // Different collider - this is an obstacle
-                isObstacle = true;
-            }
-            else
-            {
-                // Same collider - check distance to determine if we hit an obstacle part
-                // or if we're just approaching the target point
-                float hitDistance = Vector2.Distance(transform.position, obstacleHit.point);
-                if (hitDistance < distanceToTarget - 0.1f) // 0.1f tolerance for the target surface itself
+                // Check if this is an obstacle (not the target surface)
+                // Two cases:
+                // 1. Different collider = definitely an obstacle
+                // 2. Same collider = use distance check (for large surfaces like tilemaps)
+                bool isObstacle = false;
+                
+                if (obstacleHit.collider != _latchTargetCollider)
                 {
+                    // Different collider - this is an obstacle
                     isObstacle = true;
                 }
-            }
-            
-            if (isObstacle)
-            {
-                //Note: this scenario should only occur for horizontal shadow lashes
-
-                //Firstly, check upper and lower bounds of _collider
-                // Cast from the leading edge of the collider (in the direction of movement)
-                // Offset slightly inward to avoid starting inside the obstacle
-                float verticalOffset = 0.01f;
-                float horizontalOffset = 0.01f;
-                float leadingEdgeX = _collider.bounds.center.x + (_latchDirection.x > 0 ? (_collider.bounds.size.x / 2) - horizontalOffset : -(_collider.bounds.size.x / 2) + horizontalOffset);
-                
-                Vector2 upperOrigin = new Vector2(leadingEdgeX, _collider.bounds.center.y + (_collider.bounds.size.y / 2) - verticalOffset);
-                Vector2 lowerOrigin = new Vector2(leadingEdgeX, _collider.bounds.center.y - (_collider.bounds.size.y / 2) + verticalOffset);
-                RaycastHit2D upperHit = Physics2D.Raycast(upperOrigin, new Vector2(_latchDirection.x, 0), checkDistance, _latchLayerMask);
-                RaycastHit2D lowerHit = Physics2D.Raycast(lowerOrigin, new Vector2(_latchDirection.x, 0), checkDistance, _latchLayerMask);
-
-                //If both hits and they're hitting the same surface, latch here
-                //If they're hitting different surfaces (or different points far apart), it's a corner - try to push down
-                if(upperHit.collider != null && lowerHit.collider != null) {
-                    Debug.Log("upper and lower hit");
-                    // Check if both rays hit approximately the same point (same surface)
-                    float hitPointDistance = Vector2.Distance(upperHit.point, lowerHit.point);
-                    
-                    // If the hit points are close together (within the collider height), it's the same surface
-                    if (hitPointDistance < _collider.bounds.size.y * 0.5f) {
-                        //Make sure to offset the latch point by half the _colliders size depending on direction
-                        if(_latchDirection.x > 0) {
-                            _latchPosition = new Vector2(transform.position.x + (_collider.bounds.size.x / 2) + 0.125f, transform.position.y);
-                        } else {
-                            _latchPosition = new Vector2(transform.position.x - (_collider.bounds.size.x / 2) - 0.125f, transform.position.y);
-                        }
-                        return;
+                else
+                {
+                    // Same collider - check distance to determine if we hit an obstacle part
+                    // or if we're just approaching the target point
+                    float hitDistance = Vector2.Distance(transform.position, obstacleHit.point);
+                    if (hitDistance < distanceToTarget - 0.1f) // 0.1f tolerance for the target surface itself
+                    {
+                        isObstacle = true;
                     }
-                    // Otherwise, treat it as a corner case and fall through to the upperHit logic
                 }
                 
-                if(upperHit.collider != null) {
+                if (isObstacle)
+                {
+                    //Note: this scenario should only occur for horizontal shadow lashes
 
-                    //Check if upper hit horizontal position is closer to the player than the lower hit. Then treat the obstacle as an upper corner
-                    bool isUpperHitCloserToPlayer = Mathf.Abs(upperHit.point.x - transform.position.x) < Mathf.Abs(lowerHit.point.x - transform.position.x);
-                    if(isUpperHitCloserToPlayer) {
-                        //Treat as upper corner - fall through to upperHit logic
-                        //Try to push the player down to clear the corner
+                    //Firstly, check upper and lower bounds of _collider
+                    // Cast from the leading edge of the collider (in the direction of movement)
+                    // Offset slightly inward to avoid starting inside the obstacle
+                    float verticalOffset = 0.01f;
+                    float horizontalOffset = 0.01f;
+                    float leadingEdgeX = _collider.bounds.center.x + (_latchDirection.x > 0 ? (_collider.bounds.size.x / 2) - horizontalOffset : -(_collider.bounds.size.x / 2) + horizontalOffset);
+                    
+                    Vector2 upperOrigin = new Vector2(leadingEdgeX, _collider.bounds.center.y + (_collider.bounds.size.y / 2) - verticalOffset);
+                    Vector2 lowerOrigin = new Vector2(leadingEdgeX, _collider.bounds.center.y - (_collider.bounds.size.y / 2) + verticalOffset);
+                    RaycastHit2D upperHit = Physics2D.Raycast(upperOrigin, new Vector2(_latchDirection.x, 0), checkDistance, _latchLayerMask);
+                    RaycastHit2D lowerHit = Physics2D.Raycast(lowerOrigin, new Vector2(_latchDirection.x, 0), checkDistance, _latchLayerMask);
 
-                        // Raycast 2.5 pixels (0.3125 units) below the top of the collider
-                        // Top of collider is at bounds.center.y + (bounds.size.y / 2)
-                        // 2.5 pixels = 2.5 * 0.125 = 0.3125 units
-                        float raycastYPosition = _collider.bounds.center.y + (_collider.bounds.size.y / 2) - 0.3125f;
-                        Vector2 raycastOrigin = new Vector2(_collider.bounds.center.x, raycastYPosition);
+                    //If both hits and they're hitting the same surface, latch here
+                    //If they're hitting different surfaces (or different points far apart), it's a corner - try to push down
+                    if(upperHit.collider != null && lowerHit.collider != null) {
+                        Debug.Log("upper and lower hit");
+                        // Check if both rays hit approximately the same point (same surface)
+                        float hitPointDistance = Vector2.Distance(upperHit.point, lowerHit.point);
                         
-                        // Raycast in the direction of movement with a small distance
-                        RaycastHit2D rayHit = Physics2D.Raycast(
-                            raycastOrigin, 
-                            new Vector2(_latchDirection.x, 0), 
-                            checkDistance, 
-                            _latchLayerMask
-                        );
-                        
-                        // If nothing is hit, push the player down 2 pixels (0.25 units) and continue
-                        if (rayHit.collider == null)
-                        {
-                            transform.position = new Vector2(transform.position.x, transform.position.y - 0.25f);
-                            // Update the latch position to match the new vertical position
-                            _latchPosition = new Vector2(_latchPosition.x, _latchPosition.y - 0.25f);
-                            // Continue the latch pull movement
+                        // If the hit points are close together (within the collider height), it's the same surface
+                        if (hitPointDistance < _collider.bounds.size.y * 0.5f) {
+                            //Make sure to offset the latch point by half the _colliders size depending on direction
+                            if(_latchDirection.x > 0) {
+                                _latchPosition = new Vector2(transform.position.x + (_collider.bounds.size.x / 2) + 0.125f, transform.position.y);
+                            } else {
+                                _latchPosition = new Vector2(transform.position.x - (_collider.bounds.size.x / 2) - 0.125f, transform.position.y);
+                            }
                             return;
                         }
+                        // Otherwise, treat it as a corner case and fall through to the upperHit logic
                     }
-                } else if(lowerHit.collider != null) {
+                    
+                    if(upperHit.collider != null) {
 
-                    //First check if lower hit x position is close to latch point x
-                    bool isLowerHitCloseEnoughToLatchPoint = Mathf.Abs(lowerHit.point.x - _latchPosition.x) < 0.1f;
-                     
-                    if(!isLowerHitCloseEnoughToLatchPoint) {
-                        //Try to push the player up to clear the corner
+                        //Check if upper hit horizontal position is closer to the player than the lower hit. Then treat the obstacle as an upper corner
+                        bool isUpperHitCloserToPlayer = Mathf.Abs(upperHit.point.x - transform.position.x) < Mathf.Abs(lowerHit.point.x - transform.position.x);
+                        if(isUpperHitCloserToPlayer) {
+                            //Treat as upper corner - fall through to upperHit logic
+                            //Try to push the player down to clear the corner
 
-                        // Raycast 2.5 pixels above the bottom of the collider
-                        // Bottom of collider is at bounds.center.y - (bounds.size.y / 2)
-                        // 2.5 pixels = 2.5 * 0.125 = 0.3125 units
-                        float raycastYPosition = _collider.bounds.center.y - (_collider.bounds.size.y / 2) + 0.3125f;
-                        Vector2 raycastOrigin = new Vector2(_collider.bounds.center.x, raycastYPosition);
+                            // Raycast 2.5 pixels (0.3125 units) below the top of the collider
+                            // Top of collider is at bounds.center.y + (bounds.size.y / 2)
+                            // 2.5 pixels = 2.5 * 0.125 = 0.3125 units
+                            float raycastYPosition = _collider.bounds.center.y + (_collider.bounds.size.y / 2) - 0.3125f;
+                            Vector2 raycastOrigin = new Vector2(_collider.bounds.center.x, raycastYPosition);
+                            
+                            // Raycast in the direction of movement with a small distance
+                            RaycastHit2D rayHit = Physics2D.Raycast(
+                                raycastOrigin, 
+                                new Vector2(_latchDirection.x, 0), 
+                                checkDistance, 
+                                _latchLayerMask
+                            );
+                            
+                            // If nothing is hit, push the player down 2 pixels (0.25 units) and continue
+                            if (rayHit.collider == null)
+                            {
+                                transform.position = new Vector2(transform.position.x, transform.position.y - 0.25f);
+                                // Update the latch position to match the new vertical position
+                                _latchPosition = new Vector2(_latchPosition.x, _latchPosition.y - 0.25f);
+                                // Continue the latch pull movement
+                                return;
+                            }
+                        }
+                    } else if(lowerHit.collider != null) {
+
+                        //First check if lower hit x position is close to latch point x
+                        bool isLowerHitCloseEnoughToLatchPoint = Mathf.Abs(lowerHit.point.x - _latchPosition.x) < 0.01f;
                         
-                        // Raycast in the direction of movement with a small distance
-                        RaycastHit2D rayHit = Physics2D.Raycast(
-                            raycastOrigin, 
-                            new Vector2(_latchDirection.x, 0), 
-                            checkDistance, 
-                            _latchLayerMask
-                        );
-                        
-                        // If nothing is hit, push the player up 2 pixels (0.25 units) and continue
-                        if (rayHit.collider == null)
-                        {
-                            transform.position = new Vector2(transform.position.x, transform.position.y + 0.25f);
-                            // Update the latch position to match the new vertical position
-                            _latchPosition = new Vector2(_latchPosition.x, _latchPosition.y + 0.25f);
-                            // Continue the latch pull movement
-                            return;
-                        } else {
-                            UnlockFlip();
-                            CameraShakeManager.obj.ForcePushShake();
-                            //TODO impact SFX. Use temporary:
-                            _deeAudio.PlayAnchorReached();
-                            EndLatchPull(fadeOutBeam: true);
-                            _frameVelocity.x *= 0.5f;
-                            _frameVelocity.y *= 0;
-                            return;
+                        if(!isLowerHitCloseEnoughToLatchPoint) {
+                            //Try to push the player up to clear the corner
+
+                            // Raycast 2.5 pixels above the bottom of the collider
+                            // Bottom of collider is at bounds.center.y - (bounds.size.y / 2)
+                            // 2.5 pixels = 2.5 * 0.125 = 0.3125 units
+                            float raycastYPosition = _collider.bounds.center.y - (_collider.bounds.size.y / 2) + 0.3125f;
+                            Vector2 raycastOrigin = new Vector2(_collider.bounds.center.x, raycastYPosition);
+                            
+                            // Raycast in the direction of movement with a small distance
+                            RaycastHit2D rayHit = Physics2D.Raycast(
+                                raycastOrigin, 
+                                new Vector2(_latchDirection.x, 0), 
+                                checkDistance, 
+                                _latchLayerMask
+                            );
+                            
+                            // If nothing is hit, push the player up 2 pixels (0.25 units) and continue
+                            if (rayHit.collider == null)
+                            {
+                                transform.position = new Vector2(transform.position.x, transform.position.y + 0.25f);
+                                // Update the latch position to match the new vertical position
+                                _latchPosition = new Vector2(_latchPosition.x, _latchPosition.y + 0.25f);
+                                // Continue the latch pull movement
+                                return;
+                            } else {
+                                UnlockFlip();
+                                CameraShakeManager.obj.ForcePushShake();
+                                //TODO impact SFX. Use temporary:
+                                _deeAudio.PlayAnchorReached();
+                                EndLatchPull(fadeOutBeam: true);
+                                _frameVelocity.x *= 0.5f;
+                                _frameVelocity.y *= 0;
+                                return;
+                            }
                         }
                     }
                 }
@@ -1884,7 +1887,21 @@ public class ShadowTwinMovement : MonoBehaviour
         float dotProduct = Vector2.Dot(directionToTarget, _latchDirection);
         bool hasOvershot = dotProduct < 0.5f; // If direction to target is opposite to latch direction, we've overshot
         
-        bool hasReachedSurface = distanceToTarget < 0.5f || hasOvershot; // Threshold distance or overshot
+        // For horizontal latch pulls, only check X distance (player may be pushed up/down during corner rounding)
+        // For vertical latch pulls, use full 2D distance
+        bool hasReachedSurface;
+        if (Mathf.Abs(_latchDirection.x) > 0)
+        {
+            // Horizontal latch - only check X distance
+            float horizontalDistance = Mathf.Abs(transform.position.x - _latchPosition.x);
+            Debug.Log("Transform position: " + transform.position + " Latch position: " + _latchPosition + " Horizontal distance: " + horizontalDistance);
+            hasReachedSurface = horizontalDistance < 0.7f || hasOvershot;  //0.7=magic value that hinders the player from getting stuck on very small lower corners, like stacked blocks
+        }
+        else
+        {
+            // Vertical latch - use full 2D distance
+            hasReachedSurface = distanceToTarget < 0.5f || hasOvershot;
+        }
 
         if (hasReachedSurface)
         {
