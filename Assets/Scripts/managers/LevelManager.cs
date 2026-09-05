@@ -160,8 +160,6 @@ public class LevelManager : MonoBehaviour
             //TODO
         }
 
-        AdjustSpawnFaceDirection(Camera.main.transform.position.x, playerSpawnPoint.transform.position.x, playerType);        
-        
         if(PlayerManager.obj.IsSeparated) {
             PlayerManager.obj.EnableAllPlayers();
             SetPlayersStartingState();
@@ -192,6 +190,7 @@ public class LevelManager : MonoBehaviour
         RoomCameraController cameraController = mainCamera.GetComponent<RoomCameraController>();
         Collider2D roomCollider = room.GetComponent<Collider2D>();
         CameraManager.obj.EnterRoom(cameraController, roomCollider, PlayerManager.obj.GetPlayerTransform(PlayerManager.obj.GetActivePlayerType()), playerSpawnPointCollider.transform.position);  
+        AdjustSpawnFaceDirection(roomCollider.bounds.center.x, playerSpawnPoint.transform.position.x, playerType);        
 
         Reaper.obj.playerKilled = false;
 
