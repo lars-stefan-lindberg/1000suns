@@ -294,6 +294,9 @@ public class DialogueController : MonoBehaviour
         _conversationEnded = false;
         _continueIcon.SetActive(false);
         StopBlinking();
+        
+        // Stop any ongoing tweens (opening or closing) before setting rotation
+        _background.DOKill();
         _background.localRotation = Quaternion.Euler(90f, 0f, 0f);
         _isDisplayed = false;
         _typeWriter.ShowText("");
