@@ -31,9 +31,11 @@ public class FloatyPlatform : MonoBehaviour
     public bool isFallingPlatform = false;
     public bool isFallingOnMovePlatform = false;
     public float timeBeforeFall = 1f;
-    public float timeFallingBeforeDestroy = 7f;
     public float fallTimer = 0f;
     private bool _startFallCountDown = false;
+    
+    private const float CAMERA_HEIGHT = 22.5f;
+    private const float RESPAWN_MARGIN = 8f; // Extra margin below camera view
 
     //private float _idleTargetVerticalPosition = 0;
     private float _prisonerPushPower = 2f;
@@ -208,9 +210,6 @@ public class FloatyPlatform : MonoBehaviour
         }
 
         if(!_isBeingPulled) {
-            if(_isFallingOnMovePlatformFallStarted) {
-                fallTimer += Time.deltaTime;
-            }
             if(_startFallCountDown) {
                 fallTimer += Time.deltaTime;
                 if(_startFlashing) {
@@ -218,9 +217,12 @@ public class FloatyPlatform : MonoBehaviour
                     _fallingPlatformFlash.StartFlashing(timeBeforeFall);
                 }
             }
-            if(fallTimer >= timeFallingBeforeDestroy) {
+            
+            // Check if platform is outside camera view and should respawn
+            if((isFallingPlatform || _isFallingOnMovePlatformFallStarted) && ShouldRespawn()) {
                 StartRespawning();
             }
+            
             if(isFallingPlatform && fallTimer >= timeBeforeFall) {
                 _fallingPlatformFlash.StopFlashing();
                 _rigidBody.bodyType = RigidbodyType2D.Dynamic;
@@ -431,6 +433,20 @@ public class FloatyPlatform : MonoBehaviour
         yield return new WaitForSeconds(duration);
         _childCollider.enabled = true;
         _disableColliderCoroutine = null;
+    }
+
+    private bool ShouldRespawn()
+    {
+        if(_respawning)
+            return false;
+            
+        Camera mainCamera = Camera.main;
+        if (mainCamera == null) return false;
+        
+        float cameraBottomEdge = mainCamera.transform.position.y - (CAMERA_HEIGHT / 2f);
+        float respawnThreshold = cameraBottomEdge - RESPAWN_MARGIN;
+        
+        return transform.position.y < respawnThreshold;
     }
 
     private void SnapToPixelGrid()
