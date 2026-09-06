@@ -164,6 +164,8 @@ public class FloatyPlatform : MonoBehaviour
     private bool _isPlayer1CollisionTriggered = false;
     private bool _isPlayer2CollisionTriggered = false;
     private bool _isBeingPulled = false;
+    private bool _hasSnappedToGrid = false;
+    private const float PIXEL_SIZE = 0.125f;
 
     private void Update()
     {
@@ -185,6 +187,7 @@ public class FloatyPlatform : MonoBehaviour
         if(wasJustPulled) {
             _isBeingPulled = true;
             movePlatform = true;
+            _hasSnappedToGrid = false; // Reset snap flag when pulled
             if(_startFallCountDown || isFallingOnMovePlatform) {
                 _fallingPlatformFlash.PauseFlashing();
             }
@@ -317,6 +320,13 @@ public class FloatyPlatform : MonoBehaviour
         if(!_isBeingPulled && Mathf.Approximately(_rigidBody.velocity.sqrMagnitude, 0f))
         {
             movePlatform = false;
+            
+            // Snap to pixel grid when platform comes to a full stop
+            if(!_hasSnappedToGrid)
+            {
+                SnapToPixelGrid();
+                _hasSnappedToGrid = true;
+            }
         }
 
         if(_respawning) {
@@ -421,6 +431,13 @@ public class FloatyPlatform : MonoBehaviour
         yield return new WaitForSeconds(duration);
         _childCollider.enabled = true;
         _disableColliderCoroutine = null;
+    }
+
+    private void SnapToPixelGrid()
+    {
+        Vector3 currentPosition = transform.position;
+        float snappedY = Mathf.Round(currentPosition.y / PIXEL_SIZE) * PIXEL_SIZE;
+        transform.position = new Vector3(currentPosition.x, snappedY, currentPosition.z);
     }
 
     // private void OnDrawGizmosSelected()

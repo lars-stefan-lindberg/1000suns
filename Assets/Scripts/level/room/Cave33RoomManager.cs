@@ -110,16 +110,12 @@ public class Cave33RoomManager : MonoBehaviour, ISkippable
     }
 
     public void OnReturnFromShadowLashRooms() {
-        Debug.Log("here");
         CaveTimelineId.Id id = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
         if(id == CaveTimelineId.Id.Eli)
             return;
-        Debug.Log("here fff");
         if(!GameManager.obj.HasEvent(_hasShadowLash) || GameManager.obj.HasEvent(_afterShadowLashCompleted))
             return;
 
-        Debug.Log("here awega");
-        
         ShadowTwinMovement.obj.Freeze();
         StartCoroutine(AfterShadowLashRoomsCoroutine());
     }

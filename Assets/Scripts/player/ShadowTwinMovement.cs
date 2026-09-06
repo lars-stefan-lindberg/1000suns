@@ -1792,7 +1792,6 @@ public class ShadowTwinMovement : MonoBehaviour
                     //If both hits and they're hitting the same surface, latch here
                     //If they're hitting different surfaces (or different points far apart), it's a corner - try to push down
                     if(upperHit.collider != null && lowerHit.collider != null) {
-                        Debug.Log("upper and lower hit");
                         // Check if both rays hit approximately the same point (same surface)
                         float hitPointDistance = Vector2.Distance(upperHit.point, lowerHit.point);
                         
@@ -1902,7 +1901,6 @@ public class ShadowTwinMovement : MonoBehaviour
         {
             // Horizontal latch - only check X distance
             float horizontalDistance = Mathf.Abs(transform.position.x - _latchPosition.x);
-            Debug.Log("Transform position: " + transform.position + " Latch position: " + _latchPosition + " Horizontal distance: " + horizontalDistance);
             hasReachedSurface = horizontalDistance < 0.7f || hasOvershot;  //0.7=magic value that hinders the player from getting stuck on very small lower corners, like stacked blocks
         }
         else
