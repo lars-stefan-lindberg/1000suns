@@ -972,6 +972,20 @@ public class PlayerMovement : MonoBehaviour
 
             //To avoid "double grounded". Sometimes when player barely reaches up on edge it gets grounded, but still has upwards velocity, and lands again.
             _frameVelocity.y = 0; 
+        } else if(moveableRigidbody != null && !isGrounded && groundHit && ShadowTwinPlayer.obj.rigidBody.velocity.y > 0.05f) {
+            //This case might happen if the player is jumping and moving upwards while landing on something that is moving up, like
+            //a floating platform that has been pulled
+            isGrounded = true;
+            _coyoteUsable = true;
+            _endedJumpEarly = false;
+            _landed = true;
+            isFalling = false;
+
+            if (_isShadowJumping)
+            {
+                _isShadowJumping = false;
+                _eliAudio.PlayForcePushLand();
+            }
         }
         // Left the Ground
         else if (isGrounded && !groundHit)
