@@ -58,6 +58,8 @@ public class BabyPrisoner : MonoBehaviour
     private LightSprite2DFadeManager _lightSprite2DFadeManager;
     private BabyPrisonerAudio _babyPrisonerAudio;
     private Coroutine _delayedSetDynamicCoroutine;
+    private Coroutine _playAngryAfterBouncedOnSfxCoroutine;
+    private bool _playAngryAfterBouncedOnSfx = false;
 
     void Start() {
         _collider = GetComponent<BoxCollider2D>();
@@ -186,6 +188,10 @@ public class BabyPrisoner : MonoBehaviour
         if(collision.gameObject.CompareTag("Player")) {
             PlayerIdentity player = collision.gameObject.GetComponent<PlayerIdentity>();
             if(player.id == 2) {
+                if(_delayedSetDynamicCoroutine != null) {
+                    StopCoroutine(_delayedSetDynamicCoroutine);
+                }
+
                 _rigidBody.bodyType = RigidbodyType2D.Static;
                 Collider2D playerCollider = collision.collider;
                 float playerLowerBound = playerCollider.bounds.min.y;
@@ -198,9 +204,15 @@ public class BabyPrisoner : MonoBehaviour
                         ShadowTwinMovement.obj.ApplyBounce(_bouncePower);
                     }
                     _idleInPlaceUntilAlerted = true;
+                    _playAngryAfterBouncedOnSfx = true;
                     SetBouncedOn();
+                    if(_playAngryAfterBouncedOnSfxCoroutine != null) {
+                        StopCoroutine(_playAngryAfterBouncedOnSfxCoroutine);
+                    }
+                    _playAngryAfterBouncedOnSfxCoroutine = StartCoroutine(PlayAngryAfterBouncedOnSfx());
                 } else if(PlayerManager.obj.IsPlayerGrounded(PlayerManager.PlayerType.SHADOW_TWIN)) {
-                    _babyPrisonerAudio.PlayCuteGreeting();
+                    if(!_idleInPlaceUntilAlerted)
+                        _babyPrisonerAudio.PlayCuteGreeting();
                 }
             }
         }
@@ -215,12 +227,14 @@ public class BabyPrisoner : MonoBehaviour
         }
     }
 
+    private IEnumerator PlayAngryAfterBouncedOnSfx() {
+        yield return new WaitForSeconds(0.8f);
+        _babyPrisonerAudio.PlayAngryAfterJumpedOn();
+        _playAngryAfterBouncedOnSfx = false;
+    }
+
     private IEnumerator DelayedSetDynamic() {
-        yield return new WaitForSeconds(0.5f);
-        if(_idleInPlaceUntilAlerted) {
-            _babyPrisonerAudio.PlayAngryAfterJumpedOn();
-        }
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1.5f);
         _rigidBody.bodyType = RigidbodyType2D.Dynamic;
         _idleInPlaceUntilAlerted = false;
     }
