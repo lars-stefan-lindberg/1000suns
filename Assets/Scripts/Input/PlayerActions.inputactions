@@ -67,6 +67,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "CameraLook",
+                    "type": "Value",
+                    "id": "f9c7d8e4-3a2b-4c1d-9e8f-7b6a5c4d3e2f",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -287,6 +296,17 @@
                     "processors": "",
                     "groups": ";Keyboard",
                     "action": "Lash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                    "path": "<Gamepad>/rightStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "CameraLook",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

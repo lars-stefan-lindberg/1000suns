@@ -442,7 +442,8 @@ MonoBehaviour:
   roomType: 1
   topLockDistance: 2.5
   unlockHysteresis: 0.5
-  topLockScreenYSmoothTime: 0.2
+  lockYDampingBoost: 2
+  lockYDampingBoostDuration: 0.25
   unlockYDampingBoost: 2
   unlockYDampingBoostDuration: 0.25
 --- !u!114 &155284099
@@ -29440,6 +29441,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2783407976216857252, guid: 3c352cd2364a14f3f863e66cdedb5f8a, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2783407976216857252, guid: 3c352cd2364a14f3f863e66cdedb5f8a, type: 3}
       propertyPath: _darknessLevelType
       value: 1

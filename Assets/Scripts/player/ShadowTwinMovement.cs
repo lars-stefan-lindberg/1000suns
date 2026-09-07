@@ -609,6 +609,8 @@ public class ShadowTwinMovement : MonoBehaviour
             _playerInput.currentActionMap.FindAction("Jump").Disable();
             _playerInput.currentActionMap.FindAction("Shoot").Disable();
             _playerInput.currentActionMap.FindAction("Lash").Disable();
+            _playerInput.currentActionMap.FindAction("Switch").Disable();
+            _playerInput.currentActionMap.FindAction("MergeSplit").Disable();
         }
     }
 
@@ -618,6 +620,8 @@ public class ShadowTwinMovement : MonoBehaviour
             _playerInput.currentActionMap.FindAction("Jump").Enable();
             _playerInput.currentActionMap.FindAction("Shoot").Enable();
             _playerInput.currentActionMap.FindAction("Lash").Enable();
+            _playerInput.currentActionMap.FindAction("Switch").Enable();
+            _playerInput.currentActionMap.FindAction("MergeSplit").Enable();
         }
     }
 

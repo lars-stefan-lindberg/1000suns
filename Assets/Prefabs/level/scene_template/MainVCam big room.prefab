@@ -119,6 +119,7 @@ GameObject:
   - component: {fileID: 7686030277764381349}
   - component: {fileID: 7785788269196167106}
   - component: {fileID: 3016060361593072295}
+  - component: {fileID: 5558159699408509279}
   m_Layer: 0
   m_Name: MainVCam big room
   m_TagString: MainCamera
@@ -224,6 +225,23 @@ MonoBehaviour:
   roomType: 3
   topLockDistance: 14
   unlockHysteresis: 0.5
-  topLockScreenYSmoothTime: 1.5
-  unlockYDampingBoost: 2
+  lockYDampingBoost: 1
+  lockYDampingBoostDuration: 1
+  unlockYDampingBoost: 0
   unlockYDampingBoostDuration: 1.2
+--- !u!114 &5558159699408509279
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6113354118043518874}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0249b98897f774c4e851560087977800, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lookUpOffset: 0.45
+  lookDownOffset: 0.45
+  smoothTime: 0.3
+  inputDeadzone: 0.1

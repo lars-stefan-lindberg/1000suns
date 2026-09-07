@@ -4401,6 +4401,14 @@ PrefabInstance:
       propertyPath: topLockDistance
       value: 14
       objectReference: {fileID: 0}
+    - target: {fileID: 6555416367905882543, guid: ef802b5bf6dde4921899e04db1e640a7, type: 3}
+      propertyPath: lockYDampingBoost
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6555416367905882543, guid: ef802b5bf6dde4921899e04db1e640a7, type: 3}
+      propertyPath: lockYDampingBoostDuration
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6825713600872426846, guid: ef802b5bf6dde4921899e04db1e640a7, type: 3}
       propertyPath: m_LocalPosition.x
       value: 300.5
@@ -4452,8 +4460,32 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 9163768120272444979, guid: ef802b5bf6dde4921899e04db1e640a7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 883349949}
   m_SourcePrefab: {fileID: 100100000, guid: ef802b5bf6dde4921899e04db1e640a7, type: 3}
+--- !u!1 &883349948 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9163768120272444979, guid: ef802b5bf6dde4921899e04db1e640a7, type: 3}
+  m_PrefabInstance: {fileID: 883349947}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &883349949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 883349948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0249b98897f774c4e851560087977800, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lookUpOffset: 0.45
+  lookDownOffset: 0.45
+  smoothTime: 0.3
+  inputDeadzone: 0.1
 --- !u!1 &893453224
 GameObject:
   m_ObjectHideFlags: 0

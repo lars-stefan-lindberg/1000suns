@@ -926,6 +926,8 @@ public class PlayerBlobMovement : MonoBehaviour
             _playerInput.currentActionMap.FindAction("Movement").Enable();
             _playerInput.currentActionMap.FindAction("Jump").Enable();
             _playerInput.currentActionMap.FindAction("Shoot").Enable();
+            _playerInput.currentActionMap.FindAction("Switch").Enable();
+            _playerInput.currentActionMap.FindAction("MergeSplit").Enable();
         }
     }
 
@@ -934,6 +936,8 @@ public class PlayerBlobMovement : MonoBehaviour
             _playerInput.currentActionMap.FindAction("Movement").Disable();
             _playerInput.currentActionMap.FindAction("Jump").Disable();
             _playerInput.currentActionMap.FindAction("Shoot").Disable();
+            _playerInput.currentActionMap.FindAction("Switch").Disable();
+            _playerInput.currentActionMap.FindAction("MergeSplit").Disable();
         }
     }
 
