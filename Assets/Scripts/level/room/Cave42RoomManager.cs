@@ -143,6 +143,7 @@ public class Cave42RoomManager : MonoBehaviour
         ShadowTwinPlayer.obj.FadeInPlayerLight();
         ShadowTwinPlayer.obj.ResetGravity();
         ShadowTwinMovement.obj.EnableMovement();
+        ShadowTwinMovement.obj.Freeze();
         SpriteRenderer deeRenderer = ShadowTwinMovement.obj.spriteRenderer;
         deeRenderer.enabled = true;
         yield return new WaitForSeconds(2f);
