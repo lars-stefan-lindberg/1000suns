@@ -7,6 +7,7 @@ public class CaveAvatarRootsManager : MonoBehaviour
 {
     [SerializeField] private Animator _rootsAnimator;
     [SerializeField] private EventReference _rootsPulled;
+    [SerializeField] private GameEventId _sootFreed;
 
     public float duration = 3f;
     private float timer = 0;
@@ -14,8 +15,11 @@ public class CaveAvatarRootsManager : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
+        if(GameManager.obj.HasEvent(_sootFreed))
+            return;
         if(collision.gameObject.CompareTag("Player")) {
             _startTimer = true;
+            GetComponent<Collider2D>().enabled = false;
         }
     }
 

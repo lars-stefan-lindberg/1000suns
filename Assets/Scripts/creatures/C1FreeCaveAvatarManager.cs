@@ -8,6 +8,8 @@ public class C1FreeCaveAvatarManager : MonoBehaviour, ISkippable
     [SerializeField] private ConversationManager _conversationManager;
     [SerializeField] private GameObject _caveRootsTrap;
     [SerializeField] private CaveAvatarRootsManager _caveAvatarRootsManager;
+    [SerializeField] private GameObject _leftSootFollowPlayerTrigger;
+    [SerializeField] private GameEventId _sootFreed;
     private BoxCollider2D _collider;
     private Coroutine _cutsceneCoroutine;
 
@@ -20,6 +22,8 @@ public class C1FreeCaveAvatarManager : MonoBehaviour, ISkippable
     }
 
     void OnTriggerEnter2D(Collider2D collision) {
+        if(GameManager.obj.HasEvent(_sootFreed))
+            return;
         if(collision.gameObject.CompareTag("Player")) {
             _collider.enabled = false;
             _conversationManager.OnConversationEnd += OnConversationCompleted;
@@ -41,6 +45,7 @@ public class C1FreeCaveAvatarManager : MonoBehaviour, ISkippable
         Player.obj.transform.position = new Vector2(273f, -90.875f);
         PlayerMovement.obj.SetStartingOnGround();
         PlayerMovement.obj.isGrounded = true;
+        _leftSootFollowPlayerTrigger.SetActive(true);
         StartCoroutine(ResumeGameplay());
     }
 
@@ -86,6 +91,7 @@ public class C1FreeCaveAvatarManager : MonoBehaviour, ISkippable
         _conversationManager.CleanUp();
         PlayerMovement.obj.UnFreeze();
         CaveAvatar.obj.SetTarget(_finalCaveAvatarFlyPosition);
+        _leftSootFollowPlayerTrigger.SetActive(true);
         PauseMenuManager.obj.UnregisterSkippable();
     }
 }

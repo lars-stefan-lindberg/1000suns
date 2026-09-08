@@ -11,6 +11,8 @@ public class SetFollowPlayerTrigger : MonoBehaviour
     }
 
     void OnTriggerEnter2D(Collider2D collision) {
+        if(GameManager.obj.HasEvent(_event))
+            return;
         if(collision.CompareTag("Player")) {
             _collider.enabled = false;
             CaveAvatar.obj.FollowPlayer();

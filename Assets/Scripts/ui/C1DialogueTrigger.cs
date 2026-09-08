@@ -10,6 +10,7 @@ public class C1DialogueTrigger : MonoBehaviour, ISkippable
     [SerializeField] private GameObject _nextDialogueTrigger;
     [SerializeField] private Transform _finalCaveAvatarFlyPosition;
     [SerializeField] private GameObject _cutsceneCamera;
+    [SerializeField] private GameEventId _sootFreed;
     private BoxCollider2D _collider;
     private Coroutine _cutsceneCoroutine;
 
@@ -23,6 +24,8 @@ public class C1DialogueTrigger : MonoBehaviour, ISkippable
     }
 
     void OnTriggerEnter2D(Collider2D other) {
+        if(GameManager.obj.HasEvent(_sootFreed))
+            return;
         if(other.CompareTag("Player")) {
             _collider.enabled = false;
             _conversationManager.OnConversationEnd += OnConversationCompleted;
