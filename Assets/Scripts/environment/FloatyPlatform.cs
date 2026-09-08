@@ -65,6 +65,10 @@ public class FloatyPlatform : MonoBehaviour
         _pullable = GetComponentInChildren<Pullable>();
     }
 
+    void OnDisable() {
+        Reset();
+    }
+
     public float _playerOffset = 0.1f;
     void OnTriggerEnter2D(Collider2D collider)
     {
@@ -401,6 +405,26 @@ public class FloatyPlatform : MonoBehaviour
         _fallingPlatformFlash.StopFlashing();
         _startFlashing = true;
         _isFallingOnMovePlatformFallStarted = false;
+    }
+
+    //Can be used to reset the platforms state, like when exiting the room
+    public void Reset() {
+        _lightSprite.enabled = true;
+        _respawning = false;
+        fallTimer = 0f;
+        _startFallCountDown = false;
+        _rigidBody.velocity = new Vector3(0,0,0);
+        _rigidBody.gravityScale = 0;
+        _rigidBody.bodyType = RigidbodyType2D.Kinematic;
+        SetAlpha(1f);
+        isPlayer1OnPlatform = false;
+        isPlayer2OnPlatform = false;
+        _fallingPlatformFlash.StopFlashing();
+        _startFlashing = true;
+        _isFallingOnMovePlatformFallStarted = false;
+        transform.position = _startingPosition;
+        _childCollider.enabled = true; //If it was set to false from another platform
+        _collider.enabled = true;
     }
 
     public IEnumerator FadeInSprite() {
