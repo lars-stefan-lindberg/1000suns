@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
     GameProgressDebugger debugView;
 
     public bool IsPauseAllowed { get; set; }
+    public bool ResumeTimerOnContinueGame { get; set; }
 
     public CaveTimelineId.Id startingTimeline = CaveTimelineId.Id.Eli;
 
@@ -29,6 +30,7 @@ public class GameManager : MonoBehaviour
             debugView.Bind(Progress);
 
         IsPauseAllowed = true;
+        ResumeTimerOnContinueGame = false;
     }
 
     // --------- Public API ---------

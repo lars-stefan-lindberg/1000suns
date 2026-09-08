@@ -249,6 +249,7 @@ public class MainMenuManager : MonoBehaviour
             yield return null;
         }
         GameManager.obj.IsPauseAllowed = false;
+        GameManager.obj.ResumeTimerOnContinueGame = true;
 
         Player.obj.gameObject.SetActive(false);
         ShadowTwinPlayer.obj.gameObject.SetActive(false);

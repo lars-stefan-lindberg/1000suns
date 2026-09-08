@@ -215,6 +215,11 @@ public class LevelManager : MonoBehaviour
         //Give parallax bg a moment to settle before fading in
         yield return StartCoroutine(DelayedSceneFadeIn(playerSpawnPointCollider.transform, playerType));
 
+        if(GameManager.obj.ResumeTimerOnContinueGame) {
+            PlayerStatsManager.obj.ResumeTimer();
+            GameManager.obj.ResumeTimerOnContinueGame = false;
+        }
+
         yield return null;
     }
 
@@ -291,7 +296,6 @@ public class LevelManager : MonoBehaviour
     private IEnumerator DelayedSceneFadeIn(Transform playerSpawnPoint, PlayerManager.PlayerType playerType) {
         yield return new WaitForSeconds(_reloadSceneDelayTime);
         SceneFadeManager.obj.StartFadeIn();
-        PlayerStatsManager.obj.ResumeTimer();
         PlayerManager.obj.PlaySpawn(playerType);
         //Need to play a slightly delayed spawn sound due to when loading a game the sound is broken at the beginning. No idea why!
         StartCoroutine(DelayedSpawnSfx(playerSpawnPoint));

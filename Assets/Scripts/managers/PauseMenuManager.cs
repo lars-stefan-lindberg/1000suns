@@ -320,6 +320,7 @@ public class PauseMenuManager : MonoBehaviour
 
     public void Quit() {
         Time.timeScale = 1f;
+        PlayerStatsManager.obj.PauseTimer();
         StartCoroutine(QuitCoroutine());
     }
 
@@ -357,8 +358,6 @@ public class PauseMenuManager : MonoBehaviour
         while(LevelManager.obj.isRunningAfterSceneLoaded) {
             yield return null;
         }
-
-
 
         Destroy(_persistentGameplay);
     }
