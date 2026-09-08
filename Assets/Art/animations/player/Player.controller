@@ -742,7 +742,7 @@ AnimatorStateMachine:
     m_Position: {x: -430, y: 250, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 825844513741796853}
-    m_Position: {x: -310, y: 90, z: 0}
+    m_Position: {x: -300, y: 90, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -5174090837931181296}
     m_Position: {x: -420, y: 160, z: 0}
@@ -2570,9 +2570,6 @@ AnimatorStateTransition:
     m_ConditionEvent: isMoving
     m_EventTreshold: 0
   - m_ConditionMode: 1
-    m_ConditionEvent: isGrounded
-    m_EventTreshold: 0
-  - m_ConditionMode: 1
     m_ConditionEvent: isForcePushJumping
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
@@ -2626,9 +2623,6 @@ AnimatorStateTransition:
   m_Conditions:
   - m_ConditionMode: 1
     m_ConditionEvent: isMoving
-    m_EventTreshold: 0
-  - m_ConditionMode: 2
-    m_ConditionEvent: isGrounded
     m_EventTreshold: 0
   - m_ConditionMode: 1
     m_ConditionEvent: isForcePushJumping

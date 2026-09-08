@@ -237,7 +237,7 @@ public class PlayerMovement : MonoBehaviour
     private void UpdateAnimator()
     {
         _animator.SetBool("isDashing", _isDashing);
-        _animator.SetBool("isGrounded", isGrounded);
+        _animator.SetBool("isGrounded", isGrounded || CanUseCoyote);
         // Keep moving during short grace to avoid triggering stop animation on quick direction changes
         // Velocity is not enough to check though, since player can have velocity, but there's no movement input
         //isMoving = Mathf.Abs(Player.obj.rigidBody.velocity.x) > _movingVelocityEpsilon || _movementInput.x != 0;
@@ -683,7 +683,7 @@ public class PlayerMovement : MonoBehaviour
             }
             else
             {
-                _airJumpToConsume = true;
+                //_airJumpToConsume = true;  
             }
             _jumpHeldInput = true;
             _timeJumpWasPressed = _time;
@@ -1157,7 +1157,9 @@ public class PlayerMovement : MonoBehaviour
             _isDashing = false;
         }
         
-        DustParticleMgr.obj.CreateDust(PlayerManager.PlayerType.HUMAN);
+        //If coyote time is used, skip dust since it looks weird with jump dust in the air
+        if(isGrounded)
+            DustParticleMgr.obj.CreateDust(PlayerManager.PlayerType.HUMAN);
         _sharedPlayerAudio.PlayJump();
 
         StartCoroutine(JumpSqueeze(_jumpSqueezeX, _jumpSqueezeY, _jumpSqueezeTime));
