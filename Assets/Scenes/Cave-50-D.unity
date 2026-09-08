@@ -135,12 +135,16 @@ PrefabInstance:
       value: Dream world bg particles
       objectReference: {fileID: 0}
     - target: {fileID: 4913468548619884206, guid: 85182f0ed8ae74d2eae0837513185ed2, type: 3}
+      propertyPath: ShapeModule.m_Scale.x
+      value: 77.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4913468548619884206, guid: 85182f0ed8ae74d2eae0837513185ed2, type: 3}
       propertyPath: ShapeModule.m_Scale.y
       value: 10.69
       objectReference: {fileID: 0}
     - target: {fileID: 4913468548619884206, guid: 85182f0ed8ae74d2eae0837513185ed2, type: 3}
       propertyPath: EmissionModule.rateOverTime.scalar
-      value: 8
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4984591072044983329, guid: 85182f0ed8ae74d2eae0837513185ed2, type: 3}
       propertyPath: m_LocalPosition.x
@@ -35178,6 +35182,8 @@ MonoBehaviour:
       Data4: 623752613
     Path: event:/game/01_cave/space_room/eli_statue_shockwave
   _ghostRenderer: {fileID: 1325184851}
+  _isContinuous: 1
+  _isDynamic: 1
   shockwaveTime: 0.8
   startPosition: 0.05
   endPosition: 0.6
