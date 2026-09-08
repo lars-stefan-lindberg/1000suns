@@ -1298,11 +1298,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 821690305994934905, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1983.25
+      value: 1987.5
       objectReference: {fileID: 0}
     - target: {fileID: 821690305994934905, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -275.75
+      value: -278.5
       objectReference: {fileID: 0}
     - target: {fileID: 821690305994934905, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2263,6 +2263,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c92a3868d632b43469f1c50ea759eb95, type: 3}
+--- !u!1 &699257233 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 520131270585620684, guid: 55f3e3e7147604b7bb2d22fcd7ff0b32, type: 3}
+  m_PrefabInstance: {fileID: 1210322958}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &776765430
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3751,6 +3756,71 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4557110039581730200, guid: 882baef20c169468e8e0e5087c0d8add, type: 3}
   m_PrefabInstance: {fileID: 1185976322}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1210322958
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 520131270585620684, guid: 55f3e3e7147604b7bb2d22fcd7ff0b32, type: 3}
+      propertyPath: m_Name
+      value: Cutscene camera (Cave-48)
+      objectReference: {fileID: 0}
+    - target: {fileID: 520131270585620684, guid: 55f3e3e7147604b7bb2d22fcd7ff0b32, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 643016202675813108, guid: 55f3e3e7147604b7bb2d22fcd7ff0b32, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 2000
+      objectReference: {fileID: 0}
+    - target: {fileID: 643016202675813108, guid: 55f3e3e7147604b7bb2d22fcd7ff0b32, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -271.875
+      objectReference: {fileID: 0}
+    - target: {fileID: 643016202675813108, guid: 55f3e3e7147604b7bb2d22fcd7ff0b32, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -1.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 643016202675813108, guid: 55f3e3e7147604b7bb2d22fcd7ff0b32, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 643016202675813108, guid: 55f3e3e7147604b7bb2d22fcd7ff0b32, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 643016202675813108, guid: 55f3e3e7147604b7bb2d22fcd7ff0b32, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 643016202675813108, guid: 55f3e3e7147604b7bb2d22fcd7ff0b32, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 643016202675813108, guid: 55f3e3e7147604b7bb2d22fcd7ff0b32, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 643016202675813108, guid: 55f3e3e7147604b7bb2d22fcd7ff0b32, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 643016202675813108, guid: 55f3e3e7147604b7bb2d22fcd7ff0b32, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7009065085460305171, guid: 55f3e3e7147604b7bb2d22fcd7ff0b32, type: 3}
+      propertyPath: m_Lens.OrthographicSize
+      value: 11.25
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 55f3e3e7147604b7bb2d22fcd7ff0b32, type: 3}
 --- !u!1 &1272468124
 GameObject:
   m_ObjectHideFlags: 0
@@ -4264,7 +4334,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2022215575159742824, guid: f99da694f76e64569be04b4e9b5d4872, type: 3}
       propertyPath: m_Name
-      value: MainVCam vertical
+      value: MainVCam vertical (Cave-48)
       objectReference: {fileID: 0}
     - target: {fileID: 2022215575159742824, guid: f99da694f76e64569be04b4e9b5d4872, type: 3}
       propertyPath: m_IsActive
@@ -4488,6 +4558,7 @@ MonoBehaviour:
   _sootFliedOff: {fileID: 11400000, guid: 20900baac65a24d0fab069f86e4985ea, type: 2}
   _cave52ConversationCompleted: {fileID: 11400000, guid: 7610eeaba8e7a4ed2af6db9e6e0f1bbd, type: 2}
   _guidingMushroomsGrown: {fileID: 11400000, guid: eb785d9e0112d46f5936badca673c182, type: 2}
+  _cave50PostDreamRoom: {fileID: 11400000, guid: 61f4cca4e85a34dc889c6fa28a33a88f, type: 2}
   _caveAvatarFlyOffTarget: {fileID: 922763846}
   _cutsceneTrigger: {fileID: 1048785836}
   _guidingMushrooms:
@@ -4501,6 +4572,7 @@ MonoBehaviour:
       Data3: 1355664033
       Data4: 651123713
     Path: event:/env/01_cave/small_mushroom_rattle
+  _growMushroomsCamera: {fileID: 699257233}
 --- !u!4 &1942153290
 Transform:
   m_ObjectHideFlags: 0
@@ -4898,6 +4970,7 @@ SceneRoots:
   - {fileID: 1942153290}
   - {fileID: 1171967805}
   - {fileID: 1790353159}
+  - {fileID: 1210322958}
   - {fileID: 1090142850}
   - {fileID: 224687680}
   - {fileID: 187997922}

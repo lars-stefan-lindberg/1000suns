@@ -3,17 +3,21 @@ using FMODUnity;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Cave48RoomManager : MonoBehaviour
+public class Cave48RoomManager : MonoBehaviour, ISkippable
 {
     [SerializeField] private GameObject _hiddenFloor;
     [SerializeField] private GameEventId _hiddenFloorRevealed;
     [SerializeField] private GameEventId _sootFliedOff;
     [SerializeField] private GameEventId _cave52ConversationCompleted;
     [SerializeField] private GameEventId _guidingMushroomsGrown;
+    [SerializeField] private GameEventId _cave50PostDreamRoom;
     [SerializeField] private GameObject _caveAvatarFlyOffTarget;
     [SerializeField] private GameObject _cutsceneTrigger;
     [SerializeField] private GameObject[] _guidingMushrooms;
     [SerializeField] private EventReference _mushroomGrowSfx;
+    [SerializeField] private GameObject _growMushroomsCamera;
+
+    private Coroutine _cutsceneCoroutine;
 
     void Start()
     {
@@ -69,13 +73,25 @@ public class Cave48RoomManager : MonoBehaviour
     }
 
     public void GrowGuidingMushrooms() {
+        if(!GameManager.obj.HasEvent(_cave50PostDreamRoom))
+            return;
         if(GameManager.obj.HasEvent(_guidingMushroomsGrown))
             return;
         
-        StartCoroutine(GrowMushrooms());
+        _cutsceneCoroutine = StartCoroutine(GrowMushrooms());
     }
 
     private IEnumerator GrowMushrooms() {
+        PauseMenuManager.obj.RegisterSkippable(this);
+        var playerType = PlayerManager.obj.GetActivePlayerType();
+        PlayerManager.obj.FreezePlayer(playerType);
+
+        yield return new WaitForSeconds(0.5f);
+
+        _growMushroomsCamera.SetActive(true);
+
+        yield return new WaitForSeconds(2f);
+
         foreach (var mushroom in _guidingMushrooms)
         {
             mushroom.GetComponent<SpriteRenderer>().enabled = true;
@@ -88,8 +104,41 @@ public class Cave48RoomManager : MonoBehaviour
             
             yield return new WaitForSeconds(1f);
         }
+
+        _growMushroomsCamera.SetActive(false);
+        yield return new WaitForSeconds(2f);
+
+        PauseMenuManager.obj.UnregisterSkippable();
+        PlayerManager.obj.UnfreezePlayer(playerType);
         GameManager.obj.RegisterEvent(_guidingMushroomsGrown);
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
+        yield return null;
+    }
+
+    public void RequestSkip() {
+        if(_cutsceneCoroutine != null) {
+            StopCoroutine(_cutsceneCoroutine);
+        }
+
+        foreach (var mushroom in _guidingMushrooms)
+        {
+            mushroom.GetComponent<SpriteRenderer>().enabled = true;
+            mushroom.GetComponent<LightSprite2DFadeManager>().SetFadedInState();
+        }
+
+        _growMushroomsCamera.SetActive(false);
+
+        StartCoroutine(ResumeGameplay());
+    }
+
+    private IEnumerator ResumeGameplay() {
+        SceneFadeManager.obj.StartFadeIn();
+        while(SceneFadeManager.obj.IsFadingIn) {
+            yield return null;
+        }
+        var playerType = PlayerManager.obj.GetActivePlayerType();
+        PlayerManager.obj.UnfreezePlayer(playerType);
+        GameManager.obj.IsPauseAllowed = true;
         yield return null;
     }
 }
