@@ -66,6 +66,7 @@ public class Cave42RoomManager : MonoBehaviour
         } else if(caveTimeline == CaveTimelineId.Id.Dee) {
             //Setup Dee
             ShadowTwinPlayer.obj.transform.position = _deeStartPosition.position;
+            ShadowTwinMovement.obj.Freeze();
             //Setup Eli and Soot
             PlayerMovement.obj.gameObject.tag = "Untagged"; //Hack to avoid player triggers to activate like RoomMgr and LevelEntry
             PlayerMovement.obj.isOnMoveable = true;
@@ -143,7 +144,6 @@ public class Cave42RoomManager : MonoBehaviour
         ShadowTwinPlayer.obj.FadeInPlayerLight();
         ShadowTwinPlayer.obj.ResetGravity();
         ShadowTwinMovement.obj.EnableMovement();
-        ShadowTwinMovement.obj.Freeze();
         SpriteRenderer deeRenderer = ShadowTwinMovement.obj.spriteRenderer;
         deeRenderer.enabled = true;
         yield return new WaitForSeconds(2f);
