@@ -219,8 +219,10 @@ public class FloatyPlatform : MonoBehaviour
             }
             
             // Check if platform is outside camera view and should respawn
-            if((isFallingPlatform || _isFallingOnMovePlatformFallStarted) && ShouldRespawn()) {
-                StartRespawning();
+            if((isFallingPlatform && fallTimer >= timeBeforeFall) || (isFallingOnMovePlatform && _isFallingOnMovePlatformFallStarted)) {
+                if(ShouldRespawn()) {
+                    StartRespawning();
+                }
             }
             
             if(isFallingPlatform && fallTimer >= timeBeforeFall) {
