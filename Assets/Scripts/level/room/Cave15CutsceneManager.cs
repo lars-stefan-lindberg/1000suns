@@ -10,6 +10,7 @@ public class Cave15CutsceneManager : MonoBehaviour, ISkippable
     [SerializeField] private GameObject _cutsceneCamera;
     private BoxCollider2D _collider;
     private Coroutine _onConversationCompletedCoroutine;
+    private Coroutine _setupDialogueCoroutine;
 
     void Start() {
         CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
@@ -41,12 +42,17 @@ public class Cave15CutsceneManager : MonoBehaviour, ISkippable
     void OnTriggerEnter2D(Collider2D other) {
         if(other.CompareTag("Player")) {
             _collider.enabled = false;
-            StartCoroutine(SetupDialogue());
+            PlayerMovement.obj.Freeze();
+            PauseMenuManager.obj.RegisterSkippable(this);
+            _setupDialogueCoroutine = StartCoroutine(SetupDialogue());
         }
     }
 
     public void RequestSkip() {
         _cutsceneCamera.SetActive(false);
+        if(_setupDialogueCoroutine != null) {
+            StopCoroutine(_setupDialogueCoroutine);
+        }
         if(_onConversationCompletedCoroutine != null) {
             StopCoroutine(_onConversationCompletedCoroutine);
         }
@@ -76,8 +82,6 @@ public class Cave15CutsceneManager : MonoBehaviour, ISkippable
     }
 
     private IEnumerator SetupDialogue() {
-        PauseMenuManager.obj.RegisterSkippable(this);
-        PlayerMovement.obj.Freeze();
         _cutsceneCamera.SetActive(true);
         yield return new WaitForSeconds(2f);
         _conversationManager.StartConversation();
