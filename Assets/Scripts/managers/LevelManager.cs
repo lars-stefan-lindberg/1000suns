@@ -299,6 +299,11 @@ public class LevelManager : MonoBehaviour
         PlayerManager.obj.PlaySpawn(playerType);
         //Need to play a slightly delayed spawn sound due to when loading a game the sound is broken at the beginning. No idea why!
         StartCoroutine(DelayedSpawnSfx(playerSpawnPoint));
+        while(SceneFadeManager.obj.IsFadingIn)
+            yield return null;
+        //Give some extra time to complete sfx and spawn animation before allowing pause again
+        yield return new WaitForSeconds(1f);
+        GameManager.obj.IsPauseAllowed = true;
     }
 
     private void SetPlayersStartingState() {

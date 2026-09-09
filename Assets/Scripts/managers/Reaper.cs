@@ -15,6 +15,7 @@ public class Reaper : MonoBehaviour
     public float genericDeathAnimationTime = 0.8f;
     public float shadowDeathAnimationTime = 0.8f;
     public void KillPlayerGeneric(PlayerManager.PlayerType playerType) {
+        GameManager.obj.IsPauseAllowed = false;
         if(PlayerManager.obj.IsSeparated) {
             PlayerStatsManager.obj.numberOfDeaths += 1;
             
@@ -32,6 +33,7 @@ public class Reaper : MonoBehaviour
     }
 
     public void KillAllPlayersGeneric() {
+        GameManager.obj.IsPauseAllowed = false;
         if(PlayerManager.obj.IsSeparated) {
             playerKilled = true;
             PlayerStatsManager.obj.numberOfDeaths += 1;
@@ -50,6 +52,7 @@ public class Reaper : MonoBehaviour
     }
 
     public void KillPlayerShadow(PlayerManager.PlayerType playerType) {
+        GameManager.obj.IsPauseAllowed = false;
         //TODO how to handle if separated?
 
         if(!playerKilled){

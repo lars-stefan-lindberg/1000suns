@@ -282,8 +282,6 @@ public class MainMenuManager : MonoBehaviour
 
         LevelManager.obj.LoadSceneDelayed(saveData.levelId);
 
-        GameManager.obj.IsPauseAllowed = true;
-
         SceneManager.UnloadSceneAsync(_titleScreen.SceneName);
     }
 
