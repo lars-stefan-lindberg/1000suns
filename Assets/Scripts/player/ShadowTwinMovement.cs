@@ -68,11 +68,15 @@ public class ShadowTwinMovement : MonoBehaviour
     [SerializeField] private float _wallJumpHorizontalPower = 15f;
     [SerializeField] private float _wallJumpDirectionLockDuration = 0.2f;
     [SerializeField] private float _wallJumpBoostDuration = 0.1f;
+    [SerializeField] private float _wallJumpSlackTime = 0.15f; // Time window after releasing lash where wall jump is still possible
     
     private bool _isWallJumping = false;
     private float _wallJumpTimer = 0f;
     private float _wallJumpDirection = 0f;
     private float _wallJumpBoostTimer = 0f;
+    private float _frameLeftWallLatch = float.MinValue;
+    private Vector2 _lastWallLatchDirection = Vector2.zero;
+    private bool _wallJumpSlackUsable = false;
 
     // --- Floating platform propel variables ---
     [Header("Floating Platform Propel Configuration")]
@@ -717,6 +721,10 @@ public class ShadowTwinMovement : MonoBehaviour
                 if(_isLatchedToSurface && (_latchSurfaceType == LatchSurfaceType.Wall || _latchSurfaceType == LatchSurfaceType.Ceiling)) {
                     _latchedJumpToConsume = true;
                 }
+                // Also set latchedJumpToConsume if we can use wall jump slack
+                else if (CanUseWallJumpSlack) {
+                    _latchedJumpToConsume = true;
+                }
             }
             _jumpHeldInput = true;
             _timeJumpWasPressed = _time;
@@ -1133,6 +1141,7 @@ public class ShadowTwinMovement : MonoBehaviour
                 _coyoteUsable = true;
                 _endedJumpEarly = false;
                 _latchedJumpToConsume = false;
+                _wallJumpSlackUsable = false; // Reset wall jump slack when landing
                 _landed = true;
                 isFalling = false;
                 _isPropellingThroughPlatform = false;
@@ -1153,6 +1162,7 @@ public class ShadowTwinMovement : MonoBehaviour
                 isGrounded = true;
                 _coyoteUsable = true;
                 _endedJumpEarly = false;
+                _wallJumpSlackUsable = false; // Reset wall jump slack when landing
                 _landed = true;
                 isFalling = false;
             }
@@ -1278,12 +1288,20 @@ public class ShadowTwinMovement : MonoBehaviour
     private bool CanUseJump => (IsEffectivelyGrounded() || CanUseCoyote) && _jumpToConsume;
     private bool HasBufferedJump => _time < _timeJumpWasPressed + _stats.JumpBuffer;
     private bool CanUseCoyote => _coyoteUsable && !IsEffectivelyGrounded() && _time < _frameLeftGrounded + _stats.CoyoteTime;
+    private bool CanUseWallJumpSlack => _wallJumpSlackUsable && !_isLatchedToSurface && _time < _frameLeftWallLatch + _wallJumpSlackTime;
 
     private void HandleJump()
     {
         if (!_endedJumpEarly && !IsEffectivelyGrounded() && !_jumpHeldInput && ShadowTwinPlayer.obj.rigidBody.velocity.y > 0) _endedJumpEarly = true;
 
         if (_isLatchedToSurface && _latchedJumpToConsume)
+        {
+            HandleLatchJump();
+            return;
+        }
+        
+        // Check for wall jump slack - allow wall jump even after releasing lash button
+        if (!_isLatchedToSurface && _latchedJumpToConsume && CanUseWallJumpSlack)
         {
             HandleLatchJump();
             return;
@@ -1602,6 +1620,14 @@ public class ShadowTwinMovement : MonoBehaviour
         // Only stop the beam if we were actually pulling (not when called after no surface found)
         bool wasActuallyPulling = _isLatchPulling;
         
+        // Track when we left a wall latch for wall jump slack
+        if (_isLatchedToSurface && _latchSurfaceType == LatchSurfaceType.Wall)
+        {
+            _frameLeftWallLatch = _time;
+            _lastWallLatchDirection = _latchDirection;
+            _wallJumpSlackUsable = true;
+        }
+        
         _isLatchedToSurface = false;
         _latchPosition = Vector2.zero;
         _latchDirection = Vector2.zero;
@@ -1645,6 +1671,9 @@ public class ShadowTwinMovement : MonoBehaviour
         // Reset collider to default values
         _collider.offset = new Vector2(0, 0);
         _collider.size = new Vector2(0.75f, 1.75f);
+        
+        // Reset wall jump slack when latching to a new surface
+        _wallJumpSlackUsable = false;
         
         // Unlock flip when latching to a surface (not propelling)
         UnlockFlip();
@@ -2008,6 +2037,13 @@ public class ShadowTwinMovement : MonoBehaviour
 
     public void HandleLatchJump()
     {
+        // Handle wall jump slack - player released lash but can still wall jump
+        if (!_isLatchedToSurface && CanUseWallJumpSlack)
+        {
+            ExecuteWallJump();
+            return;
+        }
+        
         if (!_isLatchedToSurface)
             return;
 
@@ -2036,10 +2072,15 @@ public class ShadowTwinMovement : MonoBehaviour
     private void ExecuteWallJump()
     {
         // Determine which direction to jump away from the wall
-        // The latch direction tells us which way we pulled towards the wall
-        float horizontalDirection = -_latchDirection.x; // Jump opposite to the wall direction
+        // Use current latch direction if latched, otherwise use stored direction from slack
+        Vector2 wallDirection = _isLatchedToSurface ? _latchDirection : _lastWallLatchDirection;
+        float horizontalDirection = -wallDirection.x; // Jump opposite to the wall direction
         
-        EndLatchPull();
+        // Only end latch pull if we're still latched
+        if (_isLatchedToSurface)
+        {
+            EndLatchPull();
+        }
         
         // Set wall jump state
         _isWallJumping = true;
@@ -2059,6 +2100,7 @@ public class ShadowTwinMovement : MonoBehaviour
         _endedJumpEarly = false;
         _timeJumpWasPressed = 0;
         _coyoteUsable = false;
+        _wallJumpSlackUsable = false; // Consume the slack
         
         // Visual and audio feedback
         //DustParticleMgr.obj.CreateDust(PlayerManager.PlayerType.SHADOW_TWIN);  //TODO need to create vertical dust close to the wall
