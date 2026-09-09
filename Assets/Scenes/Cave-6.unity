@@ -860,7 +860,8 @@ MonoBehaviour:
   roomType: 0
   topLockDistance: 18
   unlockHysteresis: 0.5
-  topLockScreenYSmoothTime: 1.5
+  lockYDampingBoost: 2
+  lockYDampingBoostDuration: 0.25
   unlockYDampingBoost: 2
   unlockYDampingBoostDuration: 1.2
 --- !u!1001 &130673690
@@ -3094,6 +3095,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 8573979736475770863, guid: 524a9870ca4d14346925be8a340d13a5, type: 3}
+    - {fileID: 4477770152636092925, guid: 524a9870ca4d14346925be8a340d13a5, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
