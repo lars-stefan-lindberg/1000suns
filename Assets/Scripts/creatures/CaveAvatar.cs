@@ -222,6 +222,7 @@ public class CaveAvatar : MonoBehaviour
         SetPosition(new Vector2(1369.625f, -168.75f));
         IsFollowingPlayer = false;
         _target = null;
+        SetFloatingEnabled(true);
         SetFlipX(true);
     }
 
