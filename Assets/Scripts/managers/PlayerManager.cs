@@ -296,10 +296,9 @@ public class PlayerManager : MonoBehaviour
 
     public void FlipPlayer(PlayerType playerType) {
         if(playerType == PlayerType.HUMAN) {
-            if(Player.obj != null && _lastPlayerType == PlayerType.HUMAN)
-                PlayerMovement.obj.FlipPlayer();
-            else if(PlayerBlob.obj != null && _lastPlayerType == PlayerType.BLOB)
-                PlayerBlobMovement.obj.FlipPlayer();
+            PlayerMovement.obj.FlipPlayer();
+        } else if(playerType == PlayerType.BLOB) {
+            PlayerBlobMovement.obj.FlipPlayer();
         } else if(playerType == PlayerType.SHADOW_TWIN) {
             ShadowTwinMovement.obj.FlipPlayer();
         }
