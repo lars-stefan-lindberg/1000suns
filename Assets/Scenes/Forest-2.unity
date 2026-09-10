@@ -4497,6 +4497,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 554f8fba66e014f899be99a77ce055d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _firstCaveRoomLoaded: {fileID: 11400000, guid: b1cf557dc348043968fbb59b46e02d54, type: 2}
   _breakableSurface: {fileID: 2145678454}
   _breakParticles: {fileID: 839386971}
   _crackingParticles: {fileID: 1497663914}
@@ -4510,6 +4511,8 @@ MonoBehaviour:
   _firstCaveSurfaces:
     _sceneAsset: {fileID: 102900000, guid: 60bd225bc92df489ea4212c4063672f3, type: 3}
     _sceneName: Cave-surfaces-1
+  _caveMainAmbience: {fileID: 11400000, guid: 6475a932dfa8b47c89b448fbfee74692, type: 2}
+  _caveMainWaterDripping: {fileID: 11400000, guid: 048946b68a93d4e399bdf01055cd87d0, type: 2}
   _breakSfx:
     Guid:
       Data1: -279355293
@@ -27703,6 +27706,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 554f8fba66e014f899be99a77ce055d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _firstCaveRoomLoaded: {fileID: 0}
   _breakableSurface: {fileID: 2145678454}
   _breakParticles: {fileID: 839386971}
   _crackingParticles: {fileID: 1497663914}
@@ -27716,6 +27720,8 @@ MonoBehaviour:
   _firstCaveSurfaces:
     _sceneAsset: {fileID: 102900000, guid: 60bd225bc92df489ea4212c4063672f3, type: 3}
     _sceneName: Cave-surfaces-1
+  _caveMainAmbience: {fileID: 0}
+  _caveMainWaterDripping: {fileID: 0}
   _breakSfx:
     Guid:
       Data1: -279355293
