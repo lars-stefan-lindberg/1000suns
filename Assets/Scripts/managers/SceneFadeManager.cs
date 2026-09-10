@@ -81,9 +81,11 @@ public class SceneFadeManager : MonoBehaviour
     public void SetFadedOutState() {
         _fadeOutStartColor.a = 1;
         _fadeOutImage.color = _fadeOutStartColor;
+        IsFadingOut = false;
     }
     public void SetFadedInState() {
         _fadeOutImage.color = new Color(_fadeOutStartColor.r, _fadeOutStartColor.g, _fadeOutStartColor.b, 0);
+        IsFadingIn = false;
     }
     public void SetFadeInSpeed(float speed) {
         _fadeInSpeed = speed;

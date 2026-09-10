@@ -215,6 +215,7 @@ public class FirstCaveRoomLoader : MonoBehaviour, ISkippable
             _conversationManagerEli.CleanUp();
             _conversationManagerEli.OnConversationEnd -= OnConversationCompletedEli;
             _zoomedCamera.SetActive(false);
+            SceneFadeManager.obj.SetFadedInState();
             GameManager.obj.RegisterEvent(_eliFirstCaveRoomLoaded);
             SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);        
             StartCoroutine(ResumeGameplayEli());
