@@ -53,6 +53,7 @@ public class TentCutsceneManager : MonoBehaviour
     private IEnumerator DelayedEnablePlayer() {
         yield return new WaitForSeconds(2.5f);
 
+        PlayerSwitcher.obj.SwitchToEli();
         PlayerMovement.obj.UnFreeze();
         GameManager.obj.IsPauseAllowed = true;
         PlayerStatsManager.obj.ResumeTimer();
