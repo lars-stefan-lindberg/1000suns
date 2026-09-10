@@ -38,9 +38,9 @@ public class InputDeviceListener : MonoBehaviour
         {
             return "Keyboard";
         }
-        else if (_currentDevice == Device.Gamepad && Gamepad.current != null)
+        else if (_currentDevice == Device.Gamepad && _activeGamepad != null)
         {
-            return Gamepad.current.layout;
+            return _activeGamepad.layout;
         }
         
         return null;

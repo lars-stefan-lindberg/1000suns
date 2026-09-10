@@ -132,10 +132,13 @@ public class PlayerSwitcher : MonoBehaviour
                 Keyboard.current, Mouse.current
             );
         } else if(device == InputDeviceListener.Device.Gamepad) {
-            _activePlayerInput.SwitchCurrentControlScheme(
-                gamepadControlSchemeName,
-                Gamepad.current
-            );
+            Gamepad activeGamepad = InputDeviceListener.obj.GetActiveGamepad();
+            if(activeGamepad != null) {
+                _activePlayerInput.SwitchCurrentControlScheme(
+                    gamepadControlSchemeName,
+                    activeGamepad
+                );
+            }
         }
     }
 }
