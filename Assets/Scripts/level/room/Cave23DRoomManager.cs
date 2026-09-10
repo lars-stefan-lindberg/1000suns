@@ -103,7 +103,7 @@ public class Cave23DRoomManager : MonoBehaviour
         yield return new WaitForSeconds(1f);
         ChangeHeartbeatPace(1);
         SoundFXManager.obj.Play2D(_introStinger);
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(3.5f);
         PlayerMovement.obj.UnFreeze();
     }
 
