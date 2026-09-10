@@ -51,13 +51,15 @@ public class TentCutsceneManager : MonoBehaviour
     }
 
     private IEnumerator DelayedEnablePlayer() {
-        yield return new WaitForSeconds(2.5f);
+        yield return new WaitForSeconds(2.5f); 
 
         PlayerSwitcher.obj.SwitchToEli();
         PlayerMovement.obj.UnFreeze();
-        GameManager.obj.IsPauseAllowed = true;
-        MusicManager.obj.Stop();  //Make sure intro music reference is cleared so that we don't save it
         PlayerStatsManager.obj.ResumeTimer();
+
+        yield return new WaitForSeconds(2f); //Give Eli intro stinger some extra time to complete
+        MusicManager.obj.Stop();  //Make sure intro music reference is cleared so that we don't save it
+        GameManager.obj.IsPauseAllowed = true;
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         PlayerEvents.OnTentExitComplete -= OnEliAnimationCompleted;
     }
