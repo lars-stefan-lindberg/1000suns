@@ -1089,6 +1089,17 @@ public class ShadowTwinMovement : MonoBehaviour
         _startingOnGroundFalseCoroutineStarted = false;
     }
 
+    private bool _isSpawning = false;
+    public void SetIsSpawning(float duration) {
+        _isSpawning = true;
+        StartCoroutine(ClearIsSpawningAfterDelay(duration));
+    }
+
+    private IEnumerator ClearIsSpawningAfterDelay(float duration) {
+        yield return new WaitForSeconds(duration);
+        _isSpawning = false;
+    }
+
     public void DisableCollider() {
         _collider.enabled = false;
     }
@@ -1142,7 +1153,9 @@ public class ShadowTwinMovement : MonoBehaviour
                 _endedJumpEarly = false;
                 _latchedJumpToConsume = false;
                 _wallJumpSlackUsable = false; // Reset wall jump slack when landing
-                _landed = true;
+                if (!_isSpawning) {
+                    _landed = true;
+                }
                 isFalling = false;
                 _isPropellingThroughPlatform = false;
                 if (_isHorizontalPropelling)
@@ -1163,7 +1176,9 @@ public class ShadowTwinMovement : MonoBehaviour
                 _coyoteUsable = true;
                 _endedJumpEarly = false;
                 _wallJumpSlackUsable = false; // Reset wall jump slack when landing
-                _landed = true;
+                if (!_isSpawning) {
+                    _landed = true;
+                }
                 isFalling = false;
             }
             // Left the Ground

@@ -462,8 +462,20 @@ public class PlayerBlobMovement : MonoBehaviour
     }
 
     public void SetStartingOnGround() {
+        PlayerBlob.obj.rigidBody.velocity = Vector2.zero;
         startingOnGround = true;
         _startingOnGroundFalseCoroutineStarted = false;
+    }
+
+    private bool _isSpawning = false;
+    public void SetIsSpawning(float duration) {
+        _isSpawning = true;
+        StartCoroutine(ClearIsSpawningAfterDelay(duration));
+    }
+
+    private IEnumerator ClearIsSpawningAfterDelay(float duration) {
+        yield return new WaitForSeconds(duration);
+        _isSpawning = false;
     }
 
     //May be used by moveables, like floating platforms, to unregister themselves
@@ -531,7 +543,9 @@ public class PlayerBlobMovement : MonoBehaviour
             _coyoteUsable = true;
             _bufferedJumpUsable = true;
             _endedJumpEarly = false;
-            _landed = true;
+            if (!_isSpawning) {
+                _landed = true;
+            }
             _airJumpToConsume = false;
             _airJumpPerformed = false;
 
@@ -543,7 +557,9 @@ public class PlayerBlobMovement : MonoBehaviour
             isGrounded = true;
             _coyoteUsable = true;
             _endedJumpEarly = false;
-            _landed = true;
+            if (!_isSpawning) {
+                _landed = true;
+            }
             isFalling = false;
         }
         // Left the Ground

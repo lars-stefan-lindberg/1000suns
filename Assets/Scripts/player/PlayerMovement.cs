@@ -886,8 +886,20 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public void SetStartingOnGround() {
+        Player.obj.rigidBody.velocity = Vector2.zero;
         startingOnGround = true;
         _startingOnGroundFalseCoroutineStarted = false;
+    }
+
+    private bool _isSpawning = false;
+    public void SetIsSpawning(float duration) {
+        _isSpawning = true;
+        StartCoroutine(ClearIsSpawningAfterDelay(duration));
+    }
+
+    private IEnumerator ClearIsSpawningAfterDelay(float duration) {
+        yield return new WaitForSeconds(duration);
+        _isSpawning = false;
     }
 
     public void DisableCollider() {
@@ -965,7 +977,9 @@ public class PlayerMovement : MonoBehaviour
             _endedJumpEarly = false;
             _numberOfAirJumps = 0;
             _airJumpToConsume = false;
-            _landed = true;
+            if (!_isSpawning) {
+                _landed = true;
+            }
             isFalling = false;
 
             if (_isShadowJumping)
@@ -982,7 +996,9 @@ public class PlayerMovement : MonoBehaviour
             isGrounded = true;
             _coyoteUsable = true;
             _endedJumpEarly = false;
-            _landed = true;
+            if (!_isSpawning) {
+                _landed = true;
+            }
             isFalling = false;
 
             if (_isShadowJumping)

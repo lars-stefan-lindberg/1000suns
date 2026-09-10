@@ -30,8 +30,10 @@ public class PlayerBlob : MonoBehaviour
     }
 
     public void PlaySpawn() {
+        rigidBody.velocity = Vector2.zero;
         rigidBody.bodyType = RigidbodyType2D.Dynamic;
         _collider.enabled = true;
+        PlayerBlobMovement.obj.SetIsSpawning(_spawnFreezeDuration);
         PlayerBlobMovement.obj.Freeze(_spawnFreezeDuration);
         _animator.SetTrigger("spawn");
     }

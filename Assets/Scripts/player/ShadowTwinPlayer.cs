@@ -108,8 +108,10 @@ public class ShadowTwinPlayer : MonoBehaviour
     }
 
     public void PlaySpawn() {
+        rigidBody.velocity = Vector2.zero;
         rigidBody.bodyType = RigidbodyType2D.Dynamic;
         _collider.enabled = true;
+        ShadowTwinMovement.obj.SetIsSpawning(spawnFreezeDuration);
         ShadowTwinMovement.obj.Freeze(spawnFreezeDuration);
         _animator.SetTrigger("spawn");
     }
