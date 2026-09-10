@@ -886,7 +886,9 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public void SetStartingOnGround() {
-        Player.obj.rigidBody.velocity = Vector2.zero;
+        if(Player.obj.rigidBody.bodyType != RigidbodyType2D.Static) {
+            Player.obj.rigidBody.velocity = Vector2.zero;
+        }
         startingOnGround = true;
         _startingOnGroundFalseCoroutineStarted = false;
     }

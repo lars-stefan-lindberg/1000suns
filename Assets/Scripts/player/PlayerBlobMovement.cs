@@ -462,7 +462,9 @@ public class PlayerBlobMovement : MonoBehaviour
     }
 
     public void SetStartingOnGround() {
-        PlayerBlob.obj.rigidBody.velocity = Vector2.zero;
+        if(PlayerBlob.obj.rigidBody.bodyType != RigidbodyType2D.Static) {
+            PlayerBlob.obj.rigidBody.velocity = Vector2.zero;
+        }
         startingOnGround = true;
         _startingOnGroundFalseCoroutineStarted = false;
     }

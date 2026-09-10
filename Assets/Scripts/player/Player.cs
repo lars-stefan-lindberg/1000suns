@@ -124,7 +124,9 @@ public class Player : MonoBehaviour
     }
 
     public void PlaySpawn() {
-        rigidBody.velocity = Vector2.zero;
+        if(rigidBody.bodyType != RigidbodyType2D.Static) {
+            rigidBody.velocity = Vector2.zero;
+        }
         rigidBody.bodyType = RigidbodyType2D.Dynamic;
         _collider.enabled = true;
         PlayerMovement.obj.SetIsSpawning(spawnFreezeDuration);

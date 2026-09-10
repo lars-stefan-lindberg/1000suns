@@ -1085,6 +1085,9 @@ public class ShadowTwinMovement : MonoBehaviour
     }
 
     public void SetStartingOnGround() {
+        if(ShadowTwinPlayer.obj.rigidBody.bodyType != RigidbodyType2D.Static) {
+            ShadowTwinPlayer.obj.rigidBody.velocity = Vector2.zero;
+        }
         startingOnGround = true;
         _startingOnGroundFalseCoroutineStarted = false;
     }
