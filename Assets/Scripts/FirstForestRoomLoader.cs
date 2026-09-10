@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class FirstForestRoomLoader : MonoBehaviour
 {
     [SerializeField] private GameEventId _eliFirstForestRoomLoaded;
+    [SerializeField] private GameEventId _tentCutsceneCompleted;
     [SerializeField] private AmbienceTrack _ambience;
     [SerializeField] private TentCutsceneManager _tentCutsceneManager;
     [SerializeField] private GameObject _zoomedCamera;
@@ -17,6 +18,9 @@ public class FirstForestRoomLoader : MonoBehaviour
     void Start() {
         if(!GameManager.obj.HasEvent(_eliFirstForestRoomLoaded)) {
             StartCoroutine(LoadRoom());
+        } else if(GameManager.obj.HasEvent(_tentCutsceneCompleted)) {
+            _zoomedOutCamera.SetActive(false);
+            _zoomedOutBackgroundObjects.SetActive(false);
         }
     }
 

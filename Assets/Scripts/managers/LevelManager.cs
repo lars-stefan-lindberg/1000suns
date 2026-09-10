@@ -30,6 +30,7 @@ public class LevelManager : MonoBehaviour
     private const string SOOT_BETRAYAL_EVENT = "Cave-47.cutscene-completed";
     private const string CAVE_52_CONVERSATION_EVENT = "Cave-52.cutscene-completed";
     private const string CAVE_3_DEE_CONVERSATION_EVENT = "Cave-3.dee.cutscene-completed";
+    private const string CAVE_1_ELI_FIRST_LOAD_EVENT = "Cave-1.eli.first-load-completed";
 
 
     void Awake() {
@@ -463,6 +464,8 @@ public class LevelManager : MonoBehaviour
             } else if(GameManager.obj.HasEvent(BEFORE_SHADOW_JUMP_EVENT) && !GameManager.obj.HasEvent(AFTER_SHADOW_JUMP_EVENT)) {
                 CaveAvatar.obj.SetStartingPositionInCaveRoom33();   
             } else if(!GameManager.obj.HasEvent(SOOT_FREED_EVENT) && !GameManager.obj.isDevMode) {
+                CaveAvatar.obj.SetStartingPositionInRoom1();
+            } else if(!GameManager.obj.HasEvent(CAVE_1_ELI_FIRST_LOAD_EVENT) && !GameManager.obj.isDevMode) {
                 CaveAvatar.obj.SetStartingPositionInRoom1();
             } else {
                 CaveAvatar.obj.SetFollowPlayerStartingPosition();

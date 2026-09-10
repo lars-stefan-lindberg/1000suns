@@ -56,6 +56,7 @@ public class TentCutsceneManager : MonoBehaviour
         PlayerSwitcher.obj.SwitchToEli();
         PlayerMovement.obj.UnFreeze();
         GameManager.obj.IsPauseAllowed = true;
+        MusicManager.obj.Stop();  //Make sure intro music reference is cleared so that we don't save it
         PlayerStatsManager.obj.ResumeTimer();
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         PlayerEvents.OnTentExitComplete -= OnEliAnimationCompleted;
