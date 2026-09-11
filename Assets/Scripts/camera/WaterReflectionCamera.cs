@@ -63,10 +63,35 @@ public class WaterReflectionCamera : MonoBehaviour
         }
     }
 
+    void OnEnable()
+    {
+        // Re-enable reflection camera if it exists
+        if (reflectionCamera != null)
+        {
+            reflectionCamera.enabled = true;
+        }
+    }
+
     void OnDisable()
     {
-        if (reflectionCamera) Destroy(reflectionCamera.gameObject);
-        if (reflectionTexture) reflectionTexture.Release();
+        // Just disable the reflection camera, don't destroy it
+        if (reflectionCamera != null)
+        {
+            reflectionCamera.enabled = false;
+        }
+    }
+
+    void OnDestroy()
+    {
+        // Clean up when the component is actually destroyed
+        if (reflectionCamera != null)
+        {
+            Destroy(reflectionCamera.gameObject);
+        }
+        if (reflectionTexture != null)
+        {
+            reflectionTexture.Release();
+        }
     }
 
     void LateUpdate()
