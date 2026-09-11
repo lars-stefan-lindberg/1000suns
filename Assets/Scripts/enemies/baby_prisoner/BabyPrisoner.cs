@@ -151,7 +151,9 @@ public class BabyPrisoner : MonoBehaviour
     {
         if (turnAroundTimer <= timeToTurnAround && isTurning)
         {
-            _rigidBody.velocity = new Vector2(0, 0);
+            if(_rigidBody.bodyType != RigidbodyType2D.Static) {
+                _rigidBody.velocity = new Vector2(0, 0);
+            }
             turnAroundTimer += Time.deltaTime;
         } else if(turnAroundTimer >= timeToTurnAround && isTurning)
         {
