@@ -29,14 +29,14 @@ public class TreeBranchPlatform : MonoBehaviour
     void OnEnable()
     {
         _collider.OnCollisionEnterEvent += HandleCollisionEnter;
-        _collider.OnCollisionStayEvent += HandleCollisionStay;
+        //_collider.OnCollisionStayEvent += HandleCollisionStay;
         _collider.OnCollisionExitEvent += HandleCollisionExit;
     }
 
     void OnDisable()
     {
         _collider.OnCollisionEnterEvent -= HandleCollisionEnter;
-        _collider.OnCollisionStayEvent -= HandleCollisionStay;
+        //_collider.OnCollisionStayEvent -= HandleCollisionStay;
         _collider.OnCollisionExitEvent -= HandleCollisionExit;
     }
 
@@ -46,7 +46,9 @@ public class TreeBranchPlatform : MonoBehaviour
             return;
         }
 
-        if (IsCollisionFromTop(collision) && !_hasBouncedThisCollision) {
+        PlayerManager.PlayerType playerType = PlayerManager.obj.GetPlayerTypeFromCollision(collision);
+        float verticalVelocity = PlayerManager.obj.GetPlayerVerticalVelocity(playerType);
+        if (IsCollisionFromTop(collision) && !_hasBouncedThisCollision && verticalVelocity == 0) {
             _hasBouncedThisCollision = true;
             OnLandedOn();
         }
@@ -58,7 +60,9 @@ public class TreeBranchPlatform : MonoBehaviour
             return;
         }
 
-        if (IsCollisionFromTop(collision) && !_hasBouncedThisCollision) {
+        PlayerManager.PlayerType playerType = PlayerManager.obj.GetPlayerTypeFromCollision(collision);
+        float verticalVelocity = PlayerManager.obj.GetPlayerVerticalVelocity(playerType);
+        if (IsCollisionFromTop(collision) && !_hasBouncedThisCollision && verticalVelocity < -1) {
             _hasBouncedThisCollision = true;
             OnLandedOn();
         }
