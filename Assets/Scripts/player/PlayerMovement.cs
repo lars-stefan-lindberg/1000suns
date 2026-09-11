@@ -919,10 +919,27 @@ public class PlayerMovement : MonoBehaviour
         _endedJumpEarly = false;
         _timeJumpWasPressed = 0;
         _coyoteUsable = false;
-        _frameVelocity.y = _stats.JumpPower * bouncePower;
+        
+        // If shadow jumping, apply shadow jump physics instead of regular bounce
+        if (_isShadowJumping)
+        {
+            _frameVelocity.y = _stats.ShadowJumpPower;
+            _shadowJumpStartY = transform.position.y;
+            _shadowJumpStartX = transform.position.x;
+            _shadowJumpHorizontalDistanceTraveled = 0f;
+            _shadowJumpOppositeDirectionPressed = false;
+            // Replay shadow jump animation from the beginning, but skip sound/visual effects
+            _animator.Play("force_push_jump", 0, 0);
+            StartCoroutine(JumpSqueeze(_jumpSqueezeX, _jumpSqueezeY, _jumpSqueezeTime));
+        }
+        else
+        {
+            _frameVelocity.y = _stats.JumpPower * bouncePower;
+            _animator.Play("main_character_with_cape_jump", 0, 0);
+        }
+        
         _justBounced = true;
         isGrounded = false;
-        _animator.Play("main_character_with_cape_jump", 0, 0);
     }
 
     //May be used by moveables, like floating platforms, to unregister themselves
