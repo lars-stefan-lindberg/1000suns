@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.U2D;
 
 [RequireComponent(typeof(SpriteRenderer))]
 public class WaterReflectionCamera : MonoBehaviour
@@ -24,20 +25,42 @@ public class WaterReflectionCamera : MonoBehaviour
 
     [Header("Options")]
     public bool useRealtimeUpdate = true;
+    [Tooltip("Snap camera position to pixel grid to prevent sub-pixel jittering")]
+    public bool snapCameraToPixelGrid = true;
+    [Tooltip("Use hysteresis snapping to prevent back-and-forth pixel snapping")]
+    public bool useHysteresisSnapping = true;
+    [Tooltip("Hysteresis margin in pixels - prevents snapping back until this threshold is crossed")]
+    public float snapHysteresisPixels = 0.1f;
 
     Camera reflectionCamera;
     RenderTexture reflectionTexture;
+    PixelPerfectCamera pixelPerfectCamera;
 
     int lastFrameRendered = -1;
+    int cachedAssetsPixelsPerUnit;
+    float cachedInversePixelsPerUnit;
+    Vector2Int lastSnappedPixels;
 
     void Awake()
     {
         if (mainCamera == null)
             mainCamera = Camera.main;
 
+        if (mainCamera != null)
+        {
+            pixelPerfectCamera = mainCamera.GetComponent<PixelPerfectCamera>();
+        }
+
+        CachePixelPerfectValues();
         CreateRenderTexture();
         CreateReflectionCamera();
         AssignToMaterial();
+        
+        // Initialize last snapped position
+        if (mainCamera != null)
+        {
+            lastSnappedPixels = WorldToPixel(mainCamera.transform.position);
+        }
     }
 
     void OnDisable()
@@ -46,7 +69,7 @@ public class WaterReflectionCamera : MonoBehaviour
         if (reflectionTexture) reflectionTexture.Release();
     }
 
-    void Update()
+    void LateUpdate()
     {
         if (useRealtimeUpdate)
         {
@@ -79,6 +102,20 @@ public class WaterReflectionCamera : MonoBehaviour
         // 1. MIRROR CAMERA POSITION ACROSS WATERLINE
         //
         Vector3 mainPos = mainCamera.transform.position;
+        
+        // Snap camera position to pixel grid if enabled
+        if (snapCameraToPixelGrid)
+        {
+            if (useHysteresisSnapping)
+            {
+                mainPos = SnapToPixelGridHysteresis(mainPos, ref lastSnappedPixels);
+            }
+            else
+            {
+                mainPos = SnapToPixelGrid(mainPos);
+            }
+        }
+        
         float dist = mainPos.y - waterY;
         reflectionCamera.transform.position = new Vector3(
             mainPos.x,
@@ -229,6 +266,75 @@ public class WaterReflectionCamera : MonoBehaviour
 
         if (mainCamera == null)
             mainCamera = Camera.main;
+    }
+
+    private void CachePixelPerfectValues()
+    {
+        cachedAssetsPixelsPerUnit = GetAssetsPixelsPerUnit();
+        cachedInversePixelsPerUnit = 1f / cachedAssetsPixelsPerUnit;
+    }
+
+    private int GetAssetsPixelsPerUnit()
+    {
+        if (pixelPerfectCamera != null && pixelPerfectCamera.assetsPPU > 0)
+        {
+            return pixelPerfectCamera.assetsPPU;
+        }
+
+        return 16;
+    }
+
+    private Vector2Int WorldToPixel(Vector3 position)
+    {
+        return new Vector2Int(
+            Mathf.RoundToInt(position.x * cachedAssetsPixelsPerUnit),
+            Mathf.RoundToInt(position.y * cachedAssetsPixelsPerUnit)
+        );
+    }
+
+    private Vector3 PixelToWorld(Vector2Int pixels, float z)
+    {
+        return new Vector3(pixels.x * cachedInversePixelsPerUnit, pixels.y * cachedInversePixelsPerUnit, z);
+    }
+
+    private Vector3 SnapToPixelGrid(Vector3 position)
+    {
+        int x = Mathf.RoundToInt(position.x * cachedAssetsPixelsPerUnit);
+        int y = Mathf.RoundToInt(position.y * cachedAssetsPixelsPerUnit);
+
+        position.x = x * cachedInversePixelsPerUnit;
+        position.y = y * cachedInversePixelsPerUnit;
+        return position;
+    }
+
+    private Vector3 SnapToPixelGridHysteresis(Vector3 position, ref Vector2Int lastSnappedPixels)
+    {
+        float xPixels = position.x * cachedAssetsPixelsPerUnit;
+        float yPixels = position.y * cachedAssetsPixelsPerUnit;
+
+        float margin = Mathf.Max(0f, snapHysteresisPixels);
+
+        // Only snap to a new pixel if we've moved past the threshold with margin
+        // This prevents back-and-forth snapping when moving in one direction
+        if (xPixels > lastSnappedPixels.x + 0.5f + margin)
+        {
+            lastSnappedPixels.x = Mathf.FloorToInt(xPixels + 0.5f);
+        }
+        else if (xPixels < lastSnappedPixels.x - 0.5f - margin)
+        {
+            lastSnappedPixels.x = Mathf.CeilToInt(xPixels - 0.5f);
+        }
+
+        if (yPixels > lastSnappedPixels.y + 0.5f + margin)
+        {
+            lastSnappedPixels.y = Mathf.FloorToInt(yPixels + 0.5f);
+        }
+        else if (yPixels < lastSnappedPixels.y - 0.5f - margin)
+        {
+            lastSnappedPixels.y = Mathf.CeilToInt(yPixels - 0.5f);
+        }
+
+        return PixelToWorld(lastSnappedPixels, position.z);
     }
 
     private static Matrix4x4 CalculateReflectionMatrix(Vector4 plane)
