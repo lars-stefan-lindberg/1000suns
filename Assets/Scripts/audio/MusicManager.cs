@@ -51,6 +51,22 @@ public class MusicManager : MonoBehaviour
         StartCoroutine(StopCurrent());
     }
 
+    public void Pause()
+    {
+        if (!currentInstance.isValid())
+            return;
+
+        currentInstance.setPaused(true);
+    }
+
+    public void Resume()
+    {
+        if (!currentInstance.isValid())
+            return;
+
+        currentInstance.setPaused(false);
+    }
+
     public void EndCurrentTrack()
     {
         if (_musicLogicalState != MusicLogicalState.Playing)

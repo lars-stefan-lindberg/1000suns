@@ -59,6 +59,10 @@ public class AudioStateManager : MonoBehaviour
         fadeRoutine = StartCoroutine(FadePause(0f));
     }
 
+    public void PauseSfx() {
+        gameplaySfxBus.setPaused(true);
+    }
+
     public void RestoreSfx() {
         gameplaySfxBus.setPaused(false);
     }

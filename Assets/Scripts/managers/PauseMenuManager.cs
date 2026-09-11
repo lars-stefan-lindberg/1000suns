@@ -13,11 +13,13 @@ public class PauseMenuManager : MonoBehaviour
 {
     public static PauseMenuManager obj;
     public bool isNavigatingToMenu = true;
+    public bool isInIntro = false;
     private ISkippable _skippable;
 
     [SerializeField] private GameObject _pauseMenu;
     [SerializeField] private GameObject _pauseMenuBg;
     [SerializeField] private PauseMainScreen _pauseMainScreen;
+    [SerializeField] private IntroPauseScreen _introPauseScreen;
     [SerializeField] private GameObject _skipCutsceneMenuItem;
     [SerializeField] private GameObject _retryRoomMenuItem;
     [SerializeField] private Button _resumeButton;
@@ -25,6 +27,7 @@ public class PauseMenuManager : MonoBehaviour
     [SerializeField] private Button _skipCutsceneButton;
     [SerializeField] private Button _optionsButton;
     [SerializeField] private Button _quitButton;
+    [SerializeField] private Button _quitIntroButton;
     [SerializeField] private OptionsScreen _optionsScreen;
     [SerializeField] private GameObject _optionsMenuAudioButton;
     [SerializeField] private AudioScreen _audioScreen;
@@ -49,6 +52,7 @@ public class PauseMenuManager : MonoBehaviour
 
         SetCanvasCamera(_pauseMenuBg.GetComponent<Canvas>());
         SetCanvasCamera(_pauseMainScreen.GetComponent<Canvas>());
+        SetCanvasCamera(_introPauseScreen.GetComponent<Canvas>());
         SetCanvasCamera(_optionsScreen.GetComponent<Canvas>());
         SetCanvasCamera(_audioScreen.GetComponent<Canvas>());
         SetCanvasCamera(_controllerConfigScreen.GetComponent<Canvas>());
@@ -82,8 +86,16 @@ public class PauseMenuManager : MonoBehaviour
             if(_isPaused) {
                 _isTransitioning = true;
                 UISoundPlayer.obj.PlaySelect();
-                ResumeGame();
+                if(isInIntro)
+                    ResumeIntro();
+                else
+                    ResumeGame();
             } else {
+                if(isInIntro) {
+                    PauseIntro();
+                    return;
+                }
+
                 _cancelActionReference.action.performed += OnCancel;
                 DisableEscapeInUIControls();
                 UISoundPlayer.obj.PlayBack();
@@ -145,6 +157,83 @@ public class PauseMenuManager : MonoBehaviour
         }
     }
 
+    private void PauseIntro() {
+        MusicManager.obj.Pause();
+        // Set the time scale to 0 to pause the game
+        Time.timeScale = 0f;
+        
+        _cancelActionReference.action.performed += OnCancel;
+        DisableEscapeInUIControls();
+        UISoundPlayer.obj.PlayBack();
+        
+        // Set the pause state
+        _isPaused = true;
+        
+        // Enable the pause menu UI
+        _pauseMenu.SetActive(true);
+
+        OpenScreen(_introPauseScreen);
+        
+        // Note: _isTransitioning will be set and reset by OpenScreen
+    }
+
+    private void ResumeIntro() {
+        // Only resume if we're actually paused
+        if (_isPaused) {
+            _cancelActionReference.action.performed -= OnCancel;
+            EnableEscapeInUIControls();
+            EventSystem.current.SetSelectedGameObject(null);
+
+
+            // Hide all screens in the stack and clear it
+            while (screenStack.Count > 0) {
+                UIScreen screen = screenStack.Pop();
+                screen.gameObject.SetActive(false);
+            }
+            _pauseMainScreen.SetBackSelectable(null);
+
+            // Kill any ongoing transitions and immediately hide the menu
+            _menuTransitionSequence?.Kill();
+            _pauseMenu.SetActive(false);
+
+            // Set the pause state
+            _isPaused = false;
+            // Set the time scale back to 1 to resume the game
+            Time.timeScale = 1f;
+            MusicManager.obj.Resume();
+            
+            // Reset transition flag immediately since we're not animating
+            _isTransitioning = false;
+        }
+    }
+
+    private void AfterSkipIntro() {
+        if (_isPaused) {
+            _cancelActionReference.action.performed -= OnCancel;
+            EnableEscapeInUIControls();
+            EventSystem.current.SetSelectedGameObject(null);
+
+            // Hide all screens in the stack and clear it
+            while (screenStack.Count > 0) {
+                UIScreen screen = screenStack.Pop();
+                screen.gameObject.SetActive(false);
+            }
+            _pauseMainScreen.SetBackSelectable(null);
+
+            // Kill any ongoing transitions and immediately hide the menu
+            _menuTransitionSequence?.Kill();
+            _pauseMenu.SetActive(false);
+
+            // Set the pause state
+            _isPaused = false;
+            // Set the time scale back to 1 to resume the game
+            Time.timeScale = 1f;
+            
+            // Reset transition flag immediately since we're not animating
+            _isTransitioning = false;
+        }
+    }
+
     public void OpenScreen(UIScreen newScreen, GameObject triggerButton = null)
     {
         if (_isTransitioning)
@@ -203,6 +292,11 @@ public class PauseMenuManager : MonoBehaviour
         ResumeGame();
     }
 
+    public void OnContinueIntroButtonClick() {
+        UISoundPlayer.obj.PlaySelect(); 
+        ResumeIntro();
+    }
+
     public void OnRetryButtonClick() {
         UISoundPlayer.obj.PlaySelect(); 
         ResumeGame();
@@ -225,6 +319,12 @@ public class PauseMenuManager : MonoBehaviour
         _quitButton.interactable = false;
         UISoundPlayer.obj.PlaySelect();
         Quit();
+    }
+
+    public void OnQuitFromIntroButtonClick() {
+        _quitIntroButton.interactable = false;
+        UISoundPlayer.obj.PlaySelect();
+        QuitIntro();
     }
 
     public void OnAudioMenuButtonClicked() {
@@ -262,7 +362,7 @@ public class PauseMenuManager : MonoBehaviour
     public void ResumeGame(bool skippedCutscene = false) {
         // Only resume if we're actually paused
         if (_isPaused) {
-             _cancelActionReference.action.performed -= OnCancel;
+            _cancelActionReference.action.performed -= OnCancel;
             EnableEscapeInUIControls();
             EventSystem.current.SetSelectedGameObject(null);
 
@@ -310,7 +410,11 @@ public class PauseMenuManager : MonoBehaviour
         yield return new WaitForSeconds(0.3f);
         skippable.RequestSkip();
         UnregisterSkippable();
-        ResumeGame(true);
+        if(!isInIntro) {
+            ResumeGame(true);
+        } else {
+            AfterSkipIntro();
+        }
         yield return null;
     }
 
@@ -334,6 +438,11 @@ public class PauseMenuManager : MonoBehaviour
     public void Quit() {
         Time.timeScale = 1f;
         PlayerStatsManager.obj.PauseTimer();
+        StartCoroutine(QuitCoroutine());
+    }
+
+    private void QuitIntro() {
+        Time.timeScale = 1f;
         StartCoroutine(QuitCoroutine());
     }
 

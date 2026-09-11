@@ -183,11 +183,12 @@ public class MainMenuManager : MonoBehaviour
     }
 
     public void StartGame() {
-        //_playButton.GetComponent<Button>().interactable = false;
+        _ignoreCancelInput = true;
         StartCoroutine(StartGameCoroutine());
     }
 
     public void ContinueGame() {
+        _ignoreCancelInput = true;
         StartCoroutine(ContinueGameCoroutine());
     }
 

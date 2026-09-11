@@ -8,7 +8,7 @@ using System.Linq;
 using DG.Tweening;
 using TMPro;
 
-public class IntroController : MonoBehaviour
+public class IntroController : MonoBehaviour, ISkippable
 {
     [SerializeField] private MusicTrack _introMusic;
     [SerializeField] private float _startMusicDuration = 2f;
@@ -18,6 +18,10 @@ public class IntroController : MonoBehaviour
     [SerializeField] private SceneField _introScene;
     [SerializeField] private float _textFadeDuration = 2f;
     [SerializeField] private SceneField _firstForestSurfaces;
+    [SerializeField] private GameEventId _firstForestRoomLoaded;
+    [SerializeField] private GameEventId _tentCutsceneCompleted;
+    [SerializeField] private GameEventId _introSkipped;
+    [SerializeField] private IntroSceneFadeManager _introSceneFadeManager;
 
     [Header("Ummara")]
     [SerializeField] private ParticleSystem _ummaraParticles;
@@ -82,6 +86,10 @@ public class IntroController : MonoBehaviour
         _gameLogoCanvas.sortingLayerName = "UI";
         _gameLogoParticlesCanvas.worldCamera = Camera.main;
         _gameLogoParticlesCanvas.sortingLayerName = "UI";
+        _textCanvas.worldCamera = Camera.main;
+        _textCanvas.sortingLayerName = "UI";
+        _introSceneFadeManager.GetComponent<Canvas>().worldCamera = Camera.main;
+        _introSceneFadeManager.GetComponent<Canvas>().sortingLayerName = "UI";
         StartCoroutine(Cutscene());
     }
 
@@ -94,12 +102,17 @@ public class IntroController : MonoBehaviour
         _earthSpriteGroup.SetAlpha(0);
 
         if(!_testScale) {
-            SceneFadeManager.obj.SetFadedOutState();
+            _introSceneFadeManager.SetFadedOutState();
             yield return new WaitForSeconds(_startMusicDuration);
             MusicManager.obj.Play(_introMusic);
-            SceneFadeManager.obj.SetFadeInSpeed(0.2f);
+            _introSceneFadeManager.SetFadeInSpeed(0.2f);
+            SceneFadeManager.obj.SetFadedInState();
+            EnableCutsceneControls();
+
             yield return new WaitForSeconds(3f);
-            SceneFadeManager.obj.StartFadeIn();
+            
+            _introSceneFadeManager.StartFadeIn();
+
             yield return new WaitForSeconds(5f);
             _ummaraEyes.Activate();
             yield return new WaitForSeconds(1f);
@@ -190,6 +203,13 @@ public class IntroController : MonoBehaviour
         _earth.OnZoomInInProgress();
 
         yield return new WaitForSeconds(_earthScaleUpDuration - waitForZoomInTime - 2f);
+
+        GameManager.obj.IsPauseAllowed = false;
+        PauseMenuManager.obj.isInIntro = false;
+        PauseMenuManager.obj.UnregisterSkippable();
+        CutsceneControls.obj.Disable();
+        CutsceneControls.obj.gameObject.SetActive(false);
+
         SceneFadeManager.obj.StartFadeOut(1f);
         while(SceneFadeManager.obj.IsFadingOut) {
             yield return null;
@@ -206,6 +226,60 @@ public class IntroController : MonoBehaviour
         _earth.OnZoomInCompleted();
         yield return new WaitForSeconds(2f);
         SceneManager.UnloadSceneAsync(_introScene.SceneName);
+    }
+
+    public void RequestSkip() {
+        MusicManager.obj.Stop();
+        StopAllCoroutines();
+
+        _ummara.SetActive(false);
+        _cave.SetActive(false);
+        _underworld.SetActive(false);
+        _midnightZone.SetActive(false);
+        _treeWorld.SetActive(false);
+        _earth.gameObject.SetActive(false);
+        _gameLogoCanvas.gameObject.SetActive(false);
+        _titleParticles.gameObject.SetActive(false);
+        _textCanvas.gameObject.SetActive(false);
+        _introSceneFadeManager.gameObject.SetActive(false);
+
+        GameManager.obj.RegisterEvent(_firstForestRoomLoaded);
+        GameManager.obj.RegisterEvent(_tentCutsceneCompleted);
+        GameManager.obj.RegisterEvent(_introSkipped);
+        PauseMenuManager.obj.isInIntro = false;
+        CutsceneControls.obj.Disable();
+        CutsceneControls.obj.gameObject.SetActive(false);
+
+        StartCoroutine(ResumeGameplay());
+    }
+
+    private IEnumerator ResumeGameplay() {
+
+        SceneManager.LoadSceneAsync("Forest-1", LoadSceneMode.Additive);
+
+        while (!_firstForestRoomReady)
+        {
+            yield return null;
+        }
+
+        SceneFadeManager.obj.StartFadeIn(1f);
+        while(SceneFadeManager.obj.IsFadingIn)
+            yield return null;
+        
+        PlayerSwitcher.obj.SwitchToEli();
+        PlayerMovement.obj.UnFreeze();
+        PlayerStatsManager.obj.ResumeTimer();
+        GameManager.obj.IsPauseAllowed = true;
+
+        SceneManager.UnloadSceneAsync(_introScene.SceneName);
+    }
+
+    private void EnableCutsceneControls()
+    {
+        CutsceneControls.obj.Enable();
+        PauseMenuManager.obj.isInIntro = true;
+        GameManager.obj.IsPauseAllowed = true;
+        PauseMenuManager.obj.RegisterSkippable(this);
     }
 
     void Awake() {

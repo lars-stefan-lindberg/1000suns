@@ -45,6 +45,7 @@ public class ForestBird : MonoBehaviour
     private Transform _playerTransform;
     private bool _isInitialized = false;
     private Coroutine _cycleCoroutine;
+    private bool _isSfxMuted = false;
     
     void Start()
     {
@@ -86,7 +87,17 @@ public class ForestBird : MonoBehaviour
     }
 
     public void PlayPickSfx() {
-        SoundFXManager.obj.PlayAtGameObject(_pick, gameObject);
+        if(!_isSfxMuted) {
+            SoundFXManager.obj.PlayAtGameObject(_pick, gameObject);
+        }
+    }
+
+    public void Mute() {
+        _isSfxMuted = true;
+    }
+    
+    public void UnMute() {
+        _isSfxMuted = false;
     }
     
     private void CheckForPlayer()
@@ -123,7 +134,8 @@ public class ForestBird : MonoBehaviour
         if (_animator != null)
             _animator.SetTrigger("fly");
         
-        SoundFXManager.obj.PlayAtGameObject(_wingFlap, gameObject);
+        if(!_isSfxMuted)
+            SoundFXManager.obj.PlayAtGameObject(_wingFlap, gameObject);
         
         StartCoroutine(DestroyAfterFlightDuration());
     }

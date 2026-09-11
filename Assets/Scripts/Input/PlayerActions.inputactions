@@ -36,7 +36,7 @@
                     "name": "Pause",
                     "type": "Button",
                     "id": "a14965c3-2742-4677-ae80-4fbfbe604175",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -228,7 +228,7 @@
                     "path": "<Gamepad>/start",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";Gamepad",
                     "action": "Pause",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -393,7 +393,7 @@
                     "name": "Cancel",
                     "type": "Button",
                     "id": "283761b1-3784-42ea-b81c-3282f46d7be3",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -571,6 +571,56 @@
                     "processors": "",
                     "groups": "Keyboard",
                     "action": "CreditsScroll",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "CutsceneControls",
+            "id": "c0ec459a-1910-431d-a103-6a697a451004",
+            "actions": [
+                {
+                    "name": "Pause",
+                    "type": "Button",
+                    "id": "01f4bc19-f311-4fdc-b83f-339571bb18cf",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "04d712b2-50c2-4594-b71a-bd52366498e8",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard",
+                    "action": "Pause",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a2db5240-3396-4c59-940f-221197b0712f",
+                    "path": "<DualShockGamepad>/start",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Pause",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "39ba290a-678a-4b08-8fc2-102faeeee595",
+                    "path": "<Gamepad>/start",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Pause",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

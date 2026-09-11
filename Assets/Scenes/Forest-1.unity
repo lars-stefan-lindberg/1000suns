@@ -183,6 +183,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _eliFirstForestRoomLoaded: {fileID: 11400000, guid: 0a3aae3a6b6844aa4bd4540420009b64, type: 2}
   _tentCutsceneCompleted: {fileID: 11400000, guid: bfc961412ed714e8c9a23bc2d005b100, type: 2}
+  _introSkipped: {fileID: 11400000, guid: e70ba76b968074d80ae81f8dee3c519d, type: 2}
+  _firstForestRoomLoadedAfterIntro: {fileID: 11400000, guid: ff62a5a5c6c07460ab0ec88644169b9d, type: 2}
   _ambience: {fileID: 11400000, guid: 497cdcd6d0e5748be80a186bf59db547, type: 2}
   _tentCutsceneManager: {fileID: 1727060176}
   _zoomedCamera: {fileID: 48198652}
@@ -192,6 +194,11 @@ MonoBehaviour:
   _firstForestSurfaces:
     _sceneAsset: {fileID: 102900000, guid: 9cf9560ceeda142f5b1807ad2ff91239, type: 3}
     _sceneName: Forest-surfaces
+  _forestBackgroundScene:
+    _sceneAsset: {fileID: 102900000, guid: e599f0e60fbd14f44bcd838710536359, type: 3}
+    _sceneName: ForestBg1
+  _firstBird: {fileID: 1853152262}
+  _secondBird: {fileID: 208161505}
 --- !u!1 &20999772
 GameObject:
   m_ObjectHideFlags: 0
@@ -3314,6 +3321,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1dd42127ab9ff4e1893cb1b79382f966, type: 3}
+--- !u!114 &208161505 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2539264815264067110, guid: 1dd42127ab9ff4e1893cb1b79382f966, type: 3}
+  m_PrefabInstance: {fileID: 208161504}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59995b37c48464507857902416dc428d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &211459573
 GameObject:
   m_ObjectHideFlags: 0
@@ -72577,6 +72595,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1dd42127ab9ff4e1893cb1b79382f966, type: 3}
+--- !u!114 &1853152262 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2539264815264067110, guid: 1dd42127ab9ff4e1893cb1b79382f966, type: 3}
+  m_PrefabInstance: {fileID: 1853152261}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59995b37c48464507857902416dc428d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1860831432 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5662106709563182839, guid: 6e98f56dc8c414693856417b39aa515c, type: 3}

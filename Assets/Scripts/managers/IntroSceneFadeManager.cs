@@ -1,10 +1,8 @@
 using UnityEngine.UI;
 using UnityEngine;
 
-public class SceneFadeManager : MonoBehaviour
+public class IntroSceneFadeManager : MonoBehaviour
 {
-    public static SceneFadeManager obj;
-
     [SerializeField] private Image _fadeOutImage;
     [Range(0.1f, 10f), SerializeField] private float _fadeOutSpeed = 5f;
     private float _tempFadeOutSpeed = 0;
@@ -21,8 +19,6 @@ public class SceneFadeManager : MonoBehaviour
     private int _canvasSortingOrder;
 
     void Awake() {
-        obj = this;
-
         _fadeOutStartColor.a = 0f;
 
         _canvasSortingLayerName = _canvas.sortingLayerName;
@@ -84,7 +80,6 @@ public class SceneFadeManager : MonoBehaviour
         IsFadingOut = false;
     }
     public void SetFadedInState() {
-        _fadeOutStartColor.a = 0;
         _fadeOutImage.color = new Color(_fadeOutStartColor.r, _fadeOutStartColor.g, _fadeOutStartColor.b, 0);
         IsFadingIn = false;
     }
