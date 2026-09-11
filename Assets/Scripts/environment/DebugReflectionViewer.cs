@@ -12,7 +12,7 @@ public class DebugReflectionViewer : MonoBehaviour
         }
 
         // Try to fetch the RT via the material
-        var mat = reflectionScript.waterMaterial;
+        var mat = reflectionScript.GetWaterMaterial();
         if (mat == null) {
             GUI.Label(new Rect(10,10,400,30), "Reflection script has no waterMaterial assigned");
             return;

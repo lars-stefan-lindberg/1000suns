@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class WaterReflectionController : MonoBehaviour
 {
-    public Material waterMaterial;
     public Texture2D normalMap;
 
     [Header("Normal map animation")]
@@ -14,8 +13,20 @@ public class WaterReflectionController : MonoBehaviour
     [Range(0,1)] public float reflectionOpacity = 0.7f;
     public Color waterTint = new Color(0.6f,0.75f,0.9f,1f);
 
+    SpriteRenderer spriteRenderer;
+    Material waterMaterial; // Material instance (auto-created by Unity when accessing spriteRenderer.material)
     Vector2 offset1 = Vector2.zero;
     Vector2 offset2 = Vector2.zero;
+
+    void Awake()
+    {
+        // Get material instance from sprite renderer (Unity auto-creates instance)
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        if (spriteRenderer != null)
+        {
+            waterMaterial = spriteRenderer.material;
+        }
+    }
 
     void Update()
     {

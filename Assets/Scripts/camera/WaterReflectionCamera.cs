@@ -6,7 +6,6 @@ public class WaterReflectionCamera : MonoBehaviour
 {
     [Header("References")]
     public Camera mainCamera;
-    public Material waterMaterial;
     public LayerMask reflectionMask = ~0;
 
     [Header("RenderTexture")]
@@ -35,6 +34,8 @@ public class WaterReflectionCamera : MonoBehaviour
     Camera reflectionCamera;
     RenderTexture reflectionTexture;
     PixelPerfectCamera pixelPerfectCamera;
+    SpriteRenderer spriteRenderer;
+    Material waterMaterial; // Material instance (auto-created by Unity when accessing spriteRenderer.material)
 
     int lastFrameRendered = -1;
     int cachedAssetsPixelsPerUnit;
@@ -49,6 +50,13 @@ public class WaterReflectionCamera : MonoBehaviour
         if (mainCamera != null)
         {
             pixelPerfectCamera = mainCamera.GetComponent<PixelPerfectCamera>();
+        }
+
+        // Get material instance from sprite renderer (Unity auto-creates instance)
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        if (spriteRenderer != null)
+        {
+            waterMaterial = spriteRenderer.material;
         }
 
         CachePixelPerfectValues();
@@ -105,6 +113,14 @@ public class WaterReflectionCamera : MonoBehaviour
                 UpdateReflection();
             }
         }
+    }
+
+    public Material GetWaterMaterial() {
+        if (spriteRenderer != null)
+        {
+            return spriteRenderer.material;
+        }
+        return null;
     }
 
     public void UpdateReflection()
@@ -285,10 +301,6 @@ public class WaterReflectionCamera : MonoBehaviour
 
     void Reset()
     {
-        var sr = GetComponent<SpriteRenderer>();
-        if (sr != null)
-            waterMaterial = sr.sharedMaterial;
-
         if (mainCamera == null)
             mainCamera = Camera.main;
     }
