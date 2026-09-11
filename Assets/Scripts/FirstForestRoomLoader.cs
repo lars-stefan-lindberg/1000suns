@@ -68,7 +68,7 @@ public class FirstForestRoomLoader : MonoBehaviour
         AudioStateManager.obj.RestoreSfx();
 
         AmbienceManager.obj.Play(_ambience);
-        _waterfallSfx.StartAmbience();
+        _waterfallSfx.StartAmbienceAfterIntro();
         
         _firstBird.Mute();
         _secondBird.Mute();
