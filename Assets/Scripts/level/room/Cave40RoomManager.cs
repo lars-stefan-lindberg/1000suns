@@ -195,6 +195,7 @@ public class Cave40RoomManager : MonoBehaviour, ISkippable
         if(caveTimeline == CaveTimelineId.Id.Dee) {
             Player.obj.gameObject.SetActive(false);
             PlayerMovement.obj.SetMovementInput(Vector2.zero);
+            PlayerMovement.obj.SimulateJumpInput(false, Time.time);
             PlayerMovement.obj.CancelJumping();
             CaveAvatar.obj.gameObject.SetActive(false);
 

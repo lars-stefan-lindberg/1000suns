@@ -95,6 +95,7 @@ public class Cave15RoomManager : MonoBehaviour, ISkippable
         PlayerMovement.obj.SimulateJumpInput(true, Time.time);
         yield return null;
         yield return new WaitForSeconds(1.3f);
+        PlayerMovement.obj.SimulateJumpInput(false, Time.time);
         PlayerMovement.obj.SetMovementInput(Vector2.zero);
 
         _cutsceneCamera.SetActive(true);
@@ -116,6 +117,7 @@ public class Cave15RoomManager : MonoBehaviour, ISkippable
 
         Player.obj.SetAnimatorLayerAndHasCape(true);
         PlayerMovement.obj.SetMovementInput(Vector2.zero);
+        PlayerMovement.obj.SimulateJumpInput(false, Time.time);
         Player.obj.transform.position = _deeCutsceneEliEndPosition.position;
         Player.obj.ResetAnimator();
         Player.obj.StartAnimator();
