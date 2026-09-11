@@ -199,6 +199,7 @@ MonoBehaviour:
     _sceneName: ForestBg1
   _firstBird: {fileID: 1853152262}
   _secondBird: {fileID: 208161505}
+  _waterfallSfx: {fileID: 1578092143}
 --- !u!1 &20999772
 GameObject:
   m_ObjectHideFlags: 0
@@ -19800,6 +19801,9 @@ MonoBehaviour:
   waterY: -15.7
   reflectionAnchorX: 0
   useRealtimeUpdate: 1
+  snapCameraToPixelGrid: 1
+  useHysteresisSnapping: 1
+  snapHysteresisPixels: 0.1
 --- !u!212 &706567992
 SpriteRenderer:
   m_ObjectHideFlags: 0

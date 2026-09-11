@@ -35,6 +35,10 @@ public class PlayForestWaterfallSfx : MonoBehaviour
             _eventInstance.start();
             _currentFadeValue = 0f;
             _eventInstance.setParameterByName("fade", _currentFadeValue);
+        } else {
+            _eventInstance.start();
+            _currentFadeValue = 0f;
+            _eventInstance.setParameterByName("fade", _currentFadeValue);
         }
         
         if(_fadeCoroutine != null) {

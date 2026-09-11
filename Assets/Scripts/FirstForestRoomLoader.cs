@@ -19,6 +19,7 @@ public class FirstForestRoomLoader : MonoBehaviour
     [SerializeField] private SceneField _forestBackgroundScene;
     [SerializeField] private ForestBird _firstBird;
     [SerializeField] private ForestBird _secondBird;
+    [SerializeField] private PlayForestWaterfallSfx _waterfallSfx;
 
     void Start() {
         if(!GameManager.obj.HasEvent(_eliFirstForestRoomLoaded)) {
@@ -67,6 +68,7 @@ public class FirstForestRoomLoader : MonoBehaviour
         AudioStateManager.obj.RestoreSfx();
 
         AmbienceManager.obj.Play(_ambience);
+        _waterfallSfx.StartAmbience();
         
         _firstBird.Mute();
         _secondBird.Mute();
