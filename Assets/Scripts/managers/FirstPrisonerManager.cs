@@ -44,7 +44,7 @@ public class FirstPrisonerManager : MonoBehaviour, ISkippable
             PauseMenuManager.obj.RegisterSkippable(this);
             ShadowTwinMovement.obj.Freeze();
             _conversationManager.OnConversationEnd += OnConversationCompleted;
-            StartCoroutine(PlayDialogue());
+            _cutsceneCoroutine = StartCoroutine(PlayDialogue());
         }
     }
     private IEnumerator PlayDialogue() {
