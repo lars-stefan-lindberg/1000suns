@@ -94,7 +94,7 @@ public class WaterReflectionCamera : MonoBehaviour
         // Clean up when the component is actually destroyed
         if (reflectionCamera != null)
         {
-            Destroy(reflectionCamera.gameObject);
+            DestroyImmediate(reflectionCamera.gameObject);
         }
         if (reflectionTexture != null)
         {
