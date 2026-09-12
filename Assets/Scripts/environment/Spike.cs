@@ -38,7 +38,6 @@ public class Spike : MonoBehaviour
     private void Awake() {
         _rigidBody = GetComponent<Rigidbody2D>();
         _collider = GetComponent<BoxCollider2D>();
-        _collider.enabled = false;
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _animator = GetComponent<Animator>();
         _animator.enabled = false;
@@ -125,7 +124,7 @@ public class Spike : MonoBehaviour
     }
 
     private void Fall() {
-        _collider.enabled = true;
+        _rigidBody.bodyType = RigidbodyType2D.Dynamic;
         _rigidBody.gravityScale = gravity;
         SoundFXManager.obj.PlayAtPosition(_fallingSfx, transform.position);
     }
@@ -142,6 +141,7 @@ public class Spike : MonoBehaviour
         _isFalling = false;
         _rigidBody.velocity = Vector3.zero;
         _rigidBody.gravityScale = 0;
+        _rigidBody.bodyType = RigidbodyType2D.Static;
         _collider.enabled = false;
         if(collision.transform.CompareTag("Player")) {
             Reaper.obj.KillPlayerGeneric(PlayerManager.obj.GetPlayerTypeFromCollision(collision));
