@@ -7,6 +7,7 @@ public class RoomCameraController : MonoBehaviour
 {
     public RoomCameraType roomType;
     [Header("Vertical Room - Top Lock")]
+    public TopLockMode topLockMode = TopLockMode.Automatic;
     public float topLockDistance = 2.5f;
     public float unlockHysteresis = 0.5f;
     public float lockYDampingBoost = 2f;
@@ -35,6 +36,12 @@ public class RoomCameraController : MonoBehaviour
         Horizontal,
         Vertical,
         HorizontalAndVertical
+    }
+
+    public enum TopLockMode
+    {
+        Automatic,
+        Manual
     }
 
     void Awake()
@@ -97,6 +104,36 @@ public class RoomCameraController : MonoBehaviour
 
     public bool IsRoomCameraActivated() {
         return vcam.enabled;
+    }
+
+    /// <summary>
+    /// Manually locks the camera to the top. Use this when topLockMode is set to Manual.
+    /// </summary>
+    public void ManualTopLock()
+    {
+        if (!_requiresVerticalHandling || framing == null)
+            return;
+
+        if (!_yLockedToTop)
+        {
+            topLockMode = TopLockMode.Automatic;
+            LockCameraToTopSmooth();
+        }
+    }
+
+    /// <summary>
+    /// Manually unlocks the camera from the top. Use this when topLockMode is set to Manual.
+    /// </summary>
+    public void ManualTopUnlock()
+    {
+        if (!_requiresVerticalHandling || framing == null)
+            return;
+
+        if (_yLockedToTop)
+        {
+            topLockMode = TopLockMode.Manual;
+            UnlockCameraY();
+        }
     }
 
     void ConfigureForRoomType()
@@ -170,25 +207,37 @@ public class RoomCameraController : MonoBehaviour
             lookaheadController.ReadInput();
         }
 
-        float playerY = player.position.y;
-        float distanceToTop = _topY - playerY;
+        // Only run automatic lock/unlock logic if in Automatic mode
+        if (topLockMode == TopLockMode.Automatic)
+        {
+            float playerY = player.position.y;
+            float distanceToTop = _topY - playerY;
 
-        // Normal lock/unlock logic
-        if (!_yLockedToTop && distanceToTop <= topLockDistance)
-        {
-            if (_justActivated)
-                LockCameraToTopImmediate();
-            else
-                LockCameraToTopSmooth();
-        }
-        else if (_yLockedToTop && distanceToTop > topLockDistance + unlockHysteresis)
-        {
-            UnlockCameraY();
+            // Normal lock/unlock logic
+            if (!_yLockedToTop && distanceToTop <= topLockDistance)
+            {
+                if (_justActivated)
+                    LockCameraToTopImmediate();
+                else
+                    LockCameraToTopSmooth();
+            }
+            else if (_yLockedToTop && distanceToTop > topLockDistance + unlockHysteresis)
+            {
+                UnlockCameraY();
+            }
+            else if (_yLockedToTop)
+            {
+                // We're locked and should stay locked - ensure dead zone is set
+                // But don't override it if we're currently in a smooth transition
+                if (!_isSmoothLockingToTop && framing.m_DeadZoneHeight != 999f)
+                {
+                    framing.m_DeadZoneHeight = 999f;
+                }
+            }
         }
         else if (_yLockedToTop)
         {
-            // We're locked and should stay locked - ensure dead zone is set
-            // But don't override it if we're currently in a smooth transition
+            // In Manual mode, ensure dead zone stays set when locked
             if (!_isSmoothLockingToTop && framing.m_DeadZoneHeight != 999f)
             {
                 framing.m_DeadZoneHeight = 999f;
