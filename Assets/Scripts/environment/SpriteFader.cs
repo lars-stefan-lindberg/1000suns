@@ -20,6 +20,32 @@ public class SpriteFader : MonoBehaviour
     void Start()
     {
         _renderer = GetComponent<SpriteRenderer>();
+        InitializeAlpha();
+    }
+
+    private void InitializeAlpha()
+    {
+        var playerType = PlayerManager.obj.GetActivePlayerType();
+        var playerTransform = PlayerManager.obj.GetPlayerTransform(playerType);
+        var playerVerticalWorldPosition = playerTransform.position.y;
+        var objectVerticalPosition = transform.position.y;
+        
+        float relativePosition = playerVerticalWorldPosition - objectVerticalPosition;
+        
+        Color currentColor = _renderer.color;
+        
+        if (relativePosition >= _fadeOutCompletelyThreshold)
+        {
+            currentColor.a = 0f;
+            _targetAlpha = 0f;
+        }
+        else
+        {
+            currentColor.a = 1f;
+            _targetAlpha = 1f;
+        }
+        
+        _renderer.color = currentColor;
     }
 
     void Update()
