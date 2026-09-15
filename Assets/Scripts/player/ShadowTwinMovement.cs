@@ -61,6 +61,15 @@ public class ShadowTwinMovement : MonoBehaviour
     private float _hitBoostMax = 10f;
     [SerializeField] private float _hitBoostRiseTime = 0.12f;
     [SerializeField] private float _hitBoostFallTime = 0.3f;
+    
+    // --- Hit reaction variables ---
+    [Header("Hit Reaction Configuration")]
+    [SerializeField] private float _hitReactionHorizontalForce = 8f;
+    [SerializeField] private float _hitReactionVerticalForce = 6f;
+    [SerializeField] private float _hitReactionDuration = 0.4f;
+    private bool _isInHitReaction = false;
+    private float _hitReactionTimer = 0f;
+    private Vector2 _hitReactionVelocity = Vector2.zero;
 
     // --- Wall jump variables ---
     [Header("Wall Jump Configuration")]
@@ -140,6 +149,41 @@ public class ShadowTwinMovement : MonoBehaviour
         }
     }
 
+    public void GetHit(float hitDirection) {
+        ShadowTwinPlayer.obj.ForcePushFlash();
+        _sharedPlayerAudio.PlayGetHit(transform);
+        _animator.SetTrigger("getHit");
+        CameraShakeManager.obj.ForcePushShake();
+
+        // Flip player to face the hit direction
+        if (hitDirection > 0) {
+            // Hit from right, face right
+            spriteRenderer.flipX = false;
+        } else if (hitDirection < 0) {
+            // Hit from left, face left
+            spriteRenderer.flipX = true;
+        }
+        
+        // Start hit reaction
+        _isInHitReaction = true;
+        _hitReactionTimer = 0f;
+        
+        // Calculate hit reaction velocity with smooth arc motion
+        // Horizontal: push backwards (opposite to hit direction)
+        // Vertical: create an arc motion (up then down)
+        _hitReactionVelocity = new Vector2(
+            -hitDirection * _hitReactionHorizontalForce,
+            _hitReactionVerticalForce
+        );
+        
+        // Apply initial velocity
+        _frameVelocity = _hitReactionVelocity;
+    }
+
+    public void TriggerGetHitAnimation() {
+        _animator.SetTrigger("getHit");
+    }
+
     private void OnEnable() {
         //Reset transform from any previous squeeze
         anchor.transform.localScale = Vector3.one;
@@ -171,6 +215,18 @@ public class ShadowTwinMovement : MonoBehaviour
     {
         _time += Time.deltaTime;
         UpdateAnimator();
+        
+        // Update hit reaction timer
+        if (_isInHitReaction)
+        {
+            _hitReactionTimer += Time.deltaTime;
+            
+            if (_hitReactionTimer >= _hitReactionDuration)
+            {
+                _isInHitReaction = false;
+                _hitReactionTimer = 0f;
+            }
+        }
         
         HandleFlipPlayer();
         
@@ -2161,6 +2217,17 @@ public class ShadowTwinMovement : MonoBehaviour
             }
         }
 
+        // --- Hit reaction logic ---
+        if (_isInHitReaction)
+        {
+            // During hit reaction, maintain the hit velocity and ignore player input
+            // The velocity will naturally decay due to gravity for vertical component
+            // For horizontal, we'll apply a smooth deceleration
+            float decelerationRate = _hitReactionHorizontalForce / _hitReactionDuration;
+            _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, decelerationRate * Time.fixedDeltaTime);
+            return;
+        }
+        
         if(_freezePlayer) {
             _frameVelocity.x = 0;
             return;

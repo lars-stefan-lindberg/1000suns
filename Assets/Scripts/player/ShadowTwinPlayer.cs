@@ -133,6 +133,27 @@ public class ShadowTwinPlayer : MonoBehaviour
         _animator.SetLayerWeight(2, 1);
     }
 
+    public void PlayBreathingOnKnees() {
+        _animator.SetBool("isBreathingOnKnees", true);
+    }
+
+    public void PlayGetUp() {
+        _animator.SetBool("isBreathingOnKnees", false);
+    }
+
+    public void PlayLookUp() {
+        _animator.SetTrigger("lookUp");
+    }
+
+    public void PlayReachUpwards() {
+        _animator.SetTrigger("reachUpwards");
+    }
+
+    public void PlayFallToTheGround() {
+        _animator.SetTrigger("fallToTheGround");
+    }
+
+
     public void SetHasPowerUp(bool _hasPowerUp) {
         if(_hasPowerUp) {
             _animator.SetLayerWeight(1, 0);

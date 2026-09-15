@@ -127,6 +127,54 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 2576842243526084596, guid: 681e618cc4d84440da9934c23736f209, type: 3}
   m_PrefabInstance: {fileID: 1574997606}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &92887269
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 92887271}
+  - component: {fileID: 92887270}
+  m_Layer: 0
+  m_Name: DeeConversationManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &92887270
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 92887269}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 726327bf8f99b4dd3ab6135db8a15732, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _dialogueController: {fileID: 1968431580}
+  conversationList:
+  - dialogueContent: {fileID: 11400000, guid: 72d9d96b664e342b89e00efc2fda6c79, type: 2}
+  _isLastConversationOfRoom: 1
+--- !u!4 &92887271
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 92887269}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &97441588
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -343,6 +391,55 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4674888517572694156, guid: 88955fb1d398443c79cc7170ac97d93d, type: 3}
   m_PrefabInstance: {fileID: 134197484}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &188708579
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 188708581}
+  - component: {fileID: 188708580}
+  m_Layer: 0
+  m_Name: EliConversationManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &188708580
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 188708579}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 726327bf8f99b4dd3ab6135db8a15732, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _dialogueController: {fileID: 1968431580}
+  conversationList:
+  - dialogueContent: {fileID: 11400000, guid: 71dcf835ea45e4693a6545e8c9308244, type: 2}
+  - dialogueContent: {fileID: 11400000, guid: d578cf6d76b1c4c18a945be5e6fd7416, type: 2}
+  _isLastConversationOfRoom: 1
+--- !u!4 &188708581
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 188708579}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &189007880
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -670,6 +767,79 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1161433752606496109, guid: 9902e0a70f615475c92d72f2b6554fd2, type: 3}
   m_PrefabInstance: {fileID: 848876654}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &470115675
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 821690305994934905, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1100.875
+      objectReference: {fileID: 0}
+    - target: {fileID: 821690305994934905, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -87.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 821690305994934905, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 821690305994934905, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 821690305994934905, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 821690305994934905, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 821690305994934905, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 821690305994934905, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 821690305994934905, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 821690305994934905, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1103506649588628953, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: m_Name
+      value: Dee PlayerTrigger
+      objectReference: {fileID: 0}
+    - target: {fileID: 9050954829048252606, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: _deactivateOnTrigger
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9050954829048252606, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: OnPlayerEntered.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 2111454096}
+    - target: {fileID: 9050954829048252606, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: OnPlayerEntered.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: TeleportToDreamRoomDee
+      objectReference: {fileID: 0}
+    - target: {fileID: 9050954829048252606, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
+      propertyPath: OnPlayerEntered.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: Cave23RoomManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 6df1e82bb3c9e458cbd6350acf16bace, type: 3}
 --- !u!1 &506889648
 GameObject:
   m_ObjectHideFlags: 0
@@ -4145,7 +4315,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2111454097}
   - component: {fileID: 2111454096}
-  - component: {fileID: 2111454098}
   m_Layer: 0
   m_Name: RoomManager
   m_TagString: Untagged
@@ -4193,6 +4362,13 @@ MonoBehaviour:
       Data3: 493203618
       Data4: 766049082
     Path: event:/game/general/invisible_grab_with_delay
+  _invisibleGrab:
+    Guid:
+      Data1: -496435570
+      Data2: 1287062451
+      Data3: -845742956
+      Data4: 818944128
+    Path: event:/game/general/invisible_grab
   _stinger:
     Guid:
       Data1: -944051317
@@ -4205,15 +4381,22 @@ MonoBehaviour:
   _dreamRoomScene:
     _sceneAsset: {fileID: 102900000, guid: 84bb2e9e4c4ef486d9ed105f25b2566e, type: 3}
     _sceneName: Cave-23-D
+  _dreamRoomDeeScene:
+    _sceneAsset: {fileID: 102900000, guid: 65025840f47244d668ad38ba468fbf4e, type: 3}
+    _sceneName: Cave-23-D-Dee
   _thisScene:
     _sceneAsset: {fileID: 102900000, guid: 4c48512810050414ba01301ed0705329, type: 3}
     _sceneName: Cave-23
   _teleportInitiated: {fileID: 11400000, guid: 92733f888451a4eb9958b7a24274a454, type: 2}
+  _teleportInitiatedDee: {fileID: 11400000, guid: 84b68b2e6e878416d812fb5c01804c40, type: 2}
   _dreamSequenceCompleted: {fileID: 11400000, guid: e5d1bf7dc52344ed2b4df212b6bdcdb9, type: 2}
   _postDreamSequenceCompleted: {fileID: 11400000, guid: 2cd800d2540114bff9f973bcd04d3736, type: 2}
+  _postDeeDreamSequenceCompleted: {fileID: 11400000, guid: f03fd197538514494a8017bc42c84911, type: 2}
   _eliReturnFromDreamRoomPosition: {fileID: 1922373155}
+  _deeDreamSequenceCompleted: {fileID: 11400000, guid: 79094b7254d594c56b02886f7d59899c, type: 2}
   _sootStartPositionAfterDreamRoom: {fileID: 1055442555}
-  _conversationManager: {fileID: 2111454098}
+  _conversationManagerEli: {fileID: 188708580}
+  _conversationManagerDee: {fileID: 92887270}
   _caveMainAmbience: {fileID: 11400000, guid: 6475a932dfa8b47c89b448fbfee74692, type: 2}
   _crystalCutsceneCamera: {fileID: 38266751}
   _crystalFlash: {fileID: 608739037}
@@ -4236,23 +4419,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2111454098
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2111454095}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 726327bf8f99b4dd3ab6135db8a15732, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _dialogueController: {fileID: 1968431580}
-  conversationList:
-  - dialogueContent: {fileID: 11400000, guid: 71dcf835ea45e4693a6545e8c9308244, type: 2}
-  - dialogueContent: {fileID: 11400000, guid: d578cf6d76b1c4c18a945be5e6fd7416, type: 2}
-  _isLastConversationOfRoom: 1
 --- !u!1001 &1757572562459136414
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4452,3 +4618,6 @@ SceneRoots:
   - {fileID: 258076379}
   - {fileID: 1411072624}
   - {fileID: 1968431579}
+  - {fileID: 470115675}
+  - {fileID: 92887271}
+  - {fileID: 188708581}

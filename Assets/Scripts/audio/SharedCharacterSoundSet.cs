@@ -12,4 +12,5 @@ public class SharedCharacterSoundSet : ScriptableObject
     public EventReference spawn;
     public EventReference shapeshift;
     public EventReference mergeSplit;
+    public EventReference getHit;
 }

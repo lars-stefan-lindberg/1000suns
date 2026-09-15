@@ -68,6 +68,10 @@ public class SharedCharacterAudio : MonoBehaviour
         SoundFXManager.obj.PlayAtPosition(sounds.shadowDeath, transform.position);
     }
 
+    public void PlayGetHit(Transform transform) {
+        SoundFXManager.obj.PlayAtPosition(sounds.getHit, transform.position);
+    }
+
     public void PlaySpawn(Transform transform) {
         if (!_isSoundEnabled) return;
         SoundFXManager.obj.PlayAtPosition(sounds.spawn, transform.position);

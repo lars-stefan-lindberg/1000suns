@@ -17,7 +17,7 @@ public class Cave23DRoomManager : MonoBehaviour
     [SerializeField] private AmbienceTrack _capeRoomAmbience;
     [SerializeField] private EventReference _introStinger;
     [SerializeField] private EventReference _teleport;
-    [SerializeField] private EventReference _invisbleGrab;
+    [SerializeField] private EventReference _invisibleGrab;
     [SerializeField] private EventReference _heartbeat;
     [SerializeField] private EventReference _pulledTogether;
     [SerializeField] private SceneField _teleportBackToScene;
@@ -118,7 +118,7 @@ public class Cave23DRoomManager : MonoBehaviour
         _fixedZoomedInCamera.SetActive(true);
         yield return new WaitForSeconds(3f);
         _lightVfx.Flash();
-        SoundFXManager.obj.PlayAtPosition(_invisbleGrab, Player.obj.transform.position);
+        SoundFXManager.obj.PlayAtPosition(_invisibleGrab, Player.obj.transform.position);
         _pulledTogetherInstance = SoundFXManager.obj.CreateAttachedInstance(_pulledTogether, Player.obj.gameObject);
         _pulledTogetherInstance.start();
         CameraShakeManager.obj.ForcePushShake();
