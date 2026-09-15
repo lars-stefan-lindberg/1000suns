@@ -133,11 +133,13 @@ public class Cave23DDeeRoomManager : MonoBehaviour
 
         StartText();
 
-        yield return new WaitForSeconds(5f);
+        yield return WaitForTypingToComplete();
+        yield return new WaitForSeconds(2f);
 
         ShowNextParagraph();
 
-        yield return new WaitForSeconds(5f);
+        yield return WaitForTypingToComplete();
+        yield return new WaitForSeconds(2f);
 
         InterruptTextFade();
         FadeOutText();
@@ -158,7 +160,8 @@ public class Cave23DDeeRoomManager : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         ShowNextParagraph();
-        yield return new WaitForSeconds(5f);
+        yield return WaitForTypingToComplete();
+        yield return new WaitForSeconds(2f);
 
         InterruptTextFade();
         FadeOutText();
@@ -177,7 +180,7 @@ public class Cave23DDeeRoomManager : MonoBehaviour
 
         _prisoner2.StartMoving();
 
-        yield return new WaitForSeconds(0.7f);
+        yield return new WaitForSeconds(1f);
         _prisoner2.Despawn();
 
         yield return new WaitForSeconds(2f);
@@ -187,11 +190,13 @@ public class Cave23DDeeRoomManager : MonoBehaviour
 
         ShowNextParagraph();
 
-        yield return new WaitForSeconds(5f);
+        yield return WaitForTypingToComplete();
+        yield return new WaitForSeconds(2f);
 
         ShowNextParagraph();
 
-        yield return new WaitForSeconds(2.5f);
+        yield return WaitForTypingToComplete();
+        yield return new WaitForSeconds(2f);
 
         InterruptTextFade();
         FadeOutText();
@@ -228,7 +233,9 @@ public class Cave23DDeeRoomManager : MonoBehaviour
 
         ShowNextParagraph();
 
-        yield return new WaitForSeconds(3f);
+        yield return WaitForTypingToComplete();
+        yield return new WaitForSeconds(1f);
+        
         ShadowTwinPlayer.obj.PlayFallToTheGround();
         yield return new WaitForSeconds(1f);
 
@@ -340,6 +347,12 @@ public class Cave23DDeeRoomManager : MonoBehaviour
             Color color = _tmpText.color;
             color.a = 1f;
             _tmpText.color = color;
+        }
+    }
+
+    private IEnumerator WaitForTypingToComplete() {
+        while (_isTyping) {
+            yield return null;
         }
     }
 

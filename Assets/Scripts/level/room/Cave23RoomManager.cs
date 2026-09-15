@@ -47,6 +47,7 @@ public class Cave23RoomManager : MonoBehaviour, ISkippable
     private EventInstance _stingerInstance;
     private EventInstance _invisibleGrabWithDelayInstance;
     private EventInstance _invisibleGrabWithBuildUpInstance;
+    private EventInstance _invisibleGrabInstance;
     private CaveTimelineId.Id _activeCaveTimeline;
     private Coroutine _cutsceneCoroutine;
 
@@ -231,6 +232,7 @@ public class Cave23RoomManager : MonoBehaviour, ISkippable
                 _crystalCutsceneCamera.SetActive(false);
 
                 PlayerMovement.obj.SetMovementInput(Vector2.zero);
+                PlayerMovement.obj.StopWalking();
                 Player.obj.ResetAnimator();
                 PlayerMovement.obj.IsControlledProgrammatically = false;
                 Player.obj.rigidBody.gravityScale = 1;
@@ -276,6 +278,7 @@ public class Cave23RoomManager : MonoBehaviour, ISkippable
 
                 StopVoices();
 
+                AudioUtils.SafeStop(ref _invisibleGrabInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
                 AudioUtils.SafeStop(ref _invisibleGrabWithDelayInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
 
                 _crystalFlash.AbortFlash();
@@ -395,7 +398,9 @@ public class Cave23RoomManager : MonoBehaviour, ISkippable
 
         yield return new WaitForSeconds(1f);
         
-        SoundFXManager.obj.PlayAtPosition(_invisibleGrab, Player.obj.transform.position);
+        _invisibleGrabInstance = SoundFXManager.obj.CreateAttachedInstance(_invisibleGrab, Player.obj.gameObject);
+        _invisibleGrabInstance.start();
+        _invisibleGrabInstance.release();
         
         _crystalFlash.Flash();
         _lightVfx.Flash();
@@ -464,7 +469,7 @@ public class Cave23RoomManager : MonoBehaviour, ISkippable
     private IEnumerator OnConversationCompletedDeeCoroutine() {
         _conversationManagerDee.CleanUp();
         ShadowTwinPlayer.obj.PlayGetUp();
-        yield return new WaitForSeconds(1.7f);
+        yield return new WaitForSeconds(1.5f);
         ShadowTwinMovement.obj.UnFreeze();
         GameManager.obj.RegisterEvent(_postDeeDreamSequenceCompleted);
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
