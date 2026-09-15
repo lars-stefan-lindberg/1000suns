@@ -99,6 +99,7 @@ public class Cave23DDeeRoomManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         StartCoroutine(StartMusic());
         GameManager.obj.IsPauseAllowed = true;
+        PauseMenuManager.obj.SetPauseMusicInsteadOfMuffle(true);
 
         _cutsceneCoroutine = StartCoroutine(Cutscene());
     }
@@ -234,6 +235,7 @@ public class Cave23DDeeRoomManager : MonoBehaviour
         SoundFXManager.obj.Play2D(_teleport);
 
         GameManager.obj.IsPauseAllowed = false;
+        PauseMenuManager.obj.SetPauseMusicInsteadOfMuffle(false);
         WhiteSceneFadeManager.obj.StartFadeOut(0.8f);
 
         yield return new WaitForSeconds(0.7f);

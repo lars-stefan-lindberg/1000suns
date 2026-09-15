@@ -46,6 +46,7 @@ public class PauseMenuManager : MonoBehaviour
     private Stack<UIScreen> screenStack = new();
     private DialogueController _activeDialogueController;
     private bool _ignoreCancelInput = false;
+    private bool _shouldPauseMusicInsteadOfMuffle = false;
 
     void Awake() {
         obj = this;
@@ -107,7 +108,11 @@ public class PauseMenuManager : MonoBehaviour
                     _activeDialogueController.HideOnPause();
                 }
                 
-                AudioStateManager.obj.SetPaused(true);
+                if(_shouldPauseMusicInsteadOfMuffle) {
+                    MusicManager.obj.Pause();
+                } else {
+                    AudioStateManager.obj.SetPaused(true);
+                }
                 
                 // Set the pause state
                 _isPaused = true;
@@ -359,6 +364,10 @@ public class PauseMenuManager : MonoBehaviour
         _skippable = null;
     }
 
+    public void SetPauseMusicInsteadOfMuffle(bool shouldPause) {
+        _shouldPauseMusicInsteadOfMuffle = shouldPause;
+    }
+
     public void ResumeGame(bool skippedCutscene = false) {
         // Only resume if we're actually paused
         if (_isPaused) {
@@ -377,7 +386,11 @@ public class PauseMenuManager : MonoBehaviour
             _menuTransitionSequence?.Kill();
             _pauseMenu.SetActive(false);
 
-            AudioStateManager.obj.SetPaused(false);
+            if(_shouldPauseMusicInsteadOfMuffle) {
+                MusicManager.obj.Resume();
+            } else {
+                AudioStateManager.obj.SetPaused(false);
+            }
             
             if(_activeDialogueController != null && !skippedCutscene) {
                 _activeDialogueController.ShowAfterPause();
