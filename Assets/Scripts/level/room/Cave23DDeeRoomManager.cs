@@ -193,11 +193,6 @@ public class Cave23DDeeRoomManager : MonoBehaviour
         yield return WaitForTypingToComplete();
         yield return new WaitForSeconds(2f);
 
-        ShowNextParagraph();
-
-        yield return WaitForTypingToComplete();
-        yield return new WaitForSeconds(2f);
-
         InterruptTextFade();
         FadeOutText();
 
