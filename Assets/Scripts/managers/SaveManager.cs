@@ -46,6 +46,18 @@ public class SaveManager : MonoBehaviour
         });
     }
 
+    public async Task<SaveData> LoadSaveData(int slot) {
+        string path = GetSavePath(slot);
+        if (File.Exists(path))
+        {
+            // Read from file on background thread to avoid frame hitches
+            string json = await Task.Run(() => File.ReadAllText(path));
+            var data = JsonUtility.FromJson<SaveData>(json);
+            return data;
+        }
+        return null;
+    }
+
     public async Task<SaveData> LoadGame(int slot)
     {
         string path = GetSavePath(slot);
@@ -105,6 +117,12 @@ public class SaveManager : MonoBehaviour
             if (CollectibleManager.obj != null)
             {
                 CollectibleManager.obj.ImportPickedCollectibles(data?.pickedCollectibles);
+            }
+
+            // Restore location
+            if (GameLocationManager.obj != null && !string.IsNullOrEmpty(data?.locationKey))
+            {
+                GameLocationManager.obj.SetCurrentLocation(data.locationKey);
             }
 
             return data;
@@ -192,6 +210,7 @@ public class SaveManager : MonoBehaviour
         var playerStatsMgr = PlayerStatsManager.obj;
         var player = Player.obj;
         var shadowPlayer = ShadowTwinPlayer.obj;
+        var locationMgr = GameLocationManager.obj;
         
         SaveData data = new SaveData();
         data.levelId = levelId;
@@ -201,6 +220,7 @@ public class SaveManager : MonoBehaviour
         data.hasCape = player.GetHasCape();
         data.hasCrown = shadowPlayer.GetHasCrown();
         data.playerPowers = playerPowersMgr != null ? playerPowersMgr.GetUnlockedPowers() : new List<string>();
+        data.locationKey = locationMgr != null ? locationMgr.GetCurrentLocationKey() : "";
         
         // Replace LINQ ToList() with direct list access (already returns IReadOnlyList)
         if (gameMgr != null) {

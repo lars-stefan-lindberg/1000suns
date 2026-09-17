@@ -95,6 +95,7 @@ public class Cave42RoomManager : MonoBehaviour
             
             StartCoroutine(StartSceneDee());
         }
+        GameLocationManager.obj.SetCurrentLocation("deep_cave");
     }
 
     private IEnumerator StartSceneDee() {

@@ -1,6 +1,5 @@
 using UnityEngine.Events;
 using System.Collections;
-using UnityEngine;
 
 public class SelectSaveFileScreen : UIScreen
 {

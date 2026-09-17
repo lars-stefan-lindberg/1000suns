@@ -32,6 +32,8 @@ public class FirstForestRoomLoader : MonoBehaviour
         if(GameManager.obj.HasEvent(_introSkipped) && !GameManager.obj.HasEvent(_firstForestRoomLoadedAfterIntro)) {
             StartCoroutine(LoadRoomAfterSkippedIntro());
         }
+
+        GameLocationManager.obj.SetCurrentLocation("forest");
     }
 
     void Update() {

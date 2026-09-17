@@ -12,12 +12,16 @@ public class MainMenuItem : MonoBehaviour, IMoveHandler, ISelectHandler, IDesele
     [SerializeField] private RectTransform _rightSelector;
     [SerializeField] private float _colorChangeDuration = 0.15f;
     [SerializeField] private float _selectorScaleDuration = 0.2f;
+    [SerializeField] private bool _playSoundOnHorizontalMovement = false;
 
     public void OnMove(AxisEventData eventData)
     {
         if(eventData.moveDir == MoveDirection.Up || eventData.moveDir == MoveDirection.Down) {
             UISoundPlayer.obj.PlayBrowse();
         } 
+        if(_playSoundOnHorizontalMovement && (eventData.moveDir == MoveDirection.Left || eventData.moveDir == MoveDirection.Right)) {
+            UISoundPlayer.obj.PlayBrowse();
+        }
     }
 
     public void OnSelect(BaseEventData eventData)
@@ -43,7 +47,9 @@ public class MainMenuItem : MonoBehaviour, IMoveHandler, ISelectHandler, IDesele
 
     protected void OnDisable()
     {
-        DeselectColorChange();
+        //If the main menu item is invisible, don't reset color
+        if(_text.color.a > 0)
+            DeselectColorChange();
         ScaleSelectors(0);
     }
 }

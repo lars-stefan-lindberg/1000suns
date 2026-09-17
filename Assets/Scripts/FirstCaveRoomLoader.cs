@@ -35,6 +35,7 @@ public class FirstCaveRoomLoader : MonoBehaviour, ISkippable
             _conversationManagerDee1.OnConversationEnd += OnConversationCompletedDee1;
             StartCoroutine(LoadRoomDee());
         }
+        GameLocationManager.obj.SetCurrentLocation("cave_ruins");
     }
 
     void Update() {
