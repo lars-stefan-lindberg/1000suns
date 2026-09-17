@@ -32,6 +32,9 @@ public class Cave9SRoomManager : MonoBehaviour, ISkippable
 
         CaveAvatar.obj.IsFollowingPlayer = true;
 
+        GameManager.obj.RegisterEvent(_conversationCompleted);
+        SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
+
         StartCoroutine(ResumeGameplay());
     }
 
@@ -50,7 +53,7 @@ public class Cave9SRoomManager : MonoBehaviour, ISkippable
             return;
         PlayerMovement.obj.Freeze();
         PauseMenuManager.obj.RegisterSkippable(this);
-        StartCoroutine(DelayedStartConversation());
+        _cutsceneCoroutine = StartCoroutine(DelayedStartConversation());
     }
 
     private IEnumerator DelayedStartConversation() {

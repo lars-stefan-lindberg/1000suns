@@ -3,6 +3,7 @@ using FMODUnity;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Linq;
+using FMOD.Studio;
 
 public class CaveInSurface : MonoBehaviour, ISkippable
 {
@@ -25,6 +26,8 @@ public class CaveInSurface : MonoBehaviour, ISkippable
     private SpriteRenderer _breakableSurfaceRenderer;
     private Coroutine _cutsceneCoroutine;
     private Coroutine _delayedDisableGroundCoroutine;
+    private EventInstance _cracklingSfxInstance;
+    private EventInstance _breakSfxInstance;
 
     void Awake()
     {
@@ -55,7 +58,9 @@ public class CaveInSurface : MonoBehaviour, ISkippable
     }
 
     public void OnBreakAnimationComplete() {
-        SoundFXManager.obj.PlayAtPosition(_breakSfx, transform.position);
+        _breakSfxInstance = SoundFXManager.obj.CreateAttachedInstance(_breakSfx, gameObject);
+        _breakSfxInstance.start();
+        _breakSfxInstance.release();
         CameraShakeManager.obj.ShakeCamera(1.94f, 1.84f, 0.5f);
         _breakableSurfaceRenderer.enabled = false;
         _visibleTilemapAnimator.SetTrigger("reveal");
@@ -113,6 +118,11 @@ public class CaveInSurface : MonoBehaviour, ISkippable
         AmbienceManager.obj.Stop();
         _breakableSurfaceAnimator.StopPlayback();
         _breakableSurfaceAnimator.enabled = false;
+
+        AudioUtils.SafeStop(ref _cracklingSfxInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+        AudioUtils.SafeStop(ref _breakSfxInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+        AudioStateManager.obj.StopSfxEvents();
+
         _thunderLight.Stop();
         CameraShakeManager.obj.ShakeCamera(0, 0, 0);
         GameManager.obj.RegisterEvent(_firstCaveRoomLoaded);
@@ -138,13 +148,6 @@ public class CaveInSurface : MonoBehaviour, ISkippable
         InitRoom initRoomData = LevelManager.obj.GetInitRoomData(firstScene);
         LevelManager.obj.LoadAdjacentRooms(initRoomData);
 
-        GameObject[] sceneGameObjects = firstScene.GetRootGameObjects();
-        GameObject mainCamera = sceneGameObjects.First(gameObject => gameObject.CompareTag("MainCamera"));
-        GameObject room = sceneGameObjects.First(gameObject => gameObject.CompareTag("Room"));
-        Collider2D roomCollider = room.GetComponent<Collider2D>();
-        RoomCameraController cameraController = mainCamera.GetComponent<RoomCameraController>();
-        CameraManager.obj.EnterRoom(cameraController, roomCollider, Player.obj.transform, Player.obj.transform.position);   
-
         CaveAvatar.obj.gameObject.SetActive(false);
 
         AmbienceManager.obj.Play(_caveMainAmbience);
@@ -158,6 +161,13 @@ public class CaveInSurface : MonoBehaviour, ISkippable
         PlayerMovement.obj.spriteRenderer.flipX = false;
         Player.obj.SetAnimatorLayerAndHasCape(false);
         Player.obj.ResetAnimator();
+
+        GameObject[] sceneGameObjects = firstScene.GetRootGameObjects();
+        GameObject mainCamera = sceneGameObjects.First(gameObject => gameObject.CompareTag("MainCamera"));
+        GameObject room = sceneGameObjects.First(gameObject => gameObject.CompareTag("Room"));
+        Collider2D roomCollider = room.GetComponent<Collider2D>();
+        RoomCameraController cameraController = mainCamera.GetComponent<RoomCameraController>();
+        CameraManager.obj.EnterRoom(cameraController, roomCollider, Player.obj.transform, Player.obj.transform.position);   
 
         yield return new WaitForSeconds(1f);  //Give things some time to load and change, like the camera
 
@@ -176,7 +186,9 @@ public class CaveInSurface : MonoBehaviour, ISkippable
     }
 
     public void PlayCracklingSfx() {
-        SoundFXManager.obj.PlayAtPosition(_cracklingfx, transform.position);
+        _cracklingSfxInstance = SoundFXManager.obj.CreateAttachedInstance(_cracklingfx, gameObject);
+        _cracklingSfxInstance.start();
+        _cracklingSfxInstance.release();
         _crackingParticles.Emit(10);
     }
 
