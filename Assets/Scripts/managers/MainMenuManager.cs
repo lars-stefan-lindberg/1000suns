@@ -51,7 +51,6 @@ public class MainMenuManager : MonoBehaviour
     }
 
     void Start() {
-        //TODO set all canvases camera and sorting layer name. Has to be done since the camera is in another scene
         Canvas titleScreenCanvas = _titleScreenCanvas.GetComponent<Canvas>();
         SetCanvasCamera(titleScreenCanvas);
 
