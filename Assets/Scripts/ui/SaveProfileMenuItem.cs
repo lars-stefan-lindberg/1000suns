@@ -32,6 +32,7 @@ public class SaveProfileMenuItem : MonoBehaviour, IMoveHandler, ISelectHandler, 
     private Type _type = Type.NewGame;
     private bool _isDeletePromptActive = false;
     private bool _isSelected = false;
+    private Coroutine _startCanvasGroupFadeCoroutine;
 
     void Start() {
         _backgroundCanvasGroup.alpha = _canvasGroupDeselectedAlpha;
@@ -93,15 +94,28 @@ public class SaveProfileMenuItem : MonoBehaviour, IMoveHandler, ISelectHandler, 
     {
         _isSelected = true;
         _backgroundCanvasGroup.DOFade(1f, _colorChangeDuration).SetUpdate(true);
+
+        if(_startCanvasGroupFadeCoroutine != null) {
+            StopCoroutine(_startCanvasGroupFadeCoroutine);
+        }
+        _startCanvasGroupFadeCoroutine = StartCoroutine(StartCanvasGroupFadeDelayed());
+        
+        ScaleSelectors(1);
+        if(_type == Type.SavedFile) {
+            _saveFileCard.StartAnimations();
+        }
+    }
+
+    private IEnumerator StartCanvasGroupFadeDelayed() {
+        //Give first load of the save file some time to load properly so we now _type for sure
+        yield return new WaitForSeconds(0.05f);
+        
         if(_type == Type.NewGame) {
             _newGameCanvasGroup.DOFade(1f, _colorChangeDuration).SetUpdate(true);
         } else {
             _detailsCanvasGroup.DOFade(1f, _colorChangeDuration).SetUpdate(true);
         }
-        ScaleSelectors(1);
-        if(_type == Type.SavedFile) {
-            _saveFileCard.StartAnimations();
-        }
+        _startCanvasGroupFadeCoroutine = null;
     }
 
     public int GetId() {
@@ -115,6 +129,10 @@ public class SaveProfileMenuItem : MonoBehaviour, IMoveHandler, ISelectHandler, 
 
     public void OnDeselect(BaseEventData eventData)
     {
+        if(_startCanvasGroupFadeCoroutine != null) {
+            StopCoroutine(_startCanvasGroupFadeCoroutine);
+        }
+
         _isSelected = false;
         _backgroundCanvasGroup.DOFade(_canvasGroupDeselectedAlpha, _colorChangeDuration).SetUpdate(true);
         if(_type == Type.NewGame) {
