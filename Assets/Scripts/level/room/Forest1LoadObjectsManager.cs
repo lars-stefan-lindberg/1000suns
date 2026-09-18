@@ -23,9 +23,12 @@ public class Forest1LoadObjectsManager : MonoBehaviour
     {
         if(other.CompareTag("Player"))
         {
-            foreach (GameObject obj in _loadOnRoomEnter)
-            {
-                obj.SetActive(false);
+            if(_loadOnRoomEnter != null) {
+                foreach (GameObject obj in _loadOnRoomEnter)
+                {
+                    if(obj != null)
+                        obj.SetActive(false);
+                }
             }
         }
     }

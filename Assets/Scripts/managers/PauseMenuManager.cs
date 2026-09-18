@@ -494,6 +494,8 @@ public class PauseMenuManager : MonoBehaviour
             yield return null;
         }
 
+        MainMenuManager.obj.OnReturn();
+
         Destroy(_persistentGameplay);
     }
 

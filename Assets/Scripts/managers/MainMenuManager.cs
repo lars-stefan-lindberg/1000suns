@@ -12,6 +12,7 @@ public class MainMenuManager : MonoBehaviour
     public static MainMenuManager obj;
     [SerializeField] private CanvasGroup _mainMenuScreen;
     [SerializeField] private CanvasGroup _mainMenuVisualsScreen;
+    [SerializeField] private CanvasGroup _mainMenu;
     [SerializeField] private GameObject _startGameButton;
     [SerializeField] private GameObject _optionsButton;
     [SerializeField] private SelectSaveFileScreen _selectSaveFileScreen;
@@ -31,12 +32,14 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private SceneField _firstForestBackground;
     [SerializeField] private SceneField _firstForestSurfaces;
     [SerializeField] private GameObject _titleScreenCanvas;
+    [SerializeField] private GameObject _titleScreenBackgroundCanvas;
     [SerializeField] private GameObject _particlesCanvas;
     [SerializeField] private GameObject _titleTextCanvas;
     [SerializeField] private GameObject _lightsCanvas;
     [SerializeField] private GameObject _playButton;
     [SerializeField] private GameObject _glitchKeyStudios;
     [SerializeField] private GameObject _fmod;
+    [SerializeField] private GameObject _saveInfo;
     [SerializeField] private InputActionReference _cancelActionReference;
     [SerializeField] private InputActionAsset actions;
  
@@ -82,50 +85,10 @@ public class MainMenuManager : MonoBehaviour
         SetCanvasCamera(selectSaveFileCanvas);
 
         SceneFadeManager.obj.SetFadedOutState();
-        //SceneFadeManager.obj.SetFadedInState();
 
-        StartCoroutine(StartSequence());
-
-        //EventSystem.current.SetSelectedGameObject(_playButton);
-        EventSystem.current.SetSelectedGameObject(_playButton);
-
-        MusicManager.obj.Play(_titleScreenMusic);
-
-
-        _cancelActionReference.action.performed += OnCancel;
-
-        // _optionsButtonColor = _optionsButton.GetComponentInChildren<TextMeshProUGUI>().color;
-        
         var rebinds = PlayerPrefs.GetString("rebinds");
         if (!string.IsNullOrEmpty(rebinds))
             actions.LoadBindingOverridesFromJson(rebinds);
-        // confirmActionKeyboardDisplayString = confirmActionReference.action.GetBindingDisplayString(InputBinding.MaskByGroup("Keyboard"));
-
-        // InputDeviceListener.OnInputDeviceStream += HandleInputDeviceChanged;
-        // InputDeviceListener.OnGamepadConnected += HandleGamepadConnected;
-        // HandleInputDeviceChanged(InputDeviceListener.obj.GetCurrentInputDevice());
-
-        // bool hasValidSave = SaveManager.obj.HasValidSave(); 
-        // if (!hasValidSave) {
-        //     EventSystem.current.SetSelectedGameObject(_playButton);
-
-        //     Button playButton = _playButton.GetComponent<Button>(); 
-        //     Navigation playButtonNewNav = playButton.navigation;
-        //     playButtonNewNav.selectOnUp = _exitButton;
-        //     playButton.navigation = playButtonNewNav;
-
-        //     Navigation exitButtonNewNav = _exitButton.navigation;
-        //     exitButtonNewNav.selectOnDown = playButton;
-        //     _exitButton.navigation = exitButtonNewNav;
-
-        //     Button continueButton = _continueButton.GetComponent<Button>();
-        //     continueButton.interactable = false;
-        //     TextMeshProUGUI continueButtonText = continueButton.GetComponentInChildren<TextMeshProUGUI>();
-        //     continueButtonText.color = new Color(0.65f, 0.65f, 0.65f, 1f);
-        // } else {
-        //     EventSystem.current.SetSelectedGameObject(_continueButton);
-        // }
-        // SceneFadeManager.obj.StartFadeIn();
     }
 
     private void SetCanvasCamera(Canvas canvas) {
@@ -133,29 +96,110 @@ public class MainMenuManager : MonoBehaviour
         canvas.sortingLayerName = "UI";
     }
 
-    private IEnumerator StartSequence() {
-        SceneFadeManager.obj.StartFadeIn(1f);
+    public void OnBoot() {
+        StartCoroutine(OnBootSequence());
+    }
+
+    public void OnReturn() {
+        StartCoroutine(OnReturnSequence());
+    }
+
+    private IEnumerator OnBootSequence() {
+        _titleScreenCanvas.SetActive(true);
+        _titleScreenBackgroundCanvas.SetActive(false);
+        _glitchKeyStudios.SetActive(true);
+
+        SceneFadeManager.obj.StartFadeIn(0.5f);
         while(SceneFadeManager.obj.IsFadingIn)
             yield return null;
-        // _glitchKeyStudios.SetActive(true);
-        // SceneFadeManager.obj.StartFadeIn(0.5f);
-        // yield return new WaitForSeconds(3f);
-        // SceneFadeManager.obj.StartFadeOut(1f);
-        // while(SceneFadeManager.obj.IsFadingOut)
-        //     yield return null;
-        // _glitchKeyStudios.SetActive(false);
+        yield return new WaitForSeconds(2f);
 
-        // _fmod.SetActive(true);
-        // SceneFadeManager.obj.StartFadeIn(1f);
-        // yield return new WaitForSeconds(3f);
-        // SceneFadeManager.obj.StartFadeOut(1f);
-        // while(SceneFadeManager.obj.IsFadingOut)
-        //     yield return null;
-        // _fmod.SetActive(false);
+        SceneFadeManager.obj.StartFadeOut(1f);
+        while(SceneFadeManager.obj.IsFadingOut)
+            yield return null;
+        _glitchKeyStudios.SetActive(false);
 
-        //_title.SetActive(true);
-        //SceneFadeManager.obj.StartFadeIn(1f);
-        // MusicManager.obj.Play(_titleScreenMusic);
+        _fmod.SetActive(true);
+        SceneFadeManager.obj.StartFadeIn(0.5f);
+        while(SceneFadeManager.obj.IsFadingIn)
+            yield return null;
+        yield return new WaitForSeconds(2f);
+        SceneFadeManager.obj.StartFadeOut(1f);
+        while(SceneFadeManager.obj.IsFadingOut)
+            yield return null;
+        _fmod.SetActive(false);
+
+        _saveInfo.SetActive(true);
+        SceneFadeManager.obj.StartFadeIn(0.5f);
+        while(SceneFadeManager.obj.IsFadingIn)
+            yield return null;
+        yield return new WaitForSeconds(3f);
+        SceneFadeManager.obj.StartFadeOut(1f);
+        while(SceneFadeManager.obj.IsFadingOut)
+            yield return null;
+        _saveInfo.SetActive(false);
+
+        _titleScreenBackgroundCanvas.SetActive(true);
+        _particlesCanvas.SetActive(true);
+        _lightsCanvas.SetActive(true);
+        _titleTextCanvas.SetActive(true);
+        _mainMenu.alpha = 0;
+        _mainMenu.interactable = false;
+        _mainMenu.blocksRaycasts = false;
+        
+        yield return new WaitForSeconds(1f);
+
+        SceneFadeManager.obj.StartFadeIn(0.5f);
+        MusicManager.obj.Play(_titleScreenMusic);
+
+        while(SceneFadeManager.obj.IsFadingIn)
+            yield return null;
+
+        yield return new WaitForSeconds(0.3f);
+        
+        EventSystem.current.SetSelectedGameObject(_playButton);
+        _mainMenu
+            .DOFade(1f, 0.4f)
+            .SetEase(Ease.OutCubic)
+            .SetUpdate(true)
+            .OnComplete(() =>
+            {
+                _mainMenu.interactable = true;
+                _mainMenu.blocksRaycasts = true;
+            });
+
+        _cancelActionReference.action.performed += OnCancel;
+    }
+
+    public IEnumerator OnReturnSequence() {
+        _titleScreenCanvas.SetActive(true);
+        _particlesCanvas.SetActive(true);
+        _lightsCanvas.SetActive(true);
+        _titleTextCanvas.SetActive(true);
+        _mainMenu.alpha = 0;
+        _mainMenu.interactable = false;
+        _mainMenu.blocksRaycasts = false;
+
+        yield return new WaitForSeconds(1f);
+
+        SceneFadeManager.obj.StartFadeIn(1f);
+        MusicManager.obj.Play(_titleScreenMusic);
+
+        while(SceneFadeManager.obj.IsFadingIn)
+            yield return null;
+
+        EventSystem.current.SetSelectedGameObject(_playButton);
+        _mainMenu
+            .DOFade(1f, 0.3f)
+            .SetEase(Ease.OutCubic)
+            .SetUpdate(true)
+            .OnComplete(() =>
+            {
+                _mainMenu.interactable = true;
+                _mainMenu.blocksRaycasts = true;
+            });
+
+        _cancelActionReference.action.performed += OnCancel;
 
         yield return null;
     }
@@ -168,17 +212,6 @@ public class MainMenuManager : MonoBehaviour
 
     public void OnNewGameButtonClicked() {
         StartGame();
-
-        //Co-op specific code:
-        // _playButton.SetActive(false);
-        // _optionsButton.gameObject.SetActive(false);
-        // _exitButton.gameObject.SetActive(false);
-
-        // _singlePlayerButton.SetActive(true);
-        // _coopButton.SetActive(true);
-
-        // SoundFXManager.obj.Play2D(_uiSoundLibrary.select);
-        // EventSystem.current.SetSelectedGameObject(_singlePlayerButton);
     }
 
     public void StartGame() {

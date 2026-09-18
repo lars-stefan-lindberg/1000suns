@@ -26,6 +26,8 @@ public class BootGame : MonoBehaviour
             yield return null;
         }
 
+        MainMenuManager.obj.OnBoot();
+
         SceneManager.UnloadSceneAsync(_bootGame.SceneName);
     }
 

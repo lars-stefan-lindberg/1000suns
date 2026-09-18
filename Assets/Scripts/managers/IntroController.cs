@@ -351,8 +351,12 @@ public class IntroController : MonoBehaviour, ISkippable
 
     void OnDestroy() {
         _typeWriter.onTextShowed.RemoveAllListeners();
-        _tmpText?.DOKill();
-        _ummara?.transform.DOKill();
+        if(_tmpText != null)
+            _tmpText.DOKill();
+
+        if(_ummara != null)
+            _ummara.transform.DOKill();
+        
         IntroEvents.OnFirstForestRoomReady -= OnFirstForestRoomReady;
         IntroEvents.ClearFirstForestRoomReady();
     }
