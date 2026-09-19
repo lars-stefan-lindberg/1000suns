@@ -8,6 +8,7 @@ public class Cave35DeeD1RoomManager : MonoBehaviour
     [SerializeField] private SpawnPoint _deeSpawnPoint;
     [SerializeField] private AmbienceTrack _capeRoomAmbience;
     [SerializeField] private GameEventId _roomStarted;
+    [SerializeField] private TutorialStrip _tutorialStrip;
 
     void Start() {
         if(GameManager.obj.HasEvent(_roomStarted))
@@ -42,5 +43,17 @@ public class Cave35DeeD1RoomManager : MonoBehaviour
         ShadowTwinMovement.obj.UnFreeze();
         GameManager.obj.IsPauseAllowed = true;
         GameManager.obj.RegisterEvent(_roomStarted);
+    }
+
+    public void ShowTutorialStrip() {
+        _tutorialStrip.Show();
+    }
+
+    public void HideTutorialStrip() {
+        _tutorialStrip.Hide();
+    }
+    
+    public void HideTutorialStripQuick() {
+        _tutorialStrip.HideQuick();
     }
 }

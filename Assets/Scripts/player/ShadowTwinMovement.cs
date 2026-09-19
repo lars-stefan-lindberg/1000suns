@@ -1494,6 +1494,10 @@ public class ShadowTwinMovement : MonoBehaviour
         return _isLatchedToSurface;
     }
 
+    public bool IsLatchedToWall() {
+        return _isLatchedToSurface && Mathf.Abs(_latchDirection.x) > 0;
+    }
+
     public bool IsWallJumping()
     {
         return _isWallJumping;

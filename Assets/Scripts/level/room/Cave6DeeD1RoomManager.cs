@@ -1,13 +1,25 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Localization;
+using UnityEngine.InputSystem;
 
 public class Cave6DeeD1RoomManager : MonoBehaviour
 {
     [SerializeField] private SpawnPoint _deeSpawnPoint;
     [SerializeField] private AmbienceTrack _capeRoomAmbience;
     [SerializeField] private GameEventId _roomStarted;
+    [SerializeField] private TutorialStrip _tutorialStrip;
+
+    [SerializeField] private LocalizedString _basicMovementString;
+    [SerializeField] private List<InputActionReference> _basicMovementActions;
+    [SerializeField] private List<InputIconManager.Direction> _basicMovementDirections;
+
+    [SerializeField] private LocalizedString _isPullingString;
+    [SerializeField] private List<InputActionReference> _isPullingActions;
+    [SerializeField] private List<InputIconManager.Direction> _isPullingDirections;
 
     void Start() {
         if(GameManager.obj.HasEvent(_roomStarted))
@@ -21,6 +33,35 @@ public class Cave6DeeD1RoomManager : MonoBehaviour
         DustParticleMgr.obj.Enabled = false;
         AmbienceManager.obj.Play(_capeRoomAmbience);
         StartCoroutine(TransitionIntoRoom());
+
+        var steps = new List<ConditionalTutorialStep>
+        {
+            // Step 0: Basic movement (default, shown when no other condition is true)
+            new ConditionalTutorialStep
+            {
+                step = new TutorialStep
+                {
+                    localizedString = _basicMovementString,
+                    inputActions = _basicMovementActions,
+                    inputDirections = _basicMovementDirections
+                },
+                condition = null // No condition = default step
+            },
+            
+            // Step 1: Wall latch tutorial (shown when latched to wall)
+            new ConditionalTutorialStep
+            {
+                step = new TutorialStep
+                {
+                    localizedString = _isPullingString,
+                    inputActions = _isPullingActions,
+                    inputDirections = _isPullingDirections
+                },
+                condition = () => ShadowTwinMovement.obj != null && ShadowTwinMovement.obj.IsPulling
+            }
+        };
+        
+        _tutorialStrip.InitializeConditional(steps);
     }
 
     private IEnumerator TransitionIntoRoom() {
@@ -46,5 +87,13 @@ public class Cave6DeeD1RoomManager : MonoBehaviour
         ShadowTwinMovement.obj.UnFreeze();
         GameManager.obj.IsPauseAllowed = true;
         GameManager.obj.RegisterEvent(_roomStarted);
+    }
+
+    public void ShowTutorialStrip() {
+        _tutorialStrip.Show();
+    }
+
+    public void HideTutorialStrip() {
+        _tutorialStrip.Hide();
     }
 }
