@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class BeforeFirstPrisoner : MonoBehaviour
 {
-    [SerializeField] private float _fadeDuration = 5f;
     [SerializeField] private MusicTrack _musicTrack;
     [SerializeField] private AmbienceTrack _caveMainAmbience;    
 

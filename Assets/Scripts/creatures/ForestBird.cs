@@ -39,7 +39,6 @@ public class ForestBird : MonoBehaviour
     [SerializeField] private EventReference _pick;
     
     private bool _isFlyingAway = false;
-    private bool _isInCycle = false;
     private Vector3 _flightDirection;
     private int _currentDirection = 1;
     private Transform _playerTransform;
@@ -118,7 +117,6 @@ public class ForestBird : MonoBehaviour
         
         StopAllCoroutines();
         _isFlyingAway = true;
-        _isInCycle = false;
         
         Vector3 directionAwayFromPlayer = (transform.position - _playerTransform.position).normalized;
         
@@ -166,8 +164,6 @@ public class ForestBird : MonoBehaviour
     {
         while (!_isFlyingAway)
         {
-            _isInCycle = true;
-            
             if (!_enableMovement)
             {
                 yield return StartCoroutine(IdleAnimationCycle());
@@ -201,7 +197,6 @@ public class ForestBird : MonoBehaviour
             _currentDirection *= -1;
             _spriteRenderer.flipX = _currentDirection < 0;
             
-            _isInCycle = false;
             yield return null;
         }
     }

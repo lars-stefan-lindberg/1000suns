@@ -29,9 +29,6 @@ public class Pullable : MonoBehaviour
     [SerializeField] private float _maxBrightness = 2f;
     [SerializeField] private float _pulseFrequency = 1f;
     
-    [Header("Held Particles")]
-    [SerializeField] private float _velocityThreshold = 0.1f;
-    
     public bool IsPulled {get; set;}
     public bool IsImmune = false;
     
@@ -52,10 +49,6 @@ public class Pullable : MonoBehaviour
     private bool _isBrightnessPulsing = false;
     private float _currentBrightness = 1f;
     private float _brightnessElapsedTime = 0f;
-    
-    //private bool _ghostTrailArmed = false;
-    private float _previousVelocityMagnitude = 0f;
-    private bool _heldParticlesPlaying = false;
 
     private void Awake() {
         if (_heldParticles != null) {
@@ -141,7 +134,6 @@ public class Pullable : MonoBehaviour
         
         if (_heldParticles != null) {
             _heldParticles.Play();
-            _heldParticlesPlaying = true;
         }
     }
 
@@ -179,13 +171,8 @@ public class Pullable : MonoBehaviour
             _material.SetFloat("_Brightness", 1f);
         }
         
-        //_ghostTrailArmed = false;
-        _previousVelocityMagnitude = 0f;
-        // _trailingParticles.Stop();
-        
         if (_heldParticles != null) {
             _heldParticles.Stop();
-            _heldParticlesPlaying = false;
         }
     }
     
@@ -277,21 +264,5 @@ public class Pullable : MonoBehaviour
     private void PlayGrabbedSfx() {
         SoundFXManager.obj.PlayAtPosition(_grabbedSfx, transform.position);
     }
-    
-    // private void UpdateGhostTrail() {
-    //     float currentVelocityMagnitude = _rigidBody.velocity.magnitude;
-        
-    //     if (currentVelocityMagnitude > _previousVelocityMagnitude && _ghostTrailArmed) {
-    //         if (PullableGhostTrailManager.obj != null) {
-    //             PullableGhostTrailManager.obj.ShowGhosts();
-    //         }
-    //         _ghostTrailArmed = false;
-    //     }
-    //     else if (currentVelocityMagnitude < _previousVelocityMagnitude) {
-    //         _ghostTrailArmed = true;
-    //     }
-        
-    //     _previousVelocityMagnitude = currentVelocityMagnitude;
-    // }
     
 }

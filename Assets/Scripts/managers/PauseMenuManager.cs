@@ -437,7 +437,7 @@ public class PauseMenuManager : MonoBehaviour
         GameObject dialogueObject = null;
         try {
             dialogueObject = gameObjects.First(gameObject => gameObject.CompareTag("Dialogue"));
-        }catch(Exception e) {}
+        }catch(Exception) {}
 
         if(dialogueObject == null) {
             return null;

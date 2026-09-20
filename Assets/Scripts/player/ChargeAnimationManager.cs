@@ -5,8 +5,6 @@ public class ChargeAnimationMgr : MonoBehaviour
 {
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
-    
-    [SerializeField] private float _animationFadeMultiplier = 7f;
 
     private float _playerOffset = 0.2f;
     private Color _fadeStartColor;

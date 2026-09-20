@@ -90,7 +90,6 @@ public class Prisoner : MonoBehaviour
     private float rampageTimeCount = 0f;
 
     private AudioSource _gotHitAudioSource;
-    private bool _isFadingOutHitSound = false;
     public bool muteDeathSoundFX = false;
     private Rigidbody2D _blockInContact;
     private Material _material;
@@ -186,9 +185,6 @@ public class Prisoner : MonoBehaviour
     private void ApplyGotHitState(float hitPower, int projectileDirection)
     {
         if(!isImmuneToForcePush) {
-            // _gotHitAudioSource = SoundFXManager.obj.PlayPrisonerHit(transform);
-            _isFadingOutHitSound = false;
-            
             _animator.SetTrigger("hit");
             damagePower = hitPower;
             hasBeenHit = true;
@@ -462,11 +458,6 @@ public class Prisoner : MonoBehaviour
 
         if(isStuck)
             _rigidBody.velocity = Vector2.zero;
-
-        // if(!_isFadingOutHitSound && _gotHitAudioSource != null && !hasBeenHit && isGrounded) {
-        //     _isFadingOutHitSound = true;
-        //     SoundFXManager.obj.FadeOutAndStopSound(_gotHitAudioSource, 0.2f);
-        // }
 
         //Update animator
         _animator.SetBool("isGrounded", isGrounded);

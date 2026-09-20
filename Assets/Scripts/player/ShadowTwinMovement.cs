@@ -92,11 +92,9 @@ public class ShadowTwinMovement : MonoBehaviour
     [SerializeField] private float _propelThroughPlatformDuration = 0.3f;
     [SerializeField] private float _postPropelFloatyDuration = 0.5f;
     [SerializeField] private float _postPropelGravityModifier = 0.4f; // Lower = more floaty
-    [SerializeField] private float _platformColliderDisableDuration = 0.6f; // How long to disable platform collider
     
     [Header("Horizontal Propel Configuration")]
     [SerializeField] private float _horizontalPropelDecelerationTime = 160f; // Same as dash deceleration
-    [SerializeField] private float _horizontalPlatformColliderDisableDuration = 0.6f;
     [SerializeField] private float _horizontalPropelDirectionLockDuration = 0.3f; // How long to lock direction/flip
     
     private bool _isPropellingThroughPlatform = false;

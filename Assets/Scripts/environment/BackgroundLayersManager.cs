@@ -38,7 +38,6 @@ public class BackgroundLayersManager : MonoBehaviour
 
     [SerializeField] private bool _isChildOfMainCamera = false;
 
-    [SerializeField] private bool _snapCameraTransform = false;
     [SerializeField] private bool _overrideAssetsPixelsPerUnit = false;
     [SerializeField] private int _assetsPixelsPerUnitOverride = 16;
 

@@ -30,7 +30,7 @@ public class CaveCollectibleCreature : MonoBehaviour
     private float _squeezeX = 1.25f;
     private float _squeezeY = 0.65f;
     private float _squeezeTime = 0.16f;
-    private int _numberOfSqueezes = 3;
+    //private int _numberOfSqueezes = 3;
 
     private bool _hasTarget = false;
     private Transform _targetTransform;

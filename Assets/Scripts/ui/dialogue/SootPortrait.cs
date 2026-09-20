@@ -32,7 +32,6 @@ public class SootPortrait : MonoBehaviour, IPortrait
     [Header("Annoyed Effect")]
     [SerializeField] private float _annoyedShiftDistance = 30f;
     [SerializeField] private float _annoyedShiftDuration = 0.15f;
-    [SerializeField] private float _annoyedReturnDuration = 0.2f;
     [SerializeField] private int _annoyedNumberOfLoops = 5;
     [SerializeField] private Ease _annoyedEase = Ease.InOutSine;
     
@@ -49,7 +48,6 @@ public class SootPortrait : MonoBehaviour, IPortrait
     [SerializeField] private float _happyJumpPower = 30f;
     [SerializeField] private int _happyNumJumps = 1;
     [SerializeField] private float _happyJumpDuration = 0.5f;
-    [SerializeField] private Ease _happyJumpEase = Ease.OutQuad;
     
     [Header("Miserable Effect")]
     [SerializeField] private float _miserableShiftDistance = 30f;

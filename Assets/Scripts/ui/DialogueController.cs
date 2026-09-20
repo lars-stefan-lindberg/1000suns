@@ -23,7 +23,6 @@ public class DialogueController : MonoBehaviour
     [SerializeField] private LayoutElement _leftSpacer;
     [SerializeField] private LayoutElement _rightSpacer;
     [SerializeField] private TypewriterByCharacter _typeWriter;
-    [SerializeField] private float _typeSpeed = 10;
     [SerializeField] private GameObject _continueButton;
     [SerializeField] private GameObject _continueIcon;
     [SerializeField] private GameObject _eliPortrait;
@@ -38,10 +37,6 @@ public class DialogueController : MonoBehaviour
     [SerializeField] private float _blinkMaxDelay = 6f;
     [SerializeField] [Range(0f, 1f)] private float _doubleBlinkChance = 0.15f;
     [SerializeField] private float _emotionChangeCooldown = 1.5f;
-    
-    [Header("Dialogue Timing")]
-    [SerializeField] private float _firstParagraphDelay = 0.3f;
-    private string _tableCollectionName = "Dialogue_Text";
 
     private Queue<DialogueContent.ParagraphEntry> _paragraphs = new();
     private DialogueAudio _dialogueAudio;
@@ -443,7 +438,6 @@ public class DialogueController : MonoBehaviour
     }
     
     private IEnumerator ShowFirstParagraphAfterDelay() {
-        //yield return new WaitForSeconds(_firstParagraphDelay);
         DisplayNextParagraph();
         yield return null;
     }

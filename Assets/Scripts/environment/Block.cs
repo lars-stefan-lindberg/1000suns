@@ -8,7 +8,6 @@ public class Block : MonoBehaviour
     public LayerMask groundLayer;
     public LayerMask playerLayer;
     public LayerMask enemyLayer;
-    [SerializeField] private float _wallCheckCastDistance = 1.05f;
     [SerializeField] private float _minVelocityForWallHit = 2f;
     [SerializeField] private float _wallDetectionDistance = 0.2f;
     [SerializeField] private float _wallDetectionBoxWidthMultiplier = 0.5f;
@@ -24,7 +23,6 @@ public class Block : MonoBehaviour
     private bool _isTouchingCeiling = false;
     private AudioSource _slideSoundAudioSource;
     private bool _isMovingHorizontally = false;
-    private float _frontCheck = 1.35f;
     private float _bootTime = 0.5f; //Used to avoid landing sound on spawn
     private float _bootTimer = 0f;
     private bool _booted = false;

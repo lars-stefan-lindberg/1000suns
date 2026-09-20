@@ -19,8 +19,6 @@ public class PillarDoor : MonoBehaviour
     [SerializeField] private float _closeDustDuration = 0.15f;
     [SerializeField] private float _shakeAmplitude = 0.05f;
     [SerializeField] private float _shakeFrequency = 25.0f;
-    [SerializeField] private float _openCameraShakeAmplitude = 1.0f;
-    [SerializeField] private float _openCameraShakeFrequency = 1.0f;
     [SerializeField] private float _floorDustDuration = 0.15f;
 
     private Vector3 _doorStartPos;

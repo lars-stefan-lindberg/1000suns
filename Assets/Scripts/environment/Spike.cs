@@ -51,18 +51,13 @@ public class Spike : MonoBehaviour
         _lightSprite2DFadeManager = GetComponent<LightSprite2DFadeManager>();
     }
 
-    private readonly float _raycastOffsetX = 2;
     [SerializeField] private float _raycastOffsetY = 0;
 
     private bool hitLiquid = false;
 
     private void Update() {
-        // Debug.DrawRay(new Vector2(transform.position.x - _raycastOffsetX, transform.position.y + _raycastOffsetY), Vector3.down * (castDistance + _raycastOffsetY), Color.red);
-        // Debug.DrawRay(new Vector2(transform.position.x + _raycastOffsetX, transform.position.y + _raycastOffsetY), Vector3.down * (castDistance + _raycastOffsetY), Color.red);
         Debug.DrawRay(new Vector2(transform.position.x, transform.position.y + _raycastOffsetY), Vector3.down * (castDistance + _raycastOffsetY), Color.red);
         if (_playerDetectionEnabled && !_isFalling && !_hasDetectedPlayer) {
-            //RaycastHit2D hitLeft = Physics2D.Raycast(new Vector2(transform.position.x - _raycastOffsetX, transform.position.y + _raycastOffsetY), Vector3.down, castDistance + _raycastOffsetY);
-            //RaycastHit2D hitRight = Physics2D.Raycast(new Vector2(transform.position.x + _raycastOffsetX, transform.position.y + _raycastOffsetY), Vector3.down, castDistance + _raycastOffsetY);
             RaycastHit2D hitRight = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + _raycastOffsetY), Vector3.down, castDistance + _raycastOffsetY, _playerLayerMask);
             bool hit = false;
             // if(hitLeft.transform != null) {

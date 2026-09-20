@@ -33,12 +33,9 @@ public class ForestButterfly : MonoBehaviour
     private SpriteRenderer _spriteRenderer;
     private Vector3 _startPosition;
     private Vector3 _currentDirection;
-    private bool _isHovering = true;
-    private float _hoverTimer = 0f;
     private Vector3 _hoverStartPos;
     private Transform _playerTransform;
     private bool _wasPlayerNearbyAtStateStart = false;
-    private bool _isRecovering = false;
     private bool _isReturningToStart = false;
     private Coroutine _behaviorCycleCoroutine;
     private bool _isInitialized = false;
@@ -50,8 +47,6 @@ public class ForestButterfly : MonoBehaviour
         Recovering,
         ReturningToStart
     }
-
-    private ButterflyState _currentState = ButterflyState.Hovering;
 
     void Awake()
     {
@@ -142,7 +137,6 @@ public class ForestButterfly : MonoBehaviour
 
     private IEnumerator HoverState()
     {
-        _currentState = ButterflyState.Hovering;
         _hoverStartPos = transform.position;
         float elapsedTime = 0f;
         _wasPlayerNearbyAtStateStart = IsPlayerNearby();
@@ -169,8 +163,6 @@ public class ForestButterfly : MonoBehaviour
 
     private IEnumerator MovementState()
     {
-        _currentState = ButterflyState.Moving;
-
         bool isPlayerNearby = IsPlayerNearby();
         bool isFleeing = isPlayerNearby;
         
@@ -245,10 +237,8 @@ public class ForestButterfly : MonoBehaviour
         
         if (isFleeing)
         {
-            _isRecovering = true;
             bool recoveryInterrupted = false;
             yield return StartCoroutine(RecoveryHoverState(interrupted => recoveryInterrupted = interrupted));
-            _isRecovering = false;
             
             if (recoveryInterrupted)
             {
@@ -259,7 +249,6 @@ public class ForestButterfly : MonoBehaviour
 
     private IEnumerator RecoveryHoverState(System.Action<bool> onComplete)
     {
-        _currentState = ButterflyState.Recovering;
         _hoverStartPos = transform.position;
         float elapsedTime = 0f;
         bool interrupted = false;
@@ -283,8 +272,6 @@ public class ForestButterfly : MonoBehaviour
 
     private IEnumerator ReturnToStartPosition()
     {
-        _currentState = ButterflyState.ReturningToStart;
-        
         Vector3 startPos = transform.position;
         float journeyLength = Vector3.Distance(startPos, _startPosition);
         float startTime = Time.time;

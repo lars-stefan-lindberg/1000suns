@@ -16,9 +16,6 @@ public class BabyPrisoner : MonoBehaviour
     private Animator _animator;
     private bool isGrounded = false;
     private float isGroundedCheckOffset = 0.55f; //TODO: Get dynamic value based on enemy height
-    private float groundAheadCheck = 0.51f;
-    private bool isGroundFloorAhead = true;
-    private float frontCheck = 0.51f;
 
     public float speed = 0f;
     public float alertSpeed = 4f;
@@ -32,7 +29,6 @@ public class BabyPrisoner : MonoBehaviour
     private bool isTurning = false;
 
     private bool isAlerted = false;
-    private bool _isDespawning = false;
     private bool _isHiding = false;
     public int alertRunDirection = 1; //-1: left, 1: right
 
@@ -40,8 +36,6 @@ public class BabyPrisoner : MonoBehaviour
     [SerializeField] private HideSound _hideSoundToPlay = HideSound.None;
 
     bool IsMoving => Mathf.Abs(_rigidBody.velocity.x) > 0.01;
-
-    private float playerCastDistance = 0;
 
     private float originHorizontalPos;
     public float maxTravellingDistance = 5f;
@@ -59,7 +53,6 @@ public class BabyPrisoner : MonoBehaviour
     private BabyPrisonerAudio _babyPrisonerAudio;
     private Coroutine _delayedSetDynamicCoroutine;
     private Coroutine _playAngryAfterBouncedOnSfxCoroutine;
-    private bool _playAngryAfterBouncedOnSfx = false;
 
     void Start() {
         _collider = GetComponent<BoxCollider2D>();
@@ -77,32 +70,10 @@ public class BabyPrisoner : MonoBehaviour
     {
         //Check if grounded
         Vector3 groundLineCastPosition = _collider.transform.position;
-        //Debug.DrawLine(
-        //    groundLineCastPosition,
-        //    new Vector3(groundLineCastPosition.x, groundLineCastPosition.y - isGroundedCheckOffset, groundLineCastPosition.z),
-        //    Color.red);
         isGrounded = Physics2D.Linecast(
             groundLineCastPosition,
             new Vector3(groundLineCastPosition.x, groundLineCastPosition.y - isGroundedCheckOffset, groundLineCastPosition.z),
             groundLayer);
-
-        //Save until potentially making a smart baby prisoner
-        // if (isGrounded && !isTurning)
-        // {
-        //     //Check ahead if no ground ahead
-        //     Vector2 groundLineAheadCastPosition = _collider.transform.position - _collider.transform.right * _enemyWidth * groundAheadCheck;
-        //     isGroundFloorAhead = Physics2D.Linecast(groundLineAheadCastPosition, groundLineAheadCastPosition + Vector2.down, groundLayer);
-
-        //     //Wall check
-        //     bool isWallAhead = Physics2D.Raycast(_collider.transform.position, new Vector3(-_collider.transform.right.x, 0, 0), frontCheck, groundLayer);
-
-        //     if (isWallAhead || !isGroundFloorAhead)
-        //     {
-        //         isTurning = true;
-        //         turnAroundTimer = 0;
-        //     }
-            
-        // }
 
         if (!_idleInPlaceUntilAlerted && !isTurning && !isAlerted && !_isHiding) {
             float currentHorizontalPos = transform.position.x;
@@ -118,16 +89,6 @@ public class BabyPrisoner : MonoBehaviour
         {
             GracefulSpeedChange();
         }
-        // Debug.DrawRay(transform.position, (IsFacingLeft() ? Vector3.left : Vector3.right) * playerCastDistance, Color.red);
-        // RaycastHit2D hit = Physics2D.Raycast(transform.position, (IsFacingLeft() ? Vector3.left : Vector3.right), playerCastDistance);
-
-        // if(!isAlerted) {
-        //     if(hit.transform != null) {
-        //         if(hit.transform.CompareTag("Player")) {
-        //             Alert();
-        //         }
-        //     }
-        // }
 
         if(isAlerted && IsMoving) {
             if(playScaredSoundEffectTimer >= playScaredSoundEffectInterval) {
@@ -206,7 +167,6 @@ public class BabyPrisoner : MonoBehaviour
                         ShadowTwinMovement.obj.ApplyBounce(_bouncePower);
                     }
                     _idleInPlaceUntilAlerted = true;
-                    _playAngryAfterBouncedOnSfx = true;
                     SetBouncedOn();
                     if(_playAngryAfterBouncedOnSfxCoroutine != null) {
                         StopCoroutine(_playAngryAfterBouncedOnSfxCoroutine);
@@ -232,7 +192,6 @@ public class BabyPrisoner : MonoBehaviour
     private IEnumerator PlayAngryAfterBouncedOnSfx() {
         yield return new WaitForSeconds(0.8f);
         _babyPrisonerAudio.PlayAngryAfterJumpedOn();
-        _playAngryAfterBouncedOnSfx = false;
     }
 
     private IEnumerator DelayedSetDynamic() {
@@ -310,7 +269,6 @@ public class BabyPrisoner : MonoBehaviour
     }
 
     public void Despawn() {
-        _isDespawning = true;
         _animator.SetTrigger("despawn");
         _babyPrisonerAudio.PlayDespawn();
         _lightSprite2DFadeManager.SetFadedInState();

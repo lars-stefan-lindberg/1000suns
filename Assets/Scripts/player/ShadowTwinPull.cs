@@ -20,7 +20,6 @@ public class ShadowTwinPull : MonoBehaviour
 
     public float minBuildUpPowerTime = 0.3f;
 
-    private float _playerOffset = 0.5f;
     public float maxForce = 3;
     public float powerUpMaxForce = 4;
     public float powerBuildUpPerFixedUpdate = 1.2f;
@@ -31,8 +30,6 @@ public class ShadowTwinPull : MonoBehaviour
     public GameObject pushPowerUpAnimation;
 
     private float _buildUpPower = 0;
-    private bool _buildingUpPower = false;
-    private float _buildUpPowerTime = 0;
     
     public FloatyPlatform platform;
 
@@ -253,9 +250,7 @@ public class ShadowTwinPull : MonoBehaviour
 
         ShadowTwinPlayer.obj.RestorePlayerPullLight();
 
-        _buildingUpPower = false;
         _buildUpPower = defaultPower;
-        _buildUpPowerTime = 0;
         Player.obj.EndChargeFlash();
     }
 
