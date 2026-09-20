@@ -25,6 +25,11 @@ public class DialogueContent : ScriptableObject
         Puzzled,
         VeryAngry,
         Hurt,
+        Happy,
+        Miserable,
+        Evil,
+        IdleEvil,
+        Excited
     }
 
     [System.Serializable]
