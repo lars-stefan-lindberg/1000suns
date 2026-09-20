@@ -206,7 +206,48 @@ public class MainMenuManager : MonoBehaviour
 
     void OnDestroy() {
         _cancelActionReference.action.performed -= OnCancel;
+        
+        // Kill the main menu transition sequence
+        _menuTransitionSequence?.Kill();
         _menuTransitionSequence = null;
+        
+        // Kill all tweens on the main menu canvas groups
+        if (_mainMenu != null) DOTween.Kill(_mainMenu);
+        if (_mainMenuScreen != null) DOTween.Kill(_mainMenuScreen);
+        if (_mainMenuVisualsScreen != null) DOTween.Kill(_mainMenuVisualsScreen);
+        
+        // Kill all tweens on sub-screens and their children
+        if (_selectSaveFileScreen != null) {
+            DOTween.Kill(_selectSaveFileScreen.GetComponent<CanvasGroup>());
+            DOTween.Kill(_selectSaveFileScreen.transform, true); // true = complete all child tweens too
+        }
+        if (_optionsScreen != null) {
+            DOTween.Kill(_optionsScreen.GetComponent<CanvasGroup>());
+            DOTween.Kill(_optionsScreen.transform, true);
+        }
+        if (_gameOptionsScreen != null) {
+            DOTween.Kill(_gameOptionsScreen.GetComponent<CanvasGroup>());
+            DOTween.Kill(_gameOptionsScreen.transform, true);
+        }
+        if (_audioScreen != null) {
+            DOTween.Kill(_audioScreen.GetComponent<CanvasGroup>());
+            DOTween.Kill(_audioScreen.transform, true);
+        }
+        if (_controllerScreen != null) {
+            DOTween.Kill(_controllerScreen.GetComponent<CanvasGroup>());
+            DOTween.Kill(_controllerScreen.transform, true);
+        }
+        if (_keyboardScreen != null) {
+            DOTween.Kill(_keyboardScreen.GetComponent<CanvasGroup>());
+            DOTween.Kill(_keyboardScreen.transform, true);
+        }
+        
+        // Kill all tweens on main menu canvases and their children
+        if (_titleScreenCanvas != null) DOTween.Kill(_titleScreenCanvas.transform, true);
+        if (_particlesCanvas != null) DOTween.Kill(_particlesCanvas.transform, true);
+        if (_titleTextCanvas != null) DOTween.Kill(_titleTextCanvas.transform, true);
+        if (_lightsCanvas != null) DOTween.Kill(_lightsCanvas.transform, true);
+        
         obj = null;
     }
 

@@ -67,4 +67,10 @@ public abstract class UIScreen : MonoBehaviour
                 gameObject.SetActive(false);
             });
     }
+
+    protected virtual void OnDestroy()
+    {
+        // Kill all tweens on this canvas group to prevent warnings when the scene is unloaded
+        canvasGroup?.DOKill();
+    }
 }

@@ -47,4 +47,13 @@ public class RebindInputMenuItem : MonoBehaviour, IMoveHandler, ISelectHandler, 
         _leftSelector.DOScale(scaleValue, _selectorScaleDuration).SetUpdate(true);
         _rightSelector.DOScale(new Vector3(-scaleValue, scaleValue, scaleValue), _selectorScaleDuration).SetUpdate(true);
     }
+
+    protected void OnDestroy()
+    {
+        // Kill all tweens on this component's transforms
+        _label?.DOKill();
+        _icon?.DOKill();
+        _leftSelector?.DOKill();
+        _rightSelector?.DOKill();
+    }
 }

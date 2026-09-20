@@ -159,4 +159,13 @@ public class LanguageSelectMenuItem : MonoBehaviour, IMoveHandler, ISelectHandle
         }
         return null;
     }
+
+    protected void OnDestroy()
+    {
+        // Kill all tweens on this component's transforms
+        _label?.DOKill();
+        _valueLabel?.DOKill();
+        _leftSelector?.DOKill();
+        _rightSelector?.DOKill();
+    }
 }

@@ -52,4 +52,12 @@ public class MainMenuItem : MonoBehaviour, IMoveHandler, ISelectHandler, IDesele
             DeselectColorChange();
         ScaleSelectors(0);
     }
+
+    protected void OnDestroy()
+    {
+        // Kill all tweens on this component's transforms
+        _text?.DOKill();
+        _leftSelector?.DOKill();
+        _rightSelector?.DOKill();
+    }
 }

@@ -44,6 +44,13 @@ public class SaveProfileMenuItem : MonoBehaviour, IMoveHandler, ISelectHandler, 
 
     void OnDestroy() {
         _cancelActionReference.action.performed -= OnCancelInput;
+        
+        // Kill all tweens on this component's transforms and canvas groups
+        _leftSelector?.DOKill();
+        _rightSelector?.DOKill();
+        _backgroundCanvasGroup?.DOKill();
+        _newGameCanvasGroup?.DOKill();
+        _detailsCanvasGroup?.DOKill();
     }
 
     private void OnCancelInput(InputAction.CallbackContext context) {

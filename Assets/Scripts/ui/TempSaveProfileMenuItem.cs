@@ -84,4 +84,13 @@ public class TempSaveProfileMenuItem : MonoBehaviour, IMoveHandler, ISelectHandl
         DeselectColorChange();
         ScaleSelectors(0);
     }
+
+    protected void OnDestroy()
+    {
+        // Kill all tweens on this component's transforms
+        _text?.DOKill();
+        _idText?.DOKill();
+        _leftSelector?.DOKill();
+        _rightSelector?.DOKill();
+    }
 }
