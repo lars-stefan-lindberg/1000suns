@@ -1,12 +1,14 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using FMODUnity;
 
 public class CaveCollectiblePortalTrigger : MonoBehaviour
 {
     [SerializeField] private Transform _portal;
     [SerializeField] private Animator _portalAnimator;
     [SerializeField] private CaveCollectibleCreature _collectible;
+    [SerializeField] private EventReference _portalClose;
 
     void OnTriggerEnter2D(Collider2D collision)
     {
@@ -25,6 +27,7 @@ public class CaveCollectiblePortalTrigger : MonoBehaviour
         _collectible.IsPermanentlyCollected = true;
         yield return new WaitUntil(() => _collectible.IsDespawned);
         
+        SoundFXManager.obj.PlayAtPosition(_portalClose, transform.position);
         _portalAnimator.SetTrigger("despawn");
         CollectibleManager.obj.CollectiblePickedPermanently(_collectible);
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
