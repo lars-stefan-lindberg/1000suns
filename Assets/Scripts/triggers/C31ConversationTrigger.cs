@@ -6,6 +6,7 @@ public class C31ConversationTrigger : MonoBehaviour, ISkippable
 {
     [SerializeField] private ConversationManager _conversationManager;
     [SerializeField] private C31Manager _c31Manager;
+    [SerializeField] private MusicTrack _dialogueTrack;
     [SerializeField] private MusicTrack _musicTrack;
     [SerializeField] private GameEventId _cave52CutsceneCompleted;
     [SerializeField] private GameObject _cutsceneCamera;
@@ -43,7 +44,9 @@ public class C31ConversationTrigger : MonoBehaviour, ISkippable
         }
         PauseMenuManager.obj.RegisterSkippable(this);
         _cutsceneCamera.SetActive(true);
-        yield return new WaitForSeconds(2.2f);
+        yield return new WaitForSeconds(1f);
+        MusicManager.obj.Play(_dialogueTrack);
+        yield return new WaitForSeconds(1.2f);
         _conversationManager.StartConversation();
     }
 
@@ -53,6 +56,7 @@ public class C31ConversationTrigger : MonoBehaviour, ISkippable
         }
 
         _conversationManager.HardStopConversation();
+        MusicManager.obj.Stop();
 
         StartCoroutine(ResumeGameplay());
     }
@@ -75,6 +79,7 @@ public class C31ConversationTrigger : MonoBehaviour, ISkippable
     private IEnumerator OnConversationCompletedCoroutine() {
         CaveAvatar.obj.SetTarget(_sootAfterConversationTarget);
         yield return new WaitForSeconds(2f);
+        MusicManager.obj.Stop();
         _cutsceneCamera.SetActive(false);
         yield return new WaitForSeconds(1f);
         MusicManager.obj.Play(_musicTrack);
