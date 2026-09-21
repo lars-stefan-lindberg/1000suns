@@ -13,11 +13,14 @@ public class AudioStateManager : MonoBehaviour
 {
     public static AudioStateManager obj;
     [SerializeField] private float fadeDuration = 0.25f;
+    [SerializeField] private float fadeDialogueDuration = 1f;
 
     private Bus gameplaySfxBus;
     private PARAMETER_ID pauseParamId;
+    private PARAMETER_ID dialogueParamId;
     private PARAMETER_ID reverbZoneParamId;
     private Coroutine fadeRoutine;
+    private Coroutine fadeDialogueRoutine;
 
     void Awake()
     {
@@ -30,6 +33,13 @@ public class AudioStateManager : MonoBehaviour
         );
 
         pauseParamId = pauseDesc.id;
+
+        RuntimeManager.StudioSystem.getParameterDescriptionByName(
+            "Dialogue",
+            out PARAMETER_DESCRIPTION dialogueDesc
+        );
+
+        dialogueParamId = dialogueDesc.id;
 
         RuntimeManager.StudioSystem.getParameterDescriptionByName(
             "reverb_zone",
@@ -49,6 +59,15 @@ public class AudioStateManager : MonoBehaviour
             StopCoroutine(fadeRoutine);
 
         fadeRoutine = StartCoroutine(FadePause(target));
+    }
+
+    public void SetDialogue(bool dialogue) {
+        float target = dialogue ? 1f : 0f;
+
+        if (fadeDialogueRoutine != null)
+            StopCoroutine(fadeDialogueRoutine);
+
+        fadeDialogueRoutine = StartCoroutine(FadeDialogue(target));
     }
 
     // Restore volume and low pass filter
@@ -98,6 +117,29 @@ public class AudioStateManager : MonoBehaviour
         }
 
         RuntimeManager.StudioSystem.setParameterByID(pauseParamId, target);
+    }
+
+    private IEnumerator FadeDialogue(float target)
+    {
+        RuntimeManager.StudioSystem.getParameterByID(
+            dialogueParamId,
+            out float startValue
+        );
+
+        float time = 0f;
+
+        while (time < fadeDialogueDuration)
+        {
+            time += Time.unscaledDeltaTime;
+            float t = time / fadeDialogueDuration;
+
+            float value = Mathf.Lerp(startValue, target, t);
+            RuntimeManager.StudioSystem.setParameterByID(dialogueParamId, value);
+
+            yield return null;
+        }
+
+        RuntimeManager.StudioSystem.setParameterByID(dialogueParamId, target);
     }
 
     void OnDestroy() {

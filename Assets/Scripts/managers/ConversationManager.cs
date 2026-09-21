@@ -12,6 +12,7 @@ public class ConversationManager : MonoBehaviour
     [SerializeField] private DialogueController _dialogueController;
     [SerializeField] private List<ConversationEntry> conversationList;
     [SerializeField] private bool _isLastConversationOfRoom = true;
+    [SerializeField] private bool _duckMusic = true;
     private int currentDialogueIndex = 0;
 
     void OnEnable()
@@ -34,6 +35,8 @@ public class ConversationManager : MonoBehaviour
 
     public void StartConversation()
     {
+        if(_duckMusic)
+            AudioStateManager.obj.SetDialogue(true);
         _dialogueController.gameObject.SetActive(true);
         if (conversationList.Count > 0)
         {
@@ -43,6 +46,8 @@ public class ConversationManager : MonoBehaviour
     }
 
     public void HardStopConversation() {
+        if(_duckMusic)
+            AudioStateManager.obj.SetDialogue(false);
         currentDialogueIndex = conversationList.Count;
         if(_dialogueController.IsDisplayed()) {
             _dialogueController.HardStopConversation();
@@ -52,6 +57,8 @@ public class ConversationManager : MonoBehaviour
     }
 
     public void CleanUp() {
+        if(_duckMusic)
+            AudioStateManager.obj.SetDialogue(false);
         _dialogueController.CleanUp();
         _dialogueController.gameObject.SetActive(false);
     }
@@ -87,8 +94,11 @@ public class ConversationManager : MonoBehaviour
 
     private void EndConversation()
     {
-        if(_isLastConversationOfRoom)
+        if(_isLastConversationOfRoom) {
+            if(_duckMusic)
+                AudioStateManager.obj.SetDialogue(false);
             _dialogueController.gameObject.SetActive(false);
+        }
         OnConversationEnd?.Invoke();
     }
 }
