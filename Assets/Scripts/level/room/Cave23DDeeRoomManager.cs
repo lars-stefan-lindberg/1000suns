@@ -12,6 +12,11 @@ using FMODUnity;
 public class Cave23DDeeRoomManager : MonoBehaviour
 {
     [SerializeField] private MusicTrack _music;
+    [SerializeField] private AmbienceTrack _ummaraAmbience;
+    [SerializeField] private EventReference _ummaraSpeech1;
+    [SerializeField] private EventReference _ummaraSpeech2;
+    [SerializeField] private EventReference _ummaraSpeech3;
+    [SerializeField] private EventReference _ummaraSpeech4;
     [SerializeField] private GameEventId _dreamRoomCompleted;
     [SerializeField] private float _startMusicDuration = 2f;
     [SerializeField] private Canvas _textCanvas;
@@ -107,6 +112,8 @@ public class Cave23DDeeRoomManager : MonoBehaviour
     private IEnumerator StartMusic() {
         yield return new WaitForSeconds(_startMusicDuration);
         MusicManager.obj.Play(_music);
+        yield return new WaitForSeconds(1f);
+        AmbienceManager.obj.Play(_ummaraAmbience);
     }
 
     void Update()
@@ -132,11 +139,13 @@ public class Cave23DDeeRoomManager : MonoBehaviour
         _ummaraEyes.Activate();
 
         StartText();
+        SoundFXManager.obj.Play2D(_ummaraSpeech1);
 
         yield return WaitForTypingToComplete();
         yield return new WaitForSeconds(2f);
 
         ShowNextParagraph();
+        SoundFXManager.obj.Play2D(_ummaraSpeech2);
 
         yield return WaitForTypingToComplete();
         yield return new WaitForSeconds(2f);
@@ -160,6 +169,7 @@ public class Cave23DDeeRoomManager : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         ShowNextParagraph();
+        SoundFXManager.obj.Play2D(_ummaraSpeech3);
         yield return WaitForTypingToComplete();
         yield return new WaitForSeconds(2f);
 
@@ -189,6 +199,7 @@ public class Cave23DDeeRoomManager : MonoBehaviour
         yield return new WaitForSeconds(2f);
 
         ShowNextParagraph();
+        SoundFXManager.obj.Play2D(_ummaraSpeech4);
 
         yield return WaitForTypingToComplete();
         yield return new WaitForSeconds(2f);
@@ -213,6 +224,7 @@ public class Cave23DDeeRoomManager : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         MusicManager.obj.Stop();
+        AmbienceManager.obj.Stop();
 
         StartCoroutine(_ummaraBody.FadeOutSprite(_ummaraFadeOutDuration));
         StartCoroutine(_ummaraBody.FadeOutLight(_ummaraFadeOutDuration));
