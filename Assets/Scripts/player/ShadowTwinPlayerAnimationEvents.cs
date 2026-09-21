@@ -13,6 +13,10 @@ public class ShadowTwinPlayerAnimationEvents : MonoBehaviour
         _sharedPlayerAudio.PlayFootstep(ShadowTwinMovement.obj.surface);
     }
 
+    public void PlayHeavierLand() {
+        _sharedPlayerAudio.PlayHeavierLand(ShadowTwinMovement.obj.surface);
+    }
+
     public void JumpSqueeze() {
         ShadowTwinMovement.obj.JumpSqueeze();
     }
