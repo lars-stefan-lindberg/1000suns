@@ -44,6 +44,19 @@ public class SharedCharacterAudio : MonoBehaviour
             }
         );
     }
+    
+    public void PlayHeavierLand(SurfaceTypeManager.SurfaceType surface)
+    {
+        if (!_isSoundEnabled) return;
+        SoundFXManager.obj.PlayAtGameObject(
+            sounds.heavierLand,
+            gameObject,
+            inst =>
+            {
+                inst.setParameterByID(surfaceParamId, (float)surface);
+            }
+        );
+    }
 
     public void PlayFootstep(SurfaceTypeManager.SurfaceType surface)
     {

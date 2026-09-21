@@ -21,6 +21,10 @@ public class PlayerAnimationEvents : MonoBehaviour
         _sharedPlayerAudio.PlayFootstep(PlayerMovement.obj.surface);
     }
 
+    public void PlayHeavierLand() {
+        _sharedPlayerAudio.PlayHeavierLand(PlayerMovement.obj.surface);
+    }
+
     public void PlayHeadOutOfTent() {
         _eliAudio.PlayHeadMovingOutOfTent();
     }

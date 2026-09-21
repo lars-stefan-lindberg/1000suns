@@ -218,6 +218,7 @@ MonoBehaviour:
   - dialogueContent: {fileID: 11400000, guid: f5f524b80ed7d4c40bf0d1b67284345f, type: 2}
   - dialogueContent: {fileID: 11400000, guid: 5b902dec5485d46b19d44f9c8ca55243, type: 2}
   _isLastConversationOfRoom: 1
+  _duckMusic: 1
 --- !u!4 &60624485
 Transform:
   m_ObjectHideFlags: 0
@@ -388,6 +389,7 @@ MonoBehaviour:
   conversationList:
   - dialogueContent: {fileID: 11400000, guid: 243b1e75815414b0189e2b43728ac4a0, type: 2}
   _isLastConversationOfRoom: 0
+  _duckMusic: 1
 --- !u!4 &391456162
 Transform:
   m_ObjectHideFlags: 0
@@ -643,6 +645,10 @@ PrefabInstance:
     - target: {fileID: 8659241892950010974, guid: 122069d98019e4ae0a2b1eb7b4155ec1, type: 3}
       propertyPath: _acceleration
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8680466464798560484, guid: 122069d98019e4ae0a2b1eb7b4155ec1, type: 3}
+      propertyPath: m_TagString
+      value: Roots
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -70565,6 +70571,7 @@ MonoBehaviour:
   conversationList:
   - dialogueContent: {fileID: 11400000, guid: c0545127ea463446a84d05c77714da4f, type: 2}
   _isLastConversationOfRoom: 0
+  _duckMusic: 1
 --- !u!4 &1369182840
 Transform:
   m_ObjectHideFlags: 0
@@ -71071,6 +71078,7 @@ MonoBehaviour:
   conversationList:
   - dialogueContent: {fileID: 11400000, guid: 466bffc470b5341f6a14f2996991c34d, type: 2}
   _isLastConversationOfRoom: 0
+  _duckMusic: 1
 --- !u!4 &2074264162
 Transform:
   m_ObjectHideFlags: 0
