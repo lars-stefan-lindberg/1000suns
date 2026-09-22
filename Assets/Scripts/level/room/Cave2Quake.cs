@@ -79,6 +79,7 @@ public class Cave2Quake : MonoBehaviour, ISkippable
     {
         _earthQuakeStingerInstance = SoundFXManager.obj.CreateAttachedInstance(_earthquakeStinger, gameObject, null);
         _earthQuakeStingerInstance.start();
+        _earthQuakeStingerInstance.release();
     }
 
     private void BeginFadeOutEarthquake()

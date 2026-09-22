@@ -790,6 +790,7 @@ MonoBehaviour:
   - dialogueContent: {fileID: 11400000, guid: 250ee4a33c59d4633a6e12ee67a6ce9a, type: 2}
   - dialogueContent: {fileID: 11400000, guid: efd6100dfa9eb496c813fee8ecf48085, type: 2}
   _isLastConversationOfRoom: 1
+  _duckMusic: 1
 --- !u!114 &386315776
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -812,6 +813,27 @@ MonoBehaviour:
   _caveAvatarRootsManager: {fileID: 1484019242}
   _leftSootFollowPlayerTrigger: {fileID: 1648662844}
   _sootFreed: {fileID: 11400000, guid: 1a2a444fa9393412bb722a5279dbe39a, type: 2}
+  _sootFly1:
+    Guid:
+      Data1: -1611440873
+      Data2: 1256367522
+      Data3: 1058014364
+      Data4: -123330016
+    Path: event:/character/soot/fly_1
+  _sootFly2:
+    Guid:
+      Data1: -538191097
+      Data2: 1098948517
+      Data3: 1322515604
+      Data4: -971657494
+    Path: event:/character/soot/fly_2
+  _sootFly3:
+    Guid:
+      Data1: 2055937754
+      Data2: 1323651165
+      Data3: -547292244
+      Data4: -431144567
+    Path: event:/character/soot/fly_3
 --- !u!61 &386315777
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -6908,6 +6930,7 @@ MonoBehaviour:
   - dialogueContent: {fileID: 11400000, guid: a1355853d3d214611a5d83c34fcd0e51, type: 2}
   - dialogueContent: {fileID: 11400000, guid: 6d85ca9ec6841449d8f850e6565fe654, type: 2}
   _isLastConversationOfRoom: 0
+  _duckMusic: 1
 --- !u!114 &1022743598
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7189,6 +7212,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   roomType: 0
+  topLockMode: 0
   topLockDistance: 2.5
   unlockHysteresis: 0.5
   lockYDampingBoost: 2
@@ -13560,6 +13584,7 @@ MonoBehaviour:
   - dialogueContent: {fileID: 11400000, guid: 09b71a23f5aab49a4bf28ebfa5b9f859, type: 2}
   - dialogueContent: {fileID: 11400000, guid: 4db647336eaed42348f3332944ee2f0d, type: 2}
   _isLastConversationOfRoom: 1
+  _duckMusic: 1
 --- !u!1 &2127391947
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,5 +1,7 @@
 using System.Collections;
 using UnityEngine;
+using FMODUnity;
+using FMOD.Studio;
 
 public class C1FreeCaveAvatarManager : MonoBehaviour, ISkippable
 {
@@ -10,8 +12,13 @@ public class C1FreeCaveAvatarManager : MonoBehaviour, ISkippable
     [SerializeField] private CaveAvatarRootsManager _caveAvatarRootsManager;
     [SerializeField] private GameObject _leftSootFollowPlayerTrigger;
     [SerializeField] private GameEventId _sootFreed;
+    [SerializeField] private EventReference _sootFly1;
+    [SerializeField] private EventReference _sootFly2;
     private BoxCollider2D _collider;
     private Coroutine _cutsceneCoroutine;
+
+    private EventInstance _sootFly1Instance;
+    private EventInstance _sootFly2Instance;
 
     void Start()
     {
@@ -36,6 +43,8 @@ public class C1FreeCaveAvatarManager : MonoBehaviour, ISkippable
         Player.obj.EndPullRoots();
         if(_caveRootsTrap != null)
             _caveRootsTrap.SetActive(false);
+        AudioUtils.SafeStop(ref _sootFly1Instance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+        AudioUtils.SafeStop(ref _sootFly2Instance, FMOD.Studio.STOP_MODE.IMMEDIATE);
         CaveAvatar.obj.SetPosition(_finalCaveAvatarFlyPosition.position);
         CaveAvatar.obj.SetFlipX(false);
         CaveAvatar.obj.SetFloatingEnabled(true);
@@ -75,10 +84,24 @@ public class C1FreeCaveAvatarManager : MonoBehaviour, ISkippable
         //Soot flies happily
         CaveAvatar.obj.SetTarget(_caveAvatarFreePositions[0]);
         CaveAvatar.obj.SetFloatingEnabled(true);
+        _sootFly1Instance = SoundFXManager.obj.CreateAttachedInstance(_sootFly1, CaveAvatar.obj.gameObject, null);
+        _sootFly1Instance.start();
+        _sootFly1Instance.release();
+
         yield return new WaitForSeconds(1.5f);
         CaveAvatar.obj.SetTarget(_caveAvatarFreePositions[1]);
+        yield return new WaitForSeconds(0.2f);
+        _sootFly2Instance = SoundFXManager.obj.CreateAttachedInstance(_sootFly2, CaveAvatar.obj.gameObject, null);
+        _sootFly2Instance.start();
+        _sootFly2Instance.release();
+
         yield return new WaitForSeconds(1.5f);
         CaveAvatar.obj.SetTarget(_caveAvatarFreePositions[2]);
+        yield return new WaitForSeconds(0.2f);
+        _sootFly2Instance = SoundFXManager.obj.CreateAttachedInstance(_sootFly2, CaveAvatar.obj.gameObject, null);
+        _sootFly2Instance.start();
+        _sootFly2Instance.release();
+
         yield return new WaitForSeconds(1.5f);
 
         //Start dialogue
