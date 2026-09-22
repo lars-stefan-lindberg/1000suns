@@ -14,11 +14,13 @@ public class C1FreeCaveAvatarManager : MonoBehaviour, ISkippable
     [SerializeField] private GameEventId _sootFreed;
     [SerializeField] private EventReference _sootFly1;
     [SerializeField] private EventReference _sootFly2;
+    [SerializeField] private EventReference _freeSootStinger;
     private BoxCollider2D _collider;
     private Coroutine _cutsceneCoroutine;
 
     private EventInstance _sootFly1Instance;
     private EventInstance _sootFly2Instance;
+    private EventInstance _freeSootStingerInstance;
 
     void Start()
     {
@@ -45,6 +47,7 @@ public class C1FreeCaveAvatarManager : MonoBehaviour, ISkippable
             _caveRootsTrap.SetActive(false);
         AudioUtils.SafeStop(ref _sootFly1Instance, FMOD.Studio.STOP_MODE.IMMEDIATE);
         AudioUtils.SafeStop(ref _sootFly2Instance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+        AudioUtils.SafeStop(ref _freeSootStingerInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
         CaveAvatar.obj.SetPosition(_finalCaveAvatarFlyPosition.position);
         CaveAvatar.obj.SetFlipX(false);
         CaveAvatar.obj.SetFloatingEnabled(true);
@@ -77,7 +80,11 @@ public class C1FreeCaveAvatarManager : MonoBehaviour, ISkippable
 
         Player.obj.PlayPullRoots();
 
-        yield return new WaitForSeconds(4.8f);
+        yield return new WaitForSeconds(0.7f);
+        _freeSootStingerInstance = SoundFXManager.obj.CreateAttachedInstance(_freeSootStinger, CaveAvatar.obj.gameObject, null);
+        _freeSootStingerInstance.start();
+        _freeSootStingerInstance.release();
+        yield return new WaitForSeconds(4.1f);
 
         Player.obj.EndPullRoots();
 
