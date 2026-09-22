@@ -12,7 +12,6 @@ using FMODUnity;
 public class Cave23DDeeRoomManager : MonoBehaviour
 {
     [SerializeField] private MusicTrack _music;
-    [SerializeField] private AmbienceTrack _ummaraAmbience;
     [SerializeField] private EventReference _ummaraSpeech1;
     [SerializeField] private EventReference _ummaraSpeech2;
     [SerializeField] private EventReference _ummaraSpeech3;
@@ -112,8 +111,6 @@ public class Cave23DDeeRoomManager : MonoBehaviour
     private IEnumerator StartMusic() {
         yield return new WaitForSeconds(_startMusicDuration);
         MusicManager.obj.Play(_music);
-        yield return new WaitForSeconds(1f);
-        AmbienceManager.obj.Play(_ummaraAmbience);
     }
 
     void Update()
@@ -142,7 +139,7 @@ public class Cave23DDeeRoomManager : MonoBehaviour
         SoundFXManager.obj.Play2D(_ummaraSpeech1);
 
         yield return WaitForTypingToComplete();
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(4f);
 
         ShowNextParagraph();
         SoundFXManager.obj.Play2D(_ummaraSpeech2);
@@ -223,8 +220,7 @@ public class Cave23DDeeRoomManager : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
 
-        MusicManager.obj.Stop();
-        AmbienceManager.obj.Stop();
+        MusicManager.obj.EndCurrentTrack();
 
         StartCoroutine(_ummaraBody.FadeOutSprite(_ummaraFadeOutDuration));
         StartCoroutine(_ummaraBody.FadeOutLight(_ummaraFadeOutDuration));
@@ -245,6 +241,9 @@ public class Cave23DDeeRoomManager : MonoBehaviour
         
         ShadowTwinPlayer.obj.PlayFallToTheGround();
         yield return new WaitForSeconds(1f);
+
+        InterruptTextFade();
+        FadeOutText();
 
         SoundFXManager.obj.Play2D(_teleport);
 
