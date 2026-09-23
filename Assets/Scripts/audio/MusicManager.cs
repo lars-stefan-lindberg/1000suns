@@ -51,6 +51,19 @@ public class MusicManager : MonoBehaviour
         StartCoroutine(StopCurrent());
     }
 
+    public void StopImmediate()
+    {
+        if(currentTrack == null)
+            return;
+        if(_musicLogicalState == MusicLogicalState.None)
+            return;
+
+        _musicLogicalState = MusicLogicalState.None;
+        currentTrack = null;
+
+        StartCoroutine(StopCurrentImmediately());
+    }
+
     public void Pause()
     {
         if (!currentInstance.isValid())
@@ -148,6 +161,16 @@ public class MusicManager : MonoBehaviour
             yield break;
 
         currentInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+        currentInstance.release();
+        currentInstance.clearHandle();
+    }
+
+    IEnumerator StopCurrentImmediately()
+    {
+        if (!currentInstance.isValid())
+            yield break;
+
+        currentInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
         currentInstance.release();
         currentInstance.clearHandle();
     }

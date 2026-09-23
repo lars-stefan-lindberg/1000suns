@@ -36,6 +36,10 @@ public class Cave41RoomManager : MonoBehaviour, ISkippable
     private Coroutine _cutsceneCoroutine;
     private Coroutine _fadeElevatorSoundCoroutine;
     private Coroutine _performThreeForcePushesCoroutine;
+    private EventInstance _shadowPulseStingerInstance;
+    private EventInstance _unwell1StingerInstance;
+    private EventInstance _unwell2StingerInstance;
+    private EventInstance _transitionToOutroStingerInstance;
 
     void Start() {
         PlayerMovement.obj.isOnMoveable = true;
@@ -110,7 +114,11 @@ public class Cave41RoomManager : MonoBehaviour, ISkippable
         yield return new WaitForSeconds(2.5f);
         PlayerMovement.obj.SetBreathingOnKnees(true);
         yield return new WaitForSeconds(1f);
-        SoundFXManager.obj.Play2D(_unwell1Stinger);
+
+        _unwell1StingerInstance = SoundFXManager.obj.CreateAttachedInstance(_unwell1Stinger, gameObject);
+        _unwell1StingerInstance.start();
+        _unwell1StingerInstance.release();
+
         yield return new WaitForSeconds(1.5f);
         _conversation2Manager.StartConversation();
     }
@@ -130,7 +138,9 @@ public class Cave41RoomManager : MonoBehaviour, ISkippable
         _conversation3Manager.OnConversationEnd += OnConversation3Completed;
         _conversation3Manager.StartConversation();
         yield return new WaitForSeconds(0.4f);
-        SoundFXManager.obj.Play2D(_unwell2Stinger);
+        _unwell2StingerInstance = SoundFXManager.obj.CreateAttachedInstance(_unwell2Stinger, gameObject);
+        _unwell2StingerInstance.start();
+        _unwell2StingerInstance.release();
     }
 
     private void OnConversation3Completed() {
@@ -142,7 +152,9 @@ public class Cave41RoomManager : MonoBehaviour, ISkippable
 
     private IEnumerator OnConversation3CompletedCoroutine() { 
         MusicManager.obj.EndCurrentTrackKeepInstance();
-        SoundFXManager.obj.Play2D(_transitionToOutroStinger);
+        _transitionToOutroStingerInstance = SoundFXManager.obj.CreateAttachedInstance(_transitionToOutroStinger, gameObject);
+        _transitionToOutroStingerInstance.start();
+        _transitionToOutroStingerInstance.release();
 
         int fmodTimelinePosition = 0;
         while(true) {
@@ -178,7 +190,9 @@ public class Cave41RoomManager : MonoBehaviour, ISkippable
         PlayerPush.obj.SimulateShootHold();
         yield return new WaitForSeconds(_thirdForcePushChargeTime);
         PlayerPush.obj.SimulateShootRelease();
-        SoundFXManager.obj.Play2D(_shadowPulseStinger);
+        _shadowPulseStingerInstance = SoundFXManager.obj.CreateAttachedInstance(_shadowPulseStinger, gameObject);
+        _shadowPulseStingerInstance.start();
+        _shadowPulseStingerInstance.release();
     }
 
     private void OnConversation4Completed() {
@@ -278,6 +292,12 @@ public class Cave41RoomManager : MonoBehaviour, ISkippable
         Player.obj.ResetAnimator();
         CaveAvatar.obj.IsFollowingPlayer = false;
         _moveSoot = false;
+
+        AudioUtils.SafeStop(ref _shadowPulseStingerInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+        AudioUtils.SafeStop(ref _unwell1StingerInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+        AudioUtils.SafeStop(ref _unwell2StingerInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+        AudioUtils.SafeStop(ref _transitionToOutroStingerInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+        MusicManager.obj.StopImmediate();
 
         StartCoroutine(ResumeGameplay());
     }

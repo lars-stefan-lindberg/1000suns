@@ -17,6 +17,7 @@ public class Cave40RoomManager : MonoBehaviour, ISkippable
     [SerializeField] private Transform _deeCutsceneEliStartPosition;
     [SerializeField] private Transform _deeCutsceneEliEndPosition;
     [SerializeField] private MusicTrack _elevatorIntroMusic;
+    [SerializeField] private GameObject _cutsceneCamera;
     
     [Header("Sound Settings")]
     [SerializeField] [Range(0.1f, 1f)] private float _soundMaxIntensityAtSpeedPercent = 0.5f;
@@ -144,7 +145,9 @@ public class Cave40RoomManager : MonoBehaviour, ISkippable
     private IEnumerator StartElevatorCoroutine() {
         PauseMenuManager.obj.RegisterSkippable(this);
         PlayerMovement.obj.Freeze();
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(0.5f);
+        _cutsceneCamera.SetActive(true);
+        yield return new WaitForSeconds(1f);
 
         _elevatorCrystalSfxInstance = SoundFXManager.obj.CreateAttachedInstance(_elevatorCrystalSfx, _elevator.gameObject);
         _elevatorCrystalSfxInstance.start();
@@ -194,6 +197,7 @@ public class Cave40RoomManager : MonoBehaviour, ISkippable
         _elevatorFlash.AbortFlash();
         _elevator.StopAbruptly();
         Destroy(_elevator.gameObject);
+        AmbienceManager.obj.Stop();
 
         var caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
         if(caveTimeline == CaveTimelineId.Id.Dee) {
