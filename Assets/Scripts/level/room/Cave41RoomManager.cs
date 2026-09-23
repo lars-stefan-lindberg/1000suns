@@ -1,5 +1,6 @@
 using System.Collections;
 using FMOD.Studio;
+using FMODUnity;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -15,6 +16,10 @@ public class Cave41RoomManager : MonoBehaviour, ISkippable
     [SerializeField] private Animator _backgroundAnimator;
     [SerializeField] private SceneField _thisScene;
     [SerializeField] private SceneField _nextScene;
+    [SerializeField] private EventReference _shadowPulseStinger;
+    [SerializeField] private EventReference _unwell1Stinger;
+    [SerializeField] private EventReference _unwell2Stinger;
+    [SerializeField] private EventReference _transitionToOutroStinger;
     [SerializeField] private float _animatorSlowdownDuration = 1f;
     [SerializeField] private float _firstForcePushChargeTime = 0.4f;
     [SerializeField] private float _secondForcePushChargeTime = 0.4f;
@@ -104,7 +109,9 @@ public class Cave41RoomManager : MonoBehaviour, ISkippable
         _conversation2Manager.OnConversationEnd += OnConversation2Completed;
         yield return new WaitForSeconds(2.5f);
         PlayerMovement.obj.SetBreathingOnKnees(true);
-        yield return new WaitForSeconds(2.5f);
+        yield return new WaitForSeconds(1f);
+        SoundFXManager.obj.Play2D(_unwell1Stinger);
+        yield return new WaitForSeconds(1.5f);
         _conversation2Manager.StartConversation();
     }
 
@@ -122,6 +129,8 @@ public class Cave41RoomManager : MonoBehaviour, ISkippable
         _conversation3Manager.enabled = true;
         _conversation3Manager.OnConversationEnd += OnConversation3Completed;
         _conversation3Manager.StartConversation();
+        yield return new WaitForSeconds(0.4f);
+        SoundFXManager.obj.Play2D(_unwell2Stinger);
     }
 
     private void OnConversation3Completed() {
@@ -132,9 +141,19 @@ public class Cave41RoomManager : MonoBehaviour, ISkippable
     }
 
     private IEnumerator OnConversation3CompletedCoroutine() { 
-        yield return new WaitForSeconds(1.5f);
+        MusicManager.obj.EndCurrentTrackKeepInstance();
+        SoundFXManager.obj.Play2D(_transitionToOutroStinger);
+
+        int fmodTimelinePosition = 0;
+        while(true) {
+            MusicManager.obj.CurrentInstance.getTimelinePosition(out fmodTimelinePosition);
+            if(fmodTimelinePosition > 90000)
+                break;
+            yield return null;
+        }
+
         PlayerMovement.obj.FlipPlayer();
-        yield return new WaitForSeconds(1f);
+
         _conversation4Manager.enabled = true;
         _conversation4Manager.OnConversationEnd += OnConversation4Completed;
         _conversation4Manager.StartConversation();
@@ -159,6 +178,7 @@ public class Cave41RoomManager : MonoBehaviour, ISkippable
         PlayerPush.obj.SimulateShootHold();
         yield return new WaitForSeconds(_thirdForcePushChargeTime);
         PlayerPush.obj.SimulateShootRelease();
+        SoundFXManager.obj.Play2D(_shadowPulseStinger);
     }
 
     private void OnConversation4Completed() {

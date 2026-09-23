@@ -86,6 +86,17 @@ public class MusicManager : MonoBehaviour
         _musicLogicalState = MusicLogicalState.None;
     }
 
+    public void EndCurrentTrackKeepInstance()
+    {
+        if (_musicLogicalState != MusicLogicalState.Playing)
+            return;
+
+        if (!currentTrackHasEnding)
+            return;
+
+        currentInstance.setParameterByID(endingParamId, 1f, true);
+    }
+
     public MusicTrack CurrentTrack => currentTrack;
     public EventInstance CurrentInstance => currentInstance;
 

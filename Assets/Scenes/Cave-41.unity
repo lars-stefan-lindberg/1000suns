@@ -218,7 +218,7 @@ MonoBehaviour:
   - dialogueContent: {fileID: 11400000, guid: f5f524b80ed7d4c40bf0d1b67284345f, type: 2}
   - dialogueContent: {fileID: 11400000, guid: 5b902dec5485d46b19d44f9c8ca55243, type: 2}
   _isLastConversationOfRoom: 1
-  _duckMusic: 1
+  _duckMusic: 0
 --- !u!4 &60624485
 Transform:
   m_ObjectHideFlags: 0
@@ -389,7 +389,7 @@ MonoBehaviour:
   conversationList:
   - dialogueContent: {fileID: 11400000, guid: 243b1e75815414b0189e2b43728ac4a0, type: 2}
   _isLastConversationOfRoom: 0
-  _duckMusic: 1
+  _duckMusic: 0
 --- !u!4 &391456162
 Transform:
   m_ObjectHideFlags: 0
@@ -70571,7 +70571,7 @@ MonoBehaviour:
   conversationList:
   - dialogueContent: {fileID: 11400000, guid: c0545127ea463446a84d05c77714da4f, type: 2}
   _isLastConversationOfRoom: 0
-  _duckMusic: 1
+  _duckMusic: 0
 --- !u!4 &1369182840
 Transform:
   m_ObjectHideFlags: 0
@@ -70771,6 +70771,34 @@ MonoBehaviour:
   _nextScene:
     _sceneAsset: {fileID: 102900000, guid: 6c8f9138f02b44e16a95d005fde486ab, type: 3}
     _sceneName: Cave-42
+  _shadowPulseStinger:
+    Guid:
+      Data1: -40995858
+      Data2: 1115752489
+      Data3: 1610335118
+      Data4: -1191326348
+    Path: event:/game/01_cave/stingers/elevator/shadow_pulse
+  _unwell1Stinger:
+    Guid:
+      Data1: 575256420
+      Data2: 1289318186
+      Data3: 1066278571
+      Data4: 1212353815
+    Path: event:/game/01_cave/stingers/elevator/unwell_1
+  _unwell2Stinger:
+    Guid:
+      Data1: 1090589347
+      Data2: 1341129923
+      Data3: -628869473
+      Data4: 281783995
+    Path: event:/game/01_cave/stingers/elevator/unwell_2
+  _transitionToOutroStinger:
+    Guid:
+      Data1: 598735842
+      Data2: 1152023202
+      Data3: 1885343151
+      Data4: -1697304485
+    Path: event:/game/01_cave/stingers/elevator/transition_to_outro
   _animatorSlowdownDuration: 1
   _firstForcePushChargeTime: 0.5
   _secondForcePushChargeTime: 0.5
@@ -71078,7 +71106,7 @@ MonoBehaviour:
   conversationList:
   - dialogueContent: {fileID: 11400000, guid: 466bffc470b5341f6a14f2996991c34d, type: 2}
   _isLastConversationOfRoom: 0
-  _duckMusic: 1
+  _duckMusic: 0
 --- !u!4 &2074264162
 Transform:
   m_ObjectHideFlags: 0

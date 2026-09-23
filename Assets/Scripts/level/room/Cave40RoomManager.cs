@@ -16,6 +16,7 @@ public class Cave40RoomManager : MonoBehaviour, ISkippable
     [SerializeField] private Transform _deeBehindElevatorPosition;
     [SerializeField] private Transform _deeCutsceneEliStartPosition;
     [SerializeField] private Transform _deeCutsceneEliEndPosition;
+    [SerializeField] private MusicTrack _elevatorIntroMusic;
     
     [Header("Sound Settings")]
     [SerializeField] [Range(0.1f, 1f)] private float _soundMaxIntensityAtSpeedPercent = 0.5f;
@@ -166,6 +167,9 @@ public class Cave40RoomManager : MonoBehaviour, ISkippable
         SceneFadeManager.obj.StartFadeOut(0.8f);
         while(SceneFadeManager.obj.IsFadingOut)
             yield return null;
+
+        MusicManager.obj.Play(_elevatorIntroMusic);
+        AmbienceManager.obj.Stop();
 
         //Load next scene
         AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(_nextScene, LoadSceneMode.Additive);
