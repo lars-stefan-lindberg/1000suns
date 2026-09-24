@@ -20,6 +20,7 @@ public class Cave23DRoomManager : MonoBehaviour
     [SerializeField] private EventReference _invisibleGrab;
     [SerializeField] private EventReference _heartbeat;
     [SerializeField] private EventReference _pulledTogether;
+    [SerializeField] private EventReference _pulledTogetherStinger;
     [SerializeField] private SceneField _teleportBackToScene;
     [SerializeField] private SceneField _thisScene;
     [SerializeField] private GameEventId _dreamRoomCompleted;
@@ -129,7 +130,9 @@ public class Cave23DRoomManager : MonoBehaviour
         _eliParticles.gameObject.SetActive(true);
         _deeParticles.gameObject.SetActive(true);
         ChangeHeartbeatPace(3);
-        yield return new WaitForSeconds(4f);
+        yield return new WaitForSeconds(1.5f);
+        SoundFXManager.obj.Play2D(_pulledTogetherStinger);
+        yield return new WaitForSeconds(2.5f);
         ChangeHeartbeatPace(4);
         Player.obj.StartContrastFade();
         ShadowTwinPlayer.obj.StartContrastFade();
