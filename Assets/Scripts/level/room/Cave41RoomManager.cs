@@ -152,6 +152,8 @@ public class Cave41RoomManager : MonoBehaviour, ISkippable
 
     private IEnumerator OnConversation3CompletedCoroutine() { 
         MusicManager.obj.EndCurrentTrackKeepInstance();
+
+        yield return new WaitForSeconds(1f);
         _transitionToOutroStingerInstance = SoundFXManager.obj.CreateAttachedInstance(_transitionToOutroStinger, gameObject);
         _transitionToOutroStingerInstance.start();
         _transitionToOutroStingerInstance.release();
