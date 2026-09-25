@@ -14,13 +14,13 @@ public class C1FreeCaveAvatarManager : MonoBehaviour, ISkippable
     [SerializeField] private GameEventId _sootFreed;
     [SerializeField] private EventReference _sootFly1;
     [SerializeField] private EventReference _sootFly2;
-    [SerializeField] private EventReference _freeSootStinger;
+    [SerializeField] private MusicTrack _sootTheme;
+    [SerializeField] private AmbienceTrack _caveMain;
     private BoxCollider2D _collider;
     private Coroutine _cutsceneCoroutine;
 
     private EventInstance _sootFly1Instance;
     private EventInstance _sootFly2Instance;
-    private EventInstance _freeSootStingerInstance;
 
     void Start()
     {
@@ -47,7 +47,8 @@ public class C1FreeCaveAvatarManager : MonoBehaviour, ISkippable
             _caveRootsTrap.SetActive(false);
         AudioUtils.SafeStop(ref _sootFly1Instance, FMOD.Studio.STOP_MODE.IMMEDIATE);
         AudioUtils.SafeStop(ref _sootFly2Instance, FMOD.Studio.STOP_MODE.IMMEDIATE);
-        AudioUtils.SafeStop(ref _freeSootStingerInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+        MusicManager.obj.StopImmediate();
+        AmbienceManager.obj.Play(_caveMain);
         CaveAvatar.obj.SetPosition(_finalCaveAvatarFlyPosition.position);
         CaveAvatar.obj.SetFlipX(false);
         CaveAvatar.obj.SetFloatingEnabled(true);
@@ -81,16 +82,18 @@ public class C1FreeCaveAvatarManager : MonoBehaviour, ISkippable
         Player.obj.PlayPullRoots();
 
         yield return new WaitForSeconds(0.7f);
-        _freeSootStingerInstance = SoundFXManager.obj.CreateAttachedInstance(_freeSootStinger, CaveAvatar.obj.gameObject, null);
-        _freeSootStingerInstance.start();
-        _freeSootStingerInstance.release();
-        yield return new WaitForSeconds(4.1f);
+        yield return new WaitForSeconds(3.3f);
+        AmbienceManager.obj.Stop();
+        yield return new WaitForSeconds(0.8f);
 
         Player.obj.EndPullRoots();
+
+        yield return new WaitForSeconds(1f);
 
         //Soot flies happily
         CaveAvatar.obj.SetTarget(_caveAvatarFreePositions[0]);
         CaveAvatar.obj.SetFloatingEnabled(true);
+        MusicManager.obj.Play(_sootTheme);
         _sootFly1Instance = SoundFXManager.obj.CreateAttachedInstance(_sootFly1, CaveAvatar.obj.gameObject, null);
         _sootFly1Instance.start();
         _sootFly1Instance.release();
@@ -118,6 +121,8 @@ public class C1FreeCaveAvatarManager : MonoBehaviour, ISkippable
     }
 
     private void OnConversationCompleted() {
+        MusicManager.obj.Stop();
+        AmbienceManager.obj.Play(_caveMain);
         _conversationManager.CleanUp();
         PlayerMovement.obj.UnFreeze();
         CaveAvatar.obj.SetTarget(_finalCaveAvatarFlyPosition);

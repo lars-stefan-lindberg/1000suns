@@ -1,5 +1,7 @@
 using System.Collections;
 using UnityEngine;
+using FMODUnity;
+using FMOD.Studio;
 
 public class C1DialogueTrigger : MonoBehaviour, ISkippable
 {
@@ -11,8 +13,10 @@ public class C1DialogueTrigger : MonoBehaviour, ISkippable
     [SerializeField] private Transform _finalCaveAvatarFlyPosition;
     [SerializeField] private GameObject _cutsceneCamera;
     [SerializeField] private GameEventId _sootFreed;
+    [SerializeField] private EventReference _introStinger;
     private BoxCollider2D _collider;
     private Coroutine _cutsceneCoroutine;
+    private EventInstance _introStingerInstance;
 
     void Start() {
         _collider = GetComponent<BoxCollider2D>();
@@ -46,6 +50,8 @@ public class C1DialogueTrigger : MonoBehaviour, ISkippable
         _caveAvatarRootsManager.gameObject.SetActive(false);
         _cutsceneCamera.SetActive(false);
 
+        AudioUtils.SafeStop(ref _introStingerInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
+
         CaveAvatar.obj.SetFloatingEnabled(true);
         CaveAvatar.obj.SetPosition(_finalCaveAvatarFlyPosition.position);
         CaveAvatar.obj.SetFlipX(false);
@@ -68,8 +74,13 @@ public class C1DialogueTrigger : MonoBehaviour, ISkippable
     private IEnumerator SetupDialogue() {
         PauseMenuManager.obj.RegisterSkippable(this);
         PlayerMovement.obj.Freeze();
+        yield return new WaitForSeconds(1f);
         _cutsceneCamera.SetActive(true);
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(0.5f);
+        _introStingerInstance = SoundFXManager.obj.CreateAttachedInstance(_introStinger, CaveAvatar.obj.gameObject, null);
+        _introStingerInstance.start();
+        _introStingerInstance.release();
+        yield return new WaitForSeconds(3.5f);
         _conversationManager.StartConversation();
     }
 

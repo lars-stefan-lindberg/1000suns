@@ -827,13 +827,8 @@ MonoBehaviour:
       Data3: 1322515604
       Data4: -971657494
     Path: event:/character/soot/fly_2
-  _freeSootStinger:
-    Guid:
-      Data1: 711721879
-      Data2: 1236733747
-      Data3: -330254415
-      Data4: -1573254174
-    Path: event:/game/01_cave/stingers/free_soot
+  _sootTheme: {fileID: 11400000, guid: 79f38c54fd19e4fdab59ff39255d531b, type: 2}
+  _caveMain: {fileID: 11400000, guid: 6475a932dfa8b47c89b448fbfee74692, type: 2}
 --- !u!61 &386315777
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -6951,6 +6946,13 @@ MonoBehaviour:
   _finalCaveAvatarFlyPosition: {fileID: 534387963}
   _cutsceneCamera: {fileID: 3440138086679113843}
   _sootFreed: {fileID: 11400000, guid: 1a2a444fa9393412bb722a5279dbe39a, type: 2}
+  _introStinger:
+    Guid:
+      Data1: 2107138088
+      Data2: 1142843448
+      Data3: -2088733042
+      Data4: -1555758206
+    Path: event:/game/01_cave/stingers/power_up_room_intro
 --- !u!61 &1022743599
 BoxCollider2D:
   m_ObjectHideFlags: 0
