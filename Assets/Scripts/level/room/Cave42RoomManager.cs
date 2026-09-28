@@ -18,7 +18,7 @@ public class Cave42RoomManager : MonoBehaviour
     [SerializeField] private Transform _deeStartPosition;
     [SerializeField] private Transform _deeElevatorStartPosition;
     [SerializeField] private Transform _deactivateEliPosition;
-    [SerializeField] private AmbienceTrack _caveMain;
+    [SerializeField] private MusicTrack _deepCaveFull;
     
     [Header("Elevator Sound Settings")]
     [SerializeField] private float _elevatorSoundFadeDuration = 5f;
@@ -114,12 +114,12 @@ public class Cave42RoomManager : MonoBehaviour
         while(SceneFadeManager.obj.IsFadingIn)
             yield return null;
 
-        AmbienceManager.obj.Play(_caveMain);
-
         while(!_elevator.HasReachedStop())
             yield return null;
 
         yield return new WaitForSeconds(1f);
+        
+        MusicManager.obj.Play(_deepCaveFull);
 
         //Have Eli run off
         PlayerMovement.obj.SetMovementInput(new Vector2(1f, 0f));
@@ -177,8 +177,6 @@ public class Cave42RoomManager : MonoBehaviour
         
         while(SceneFadeManager.obj.IsFadingIn)
             yield return null;
-
-        AmbienceManager.obj.Play(_caveMain);
 
         while(!_elevator.HasReachedStop())
             yield return null;
