@@ -69,6 +69,7 @@ public class Cave45RoomManager : MonoBehaviour
         yield return null;
 
         yield return new WaitForSeconds(0.5f);
+        AmbienceManager.obj.Stop();
         MusicManager.obj.Play(_bossMusic);
         yield return new WaitForSeconds(1.5f);
         PlayerMovement.obj.UnFreeze();
