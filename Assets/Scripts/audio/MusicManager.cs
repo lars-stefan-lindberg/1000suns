@@ -24,7 +24,7 @@ public class MusicManager : MonoBehaviour
     }
 
     // Public API — this is what scenes call
-    public void Play(MusicTrack track)
+    public void Play(MusicTrack track, MusicParameter[] parameters = null)
     {
         if (track == null)
             return;
@@ -35,7 +35,7 @@ public class MusicManager : MonoBehaviour
         _musicLogicalState = MusicLogicalState.Playing;
         currentTrack = track;
 
-        SwapTrack(track);
+        SwapTrack(track, parameters);
     }
 
     public void Stop()
@@ -128,7 +128,7 @@ public class MusicManager : MonoBehaviour
         Play(track);
     }
 
-    private void SwapTrack(MusicTrack nextTrack)
+    private void SwapTrack(MusicTrack nextTrack, MusicParameter[] parameters = null)
     {
         // Fade out old (FMOD handles timing)
         if (currentInstance.isValid())
@@ -152,6 +152,16 @@ public class MusicManager : MonoBehaviour
             // Ensure we're in "normal" mode
             currentInstance.setParameterByID(endingParamId, 0f);
         }
+
+        // Apply custom parameters before starting
+        if (parameters != null)
+        {
+            foreach (var param in parameters)
+            {
+                currentInstance.setParameterByName(param.parameterName, param.value);
+            }
+        }
+
         currentInstance.start();
     }
 

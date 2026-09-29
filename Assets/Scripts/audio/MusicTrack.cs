@@ -1,6 +1,13 @@
 using UnityEngine;
 using FMODUnity;
 
+[System.Serializable]
+public class MusicParameter
+{
+    public string parameterName;
+    public float value;
+}
+
 [CreateAssetMenu(menuName = "Audio/Music Track")]
 public class MusicTrack : ScriptableObject
 {
