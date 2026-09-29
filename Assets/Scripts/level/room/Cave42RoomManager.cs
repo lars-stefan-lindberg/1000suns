@@ -173,6 +173,8 @@ public class Cave42RoomManager : MonoBehaviour
         _elevator.GetComponentInChildren<LightSprite2D>().enabled = true;
 
         yield return new WaitForSeconds(2f);
+        
+        AmbienceManager.obj.Play(_deepCaveMain);
 
         SceneFadeManager.obj.StartFadeIn(0.8f);
         StartCoroutine(FadeElevatorSoundBack());
@@ -181,7 +183,6 @@ public class Cave42RoomManager : MonoBehaviour
         while(SceneFadeManager.obj.IsFadingIn)
             yield return null;
 
-        AmbienceManager.obj.Play(_deepCaveMain);
 
         while(!_elevator.HasReachedStop())
             yield return null;

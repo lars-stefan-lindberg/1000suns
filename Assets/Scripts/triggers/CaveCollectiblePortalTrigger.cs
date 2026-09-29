@@ -28,6 +28,7 @@ public class CaveCollectiblePortalTrigger : MonoBehaviour
         yield return new WaitUntil(() => _collectible.IsDespawned);
         
         SoundFXManager.obj.PlayAtPosition(_portalClose, transform.position);
+        yield return new WaitForSeconds(0.3f);  //Sync sfx with animation
         _portalAnimator.SetTrigger("despawn");
         CollectibleManager.obj.CollectiblePickedPermanently(_collectible);
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);

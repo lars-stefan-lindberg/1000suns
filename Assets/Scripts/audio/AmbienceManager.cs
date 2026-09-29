@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using FMOD.Studio;
 using FMODUnity;
 using UnityEngine;
+using System.Collections;
 
 public class AmbienceManager : MonoBehaviour
 {
@@ -50,17 +51,56 @@ public class AmbienceManager : MonoBehaviour
 
     public void StopAll()
     {
-        foreach (var kvp in activeInstances)
+        List<EventInstance> tracksToStop = new List<EventInstance>(activeInstances.Values);
+        activeInstances.Clear();
+        foreach (var inst in tracksToStop)
         {
-            if (kvp.Value.isValid())
+            if (inst.isValid())
             {
-                kvp.Value.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-                kvp.Value.release();
-                kvp.Value.clearHandle();
+                inst.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+                inst.release();
+                inst.clearHandle();
             }
         }
+    }
 
+    public IEnumerator StopAllExcept(AmbienceTrack track)
+    {
+        List<EventInstance> tracksToStop = new List<EventInstance>();
+        EventInstance trackToKeep = default(EventInstance);
+        bool hasTrackToKeep = false;
+        
+        foreach (var kvp in activeInstances)
+        {
+            if (kvp.Key.ambienceId != track.ambienceId)
+            {
+                tracksToStop.Add(kvp.Value);
+            }
+            else
+            {
+                trackToKeep = kvp.Value;
+                hasTrackToKeep = true;
+            }
+        }
         activeInstances.Clear();
+        
+        // Re-add the track we want to keep
+        if (hasTrackToKeep)
+        {
+            activeInstances[track] = trackToKeep;
+        }
+        
+        foreach (var trackToStop in tracksToStop)
+        {
+            if (trackToStop.isValid())
+            {
+                trackToStop.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+                trackToStop.release();
+                trackToStop.clearHandle();
+            }
+        }
+        
+        yield return null;
     }
 
     public IReadOnlyDictionary<AmbienceTrack, EventInstance> ActiveInstances => activeInstances;

@@ -82,6 +82,7 @@ public class C31ConversationTrigger : MonoBehaviour, ISkippable
         MusicManager.obj.Stop();
         _cutsceneCamera.SetActive(false);
         yield return new WaitForSeconds(1f);
+        AmbienceManager.obj.Stop();
         MusicManager.obj.Play(_musicTrack);
         yield return new WaitForSeconds(1.5f);
         CaveAvatar.obj.SetTarget(null);
