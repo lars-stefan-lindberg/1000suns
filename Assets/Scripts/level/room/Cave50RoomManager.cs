@@ -17,6 +17,7 @@ public class Cave50RoomManager : MonoBehaviour
     [SerializeField] private AmbienceTrack _caveMain;
     [SerializeField] private GameObject _powerUpPortal;
     [SerializeField] private GameObject _playerTeleportPosition;
+    [SerializeField] private MusicTrack _deepCaveShort;
     
     void Start()
     {
@@ -69,7 +70,8 @@ public class Cave50RoomManager : MonoBehaviour
         }
         Time.timeScale = 1;
         GameManager.obj.IsPauseAllowed = true;
-
+        MusicManager.obj.Play(_deepCaveShort);
+        
         PlayerPowersManager.obj.EliCanTurnFromBlobToHuman = true;
         PlayerMovement.obj.UnFreeze();
         GameManager.obj.RegisterEvent(_postDreamSequenceCompleted);

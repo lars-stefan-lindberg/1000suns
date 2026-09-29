@@ -19,6 +19,7 @@ public class Cave42RoomManager : MonoBehaviour
     [SerializeField] private Transform _deeElevatorStartPosition;
     [SerializeField] private Transform _deactivateEliPosition;
     [SerializeField] private MusicTrack _deepCaveFull;
+    [SerializeField] private MusicTrack _deepCaveShort;
     
     [Header("Elevator Sound Settings")]
     [SerializeField] private float _elevatorSoundFadeDuration = 5f;
@@ -182,6 +183,9 @@ public class Cave42RoomManager : MonoBehaviour
             yield return null;
 
         yield return new WaitForSeconds(1f);
+
+        MusicManager.obj.Play(_deepCaveShort);
+
         GameManager.obj.RegisterEvent(_elevatorCompleted);
         GameManager.obj.SetCurrentSpawnPointId(_afterElevatorSpawnPoint.SpawnPointID);
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
