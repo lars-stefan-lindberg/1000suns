@@ -75,6 +75,7 @@ public class FirstCaveMiniBossManager : MonoBehaviour
     }
 
     private IEnumerator DelayedStart() {
+        AmbienceManager.obj.Stop();
         yield return new WaitForSeconds(1.7f);
         foreach(Prisoner prisoner in _prisoners)
             prisoner.isStatic = false;

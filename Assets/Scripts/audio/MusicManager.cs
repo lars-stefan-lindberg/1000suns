@@ -7,6 +7,7 @@ public class MusicManager : MonoBehaviour
 {
     public static MusicManager obj;
     [SerializeField] private MusicLibrary musicLibrary;
+    [SerializeField] private MusicTrack _caveMain;
 
     private EventInstance currentInstance;
     private MusicTrack currentTrack;
@@ -193,5 +194,14 @@ public class MusicManager : MonoBehaviour
             currentInstance.release();
         }
         obj = null;
+    }
+
+    //For debugging
+    [ContextMenu("Play cave main")]
+    public void PlayCaveMain() {
+        var parameter = new MusicParameter();
+        parameter.parameterName = "caveMainIntro";
+        parameter.value = 1;
+        Play(_caveMain, new MusicParameter[] { parameter });
     }
 }

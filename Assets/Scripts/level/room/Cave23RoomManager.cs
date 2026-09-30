@@ -126,8 +126,15 @@ public class Cave23RoomManager : MonoBehaviour, ISkippable
         } else if(_activeCaveTimeline == CaveTimelineId.Id.Dee) {
             ShadowTwinMovement.obj.UnFreeze();
         }
+        StartCoroutine(DelayedPlayAmbience());
         GameManager.obj.IsPauseAllowed = true;
         yield return null;
+    }
+
+    //To allow eventual current ambience to fade out before starting it again
+    private IEnumerator DelayedPlayAmbience() {
+        yield return new WaitForSeconds(3f);
+        AmbienceManager.obj.Play(_caveMainAmbience);
     }
 
     private IEnumerator AfterEliDreamRoom() {
@@ -224,9 +231,6 @@ public class Cave23RoomManager : MonoBehaviour, ISkippable
                     _cutsceneCoroutine = null;
                 }
 
-                AmbienceManager.obj.Stop();
-                AmbienceManager.obj.Play(_caveMainAmbience);
-
                 AudioUtils.SafeStop(ref _stingerInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
 
                 _crystalCutsceneCamera.SetActive(false);
@@ -246,7 +250,7 @@ public class Cave23RoomManager : MonoBehaviour, ISkippable
 
                 CameraShakeManager.obj.ShakeCamera(0, 0, 0);
 
-                StopVoices();
+                StopVoices(true);
 
                 AudioUtils.SafeStop(ref _invisibleGrabWithDelayInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
                 AudioUtils.SafeStop(ref _invisibleGrabWithBuildUpInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
@@ -264,9 +268,6 @@ public class Cave23RoomManager : MonoBehaviour, ISkippable
                     _cutsceneCoroutine = null;
                 }
 
-                AmbienceManager.obj.Stop();
-                AmbienceManager.obj.Play(_caveMainAmbience);
-
                 _crystalCutsceneCamera.SetActive(false);
 
                 ShadowTwinPlayer.obj.ResetAnimator();
@@ -276,7 +277,7 @@ public class Cave23RoomManager : MonoBehaviour, ISkippable
 
                 CameraShakeManager.obj.ShakeCamera(0, 0, 0);
 
-                StopVoices();
+                StopVoices(true);
 
                 AudioUtils.SafeStop(ref _invisibleGrabInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
                 AudioUtils.SafeStop(ref _invisibleGrabWithDelayInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
@@ -489,11 +490,18 @@ public class Cave23RoomManager : MonoBehaviour, ISkippable
         InitializeFadeParameter();
     }
     
-    private void StopVoices()
+    private void StopVoices(bool stopImmediate = false)
     {
         if (_voicesPlaying && _voicesInstance.isValid())
         {
-            _voicesInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+            if (stopImmediate)
+            {
+                _voicesInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+            }
+            else
+            {
+                _voicesInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+            }
             _voicesInstance.release();
         }
         _voicesPlaying = false;
