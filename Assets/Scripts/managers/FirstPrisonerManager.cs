@@ -12,6 +12,7 @@ public class FirstPrisonerManager : MonoBehaviour, ISkippable
     [SerializeField] private GameObject _blockingWall;
     [SerializeField] private Tilemap _blockingWallTilemap;
     [SerializeField] private ConversationManager _conversationManager;
+    [SerializeField] private AmbienceTrack _caveMain;
 
     private Coroutine _cutsceneCoroutine;
 
@@ -36,6 +37,7 @@ public class FirstPrisonerManager : MonoBehaviour, ISkippable
         });
         
         MusicManager.obj.EndCurrentTrack();
+        AmbienceManager.obj.Play(_caveMain);
         CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
         if(caveTimeline == CaveTimelineId.Id.Eli) {
             GameManager.obj.RegisterEvent(_firstPrisonerFightEndedEli);

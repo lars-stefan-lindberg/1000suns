@@ -121,6 +121,7 @@ public class Cave42RoomManager : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
         
+        AmbienceManager.obj.Stop();
         MusicManager.obj.Play(_deepCaveFull);
 
         //Have Eli run off

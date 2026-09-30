@@ -15,6 +15,7 @@ public class Cave15RoomManager : MonoBehaviour, ISkippable
     [SerializeField] private GameObject _cutsceneCamera;
     [SerializeField] private Transform _deeCutsceneEliStartPosition;
     [SerializeField] private Transform _deeCutsceneEliEndPosition;
+    [SerializeField] private MusicTrack _tenseBassTrack;
 
     private CaveTimelineId.Id _caveTimelineId;
     private Coroutine _cutsceneCoroutine;
@@ -103,6 +104,8 @@ public class Cave15RoomManager : MonoBehaviour, ISkippable
         yield return new WaitForSeconds(2f);
 
         _conversationManager.StartConversation();
+        yield return new WaitForSeconds(0.8f);
+        MusicManager.obj.Play(_tenseBassTrack);
     }
 
     public void RequestSkip() {
@@ -134,6 +137,8 @@ public class Cave15RoomManager : MonoBehaviour, ISkippable
         _eliBreakableWall.SetActive(false);
         _eliBlockingWall.SetActive(false);
         _deeBlockingTiles.SetActive(true);
+
+        MusicManager.obj.Play(_tenseBassTrack);
 
         StartCoroutine(ResumeGameplay());
     }

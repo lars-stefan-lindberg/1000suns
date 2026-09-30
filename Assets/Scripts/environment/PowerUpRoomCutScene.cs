@@ -66,6 +66,7 @@ public class PowerUpRoomCutScene : MonoBehaviour, ISkippable
 
         Player.obj.transform.position = new Vector2(1306.25f, Player.obj.transform.position.y);
         PlayerMovement.obj.SetNewPower();
+        AmbienceManager.obj.Stop();
         yield return new WaitForSeconds(1.5f);
 
         _receivePowerupStingerInstance = SoundFXManager.obj.CreateAttachedInstance(_receivePowerupStinger, gameObject);
@@ -104,6 +105,7 @@ public class PowerUpRoomCutScene : MonoBehaviour, ISkippable
         }
 
         CameraShakeManager.obj.ShakeCamera(0, 0, 0);
+        AmbienceManager.obj.Stop();
 
         AudioUtils.SafeStop(ref _receivePowerupStingerInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
         AudioUtils.SafeStop(ref _pickupPowerupSfxInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
@@ -164,8 +166,6 @@ public class PowerUpRoomCutScene : MonoBehaviour, ISkippable
 
         while(WhiteSceneFadeManager.obj.IsFadingOut)
             yield return null;
-
-        AmbienceManager.obj.Stop();
 
         //Load dream room
         AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(_dreamRoomScene, LoadSceneMode.Additive);

@@ -49,7 +49,7 @@ public class TutorialStrip : MonoBehaviour
     
     // Fade durations
     private readonly float _fadeInDuration = 1f;
-    private readonly float _fadeOutDuration = 1f;
+    private readonly float _fadeOutDuration = 1.5f;
     private readonly float _quickFadeOutDuration = 0.3f;
     private readonly float _textTransitionFadeOutDuration = 0.1f;
     private readonly float _textTransitionFadeInDuration = 0.1f;

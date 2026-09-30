@@ -67,6 +67,7 @@ public class PowerUpRoomCutSceneDee : MonoBehaviour, ISkippable
 
         ShadowTwinPlayer.obj.transform.position = new Vector2(1453.75f, ShadowTwinPlayer.obj.transform.position.y);
         ShadowTwinMovement.obj.SetNewPower();
+        AmbienceManager.obj.Stop();
         yield return new WaitForSeconds(1.5f);
 
         _receivePowerupStingerInstance = SoundFXManager.obj.CreateAttachedInstance(_receivePowerupStinger, gameObject);
@@ -114,6 +115,8 @@ public class PowerUpRoomCutSceneDee : MonoBehaviour, ISkippable
         _isPicked = false;
         _animator.SetBool("isPicked", true);
         _animator.Play("idle_picked", 0, 0);
+
+        AmbienceManager.obj.Stop();
 
         StartCoroutine(ResumeGameplay());
     }

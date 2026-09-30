@@ -67,6 +67,7 @@ public class PrisonerAlertCutSceneTrigger : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
 
+        AmbienceManager.obj.Stop();
         MusicManager.obj.Play(_musicTrack);
 
         CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
