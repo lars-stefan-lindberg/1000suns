@@ -1,7 +1,9 @@
 using Cinemachine;
-using System.Collections;
 using UnityEngine;
 
+// Run before CinemachineBrain (default order 0) so the tracked offset set in LateUpdate
+// is used by the camera in the same frame.
+[DefaultExecutionOrder(-100)]
 [RequireComponent(typeof(CinemachineVirtualCamera))]
 public class RoomCameraController : MonoBehaviour
 {
@@ -10,10 +12,10 @@ public class RoomCameraController : MonoBehaviour
     public TopLockMode topLockMode = TopLockMode.Automatic;
     public float topLockDistance = 2.5f;
     public float unlockHysteresis = 0.5f;
-    public float lockYDampingBoost = 2f;
-    public float lockYDampingBoostDuration = 0.25f;
-    public float unlockYDampingBoost = 2f;
-    public float unlockYDampingBoostDuration = 0.25f;
+    [Tooltip("Approximate time (seconds) for the camera to ease up into top lock")]
+    public float lockSmoothTime = 0.6f;
+    [Tooltip("Approximate time (seconds) for the camera to ease back down out of top lock")]
+    public float unlockSmoothTime = 0.6f;
 
     private CinemachineVirtualCamera vcam;
     private CinemachineFramingTransposer framing;
@@ -23,12 +25,10 @@ public class RoomCameraController : MonoBehaviour
     private bool _yLockedToTop = false;
     private float _topY;
     private bool _justActivated = false;
-    private Coroutine _unlockYDampingCoroutine;
-    private float _unlockYDampingPreviousValue;
-    private Coroutine _lockYDampingCoroutine;
-    private float _lockYDampingPreviousValue;
-    private bool _isSmoothLockingToTop = false;
     private bool _requiresVerticalHandling;
+    // 0 = camera follows the player vertically, 1 = camera is pinned to the top of the room
+    private float _topLockBlend = 0f;
+    private float _topLockBlendVelocity = 0f;
 
     public enum RoomCameraType
     {
@@ -89,8 +89,6 @@ public class RoomCameraController : MonoBehaviour
     public void Deactivate() {
         vcam.Follow = null;
         vcam.enabled = false;
-
-        StopUnlockYDampingBoostAndRestore();
         
         // Disable lookahead controller
         if (lookaheadController != null)
@@ -100,6 +98,8 @@ public class RoomCameraController : MonoBehaviour
 
         gameObject.SetActive(false);
         _yLockedToTop = false;
+        _topLockBlend = 0f;
+        _topLockBlendVelocity = 0f;
     }
 
     public bool IsRoomCameraActivated() {
@@ -225,40 +225,19 @@ public class RoomCameraController : MonoBehaviour
             {
                 UnlockCameraY();
             }
-            else if (_yLockedToTop)
-            {
-                // We're locked and should stay locked - ensure dead zone is set
-                // But don't override it if we're currently in a smooth transition
-                if (!_isSmoothLockingToTop && framing.m_DeadZoneHeight != 999f)
-                {
-                    framing.m_DeadZoneHeight = 999f;
-                }
-            }
         }
-        else if (_yLockedToTop)
-        {
-            // In Manual mode, ensure dead zone stays set when locked
-            if (!_isSmoothLockingToTop && framing.m_DeadZoneHeight != 999f)
-            {
-                framing.m_DeadZoneHeight = 999f;
-            }
-        }
+
+        ApplyTopLockOffset();
     }
 
     private void LockCameraToTopImmediate()
     {
         _yLockedToTop = true;
-
-        StopUnlockYDampingBoostAndRestore();
-
-        framing.m_DeadZoneHeight = 999f;
-
-        framing.m_ScreenY = 1.5f;
+        _topLockBlend = 1f;
+        _topLockBlendVelocity = 0f;
         
-        // Update lookahead controller base screen Y
         if (lookaheadController != null)
         {
-            lookaheadController.SetBaseScreenY(1.5f);
             lookaheadController.ResetToBase();
         }
 
@@ -269,142 +248,30 @@ public class RoomCameraController : MonoBehaviour
     private void LockCameraToTopSmooth()
     {
         _yLockedToTop = true;
-        _isSmoothLockingToTop = true;
-
-        StopUnlockYDampingBoostAndRestore();
-
-        // Keep dead zone at 0 during transition, will be set to 999 after damping completes
-        framing.m_DeadZoneHeight = 0f;
-        
-        // Set Screen Y to target and use damping to smooth the transition
-        framing.m_ScreenY = 1.5f;
-        
-        // Apply damping boost for smooth transition
-        if (_lockYDampingCoroutine != null)
-        {
-            StopCoroutine(_lockYDampingCoroutine);
-        }
-        _lockYDampingCoroutine = StartCoroutine(ApplyLockYDampingBoost());
-        
-        // Update lookahead controller base screen Y
-        if (lookaheadController != null)
-        {
-            lookaheadController.SetBaseScreenY(1.5f);
-        }
     }
 
     void UnlockCameraY()
     {
         _yLockedToTop = false;
-        _isSmoothLockingToTop = false;
-
-        StopLockYDampingBoostAndRestore();
-
-        framing.m_DeadZoneHeight = 0f;
-        framing.m_ScreenY = 0.5f;
-        framing.m_ScreenX = 0.5f;
-        
-        // Update lookahead controller base screen Y
-        if (lookaheadController != null)
-        {
-            lookaheadController.SetBaseScreenY(0.5f);
-            lookaheadController.ResetToBase();
-        }
-
-        StartUnlockYDampingBoost();
     }
 
-    private void StartUnlockYDampingBoost()
+    /// <summary>
+    /// The camera keeps following the player normally; the top lock shifts the tracked point
+    /// (via the tracked object offset) from the player towards the "pinned to top" Y,
+    /// eased with a critically damped spring. The tracked point never goes past the confiner,
+    /// so the full transition is visible instead of being clipped.
+    /// </summary>
+    void ApplyTopLockOffset()
     {
-        if (framing == null)
-            return;
+        float target = _yLockedToTop ? 1f : 0f;
+        float smoothTime = Mathf.Max(0.0001f, _yLockedToTop ? lockSmoothTime : unlockSmoothTime);
+        _topLockBlend = Mathf.Clamp01(Mathf.SmoothDamp(
+            _topLockBlend, target, ref _topLockBlendVelocity, smoothTime, Mathf.Infinity, Time.deltaTime));
 
-        StopUnlockYDampingBoostAndRestore();
-
-        _unlockYDampingPreviousValue = framing.m_YDamping;
-        _unlockYDampingCoroutine = StartCoroutine(UnlockYDampingBoostRoutine());
+        // Camera center Y where the top of the view touches the top of the confiner
+        float lockedY = _topY - vcam.m_Lens.OrthographicSize;
+        Vector3 worldOffset = new Vector3(0f, (lockedY - player.position.y) * _topLockBlend, 0f);
+        // The framing transposer applies the offset in the follow target's local space
+        framing.m_TrackedObjectOffset = Quaternion.Inverse(player.rotation) * worldOffset;
     }
-
-    private void StopUnlockYDampingBoostAndRestore()
-    {
-        if (_unlockYDampingCoroutine == null)
-            return;
-
-        StopCoroutine(_unlockYDampingCoroutine);
-        _unlockYDampingCoroutine = null;
-
-        if (framing != null)
-            framing.m_YDamping = _unlockYDampingPreviousValue;
-    }
-
-    private void StopLockYDampingBoostAndRestore()
-    {
-        if (_lockYDampingCoroutine == null)
-            return;
-
-        StopCoroutine(_lockYDampingCoroutine);
-        _lockYDampingCoroutine = null;
-
-        if (framing != null)
-            framing.m_YDamping = _lockYDampingPreviousValue;
-    }
-
-    private IEnumerator UnlockYDampingBoostRoutine()
-    {
-        if (framing == null)
-        {
-            _unlockYDampingCoroutine = null;
-            yield break;
-        }
-
-        framing.m_YDamping = unlockYDampingBoost;
-
-        float t = 0f;
-        while (t < unlockYDampingBoostDuration)
-        {
-            t += Time.deltaTime;
-            yield return null;
-        }
-
-        if (framing != null)
-        {
-            framing.m_YDamping = _unlockYDampingPreviousValue;
-        }
-
-        _unlockYDampingCoroutine = null;
-    }
-
-    IEnumerator ApplyLockYDampingBoost()
-    {
-        if (framing == null)
-        {
-            _lockYDampingCoroutine = null;
-            yield break;
-        }
-
-        _lockYDampingPreviousValue = framing.m_YDamping;
-        framing.m_YDamping = lockYDampingBoost;
-
-        float t = 0f;
-        while (t < lockYDampingBoostDuration)
-        {
-            t += Time.deltaTime;
-            yield return null;
-        }
-
-        if (framing != null)
-        {
-            framing.m_YDamping = _lockYDampingPreviousValue;
-            
-            // Set dead zone to 999 after transition completes to lock the camera
-            if (_yLockedToTop)
-            {
-                framing.m_DeadZoneHeight = 999f;
-                _isSmoothLockingToTop = false;
-            }
-        }
-
-        _lockYDampingCoroutine = null;
-    }
-
 }
