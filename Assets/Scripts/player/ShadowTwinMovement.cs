@@ -2164,6 +2164,10 @@ public class ShadowTwinMovement : MonoBehaviour
         _wallJumpBoostTimer = _wallJumpBoostDuration;
         _wallJumpDirection = horizontalDirection;
         
+        // Face away from the wall. When wall jumping from the slack window the player may have
+        // flipped towards the wall after releasing the lash, so enforce facing here.
+        FlipPlayer(horizontalDirection);
+        
         // Apply vertical jump power (reduced compared to regular jump)
         _frameVelocity.y = _wallJumpVerticalPower;
         
