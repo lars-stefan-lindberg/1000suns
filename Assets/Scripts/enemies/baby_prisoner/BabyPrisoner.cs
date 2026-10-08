@@ -122,7 +122,7 @@ public class BabyPrisoner : MonoBehaviour
             FlipHorizontal();
         }
         
-        if (isGrounded)
+        if (isGrounded && _rigidBody.bodyType != RigidbodyType2D.Static)
         {
             if (!isTurning)
             {
