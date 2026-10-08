@@ -2113,80 +2113,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 3898464922500168640, guid: ba546279efae1410bb4292d130d9d24d, type: 3}
   m_PrefabInstance: {fileID: 627433677}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &679657263
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 732622721}
-    m_Modifications:
-    - target: {fileID: 6207383847890668986, guid: fe6657d07330a41c8b624b8a5aea0eb6, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -43.645508
-      objectReference: {fileID: 0}
-    - target: {fileID: 6207383847890668986, guid: fe6657d07330a41c8b624b8a5aea0eb6, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -6.56
-      objectReference: {fileID: 0}
-    - target: {fileID: 6207383847890668986, guid: fe6657d07330a41c8b624b8a5aea0eb6, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.020960212
-      objectReference: {fileID: 0}
-    - target: {fileID: 6207383847890668986, guid: fe6657d07330a41c8b624b8a5aea0eb6, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6207383847890668986, guid: fe6657d07330a41c8b624b8a5aea0eb6, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6207383847890668986, guid: fe6657d07330a41c8b624b8a5aea0eb6, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6207383847890668986, guid: fe6657d07330a41c8b624b8a5aea0eb6, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6207383847890668986, guid: fe6657d07330a41c8b624b8a5aea0eb6, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6207383847890668986, guid: fe6657d07330a41c8b624b8a5aea0eb6, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6207383847890668986, guid: fe6657d07330a41c8b624b8a5aea0eb6, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6729914342000212612, guid: fe6657d07330a41c8b624b8a5aea0eb6, type: 3}
-      propertyPath: color.a
-      value: 0.474
-      objectReference: {fileID: 0}
-    - target: {fileID: 6729914342000212612, guid: fe6657d07330a41c8b624b8a5aea0eb6, type: 3}
-      propertyPath: lightSpriteTransform.scale.x
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6729914342000212612, guid: fe6657d07330a41c8b624b8a5aea0eb6, type: 3}
-      propertyPath: lightSpriteTransform.scale.y
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 9089008626601983338, guid: fe6657d07330a41c8b624b8a5aea0eb6, type: 3}
-      propertyPath: m_Name
-      value: Big ceiling light
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: fe6657d07330a41c8b624b8a5aea0eb6, type: 3}
---- !u!4 &679657264 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 6207383847890668986, guid: fe6657d07330a41c8b624b8a5aea0eb6, type: 3}
-  m_PrefabInstance: {fileID: 679657263}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &732622719
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2273,9 +2199,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1600733566929813044, guid: 5c0dc4586589146d7a32b749382010bb, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1257468969}
-    - targetCorrespondingSourceObject: {fileID: 1600733566929813044, guid: 5c0dc4586589146d7a32b749382010bb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 679657264}
     - targetCorrespondingSourceObject: {fileID: 1600733566929813044, guid: 5c0dc4586589146d7a32b749382010bb, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1741645198}
@@ -3207,9 +3130,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 732622721}
     m_Modifications:
+    - target: {fileID: 2552312769310611993, guid: 20df9f54e53b34f57b3ed91543d32a13, type: 3}
+      propertyPath: lightSpriteTransform.scale.y
+      value: 3.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2865698501768169932, guid: 20df9f54e53b34f57b3ed91543d32a13, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -3.375
+      objectReference: {fileID: 0}
     - target: {fileID: 4781528938233027967, guid: 20df9f54e53b34f57b3ed91543d32a13, type: 3}
       propertyPath: m_Name
       value: Straight ceiling light beam
+      objectReference: {fileID: 0}
+    - target: {fileID: 4781528938233027967, guid: 20df9f54e53b34f57b3ed91543d32a13, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8161167522269539181, guid: 20df9f54e53b34f57b3ed91543d32a13, type: 3}
       propertyPath: _smallLight1
@@ -3226,6 +3161,10 @@ PrefabInstance:
     - target: {fileID: 8161167522269539181, guid: 20df9f54e53b34f57b3ed91543d32a13, type: 3}
       propertyPath: _bighLightMinAlpha
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8161167522269539181, guid: 20df9f54e53b34f57b3ed91543d32a13, type: 3}
+      propertyPath: _playerMinDistance
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 8161167522269539181, guid: 20df9f54e53b34f57b3ed91543d32a13, type: 3}
       propertyPath: _bighLightMaxThickness
