@@ -40,6 +40,7 @@ public class Prisoner : MonoBehaviour
     public float frontCheckHitBlock = 1f;
     public float behindCheck = 1.4f;
     private RaycastHit2D _otherHit; //Enemy or boulder
+    private readonly RaycastHit2D[] _groundHits = new RaycastHit2D[8];
 
     //When hit or recovering from hit
     public bool hasBeenHit = false;
@@ -324,15 +325,7 @@ public class Prisoner : MonoBehaviour
             }
         }
         //Check if grounded using boxcast
-        Vector2 boxSize = new Vector2(_collider.bounds.size.x, 0.1f);
-        Vector2 boxCastOrigin = _collider.bounds.center;
-        RaycastHit2D groundHit = Physics2D.BoxCast(
-            boxCastOrigin,
-            boxSize,
-            0f,
-            Vector2.down,
-            isGroundedCheckOffset,
-            groundLayer);
+        bool groundHit = CheckGrounded();
 
         if(!isGrounded && groundHit) {
             _isFalling = false;
@@ -345,7 +338,7 @@ public class Prisoner : MonoBehaviour
             _animator.SetTrigger("fall");
         }
 
-        isGrounded = groundHit.collider != null;
+        isGrounded = groundHit;
 
         //Check if space to move is too small. If so go into idle state
         if(isGrounded) {
@@ -514,6 +507,24 @@ public class Prisoner : MonoBehaviour
                 _rigidBody.velocity = currentVelocity;
             }
         }
+    }
+
+    //Ignores hits where the cast box already overlaps a collider at its origin (e.g. a wall the prisoner is flush against),
+    //otherwise a wall on the ground layer reports the prisoner as grounded while in mid-air
+    private bool CheckGrounded()
+    {
+        Vector2 boxSize = new Vector2(_collider.bounds.size.x, 0.1f);
+        Vector2 boxCastOrigin = _collider.bounds.center;
+        ContactFilter2D filter = new ContactFilter2D();
+        filter.SetLayerMask(groundLayer);
+        filter.useTriggers = Physics2D.queriesHitTriggers;
+        int hitCount = Physics2D.BoxCast(boxCastOrigin, boxSize, 0f, Vector2.down, filter, _groundHits, isGroundedCheckOffset);
+        for (int i = 0; i < hitCount; i++)
+        {
+            if (_groundHits[i].distance > 0f)
+                return true;
+        }
+        return false;
     }
 
     private void GracefulMovementStop(float currentVelocity)
