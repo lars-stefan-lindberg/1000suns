@@ -10,6 +10,7 @@ public class LevelEntry : MonoBehaviour
     [SerializeField] private bool _fireCustomCameraHandlingEvent = false;
     [SerializeField] private bool _enablePlayerTransition = true;
     [SerializeField] private bool _shouldSaveGame = true;
+    [SerializeField] private bool _unduckMusic = false;
     public UnityEvent OnCustomCameraHandling;
     private BoxCollider2D _collider;
     private SpawnPoint _spawnPoint;
@@ -46,6 +47,9 @@ public class LevelEntry : MonoBehaviour
 
             if(_shouldSaveGame)
                 SaveManager.obj.SaveGame(newScene.name);
+                
+            if(_unduckMusic)
+                AudioStateManager.obj.SetDucked(false);
         }
     }
 

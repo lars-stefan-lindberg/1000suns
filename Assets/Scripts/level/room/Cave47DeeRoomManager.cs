@@ -60,7 +60,7 @@ public class Cave47DeeRoomManager : MonoBehaviour, ISkippable
         PlayerSwitcher.obj.DisableSwitching();
 
         _zoomedOutCamera.SetActive(true);
-        AudioStateManager.obj.SetDialogue(true);
+        AudioStateManager.obj.SetDucked(true);
 
         yield return new WaitForSeconds(3.5f);
 
@@ -105,7 +105,7 @@ public class Cave47DeeRoomManager : MonoBehaviour, ISkippable
 
         //After finished
         _zoomedOutCamera.SetActive(false);
-        AudioStateManager.obj.SetDialogue(false);
+        AudioStateManager.obj.SetDucked(false);
 
         yield return new WaitForSeconds(3.5f);
 
@@ -169,7 +169,7 @@ public class Cave47DeeRoomManager : MonoBehaviour, ISkippable
 
         PlayerSwitcher.obj.EnableSwitching();
 
-        AudioStateManager.obj.SetDialogue(false);
+        AudioStateManager.obj.SetDucked(false);
 
         GameManager.obj.RegisterEvent(_cutsceneCompleted);
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);

@@ -36,7 +36,7 @@ public class ConversationManager : MonoBehaviour
     public void StartConversation()
     {
         if(_duckMusic)
-            AudioStateManager.obj.SetDialogue(true);
+            AudioStateManager.obj.SetDucked(true);
         _dialogueController.gameObject.SetActive(true);
         if (conversationList.Count > 0)
         {
@@ -47,7 +47,7 @@ public class ConversationManager : MonoBehaviour
 
     public void HardStopConversation() {
         if(_duckMusic)
-            AudioStateManager.obj.SetDialogue(false);
+            AudioStateManager.obj.SetDucked(false);
         currentDialogueIndex = conversationList.Count;
         if(_dialogueController.IsDisplayed()) {
             _dialogueController.HardStopConversation();
@@ -58,7 +58,7 @@ public class ConversationManager : MonoBehaviour
 
     public void CleanUp() {
         if(_duckMusic)
-            AudioStateManager.obj.SetDialogue(false);
+            AudioStateManager.obj.SetDucked(false);
         _dialogueController.CleanUp();
         _dialogueController.gameObject.SetActive(false);
     }
@@ -96,7 +96,7 @@ public class ConversationManager : MonoBehaviour
     {
         if(_isLastConversationOfRoom) {
             if(_duckMusic)
-                AudioStateManager.obj.SetDialogue(false);
+                AudioStateManager.obj.SetDucked(false);
             _dialogueController.gameObject.SetActive(false);
         }
         OnConversationEnd?.Invoke();

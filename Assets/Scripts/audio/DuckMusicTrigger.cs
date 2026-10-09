@@ -8,13 +8,13 @@ public class DuckMusicTrigger : MonoBehaviour
         if(!collider.CompareTag("Player"))
             return;
 
-        AudioStateManager.obj.SetDialogue(true);        
+        AudioStateManager.obj.SetDucked(true);        
     }
 
     void OnTriggerExit2D(Collider2D collider) {
         if(!collider.CompareTag("Player"))
             return;
 
-        AudioStateManager.obj.SetDialogue(false);        
+        AudioStateManager.obj.SetDucked(false);        
     }
 }

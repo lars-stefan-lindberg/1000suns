@@ -33,6 +33,7 @@ public class CaveCollectiblePortalTrigger : MonoBehaviour
         CollectibleManager.obj.CollectiblePickedPermanently(_collectible);
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         PlayerManager.obj.UnfreezePlayer(playerType);
+        AudioStateManager.obj.SetDucked(false);
         Destroy(this, 5);
     }
 }

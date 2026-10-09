@@ -13,14 +13,14 @@ public class AudioStateManager : MonoBehaviour
 {
     public static AudioStateManager obj;
     [SerializeField] private float fadeDuration = 0.25f;
-    [SerializeField] private float fadeDialogueDuration = 1f;
+    [SerializeField] private float fadeDuckedDuration = 1f;
 
     private Bus gameplaySfxBus;
     private PARAMETER_ID pauseParamId;
-    private PARAMETER_ID dialogueParamId;
+    private PARAMETER_ID duckParamId;
     private PARAMETER_ID reverbZoneParamId;
     private Coroutine fadeRoutine;
-    private Coroutine fadeDialogueRoutine;
+    private Coroutine fadeDuckedRoutine;
 
     void Awake()
     {
@@ -35,11 +35,11 @@ public class AudioStateManager : MonoBehaviour
         pauseParamId = pauseDesc.id;
 
         RuntimeManager.StudioSystem.getParameterDescriptionByName(
-            "Dialogue",
-            out PARAMETER_DESCRIPTION dialogueDesc
+            "Duck",
+            out PARAMETER_DESCRIPTION duckDesc
         );
 
-        dialogueParamId = dialogueDesc.id;
+        duckParamId = duckDesc.id;
 
         RuntimeManager.StudioSystem.getParameterDescriptionByName(
             "reverb_zone",
@@ -61,13 +61,13 @@ public class AudioStateManager : MonoBehaviour
         fadeRoutine = StartCoroutine(FadePause(target));
     }
 
-    public void SetDialogue(bool dialogue) {
-        float target = dialogue ? 1f : 0f;
+    public void SetDucked(bool ducked) {
+        float target = ducked ? 1f : 0f;
 
-        if (fadeDialogueRoutine != null)
-            StopCoroutine(fadeDialogueRoutine);
+        if (fadeDuckedRoutine != null)
+            StopCoroutine(fadeDuckedRoutine);
 
-        fadeDialogueRoutine = StartCoroutine(FadeDialogue(target));
+        fadeDuckedRoutine = StartCoroutine(FadeDucked(target));
     }
 
     // Restore volume and low pass filter
@@ -119,27 +119,27 @@ public class AudioStateManager : MonoBehaviour
         RuntimeManager.StudioSystem.setParameterByID(pauseParamId, target);
     }
 
-    private IEnumerator FadeDialogue(float target)
+    private IEnumerator FadeDucked(float target)
     {
         RuntimeManager.StudioSystem.getParameterByID(
-            dialogueParamId,
+            duckParamId,
             out float startValue
         );
 
         float time = 0f;
 
-        while (time < fadeDialogueDuration)
+        while (time < fadeDuckedDuration)
         {
             time += Time.unscaledDeltaTime;
-            float t = time / fadeDialogueDuration;
+            float t = time / fadeDuckedDuration;
 
             float value = Mathf.Lerp(startValue, target, t);
-            RuntimeManager.StudioSystem.setParameterByID(dialogueParamId, value);
+            RuntimeManager.StudioSystem.setParameterByID(duckParamId, value);
 
             yield return null;
         }
 
-        RuntimeManager.StudioSystem.setParameterByID(dialogueParamId, target);
+        RuntimeManager.StudioSystem.setParameterByID(duckParamId, target);
     }
 
     void OnDestroy() {
