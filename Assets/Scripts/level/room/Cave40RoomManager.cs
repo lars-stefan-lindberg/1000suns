@@ -13,6 +13,7 @@ public class Cave40RoomManager : MonoBehaviour, ISkippable
     [SerializeField] private SceneField _thisScene;
     [SerializeField] private EventReference _elevatorBuzzSfx;
     [SerializeField] private EventReference _elevatorCrystalSfx;
+    [SerializeField] private EventReference _eliDistantFootstepsSfx;
     [SerializeField] private Transform _deeBehindElevatorPosition;
     [SerializeField] private Transform _deeCutsceneEliStartPosition;
     [SerializeField] private Transform _deeCutsceneEliEndPosition;
@@ -24,6 +25,7 @@ public class Cave40RoomManager : MonoBehaviour, ISkippable
     
     private const string ELEVATOR_SOUND_NAME = "ElevatorBuzz";
     private EventInstance _elevatorCrystalSfxInstance;
+    private EventInstance _eliDistantFootstepsSfxInstance;
 
     private Coroutine _cutsceneCoroutine;
     private Coroutine _updateElevatorSoundCoroutine;
@@ -42,6 +44,9 @@ public class Cave40RoomManager : MonoBehaviour, ISkippable
         yield return new WaitForSeconds(1f);
 
         //Play back Eli sfx
+        _eliDistantFootstepsSfxInstance = SoundFXManager.obj.CreateAttachedInstance(_eliDistantFootstepsSfx, ShadowTwinMovement.obj.gameObject);
+        _eliDistantFootstepsSfxInstance.start();
+        _eliDistantFootstepsSfxInstance.release();
 
         ShadowTwinMovement.obj.FlipPlayer();
 
@@ -206,6 +211,8 @@ public class Cave40RoomManager : MonoBehaviour, ISkippable
             PlayerMovement.obj.SimulateJumpInput(false, Time.time);
             PlayerMovement.obj.CancelJumping();
             CaveAvatar.obj.gameObject.SetActive(false);
+
+            AudioUtils.SafeStop(ref _eliDistantFootstepsSfxInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
 
             SpriteRenderer deeRenderer = ShadowTwinMovement.obj.spriteRenderer;
             deeRenderer.sortingLayerName = "Background props";
