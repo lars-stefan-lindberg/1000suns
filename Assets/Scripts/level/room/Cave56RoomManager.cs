@@ -11,6 +11,7 @@ public class Cave56RoomManager : MonoBehaviour, ISkippable
     [SerializeField] private Transform _eliEndPosition;
     [SerializeField] private Transform _sootStartPosition;
     [SerializeField] private Transform _sootEndPosition;
+    [SerializeField] private GameObject _breakableFloor;
 
     private Coroutine _cutsceneCoroutine;
     private Coroutine _conversationCompletedCoroutine;
@@ -19,6 +20,7 @@ public class Cave56RoomManager : MonoBehaviour, ISkippable
     {
         var caveTimelineId = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
         if(GameManager.obj.HasEvent(_cutsceneCompleted) || caveTimelineId != CaveTimelineId.Id.Dee) {
+            _breakableFloor.SetActive(false);
             Destroy(this);
             return;
         }
@@ -39,6 +41,10 @@ public class Cave56RoomManager : MonoBehaviour, ISkippable
 
     public void StartCutscene() {
         if(GameManager.obj.HasEvent(_cutsceneCompleted)) {
+            return;
+        }
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(caveTimeline == CaveTimelineId.Id.Both) { 
             return;
         }
 

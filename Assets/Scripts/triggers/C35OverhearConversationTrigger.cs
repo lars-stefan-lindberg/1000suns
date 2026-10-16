@@ -33,6 +33,10 @@ public class C35OverhearConversationTrigger : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(caveTimeline == CaveTimelineId.Id.Both) { 
+            return;
+        }
         if(collision.CompareTag("Player")) {
             _boxCollider2D.enabled = false;
             StartCoroutine(HandleDialogue());

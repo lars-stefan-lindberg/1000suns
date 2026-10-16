@@ -21,6 +21,17 @@ public class Cave48RoomManager : MonoBehaviour, ISkippable
 
     void Start()
     {
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(caveTimeline == CaveTimelineId.Id.Both) { 
+            foreach (var mushroom in _guidingMushrooms)
+            {
+                mushroom.GetComponent<SpriteRenderer>().enabled = true;
+                mushroom.GetComponent<LightSprite2DFadeManager>().SetFadedInState();
+            }
+            _hiddenFloor.SetActive(false);
+            _cutsceneTrigger.SetActive(false);
+            return;
+        }
         if(GameManager.obj.HasEvent(_guidingMushroomsGrown)) {
             foreach (var mushroom in _guidingMushrooms)
             {
@@ -76,6 +87,9 @@ public class Cave48RoomManager : MonoBehaviour, ISkippable
         if(!GameManager.obj.HasEvent(_cave50PostDreamRoom))
             return;
         if(GameManager.obj.HasEvent(_guidingMushroomsGrown))
+            return;
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(caveTimeline == CaveTimelineId.Id.Both)
             return;
         
         _cutsceneCoroutine = StartCoroutine(GrowMushrooms());

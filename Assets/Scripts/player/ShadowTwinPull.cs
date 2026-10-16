@@ -183,6 +183,12 @@ public class ShadowTwinPull : MonoBehaviour
         if (_isPullingObject && _pulledPullable != null)
             return;
         
+        if (!IsDeeControlled())
+        {
+            ClearHighlight();
+            return;
+        }
+        
         // Throttle detection to reduce CPU overhead
         if (Time.time - _lastDetectionTime >= _detectionInterval)
         {
@@ -220,6 +226,25 @@ public class ShadowTwinPull : MonoBehaviour
             
             _highlightedPullable = closestPullable;
         }
+    }
+
+    private void OnDisable()
+    {
+        ClearHighlight();
+    }
+
+    private bool IsDeeControlled()
+    {
+        return PlayerManager.obj == null || PlayerManager.obj.IsCoopActive
+            || PlayerSwitcher.obj == null || PlayerSwitcher.obj.IsDeeActive();
+    }
+
+    private void ClearHighlight()
+    {
+        if (_highlightedPullable != null && _highlightedPullable != _pulledPullable)
+            _highlightedPullable.StopHighlight();
+        _highlightedPullable = null;
+        _cachedClosestPullable = null;
     }
 
     public void DisablePull() {
@@ -303,6 +328,8 @@ public class ShadowTwinPull : MonoBehaviour
             if (closestPullable != _pulledPullable)
             {
                 _pulledPullable.StopHighlight();
+                if (_highlightedPullable == _pulledPullable)
+                    _highlightedPullable = null;
             }
         }
         _pulledPullable = null;

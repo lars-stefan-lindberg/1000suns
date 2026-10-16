@@ -7,12 +7,15 @@ using UnityEngine.Tilemaps;
 public class Cave45RoomManager : MonoBehaviour
 {
     [SerializeField] private GameEventId _bossCompleted;
+    [SerializeField] private GameEventId _bossCompletedBoth;
     [SerializeField] private GameEventId _bossStarted;
+    [SerializeField] private GameEventId _bossStartedBoth;
     [SerializeField] private GameObject _lockedDoorOrb;
     [SerializeField] private GameObject _lockedDoor;
     [SerializeField] private Prisoner _prisoner1;
     [SerializeField] private Prisoner _prisoner2;
     [SerializeField] private MusicTrack _bossMusic;
+    [SerializeField] private MusicTrack _deepCaveFull;
     [SerializeField] private AmbienceTrack _caveMainAmbience;
     [SerializeField] private SpawnPoint _bossSpawnPoint;
     [SerializeField] private GameObject _blockingWall;
@@ -20,16 +23,37 @@ public class Cave45RoomManager : MonoBehaviour
 
     void Start()
     {
-        if(GameManager.obj.HasEvent(_bossCompleted)) {
-            _lockedDoorOrb.SetActive(false);
-            return;
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(caveTimeline == CaveTimelineId.Id.Both) { 
+            if(GameManager.obj.HasTemporaryEvent(_bossCompletedBoth)) {
+                _lockedDoorOrb.SetActive(false);
+                return;
+            }
+        }
+        if(caveTimeline == CaveTimelineId.Id.Eli) {
+            if(GameManager.obj.HasEvent(_bossCompleted)) {
+                _lockedDoorOrb.SetActive(false);
+                return;
+            }
         }
     }
 
     public void StartFight() {
-        if(GameManager.obj.HasEvent(_bossCompleted))
-            return;
-        else if(GameManager.obj.HasEvent(_bossStarted)) {
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(caveTimeline == CaveTimelineId.Id.Both) { 
+            if(GameManager.obj.HasTemporaryEvent(_bossCompletedBoth)) {
+                return;
+            }
+        }
+        if(caveTimeline == CaveTimelineId.Id.Eli) {
+            if(GameManager.obj.HasEvent(_bossCompleted)) {
+                return;
+            }
+        }
+        
+        if(caveTimeline == CaveTimelineId.Id.Eli && GameManager.obj.HasEvent(_bossStarted)) {
+            StartCoroutine(ContinueFight());
+        } else if(caveTimeline == CaveTimelineId.Id.Both && GameManager.obj.HasTemporaryEvent(_bossStarted)) {
             StartCoroutine(ContinueFight());
         } else
             StartCoroutine(StartFightCoroutine());
@@ -51,7 +75,8 @@ public class Cave45RoomManager : MonoBehaviour
     }
 
     private IEnumerator StartFightCoroutine() {
-        PlayerMovement.obj.Freeze();
+        var activePlayerType = PlayerManager.obj.GetActivePlayerType();
+        PlayerManager.obj.FreezePlayer(activePlayerType);
         _prisoner1.isStatic = true;
         _prisoner2.isStatic = true;
         _prisoner1.gameObject.SetActive(true);
@@ -72,11 +97,19 @@ public class Cave45RoomManager : MonoBehaviour
         AmbienceManager.obj.Stop();
         MusicManager.obj.Play(_bossMusic);
         yield return new WaitForSeconds(1.5f);
-        PlayerMovement.obj.UnFreeze();
+        
+        activePlayerType = PlayerManager.obj.GetActivePlayerType();
+        PlayerManager.obj.UnfreezePlayer(activePlayerType);
         yield return new WaitForSeconds(1f);
         _prisoner1.isStatic = false;
         _prisoner2.isStatic = false;
-        GameManager.obj.RegisterEvent(_bossStarted);
+        
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(caveTimeline == CaveTimelineId.Id.Eli) {
+            GameManager.obj.RegisterEvent(_bossStarted);
+        } else if(caveTimeline == CaveTimelineId.Id.Both) {
+            GameManager.obj.RegisterTemporaryEvent(_bossStartedBoth);
+        }
         GameManager.obj.SetCurrentSpawnPointId(_bossSpawnPoint.SpawnPointID);
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
     }
@@ -91,9 +124,21 @@ public class Cave45RoomManager : MonoBehaviour
             _blockingWall.SetActive(false);
         });
         
-        MusicManager.obj.EndCurrentTrack();
-        AmbienceManager.obj.Play(_caveMainAmbience);
-        GameManager.obj.RegisterEvent(_bossCompleted);
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(caveTimeline == CaveTimelineId.Id.Eli) {
+            GameManager.obj.RegisterEvent(_bossCompleted);
+            MusicManager.obj.EndCurrentTrack();
+            AmbienceManager.obj.Play(_caveMainAmbience);
+        } else if(caveTimeline == CaveTimelineId.Id.Both) {
+            GameManager.obj.RegisterTemporaryEvent(_bossCompletedBoth);
+            MusicManager.obj.EndCurrentTrack();
+            StartCoroutine(DelayedPlayFullCaveMusic());
+        }
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
+    }
+
+    private IEnumerator DelayedPlayFullCaveMusic() {
+        yield return new WaitForSeconds(5f);
+        MusicManager.obj.Play(_deepCaveFull);
     }
 }

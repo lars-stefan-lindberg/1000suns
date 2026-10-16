@@ -83,6 +83,10 @@ public class SaveManager : MonoBehaviour
                 GameProgress gameProgress = new GameProgress();
                 gameProgress.ImportCompletedEvents(data?.completedEvents);
                 GameManager.obj.LoadProgress(gameProgress);
+
+                GameProgress temporaryProgress = new GameProgress();
+                temporaryProgress.ImportCompletedEvents(data?.temporaryEvents ?? new List<string>());
+                GameManager.obj.LoadTemporaryProgress(temporaryProgress);
             }
 
             if(GameManager.obj != null) {
@@ -236,8 +240,10 @@ public class SaveManager : MonoBehaviour
         if (gameMgr != null) {
             var completedEventIds = gameMgr.GetProgressForSave().GetCompletedEventIds();
             data.completedEvents = new List<string>(completedEventIds);
+            data.temporaryEvents = new List<string>(gameMgr.GetTemporaryProgressForSave().GetCompletedEventIds());
         } else {
             data.completedEvents = new List<string>();
+            data.temporaryEvents = new List<string>();
         }
         
         data.completedLevels = levelMgr != null ? levelMgr.ExportCompletedLevels() : new List<string>();

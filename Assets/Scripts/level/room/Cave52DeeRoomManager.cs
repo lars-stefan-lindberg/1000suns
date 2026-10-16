@@ -15,6 +15,10 @@ public class Cave52DeeRoomManager : MonoBehaviour, ISkippable
     public void OnCutsceneTriggered() {
         if(GameManager.obj.HasEvent(_cutsceneCompleted))
             return;
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(caveTimeline == CaveTimelineId.Id.Both) { 
+            return;
+        }
         
         ShadowTwinMovement.obj.Freeze();
         _cutsceneCoroutine = StartCoroutine(CutsceneCoroutine());

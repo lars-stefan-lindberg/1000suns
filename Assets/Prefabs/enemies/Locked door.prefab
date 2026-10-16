@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 4338809134778024605}
   - component: {fileID: 6292067216848879652}
   - component: {fileID: 3700406768064730991}
+  - component: {fileID: 8782247522218421830}
   m_Layer: 3
   m_Name: Locked door
   m_TagString: Untagged
@@ -227,3 +228,16 @@ MonoBehaviour:
   OnFullyFadedIn:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &8782247522218421830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 501410472896886909}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 271f961d5949b4e15b0caf3b19de15d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _sounds: {fileID: 11400000, guid: 4b6c275a70b35413bb5214d694c6da29, type: 2}

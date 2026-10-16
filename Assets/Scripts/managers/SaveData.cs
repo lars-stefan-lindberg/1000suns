@@ -17,6 +17,7 @@ public class SaveData
 
     public List<string> playerPowers = new();
     public List<string> completedEvents = new(); // Levels that have been completed. We store as a list since JsonUtility can't serialize Dictionary.
+    public List<string> temporaryEvents = new();
     public List<string> completedLevels = new(); // Collectible IDs that have been permanently picked by the player
     public List<string> pickedCollectibles = new();
 

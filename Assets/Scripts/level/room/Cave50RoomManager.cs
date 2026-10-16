@@ -24,7 +24,8 @@ public class Cave50RoomManager : MonoBehaviour
         if(GameManager.obj.HasEvent(_dreamSequenceCompleted) && !GameManager.obj.HasEvent(_postDreamSequenceCompleted)) {
             StartCoroutine(AfterDreamRoom());
         }
-        if(GameManager.obj.HasEvent(_dreamSequenceCompleted)) {
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(GameManager.obj.HasEvent(_dreamSequenceCompleted) || caveTimeline == CaveTimelineId.Id.Both) {
             _powerUpPortal.SetActive(false);
         }
     }
@@ -79,7 +80,8 @@ public class Cave50RoomManager : MonoBehaviour
     }
 
     public void TeleportToDreamRoom() {
-        if(GameManager.obj.HasEvent(_dreamSequenceCompleted))
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(GameManager.obj.HasEvent(_dreamSequenceCompleted) || caveTimeline == CaveTimelineId.Id.Both)
             return;
         PlayerBlobMovement.obj.Freeze();
         AmbienceManager.obj.Stop();

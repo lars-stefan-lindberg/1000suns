@@ -15,6 +15,7 @@ public class Cave42RoomManager : MonoBehaviour
     [SerializeField] private CaveElevator _elevator;
     [SerializeField] private GameEventId _elevatorCompleted;
     [SerializeField] private GameEventId _elevatorCompletedDee;
+    [SerializeField] private GameEventId _elevatorCompletedBoth;
     [SerializeField] private Transform _deeStartPosition;
     [SerializeField] private Transform _deeElevatorStartPosition;
     [SerializeField] private Transform _deactivateEliPosition;
@@ -38,6 +39,11 @@ public class Cave42RoomManager : MonoBehaviour
             return;
         }
         if(GameManager.obj.HasEvent(_elevatorCompletedDee) && caveTimeline == CaveTimelineId.Id.Dee) {
+            _elevator.transform.position = new Vector2(_elevator.transform.position.x, _elevatorStopPosition.position.y);
+            _elevator.GetComponentInChildren<LightSprite2D>().enabled = true;
+            return;
+        }
+        if(GameManager.obj.HasTemporaryEvent(_elevatorCompletedBoth) && caveTimeline == CaveTimelineId.Id.Both) {
             _elevator.transform.position = new Vector2(_elevator.transform.position.x, _elevatorStopPosition.position.y);
             _elevator.GetComponentInChildren<LightSprite2D>().enabled = true;
             return;
@@ -253,7 +259,7 @@ public class Cave42RoomManager : MonoBehaviour
 
         MusicManager.obj.Play(_deepCaveFull);
 
-        //GameManager.obj.RegisterEvent(_elevatorCompleted);
+        GameManager.obj.RegisterTemporaryEvent(_elevatorCompletedBoth);
         GameManager.obj.SetCurrentSpawnPointId(_afterElevatorSpawnPoint.SpawnPointID);
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
         PlayerManager.obj.UnfreezePlayer(activePlayerType);

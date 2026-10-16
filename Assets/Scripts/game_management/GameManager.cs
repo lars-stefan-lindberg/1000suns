@@ -4,6 +4,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager obj;
     public GameProgress Progress { get; private set; }
+    public GameProgress TemporaryProgress { get; private set; }
     public bool isDevMode = false;
     private CaveTimeline _caveTimeline;
     private string _currentSpawnPointId;
@@ -20,6 +21,7 @@ public class GameManager : MonoBehaviour
     void Awake() {
         obj = this;
         Progress = new GameProgress();
+        TemporaryProgress = new GameProgress();
         // var testEvent = ScriptableObject.CreateInstance<GameEventId>();
         // testEvent.id = "cave-3.soot-freed";
         // Progress.RegisterEvent(testEvent);
@@ -50,6 +52,36 @@ public class GameManager : MonoBehaviour
         Progress.RegisterEvent(eventId);
     }
 
+    public bool HasTemporaryEvent(GameEventId eventId)
+    {
+        return TemporaryProgress.HasEvent(eventId);
+    }
+
+    public bool HasTemporaryEvent(string eventIdString)
+    {
+        return TemporaryProgress.HasEvent(eventIdString);
+    }
+
+    public void RegisterTemporaryEvent(GameEventId eventId)
+    {
+        TemporaryProgress.RegisterEvent(eventId);
+    }
+
+    public void ClearTemporaryEvents()
+    {
+        TemporaryProgress.Clear();
+    }
+
+    public void ExitStage()
+    {
+        ClearTemporaryEvents();
+    }
+
+    public void CompleteStage()
+    {
+        ClearTemporaryEvents();
+    }
+
     public void NewGame()
     {
         Progress.Clear();
@@ -75,6 +107,16 @@ public class GameManager : MonoBehaviour
     public void LoadProgress(GameProgress loaded)
     {
         Progress = loaded;
+    }
+
+    public GameProgress GetTemporaryProgressForSave()
+    {
+        return TemporaryProgress;
+    }
+
+    public void LoadTemporaryProgress(GameProgress loaded)
+    {
+        TemporaryProgress = loaded;
     }
 
     public CaveTimeline GetCaveTimeline() {

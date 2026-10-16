@@ -40,6 +40,10 @@ public class C26CutsceneManager : MonoBehaviour, ISkippable
         if(GameManager.obj.HasEvent(_cutsceneCompleted)) {
             return;
         }
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(caveTimeline == CaveTimelineId.Id.Both) {
+            return;
+        }
         if (other.gameObject.CompareTag("Player")) {
             _startCutscene = true;
             GetComponent<BoxCollider2D>().enabled = false;
@@ -61,6 +65,11 @@ public class C26CutsceneManager : MonoBehaviour, ISkippable
             _backgroundBlobs.SetActive(false);
             if(!CaveAvatar.obj.IsFollowingPlayer && !GameManager.obj.HasEvent(_sootFliedOffInCave48))
                 CaveAvatar.obj.SetStartingPositionInRoom48();
+            return;
+        }
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(caveTimeline == CaveTimelineId.Id.Both) {
+            _backgroundBlobs.SetActive(false);
             return;
         }
         if (_dialogueController != null)
