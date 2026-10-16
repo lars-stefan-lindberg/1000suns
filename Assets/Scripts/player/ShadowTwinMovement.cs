@@ -239,6 +239,11 @@ public class ShadowTwinMovement : MonoBehaviour
     private void Update()
     {
         _time += Time.deltaTime;
+        if (_pollTransferredJumpHeld && !PlayerManager.IsActionPressed(_playerInput, "Jump"))
+        {
+            _jumpHeldInput = false;
+            _pollTransferredJumpHeld = false;
+        }
         UpdateAnimator();
         
         // Update hit reaction timer
@@ -786,6 +791,7 @@ public class ShadowTwinMovement : MonoBehaviour
 
     public void OnJump(InputAction.CallbackContext context)
     {
+        _pollTransferredJumpHeld = false;
         if (context.performed)
         {
             if(jumpThroughPlatform != null &&
@@ -1002,28 +1008,54 @@ public class ShadowTwinMovement : MonoBehaviour
         yield return null;
     }
 
+    //Captures the state to carry over to the new character when switching. Must be called before this character is disabled
+    public PlayerManager.SwitchState GetSwitchState() {
+        return new PlayerManager.SwitchState {
+            velocity = _frameVelocity,
+            isGrounded = isGrounded,
+            isOnMoveable = isOnMoveable,
+            moveableRigidbody = moveableRigidbody,
+            jumpHeld = _jumpHeldInput,
+            endedJumpEarly = _endedJumpEarly
+        };
+    }
+
+    //Applies the state from the previous character when switching. Velocity is clamped to regular movement limits,
+    //so special movement (dash, shadow jump, wall jump, propel etc) isn't carried over
+    public void ApplySwitchState(PlayerManager.SwitchState state) {
+        float velocityX = Mathf.Clamp(state.velocity.x, -_stats.MaxSpeed, _stats.MaxSpeed);
+        if(state.isGrounded) {
+            SetStartingOnGround();
+            isGrounded = true;
+            isOnMoveable = state.isOnMoveable;
+            moveableRigidbody = state.moveableRigidbody;
+            _frameVelocity = new Vector2(velocityX, 0);
+        } else {
+            isGrounded = false;
+            startingOnGround = false;
+            _frameVelocity = new Vector2(velocityX, Mathf.Clamp(state.velocity.y, -_stats.MaxFallSpeed, _stats.JumpPower));
+        }
+        _jumpHeldInput = state.jumpHeld;
+        _endedJumpEarly = state.endedJumpEarly;
+        _pollTransferredJumpHeld = state.jumpHeld;
+        if(ShadowTwinPlayer.obj.rigidBody.bodyType != RigidbodyType2D.Static) {
+            ShadowTwinPlayer.obj.rigidBody.velocity = _frameVelocity;
+        }
+    }
+
     public void ToTwin() {
         CameraManager.SwitchFollowTarget(transform, _playerTwin.transform);
 
+        PlayerManager.SwitchState switchState = GetSwitchState();
         ShadowTwinPlayer.obj.rigidBody.velocity = new Vector2(0, 0);
         _frameVelocity = new Vector2(0, 0);
-        bool wasOnMoveable = isOnMoveable;
-        Rigidbody2D currentMoveable = moveableRigidbody;
         gameObject.SetActive(false);
         _playerTwin.transform.position = transform.position;
         _playerTwin.GetComponent<PlayerMovement>().spriteRenderer.flipX = IsFacingLeft();
         _playerTwin.GetComponent<PlayerMovement>().CancelJumping();
         _playerTwin.SetActive(true);
         PlayerSwitcher.obj.SwitchToEli();
-        if(isGrounded) {
-            _playerTwin.GetComponent<PlayerMovement>().SetStartingOnGround();
-            _playerTwin.GetComponent<PlayerMovement>().isGrounded = true;
-            _playerTwin.GetComponent<PlayerMovement>().isOnMoveable = wasOnMoveable;
-            _playerTwin.GetComponent<PlayerMovement>().moveableRigidbody = currentMoveable;
-        } else {
-            _playerTwin.GetComponent<PlayerMovement>().isGrounded = false;
-            _playerTwin.GetComponent<PlayerMovement>().startingOnGround = false;
-        }
+        _playerTwin.GetComponent<PlayerMovement>().ApplySwitchState(switchState);
         if(IsFrozen()) {
             _playerTwin.GetComponent<PlayerMovement>().Freeze();
         } else {
@@ -1062,24 +1094,15 @@ public class ShadowTwinMovement : MonoBehaviour
     public void ToBlob() {
         CameraManager.SwitchFollowTarget(transform, _playerBlob.transform);
 
+        PlayerManager.SwitchState switchState = GetSwitchState();
         ShadowTwinPlayer.obj.rigidBody.velocity = new Vector2(0, 0);
         _frameVelocity = new Vector2(0, 0);
-        bool wasOnMoveable = isOnMoveable;
-        Rigidbody2D currentMoveable = moveableRigidbody;
         gameObject.SetActive(false);
         _playerBlob.transform.position = transform.position - new Vector3(0, 0.5f, 0);
         _playerBlob.GetComponent<PlayerBlobMovement>().spriteRenderer.flipX = IsFacingLeft();
         _playerBlob.SetActive(true);
         PlayerSwitcher.obj.SwitchToBlob();
-        if(isGrounded) {
-            _playerBlob.GetComponent<PlayerBlobMovement>().SetStartingOnGround();
-            _playerBlob.GetComponent<PlayerBlobMovement>().isGrounded = true;
-            _playerBlob.GetComponent<PlayerBlobMovement>().isOnMoveable = wasOnMoveable;
-            _playerBlob.GetComponent<PlayerBlobMovement>().moveableRigidbody = currentMoveable;
-        } else {
-            _playerBlob.GetComponent<PlayerBlobMovement>().isGrounded = false;
-            _playerBlob.GetComponent<PlayerBlobMovement>().startingOnGround = false;
-        }
+        _playerBlob.GetComponent<PlayerBlobMovement>().ApplySwitchState(switchState);
         if(IsFrozen()) {
             _playerBlob.GetComponent<PlayerBlobMovement>().Freeze();
         } else {
@@ -1381,6 +1404,7 @@ public class ShadowTwinMovement : MonoBehaviour
 
     #region Jumping
     private bool _jumpToConsume;
+    private bool _pollTransferredJumpHeld = false; //Jump held carried over from a character switch. Polled until released, since no canceled event fires for it
     private float _timeJumpWasPressed = -100;  //To avoid having buffered jump from the start
     private bool _endedJumpEarly;
     private bool _coyoteUsable;
@@ -2412,6 +2436,9 @@ public class ShadowTwinMovement : MonoBehaviour
 
     #region Gravity
 
+    [Tooltip("Deceleration of downward velocity while playing the to blob animation when falling")]
+    [SerializeField] private float _switchToBlobFallDeceleration = 40f;
+
     private void HandleGravity()
     {
         // Check horizontal propelling first - set vertical velocity to 0 like dash
@@ -2459,7 +2486,12 @@ public class ShadowTwinMovement : MonoBehaviour
         }
         else
         {
-            if (_isDashing)
+            if (isTransforming && PlayerManager.obj.IsEliInBlobForm() && _frameVelocity.y < 0)
+            {
+                //Brake the fall during the to blob animation, so the blob doesn't end up lower than feels natural
+                _frameVelocity.y = Mathf.MoveTowards(_frameVelocity.y, 0, _switchToBlobFallDeceleration * Time.fixedDeltaTime);
+            }
+            else if (_isDashing)
             {
                 //Just keep horizontal movement
                 _frameVelocity.y = 0;

@@ -20,6 +20,8 @@ public class PlayerBlobMovement : MonoBehaviour
     [SerializeField] private LayerMask _groundLayerMasks;
     public bool isOnMoveable = false;
     public Rigidbody2D moveableRigidbody;
+    [Tooltip("Multiplier for downward velocity carried over when switching to blob while falling. Lower = more braking. 1 = no braking")]
+    [Range(0f, 1f)] public float switchToBlobFallVelocityMultiplier = 0.5f;
     private LayerMask _moveableLayerMasks;
     private LayerMask _ceilingLayerMasks;
     private bool _roundedCeilingCornerThisFrame = false;
@@ -39,7 +41,8 @@ public class PlayerBlobMovement : MonoBehaviour
     private bool _freezePlayer = false;
 
     //Not great but it's hard to get this dynamically since the player object is always disabled when player blob is active
-    private readonly float _playerColliderHeight = 1.642559f;  
+    //Collider height of both Eli and Dee
+    private readonly float _playerColliderHeight = 1.75f;
 
     // --- Hit boost variables ---
     private bool _isHit = false;
@@ -96,8 +99,6 @@ public class PlayerBlobMovement : MonoBehaviour
             if(!IsEnoughSpaceForPlayer()) {
                 return;
             }
-            PlayerBlob.obj.rigidBody.velocity = new Vector2(0,0);
-            _frameVelocity = new Vector2(0,0);
             ToHuman();
         }
     }
@@ -120,6 +121,10 @@ public class PlayerBlobMovement : MonoBehaviour
 
         if(PlayerPowersManager.obj.CanSwitchBetweenTwinsMerged && !PlayerManager.obj.IsSeparated)
         {    
+            //Same as when turning to human, make sure the shadow twin fits
+            if(!IsEnoughSpaceForPlayer()) {
+                return;
+            }
             //Switch to shadow twin
             _blobAudio.PlayShapeshift();
             isTransformingToTwin = true;
@@ -231,27 +236,68 @@ public class PlayerBlobMovement : MonoBehaviour
         yield return null;
     }
 
+    //Captures the state to carry over to the new character when switching. Must be called before this character is disabled
+    public PlayerManager.SwitchState GetSwitchState() {
+        return new PlayerManager.SwitchState {
+            velocity = _frameVelocity,
+            isGrounded = isGrounded,
+            isOnMoveable = isOnMoveable,
+            moveableRigidbody = moveableRigidbody,
+            jumpHeld = _jumpHeldInput,
+            endedJumpEarly = _endedJumpEarly
+        };
+    }
+
+    //Applies the state from the previous character when switching. Velocity is clamped to regular movement limits,
+    //so special movement (dash, shadow jump, wall jump, propel etc) isn't carried over
+    public void ApplySwitchState(PlayerManager.SwitchState state) {
+        float velocityX = Mathf.Clamp(state.velocity.x, -_stats.MaxSpeed, _stats.MaxSpeed);
+        if(state.isGrounded) {
+            SetStartingOnGround();
+            isGrounded = true;
+            isOnMoveable = state.isOnMoveable;
+            moveableRigidbody = state.moveableRigidbody;
+            _frameVelocity = new Vector2(velocityX, 0);
+        } else {
+            isGrounded = false;
+            startingOnGround = false;
+            //Brake slightly when falling, since the blob spawns at the feet of the previous character and otherwise feels like it ends up too low
+            float velocityY = state.velocity.y < 0 ? state.velocity.y * switchToBlobFallVelocityMultiplier : state.velocity.y;
+            _frameVelocity = new Vector2(velocityX, Mathf.Clamp(velocityY, -_stats.MaxFallSpeed, _stats.JumpPower));
+        }
+        _jumpHeldInput = state.jumpHeld;
+        _endedJumpEarly = state.endedJumpEarly;
+        _pollTransferredJumpHeld = state.jumpHeld;
+        if(PlayerBlob.obj.rigidBody.bodyType != RigidbodyType2D.Static) {
+            PlayerBlob.obj.rigidBody.velocity = _frameVelocity;
+        }
+    }
+
+    //Vertical offset from the blob to Eli/Dee when switching. When grounded the feet are aligned (Eli/Dee are 0.5 units taller from the center).
+    //In the air the center is kept to avoid a visible position pop, unless ground is close enough below that the taller collider would end up in it
+    private Vector3 GetOffsetToTallerCharacter() {
+        const float feetAlignOffset = 0.5f;
+        if(isGrounded)
+            return new Vector3(0, feetAlignOffset, 0);
+        Physics2D.queriesStartInColliders = false;
+        RaycastHit2D groundHit = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, feetAlignOffset, _groundLayerMasks);
+        Physics2D.queriesStartInColliders = _cachedQueryStartInColliders;
+        return new Vector3(0, groundHit.collider != null ? feetAlignOffset - groundHit.distance : 0f, 0);
+    }
+
     public void ToTwin() {
         CameraManager.SwitchFollowTarget(transform, _playerTwin.transform);
 
+        PlayerManager.SwitchState switchState = GetSwitchState();
+        Vector3 offset = GetOffsetToTallerCharacter();
         PlayerBlob.obj.rigidBody.velocity = new Vector2(0, 0);
         _frameVelocity = new Vector2(0, 0);
-        bool wasOnMoveable = isOnMoveable;
-        Rigidbody2D currentMoveable = moveableRigidbody;
         gameObject.SetActive(false);
-        _playerTwin.transform.position = transform.position + new Vector3(0, 0.5f, 0);
+        _playerTwin.transform.position = transform.position + offset;
         _playerTwin.GetComponent<ShadowTwinMovement>().spriteRenderer.flipX = IsFacingLeft();
         _playerTwin.SetActive(true);
         PlayerSwitcher.obj.SwitchToDee();
-        if(isGrounded) {
-            _playerTwin.GetComponent<ShadowTwinMovement>().SetStartingOnGround();
-            _playerTwin.GetComponent<ShadowTwinMovement>().isGrounded = true;
-            _playerTwin.GetComponent<ShadowTwinMovement>().isOnMoveable = wasOnMoveable;
-            _playerTwin.GetComponent<ShadowTwinMovement>().moveableRigidbody = currentMoveable;
-        } else {
-            _playerTwin.GetComponent<ShadowTwinMovement>().isGrounded = false;
-            _playerTwin.GetComponent<ShadowTwinMovement>().startingOnGround = false;
-        }
+        _playerTwin.GetComponent<ShadowTwinMovement>().ApplySwitchState(switchState);
         if(IsFrozen()) {
             _playerTwin.GetComponent<ShadowTwinMovement>().Freeze();
         } else {
@@ -321,24 +367,18 @@ public class PlayerBlobMovement : MonoBehaviour
     public void ToHuman(bool playSfx = true) {
         CameraManager.SwitchFollowTarget(transform, _player.transform);
 
-        bool wasOnMoveable = isOnMoveable;
-        Rigidbody2D currentMoveable = moveableRigidbody;
+        PlayerManager.SwitchState switchState = GetSwitchState();
+        Vector3 offset = GetOffsetToTallerCharacter();
+        PlayerBlob.obj.rigidBody.velocity = new Vector2(0, 0);
+        _frameVelocity = new Vector2(0, 0);
         gameObject.SetActive(false);
-        _player.transform.position = transform.position + new Vector3(0, 0.5f, 0);
+        _player.transform.position = transform.position + offset;
         _player.GetComponent<PlayerMovement>().spriteRenderer.flipX = IsFacingLeft();
         _player.GetComponent<PlayerMovement>().CancelJumping();
         _player.SetActive(true);
         PlayerManager.obj.elisLastForm = PlayerManager.PlayerType.HUMAN;
         PlayerSwitcher.obj.SwitchToEli();
-        if(isGrounded) {
-            _player.GetComponent<PlayerMovement>().SetStartingOnGround();
-            _player.GetComponent<PlayerMovement>().isGrounded = true;
-            _player.GetComponent<PlayerMovement>().isOnMoveable = wasOnMoveable;
-            _player.GetComponent<PlayerMovement>().moveableRigidbody = currentMoveable;
-        } else {
-            _player.GetComponent<PlayerMovement>().isGrounded = false;
-            _player.GetComponent<PlayerMovement>().startingOnGround = false;
-        }
+        _player.GetComponent<PlayerMovement>().ApplySwitchState(switchState);
         if(IsFrozen()) {
             _player.GetComponent<PlayerMovement>().Freeze();
         } else {
@@ -382,6 +422,7 @@ public class PlayerBlobMovement : MonoBehaviour
 
     public void OnJump(InputAction.CallbackContext context)
     {
+        _pollTransferredJumpHeld = false;
         if(!PlayerPowersManager.obj.EliBlobCanJump) {
             return;
         }
@@ -432,6 +473,11 @@ public class PlayerBlobMovement : MonoBehaviour
     private void Update()
     {
         _time += Time.deltaTime;
+        if (_pollTransferredJumpHeld && !PlayerManager.IsActionPressed(_playerInput, "Jump"))
+        {
+            _jumpHeldInput = false;
+            _pollTransferredJumpHeld = false;
+        }
         UpdateAnimator();
         FlipPlayer(_movementInput.x);
         if (_mergeSplitHeld)
@@ -668,6 +714,7 @@ public class PlayerBlobMovement : MonoBehaviour
     private bool _coyoteUsable;
     private bool _bufferedJumpUsable;
     private bool _jumpHeldInput; 
+    private bool _pollTransferredJumpHeld = false; //Jump held carried over from a character switch. Polled until released, since no canceled event fires for it
     private bool CanUseJump => (isGrounded || CanUseCoyote) && _jumpToConsume;
     private bool CanUseCoyote => _coyoteUsable && !isGrounded && _time < _frameLeftGrounded + _stats.CoyoteTime;
     private bool HasBufferedJump => _bufferedJumpUsable && _time < _timeJumpWasPressed + _stats.JumpBuffer;

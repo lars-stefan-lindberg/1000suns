@@ -1,8 +1,32 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager obj;
+
+    //State carried over from the current character to the new one when switching character, to make the switch seamless
+    public struct SwitchState {
+        public Vector2 velocity;
+        public bool isGrounded;
+        public bool isOnMoveable;
+        public Rigidbody2D moveableRigidbody;
+        public bool jumpHeld;
+        public bool endedJumpEarly;
+    }
+
+    //Reads the actual button state of an action's controls. Used when an action was already held when its PlayerInput got enabled,
+    //since button actions don't do an initial state check and therefore won't fire canceled when released
+    public static bool IsActionPressed(PlayerInput playerInput, string actionName) {
+        InputAction action = playerInput != null && playerInput.currentActionMap != null ? playerInput.currentActionMap.FindAction(actionName) : null;
+        if(action == null)
+            return false;
+        foreach(InputControl control in action.controls) {
+            if(control.IsPressed())
+                return true;
+        }
+        return false;
+    }
 
     public enum PlayerDirection {
         RIGHT,

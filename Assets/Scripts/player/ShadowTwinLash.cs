@@ -78,6 +78,13 @@ public class ShadowTwinLash : MonoBehaviour
             ShadowTwinPlayer.obj.ResetGravity();
         }
 
+        // Fade out any beam. The beam may already be shot during the lash pause (before latch pulling starts),
+        // and the lash coroutine that would normally stop it has just been stopped
+        if (ShadowLashBeamManager.obj != null)
+        {
+            ShadowLashBeamManager.obj.StopBeam();
+        }
+
         if (ShadowTwinMovement.obj != null && ShadowTwinPlayer.obj != null)
         {
             ShadowTwinMovement.obj.UnpauseInAir();
