@@ -102,6 +102,15 @@ public class RoomCameraController : MonoBehaviour
         _topLockBlendVelocity = 0f;
     }
 
+    public void SwitchFollowTarget(Transform from, Transform to) {
+        if (player != from)
+            return;
+
+        player = to;
+        if (vcam.Follow == from)
+            vcam.Follow = to;
+    }
+
     public bool IsRoomCameraActivated() {
         return vcam.enabled;
     }

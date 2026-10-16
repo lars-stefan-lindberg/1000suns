@@ -34,6 +34,10 @@ public class Cave40RoomManager : MonoBehaviour, ISkippable
         _cutsceneCoroutine = StartCoroutine(StartElevatorCoroutine());
     }
 
+    public void StartElevatorBothTimeline() {
+        StartCoroutine(StartElevatorBothTimelineCoroutine());
+    }
+
     public void StartDeeCutscene() {
         _cutsceneCoroutine = StartCoroutine(DeeCutsceneCoroutine());
     }
@@ -128,6 +132,58 @@ public class Cave40RoomManager : MonoBehaviour, ISkippable
             yield return null;
 
         Player.obj.gameObject.SetActive(false);
+        CaveAvatar.obj.gameObject.SetActive(false);
+
+        //Switch backgrounds
+        yield return StartCoroutine(BackgroundLoaderManager.obj.RemoveBackgroundLayers());
+        yield return StartCoroutine(BackgroundLoaderManager.obj.LoadAndSetBackground("CaveBg2"));
+
+        //Load next scene
+        AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(_skipElevatorScene, LoadSceneMode.Additive);
+        while(!asyncOperation.isDone)
+            yield return null;
+        InitRoom initRoomData = LevelManager.obj.GetInitRoomData(SceneManager.GetSceneByName(_skipElevatorScene));
+        LevelManager.obj.LoadAdjacentRooms(initRoomData);
+
+        yield return new WaitForSeconds(2f);
+        
+        //Unload this scene
+        SceneManager.UnloadSceneAsync(_thisScene);
+    }
+
+    private IEnumerator StartElevatorBothTimelineCoroutine() {
+        var activePlayerType = PlayerManager.obj.GetActivePlayerType();
+        PlayerManager.obj.FreezePlayer(activePlayerType);
+        yield return new WaitForSeconds(1f);
+
+        _elevatorCrystalSfxInstance = SoundFXManager.obj.CreateAttachedInstance(_elevatorCrystalSfx, _elevator.gameObject);
+        _elevatorCrystalSfxInstance.start();
+        _elevatorCrystalSfxInstance.release();
+
+        yield return new WaitForSeconds(1.4f);
+        _elevatorFlash.Flash();
+        yield return new WaitForSeconds(2.5f);
+        
+        SoundFXManager.obj.StartNamedPersistent2DSound(ELEVATOR_SOUND_NAME, _elevatorBuzzSfx);
+        _elevator.StartMoving();
+        
+        _updateElevatorSoundCoroutine = StartCoroutine(UpdateElevatorSoundCoroutine());
+
+        yield return new WaitForSeconds(3f);
+
+        GameManager.obj.IsPauseAllowed = false;
+
+        SceneFadeManager.obj.StartFadeOut(0.8f);
+        while(SceneFadeManager.obj.IsFadingOut)
+            yield return null;
+
+        AmbienceManager.obj.Stop();
+
+        if(activePlayerType == PlayerManager.PlayerType.HUMAN) {
+            Player.obj.gameObject.SetActive(false);
+        } else {
+            ShadowTwinPlayer.obj.gameObject.SetActive(false);
+        }
         CaveAvatar.obj.gameObject.SetActive(false);
 
         //Switch backgrounds

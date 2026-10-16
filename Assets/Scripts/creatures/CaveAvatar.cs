@@ -17,6 +17,8 @@ public class CaveAvatar : MonoBehaviour
     [SerializeField] private Transform _playerTargetRight;    
     [SerializeField] private Transform _deeTargetLeft;
     [SerializeField] private Transform _deeTargetRight;
+    [SerializeField] private Transform _blobTargetLeft;
+    [SerializeField] private Transform _blobTargetRight;
     [SerializeField] private EventReference _attackSfx;
     private Transform _target;
     private Animator _animator;
@@ -65,6 +67,10 @@ public class CaveAvatar : MonoBehaviour
                 bool isPlayerFacingLeft = ShadowTwinMovement.obj.IsFacingLeft();
                 _headSpriteRenderer.flipX = isPlayerFacingLeft;   
                 headTargetPosition = isPlayerFacingLeft ? _deeTargetRight.position : _deeTargetLeft.position;
+            } else if(activePlayerType == PlayerManager.PlayerType.BLOB) {
+                bool isPlayerFacingLeft = PlayerBlobMovement.obj.IsFacingLeft();
+                _headSpriteRenderer.flipX = isPlayerFacingLeft;   
+                headTargetPosition = isPlayerFacingLeft ? _blobTargetRight.position : _blobTargetLeft.position;
             } else {
                 return;
             }
@@ -183,8 +189,11 @@ public class CaveAvatar : MonoBehaviour
             headTargetPosition = PlayerManager.obj.IsPlayerFacingLeft(activePlayerType) ? _playerTargetRight.position : _playerTargetLeft.position;
         } else if(activePlayerType == PlayerManager.PlayerType.SHADOW_TWIN) {
             headTargetPosition = PlayerManager.obj.IsPlayerFacingLeft(activePlayerType) ? _deeTargetRight.position : _deeTargetLeft.position;
-        } else
+        } else if(activePlayerType == PlayerManager.PlayerType.BLOB) {
+            headTargetPosition = PlayerManager.obj.IsPlayerFacingLeft(activePlayerType) ? _blobTargetRight.position : _blobTargetLeft.position;
+        } else {
             headTargetPosition = new(0, 0);
+        }
         SetPosition(headTargetPosition);
     }
 

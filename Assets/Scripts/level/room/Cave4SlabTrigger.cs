@@ -24,14 +24,17 @@ public class Cave4SlabTrigger : MonoBehaviour
     {
         if(!collision.CompareTag("Player"))
             return;
-            
-        PlayerIdentity player = collision.gameObject.GetComponent<PlayerIdentity>();
-        if(player.id == 1) {
-            if(!GameManager.obj.HasEvent(_isCutsceneCompletedEli))
-                return;
-        } else if(player.id == 2) {
-            if(!GameManager.obj.HasEvent(_isCutsceneCompletedDee))
-                return;
+        
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(caveTimeline == CaveTimelineId.Id.Eli || caveTimeline == CaveTimelineId.Id.Dee) {
+            PlayerIdentity player = collision.gameObject.GetComponent<PlayerIdentity>();
+            if(player.id == 1) {
+                if(!GameManager.obj.HasEvent(_isCutsceneCompletedEli))
+                    return;
+            } else if(player.id == 2) {
+                if(!GameManager.obj.HasEvent(_isCutsceneCompletedDee))
+                    return;
+            }
         }
         
         if (Time.time < _nextAllowedTriggerTime)

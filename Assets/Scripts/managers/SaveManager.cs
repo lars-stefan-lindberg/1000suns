@@ -92,6 +92,14 @@ public class SaveManager : MonoBehaviour
                     PlayerSwitcher.obj.SwitchToEli();
                 } else if(caveTimeline == CaveTimelineId.Id.Dee) {
                     PlayerSwitcher.obj.SwitchToDee();
+                } else if(caveTimeline == CaveTimelineId.Id.Both) {
+                    //Get last active player type, and switch to that character
+                    // Only HUMAN or SHADOW_TWIN are restored; BLOB, NONE or missing fall back to HUMAN
+                    if(data.lastActivePlayerType == PlayerManager.PlayerType.SHADOW_TWIN) {
+                        PlayerSwitcher.obj.SwitchToDee();
+                    } else {
+                        PlayerSwitcher.obj.SwitchToEli();
+                    }
                 }
             }
 
@@ -211,6 +219,7 @@ public class SaveManager : MonoBehaviour
         var player = Player.obj;
         var shadowPlayer = ShadowTwinPlayer.obj;
         var locationMgr = GameLocationManager.obj;
+        var playerMgr = PlayerManager.obj;
         
         SaveData data = new SaveData();
         data.levelId = levelId;
@@ -221,6 +230,7 @@ public class SaveManager : MonoBehaviour
         data.hasCrown = shadowPlayer.GetHasCrown();
         data.playerPowers = playerPowersMgr != null ? playerPowersMgr.GetUnlockedPowers() : new List<string>();
         data.locationKey = locationMgr != null ? locationMgr.GetCurrentLocationKey() : "";
+        data.lastActivePlayerType = playerMgr != null ? playerMgr.GetActivePlayerType() : PlayerManager.PlayerType.NONE;
         
         // Replace LINQ ToList() with direct list access (already returns IReadOnlyList)
         if (gameMgr != null) {

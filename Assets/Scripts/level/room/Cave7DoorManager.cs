@@ -13,6 +13,8 @@ public class Cave7DoorManager : MonoBehaviour
             _door.SetFullyOpenImmediate();
         } else if(caveTimeline == CaveTimelineId.Id.Dee && !GameManager.obj.HasEvent(_deeDoorClosed)) {
             _door.SetFullyOpenImmediate();
+        } else if(caveTimeline == CaveTimelineId.Id.Both) {
+            _door.SetFullyOpenImmediate();
         }
     }
 

@@ -34,6 +34,8 @@ public class FirstCaveRoomLoader : MonoBehaviour, ISkippable
             _conversationManagerDee1.enabled = true;
             _conversationManagerDee1.OnConversationEnd += OnConversationCompletedDee1;
             StartCoroutine(LoadRoomDee());
+        } else if(caveTimeline == CaveTimelineId.Id.Both) {
+            StartCoroutine(LoadRoomBoth());
         }
         GameLocationManager.obj.SetCurrentLocation("cave_ruins");
     }
@@ -95,6 +97,12 @@ public class FirstCaveRoomLoader : MonoBehaviour, ISkippable
         yield return null;
     }
 
+    private IEnumerator LoadRoomBoth() {
+        AmbienceManager.obj.Play(_caveMainAmbience);
+        AmbienceManager.obj.Play(_caveMainWaterDripping);
+        yield return null;
+    }
+    
     private IEnumerator LoadRoomEli() {
         Player.obj.SetCaveStartingCoordinates();
         Player.obj.gameObject.SetActive(true);

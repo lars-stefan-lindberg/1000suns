@@ -187,6 +187,33 @@ public class ShadowTwinMovement : MonoBehaviour
         anchor.transform.localScale = Vector3.one;
     }
 
+    private void OnDisable() {
+        //Clear any lash/propel state so it doesn't persist while inactive (e.g. when switching character mid lash)
+        _isPausedInAir = false;
+        _isFlipLocked = false;
+        _isPropellingThroughPlatform = false;
+        _propelTimer = 0f;
+        _isPostPropelFloaty = false;
+        _postPropelFloatyTimer = 0f;
+        _isHorizontalPropelling = false;
+        _horizontalPropelDirectionLockTimer = 0f;
+        //Moveable is transferred to the new character in the switch methods if grounded on one
+        isOnMoveable = false;
+        moveableRigidbody = null;
+        jumpThroughPlatform = null;
+        _isDashing = false;
+        if (ShadowTwinPlayer.obj != null && ShadowTwinLash.obj != null) {
+            EndLatchPull();
+        }
+        //Reset wall jump state after EndLatchPull, since it may re-enable wall jump slack. The wall jump timer is only
+        //ticked in Update, so if left set the wall jump direction lock (lash direction + flip) would persist after switching back
+        _isWallJumping = false;
+        _wallJumpTimer = 0f;
+        _wallJumpBoostTimer = 0f;
+        _wallJumpDirection = 0f;
+        _wallJumpSlackUsable = false;
+    }
+
     private void FixedUpdate()
     {
         _roundedCeilingCornerThisFrame = false;
@@ -820,7 +847,11 @@ public class ShadowTwinMovement : MonoBehaviour
             _sharedPlayerAudio.PlayShapeshift();
             isTransforming = true;
             ShadowTwinPull.obj.CancelPulling();
+            ShadowTwinPlayer.obj.RestorePlayerPullLight();
+            ShadowTwinPlayer.obj.EndFullyChargedVfx();
             ShadowTwinPull.obj.DisablePull();
+            ShadowTwinLash.obj.HardCancel();
+            ShadowTwinLash.obj.DisableLash();
             
             if(PlayerManager.obj.IsEliInBlobForm()) {
                 //The execution for actually transforming to twin blob is done from the animation events 
@@ -972,23 +1003,26 @@ public class ShadowTwinMovement : MonoBehaviour
     }
 
     public void ToTwin() {
-        ICinemachineCamera activeVirtualCamera = CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera;
-        if(activeVirtualCamera != null && activeVirtualCamera.Follow == transform) {
-            activeVirtualCamera.Follow = _playerTwin.transform;
-        }
+        CameraManager.SwitchFollowTarget(transform, _playerTwin.transform);
 
         ShadowTwinPlayer.obj.rigidBody.velocity = new Vector2(0, 0);
         _frameVelocity = new Vector2(0, 0);
+        bool wasOnMoveable = isOnMoveable;
+        Rigidbody2D currentMoveable = moveableRigidbody;
         gameObject.SetActive(false);
         _playerTwin.transform.position = transform.position;
         _playerTwin.GetComponent<PlayerMovement>().spriteRenderer.flipX = IsFacingLeft();
+        _playerTwin.GetComponent<PlayerMovement>().CancelJumping();
         _playerTwin.SetActive(true);
         PlayerSwitcher.obj.SwitchToEli();
         if(isGrounded) {
             _playerTwin.GetComponent<PlayerMovement>().SetStartingOnGround();
             _playerTwin.GetComponent<PlayerMovement>().isGrounded = true;
+            _playerTwin.GetComponent<PlayerMovement>().isOnMoveable = wasOnMoveable;
+            _playerTwin.GetComponent<PlayerMovement>().moveableRigidbody = currentMoveable;
         } else {
             _playerTwin.GetComponent<PlayerMovement>().isGrounded = false;
+            _playerTwin.GetComponent<PlayerMovement>().startingOnGround = false;
         }
         if(IsFrozen()) {
             _playerTwin.GetComponent<PlayerMovement>().Freeze();
@@ -1000,10 +1034,7 @@ public class ShadowTwinMovement : MonoBehaviour
     }
 
     public void SplitToTwin(Vector3 splitTarget) {
-        ICinemachineCamera activeVirtualCamera = CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera;
-        if(activeVirtualCamera != null && activeVirtualCamera.Follow == transform) {
-            activeVirtualCamera.Follow = _playerTwin.transform;
-        }
+        CameraManager.SwitchFollowTarget(transform, _playerTwin.transform);
 
         ShadowTwinPlayer.obj.rigidBody.velocity = new Vector2(0, 0);
         _frameVelocity = new Vector2(0, 0);
@@ -1029,13 +1060,12 @@ public class ShadowTwinMovement : MonoBehaviour
     }
 
     public void ToBlob() {
-        ICinemachineCamera activeVirtualCamera = CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera;
-        if(activeVirtualCamera != null && activeVirtualCamera.Follow == transform) {
-            activeVirtualCamera.Follow = _playerBlob.transform;
-        }
+        CameraManager.SwitchFollowTarget(transform, _playerBlob.transform);
 
         ShadowTwinPlayer.obj.rigidBody.velocity = new Vector2(0, 0);
         _frameVelocity = new Vector2(0, 0);
+        bool wasOnMoveable = isOnMoveable;
+        Rigidbody2D currentMoveable = moveableRigidbody;
         gameObject.SetActive(false);
         _playerBlob.transform.position = transform.position - new Vector3(0, 0.5f, 0);
         _playerBlob.GetComponent<PlayerBlobMovement>().spriteRenderer.flipX = IsFacingLeft();
@@ -1044,8 +1074,11 @@ public class ShadowTwinMovement : MonoBehaviour
         if(isGrounded) {
             _playerBlob.GetComponent<PlayerBlobMovement>().SetStartingOnGround();
             _playerBlob.GetComponent<PlayerBlobMovement>().isGrounded = true;
+            _playerBlob.GetComponent<PlayerBlobMovement>().isOnMoveable = wasOnMoveable;
+            _playerBlob.GetComponent<PlayerBlobMovement>().moveableRigidbody = currentMoveable;
         } else {
             _playerBlob.GetComponent<PlayerBlobMovement>().isGrounded = false;
+            _playerBlob.GetComponent<PlayerBlobMovement>().startingOnGround = false;
         }
         if(IsFrozen()) {
             _playerBlob.GetComponent<PlayerBlobMovement>().Freeze();
@@ -1056,10 +1089,7 @@ public class ShadowTwinMovement : MonoBehaviour
     }
 
     public void SplitToBlob(Vector3 splitTarget) {
-        ICinemachineCamera activeVirtualCamera = CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera;
-        if(activeVirtualCamera != null && activeVirtualCamera.Follow == transform) {
-            activeVirtualCamera.Follow = _playerBlob.transform;
-        }
+        CameraManager.SwitchFollowTarget(transform, _playerBlob.transform);
 
         ShadowTwinPlayer.obj.rigidBody.velocity = new Vector2(0, 0);
         _frameVelocity = new Vector2(0, 0);
@@ -1478,6 +1508,7 @@ public class ShadowTwinMovement : MonoBehaviour
     }
 
     public void UpdateAnimatorIsLatchPulling(bool value) {
+        if (!_animator.isActiveAndEnabled) return;
         _animator.SetBool("isLatchPulling", value);
     }
 

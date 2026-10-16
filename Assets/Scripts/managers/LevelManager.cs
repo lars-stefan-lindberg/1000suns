@@ -158,18 +158,45 @@ public class LevelManager : MonoBehaviour
                 ShadowTwinPlayer.obj.transform.position = playerSpawnPointCollider.transform.position;
             }
         } else if(caveTimelineId == CaveTimelineId.Id.Both) {
-            //TODO
+            if(playerType == PlayerManager.PlayerType.NONE) {
+                //Default Eli
+                Player.obj.transform.position = playerSpawnPointCollider.transform.position;
+                if(ShadowTwinPlayer.obj != null) {
+                    ShadowTwinPlayer.obj.gameObject.SetActive(false);
+                }
+            } else if(playerType == PlayerManager.PlayerType.HUMAN) {
+                Player.obj.transform.position = playerSpawnPointCollider.transform.position;
+                if(ShadowTwinPlayer.obj != null) {
+                    ShadowTwinPlayer.obj.gameObject.SetActive(false);
+                }
+            } else if(playerType == PlayerManager.PlayerType.SHADOW_TWIN) {
+                ShadowTwinPlayer.obj.transform.position = playerSpawnPointCollider.transform.position;
+                if(Player.obj != null) {
+                    Player.obj.gameObject.SetActive(false);
+                }
+                if(PlayerBlob.obj != null) {
+                    PlayerBlob.obj.gameObject.SetActive(false);
+                }
+            } else if(playerType == PlayerManager.PlayerType.BLOB) {
+                PlayerBlob.obj.transform.position = playerSpawnPointCollider.transform.position - new Vector3(0, 0.5f, 0);
+                if(Player.obj != null) {
+                    Player.obj.gameObject.SetActive(false);
+                }
+                if(ShadowTwinPlayer.obj != null) {
+                    ShadowTwinPlayer.obj.gameObject.SetActive(false);
+                }
+            }
         }
 
         if(PlayerManager.obj.IsSeparated) {
             PlayerManager.obj.EnableAllPlayers();
-            SetPlayersStartingState();
+            SetPlayersStartingState(caveTimelineId);
             if(PlayerManager.obj.IsCoopActive) {
                 LobbyManager.obj.SetPlayerInputs();
             }
         } else {
             PlayerManager.obj.EnablePlayerGameObject(playerType);
-            SetPlayersStartingState();
+            SetPlayersStartingState(caveTimelineId);
         }
 
         if(CaveAvatar.obj != null && CaveAvatar.obj.gameObject.activeSelf) {
@@ -307,7 +334,7 @@ public class LevelManager : MonoBehaviour
         GameManager.obj.IsPauseAllowed = true;
     }
 
-    private void SetPlayersStartingState() {
+    private void SetPlayersStartingState(CaveTimelineId.Id caveTimelineId) {
         if(PlayerBlobMovement.obj != null && PlayerBlobMovement.obj.gameObject.activeSelf) {
             PlayerBlobMovement.obj.SetStartingOnGround();
             PlayerBlobMovement.obj.isGrounded = true;
@@ -322,14 +349,6 @@ public class LevelManager : MonoBehaviour
             PlayerMovement.obj.isTransformingToTwin = false;
             PlayerMovement.obj.CancelJumping();
             Player.obj.FadeInPlayerLight();
-
-            if(Player.obj != null) {
-                if(Player.obj.GetHasCape() || GameManager.obj.isDevMode) {
-                    Player.obj.SetAnimatorLayerAndHasCape(true);
-                } else {
-                    Player.obj.SetAnimatorLayerAndHasCape(false);
-                }
-            }
         }
 
         if(ShadowTwinMovement.obj != null && ShadowTwinMovement.obj.gameObject.activeSelf) {
@@ -338,7 +357,17 @@ public class LevelManager : MonoBehaviour
             ShadowTwinMovement.obj.isTransforming = false;
             ShadowTwinMovement.obj.CancelJumping();
             ShadowTwinPlayer.obj.FadeInPlayerLight();
+        }
 
+        if(caveTimelineId == CaveTimelineId.Id.Eli) {
+            if(Player.obj != null) {
+                if(Player.obj.GetHasCape() || GameManager.obj.isDevMode) {
+                    Player.obj.SetAnimatorLayerAndHasCape(true);
+                } else {
+                    Player.obj.SetAnimatorLayerAndHasCape(false);
+                }
+            }
+        } else if(caveTimelineId == CaveTimelineId.Id.Dee) {
             if(ShadowTwinPlayer.obj != null) {
                 if(ShadowTwinPlayer.obj.GetHasCrown() || GameManager.obj.isDevMode) {
                     ShadowTwinPlayer.obj.SetAnimatorLayerAndHasCrown(true);
@@ -346,6 +375,9 @@ public class LevelManager : MonoBehaviour
                     ShadowTwinPlayer.obj.SetAnimatorLayerAndHasCrown(false);
                 }
             }
+        } else if(caveTimelineId == CaveTimelineId.Id.Both) {
+            Player.obj.SetAnimatorLayerAndHasCape(true);
+            ShadowTwinPlayer.obj.SetAnimatorLayerAndHasCrown(true);
         }
     }
 
@@ -484,6 +516,9 @@ public class LevelManager : MonoBehaviour
                     CaveAvatar.obj.gameObject.SetActive(false);
                 }
             }
+        } else if(caveTimelineId == CaveTimelineId.Id.Both) {
+            CaveAvatar.obj.SetFollowPlayerStartingPosition();
+            CaveAvatar.obj.FollowPlayer();   
         }
     }
 

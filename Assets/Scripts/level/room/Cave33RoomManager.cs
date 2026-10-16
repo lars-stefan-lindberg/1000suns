@@ -20,11 +20,13 @@ public class Cave33RoomManager : MonoBehaviour, ISkippable
     [SerializeField] private ConversationManager _deeCutsceneConversation;
     [SerializeField] private AmbienceTrack _caveMain;
     [SerializeField] private GameObject _eliBlockingFloor;
+    [SerializeField] private GameObject _eliBreakableFloor;
     [SerializeField] private GameObject _deeBlockingFloor;
     [SerializeField] private GameObject _deeBreakableFloor;
     [SerializeField] private GameObject _deeFloatingPlatform;
     [SerializeField] private EventReference _blockingFloorSfx;
     [SerializeField] private GameObject _blockDeePathBack;
+    [SerializeField] private GameObject _playAmbienceTrigger;
 
     private Coroutine _cutsceneCoroutine;
     private EventInstance _blockingFloorSfxInstance;
@@ -51,9 +53,13 @@ public class Cave33RoomManager : MonoBehaviour, ISkippable
                 _eliBlockingFloor.SetActive(true);
         }
         else if(id == CaveTimelineId.Id.Both) {
-            //TODO
+            _deeBreakableFloor.SetActive(false);
+            _deeBlockingFloor.SetActive(true);
+            _eliBreakableFloor.SetActive(false);
+            _eliBlockingFloor.SetActive(true);
             _deesPathRight.SetActive(false);
             _deesPathLeft.SetActive(false);
+            _playAmbienceTrigger.SetActive(false);
         }
         else if(id == CaveTimelineId.Id.Dee) {
             _blockDeePathBack.SetActive(true);
@@ -101,6 +107,9 @@ public class Cave33RoomManager : MonoBehaviour, ISkippable
     }
 
     public void OnReturnFromShadowJumpRooms() {
+        CaveTimelineId.Id id = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(id != CaveTimelineId.Id.Eli)
+            return;
         if(!GameManager.obj.HasEvent(_hasShadowJump) || GameManager.obj.HasEvent(_afterShadowJumpConversationCompleted))
             return;
         
@@ -111,7 +120,7 @@ public class Cave33RoomManager : MonoBehaviour, ISkippable
 
     public void OnReturnFromShadowLashRooms() {
         CaveTimelineId.Id id = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
-        if(id == CaveTimelineId.Id.Eli)
+        if(id == CaveTimelineId.Id.Eli || id == CaveTimelineId.Id.Both)
             return;
         if(!GameManager.obj.HasEvent(_hasShadowLash) || GameManager.obj.HasEvent(_afterShadowLashCompleted))
             return;

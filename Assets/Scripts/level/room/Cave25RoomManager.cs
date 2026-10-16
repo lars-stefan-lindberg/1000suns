@@ -17,6 +17,10 @@ public class Cave25RoomManager : MonoBehaviour, ISkippable
         if(GameManager.obj.HasEvent(_cutsceneCompleted)) {
             return;
         }
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(caveTimeline != CaveTimelineId.Id.Eli) {
+            return;
+        }
         PlayerMovement.obj.Freeze();
 
         _cutsceneCoroutine = StartCoroutine(StartCutsceneCoroutine());

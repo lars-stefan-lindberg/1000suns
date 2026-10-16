@@ -23,6 +23,8 @@ public class FirstPrisonerManager : MonoBehaviour, ISkippable
             _bossGameObjects.SetActive(false);
         } else if(caveTimeline == CaveTimelineId.Id.Dee && GameManager.obj.HasEvent(_firstPrisonerFightEndedDee)) {
             _bossGameObjects.SetActive(false);
+        } else if(caveTimeline == CaveTimelineId.Id.Both) {
+            _bossGameObjects.SetActive(false);
         }
     }
 

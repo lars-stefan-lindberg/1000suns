@@ -23,6 +23,10 @@ public class BabyPrisonerAlertTrigger : MonoBehaviour
             if(player.id == 2) { //If Dee, don't get alerted
                 return;
             }
+            CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+            if(caveTimeline == CaveTimelineId.Id.Both) {
+                return;
+            }
             if(playerFreezeTime > 0) {
                 PlayerMovement.obj.Freeze(playerFreezeTime);
             }

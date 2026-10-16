@@ -149,33 +149,35 @@ public class BabyPrisoner : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision) {
         if(collision.gameObject.CompareTag("Player")) {
-            PlayerIdentity player = collision.gameObject.GetComponent<PlayerIdentity>();
-            if(player.id == 2) {
-                if(_delayedSetDynamicCoroutine != null) {
-                    StopCoroutine(_delayedSetDynamicCoroutine);
-                }
+            if(_delayedSetDynamicCoroutine != null) {
+                StopCoroutine(_delayedSetDynamicCoroutine);
+            }
 
-                _rigidBody.bodyType = RigidbodyType2D.Static;
-                Collider2D playerCollider = collision.collider;
-                float playerLowerBound = playerCollider.bounds.min.y;
-                float babyPrisonerUpperBound = _collider.bounds.max.y;
+            _rigidBody.bodyType = RigidbodyType2D.Static;
+            Collider2D playerCollider = collision.collider;
+            float playerLowerBound = playerCollider.bounds.min.y;
+            float babyPrisonerUpperBound = _collider.bounds.max.y;
 
-                if(playerLowerBound >= babyPrisonerUpperBound) {
-                    // Apply bounce to the player
-                    if(ShadowTwinMovement.obj != null) {
-                        _babyPrisonerAudio.PlayJumpedOn();
-                        ShadowTwinMovement.obj.ApplyBounce(_bouncePower);
-                    }
-                    _idleInPlaceUntilAlerted = true;
-                    SetBouncedOn();
-                    if(_playAngryAfterBouncedOnSfxCoroutine != null) {
-                        StopCoroutine(_playAngryAfterBouncedOnSfxCoroutine);
-                    }
-                    _playAngryAfterBouncedOnSfxCoroutine = StartCoroutine(PlayAngryAfterBouncedOnSfx());
-                } else if(PlayerManager.obj.IsPlayerGrounded(PlayerManager.PlayerType.SHADOW_TWIN)) {
-                    if(!_idleInPlaceUntilAlerted)
-                        _babyPrisonerAudio.PlayCuteGreeting();
+            PlayerManager.PlayerType activePlayerType = PlayerManager.obj.GetActivePlayerType();
+            if(playerLowerBound >= babyPrisonerUpperBound) {
+                // Apply bounce to the player
+                _babyPrisonerAudio.PlayJumpedOn();
+                if(activePlayerType == PlayerManager.PlayerType.SHADOW_TWIN) {
+                    ShadowTwinMovement.obj.ApplyBounce(_bouncePower);
+                } else if(activePlayerType == PlayerManager.PlayerType.HUMAN) {
+                    PlayerMovement.obj.ApplyBounce(_bouncePower);
+                } else if(activePlayerType == PlayerManager.PlayerType.BLOB) {
+                    PlayerBlobMovement.obj.ApplyBounce(_bouncePower);
                 }
+                _idleInPlaceUntilAlerted = true;
+                SetBouncedOn();
+                if(_playAngryAfterBouncedOnSfxCoroutine != null) {
+                    StopCoroutine(_playAngryAfterBouncedOnSfxCoroutine);
+                }
+                _playAngryAfterBouncedOnSfxCoroutine = StartCoroutine(PlayAngryAfterBouncedOnSfx());
+            } else if(PlayerManager.obj.IsPlayerGrounded(activePlayerType)) {
+                if(!_idleInPlaceUntilAlerted)
+                    _babyPrisonerAudio.PlayCuteGreeting();
             }
         }
     }

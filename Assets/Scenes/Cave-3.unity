@@ -7217,10 +7217,8 @@ MonoBehaviour:
   topLockMode: 0
   topLockDistance: 2.5
   unlockHysteresis: 0.5
-  lockYDampingBoost: 2
-  lockYDampingBoostDuration: 0.25
-  unlockYDampingBoost: 2
-  unlockYDampingBoostDuration: 0.25
+  lockSmoothTime: 0.6
+  unlockSmoothTime: 0.6
 --- !u!114 &1331100907
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13552,6 +13550,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _cutsceneCompleted: {fileID: 11400000, guid: b1b4104473e6542f79dbe3f0d1e0a916, type: 2}
   _deeConversationManager: {fileID: 2023637208}
+  _roots: {fileID: 385714737}
 --- !u!4 &2023637207
 Transform:
   m_ObjectHideFlags: 0

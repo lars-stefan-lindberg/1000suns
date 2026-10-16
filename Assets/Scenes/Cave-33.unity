@@ -8879,6 +8879,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1f4802bf4839248948bc9d9a3e9c7a97, type: 3}
+--- !u!1 &386829772 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3931318114812751334, guid: 1f4802bf4839248948bc9d9a3e9c7a97, type: 3}
+  m_PrefabInstance: {fileID: 386829771}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &442863647
 GameObject:
   m_ObjectHideFlags: 0
@@ -9326,6 +9331,7 @@ MonoBehaviour:
   _deeCutsceneConversation: {fileID: 1768161372}
   _caveMain: {fileID: 11400000, guid: 6475a932dfa8b47c89b448fbfee74692, type: 2}
   _eliBlockingFloor: {fileID: 2116225708}
+  _eliBreakableFloor: {fileID: 442863647}
   _deeBlockingFloor: {fileID: 1492147477}
   _deeBreakableFloor: {fileID: 1064212269}
   _deeFloatingPlatform: {fileID: 1143773679}
@@ -9337,6 +9343,7 @@ MonoBehaviour:
       Data4: -268341816
     Path: event:/env/general/breakable_floor_appear
   _blockDeePathBack: {fileID: 382798015}
+  _playAmbienceTrigger: {fileID: 386829772}
 --- !u!4 &581217627
 Transform:
   m_ObjectHideFlags: 0

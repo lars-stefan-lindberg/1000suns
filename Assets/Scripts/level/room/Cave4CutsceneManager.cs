@@ -28,6 +28,11 @@ public class Cave4CutsceneManager : MonoBehaviour, ISkippable
     {
         if(!collision.CompareTag("Player"))
             return;
+            
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(caveTimeline == CaveTimelineId.Id.Both)
+            return;
+
         PlayerIdentity player = collision.gameObject.GetComponent<PlayerIdentity>();
         if(player.id == 1) {
             if(GameManager.obj.HasEvent(_isCutsceneCompletedEli)) {

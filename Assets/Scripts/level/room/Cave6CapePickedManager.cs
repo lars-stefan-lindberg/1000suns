@@ -30,6 +30,7 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
     [SerializeField] private SceneField _secondDreamRoomSceneDee;
     [SerializeField] private SceneField _thisScene;
     [SerializeField] private EventReference _teleportSfx;
+    [SerializeField] private GameObject _playMusicTrigger;
     
     private EventInstance _capePickedRoarInstance;
     private Coroutine _cutsceneCoroutine;
@@ -47,6 +48,11 @@ public class Cave6CapePickedManager : MonoBehaviour, ISkippable
             if(GameManager.obj.HasEvent(_crownPicked) && !GameManager.obj.HasEvent(_deePostDreamRoomsCompleted)) {
                 StartCoroutine(AfterDeeDreamRoom());
             }
+        }
+
+        if(caveTimeline == CaveTimelineId.Id.Both) {
+            _blobsContainer.SetActive(false);
+            _playMusicTrigger.SetActive(true);
         }
     }
 

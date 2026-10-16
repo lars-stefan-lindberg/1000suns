@@ -7,8 +7,16 @@ public class Cave3RoomManager : MonoBehaviour, ISkippable
 {
     [SerializeField] private GameEventId _cutsceneCompleted;
     [SerializeField] private ConversationManager _deeConversationManager;
+    [SerializeField] private GameObject _roots;
 
     private Coroutine _cutsceneCoroutine;
+
+    void Start() {
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(caveTimeline == CaveTimelineId.Id.Both) {
+            _roots.SetActive(false);
+        }
+    }
 
     public void StartCutscene()
     {

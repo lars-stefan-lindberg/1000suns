@@ -77,10 +77,23 @@ public class ShadowTwinLash : MonoBehaviour
         {
             ShadowTwinPlayer.obj.ResetGravity();
         }
+
+        if (ShadowTwinMovement.obj != null && ShadowTwinPlayer.obj != null)
+        {
+            ShadowTwinMovement.obj.UnpauseInAir();
+            ShadowTwinMovement.obj.UnlockFlip();
+            ShadowTwinMovement.obj.EndLatchPull();
+        }
     }
 
     public void OnLash(InputAction.CallbackContext context)
     {
+        // Prevent shadow lash while transforming to another character
+        if (ShadowTwinMovement.obj != null && ShadowTwinMovement.obj.isTransforming)
+        {
+            return;
+        }
+
         // Prevent shadow lash during shadow pull
         if (ShadowTwinMovement.obj != null && ShadowTwinMovement.obj.IsPulling)
         {
@@ -340,6 +353,12 @@ public class ShadowTwinLash : MonoBehaviour
         {
             ShadowTwinMovement.obj.EndLatchPull();
         }
+    }
+
+    public void HardCancel() {
+        _lashButtonReleased = true;
+        ShadowTwinMovement.obj.EndLatchPull(true);
+        ShadowTwinMovement.obj.UnlockFlip();
     }
 
     public void DisableLash()

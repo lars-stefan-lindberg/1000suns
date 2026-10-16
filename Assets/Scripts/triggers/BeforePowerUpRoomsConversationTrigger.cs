@@ -13,7 +13,8 @@ public class BeforePowerUpRoomsConversationTrigger : MonoBehaviour, ISkippable
 
     void Start()
     {
-        if(GameManager.obj.HasEvent(_cave33FirstEliSootConversationCompleted))
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(GameManager.obj.HasEvent(_cave33FirstEliSootConversationCompleted) || caveTimeline != CaveTimelineId.Id.Eli)
             gameObject.SetActive(false);
     }
 

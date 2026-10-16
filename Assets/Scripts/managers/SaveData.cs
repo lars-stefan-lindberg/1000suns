@@ -13,6 +13,7 @@ public class SaveData
     public string surface;
     public CaveTimelineId.Id caveTimeline;
     public string locationKey; // Key to lookup localized location name
+    public PlayerManager.PlayerType lastActivePlayerType;
 
     public List<string> playerPowers = new();
     public List<string> completedEvents = new(); // Levels that have been completed. We store as a list since JsonUtility can't serialize Dictionary.

@@ -16,7 +16,7 @@ public class Cave20RoomManager : MonoBehaviour
             }
         }
 
-        if(GameManager.obj.HasEvent(_secretRevealed) && caveTimeline == CaveTimelineId.Id.Eli) {
+        if(GameManager.obj.HasEvent(_secretRevealed) && (caveTimeline == CaveTimelineId.Id.Eli || caveTimeline == CaveTimelineId.Id.Both)) {
             _secretWall.SetActive(false);
         }
     }

@@ -18,17 +18,27 @@ public class PlayerLightManager : MonoBehaviour
     }
 
     public void FadeOut() {
+        if (!isActiveAndEnabled) {
+            _light2D.color = Color.clear;
+            return;
+        }
         StartCoroutine(FadeOutLight());
     }
 
     public void FadeIn() {
+        if (!isActiveAndEnabled) {
+            _light2D.color = _originalLightColor;
+            return;
+        }
         StartCoroutine(FadeInLight());
     }
 
     public void IncreaseLightSize() {
         if (_pushCoroutine != null) {
             StopCoroutine(_pushCoroutine);
+            _pushCoroutine = null;
         }
+        if (!isActiveAndEnabled) return;
         _pushCoroutine = StartCoroutine(IncreaseLightSizeCoroutine());
     }
 
@@ -36,6 +46,10 @@ public class PlayerLightManager : MonoBehaviour
         if (_pushCoroutine != null) {
             StopCoroutine(_pushCoroutine);
             _pushCoroutine = null;
+        }
+        if (!isActiveAndEnabled) {
+            _light2D.size = _defaultLightSize;
+            return;
         }
         StartCoroutine(RestoreLightSizeCoroutine());
     }

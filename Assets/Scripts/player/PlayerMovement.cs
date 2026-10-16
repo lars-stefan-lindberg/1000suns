@@ -83,6 +83,16 @@ public class PlayerMovement : MonoBehaviour
         anchor.transform.localScale = Vector3.one;
     }
 
+    private void OnDisable() {
+        //Not standing on anything while inactive. If left set, HandleGravity keeps copying the moveable's (zero) vertical velocity
+        //when re-enabled in the air, and since isGrounded is false the "left the ground" branch never clears it, so the player hangs.
+        //When switching character while grounded on a moveable, it is transferred to the new character in the switch methods
+        isOnMoveable = false;
+        moveableRigidbody = null;
+        jumpThroughPlatform = null;
+        _isDashing = false;
+    }
+
     private void FixedUpdate()
     {
         _roundedCeilingCornerThisFrame = false;
@@ -555,13 +565,12 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public void ToBlob() {
-        ICinemachineCamera activeVirtualCamera = CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera;
-        if(activeVirtualCamera != null && activeVirtualCamera.Follow == transform) {
-            activeVirtualCamera.Follow = _playerBlob.transform;
-        }
+        CameraManager.SwitchFollowTarget(transform, _playerBlob.transform);
 
         Player.obj.rigidBody.velocity = new Vector2(0, 0);
         _frameVelocity = new Vector2(0, 0);
+        bool wasOnMoveable = isOnMoveable;
+        Rigidbody2D currentMoveable = moveableRigidbody;
         gameObject.SetActive(false);
         _playerBlob.transform.position = transform.position - new Vector3(0, 0.5f, 0);
         PlayerBlobMovement playerBlobMovement = _playerBlob.GetComponent<PlayerBlobMovement>();
@@ -572,8 +581,11 @@ public class PlayerMovement : MonoBehaviour
         if(isGrounded) {
             playerBlobMovement.SetStartingOnGround();
             playerBlobMovement.isGrounded = true;
+            playerBlobMovement.isOnMoveable = wasOnMoveable;
+            playerBlobMovement.moveableRigidbody = currentMoveable;
         } else {
             playerBlobMovement.isGrounded = false;
+            playerBlobMovement.startingOnGround = false;
         }
         if(IsFrozen()) {
             playerBlobMovement.Freeze();
@@ -584,13 +596,12 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public void ToTwin() {
-        ICinemachineCamera activeVirtualCamera = CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera;
-        if(activeVirtualCamera != null && activeVirtualCamera.Follow == transform) {
-            activeVirtualCamera.Follow = _playerTwin.transform;
-        }
+        CameraManager.SwitchFollowTarget(transform, _playerTwin.transform);
 
         Player.obj.rigidBody.velocity = new Vector2(0, 0);
         _frameVelocity = new Vector2(0, 0);
+        bool wasOnMoveable = isOnMoveable;
+        Rigidbody2D currentMoveable = moveableRigidbody;
         gameObject.SetActive(false);
         _playerTwin.transform.position = transform.position;
         _playerTwin.GetComponent<ShadowTwinMovement>().spriteRenderer.flipX = IsFacingLeft();
@@ -599,8 +610,11 @@ public class PlayerMovement : MonoBehaviour
         if(isGrounded) {
             _playerTwin.GetComponent<ShadowTwinMovement>().SetStartingOnGround();
             _playerTwin.GetComponent<ShadowTwinMovement>().isGrounded = true;
+            _playerTwin.GetComponent<ShadowTwinMovement>().isOnMoveable = wasOnMoveable;
+            _playerTwin.GetComponent<ShadowTwinMovement>().moveableRigidbody = currentMoveable;
         } else {
             _playerTwin.GetComponent<ShadowTwinMovement>().isGrounded = false;
+            _playerTwin.GetComponent<ShadowTwinMovement>().startingOnGround = false;
         }
         if(IsFrozen()) {
             _playerTwin.GetComponent<ShadowTwinMovement>().Freeze();
@@ -608,14 +622,12 @@ public class PlayerMovement : MonoBehaviour
             _playerTwin.GetComponent<ShadowTwinMovement>().UnFreeze();
         }
         ShadowTwinPull.obj.EnablePull();
+        ShadowTwinLash.obj.EnableLash();
         isTransformingToTwin = false;
     }
 
     public void Split(Vector3 splitTarget) {
-        ICinemachineCamera activeVirtualCamera = CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera;
-        if(activeVirtualCamera != null && activeVirtualCamera.Follow == transform) {
-            activeVirtualCamera.Follow = _playerTwin.transform;
-        }
+        CameraManager.SwitchFollowTarget(transform, _playerTwin.transform);
 
         Player.obj.rigidBody.velocity = new Vector2(0, 0);
         _frameVelocity = new Vector2(0, 0);
@@ -636,6 +648,7 @@ public class PlayerMovement : MonoBehaviour
         PlayerSwitcher.obj.SwitchToDee();
         
         ShadowTwinPull.obj.EnablePull();
+        ShadowTwinLash.obj.EnableLash();
 
         PlayerManager.obj.IsSeparated = true;
     }
@@ -1009,7 +1022,7 @@ public class PlayerMovement : MonoBehaviour
 
             //To avoid "double grounded". Sometimes when player barely reaches up on edge it gets grounded, but still has upwards velocity, and lands again.
             _frameVelocity.y = 0; 
-        } else if(moveableRigidbody != null && !isGrounded && groundHit && ShadowTwinPlayer.obj.rigidBody.velocity.y > 0.05f) {
+        } else if(moveableRigidbody != null && !isGrounded && groundHit && Player.obj.rigidBody.velocity.y > 0.05f) {
             //This case might happen if the player is jumping and moving upwards while landing on something that is moving up, like
             //a floating platform that has been pulled
             isGrounded = true;

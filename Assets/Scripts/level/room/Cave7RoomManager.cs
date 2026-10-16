@@ -51,6 +51,10 @@ public class Cave7RoomManager : MonoBehaviour
     public void ShowTutorialStrip() {
         if(GameManager.obj.HasEvent(_tutorialCompleted))
             return;
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(caveTimeline == CaveTimelineId.Id.Both)
+            return;
+
         _tutorialStrip.Show();
     }
 
@@ -64,6 +68,9 @@ public class Cave7RoomManager : MonoBehaviour
 
     public void ShowPauseMenuPowersTutorialStrip() {
         if(GameManager.obj.HasEvent(_seenPauseMenuPowers))
+            return;
+        CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
+        if(caveTimeline == CaveTimelineId.Id.Both)
             return;
         _pauseMenuPowersTutorial.Show();
     }
