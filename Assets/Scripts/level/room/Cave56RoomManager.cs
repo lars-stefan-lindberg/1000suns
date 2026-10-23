@@ -19,7 +19,18 @@ public class Cave56RoomManager : MonoBehaviour, ISkippable
     void Start()
     {
         var caveTimelineId = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
-        if(GameManager.obj.HasEvent(_cutsceneCompleted) || caveTimelineId != CaveTimelineId.Id.Dee) {
+        if(caveTimelineId == CaveTimelineId.Id.Eli) {
+            Destroy(this);
+            return;
+        }
+        if(caveTimelineId == CaveTimelineId.Id.Dee) {
+            if(GameManager.obj.HasEvent(_cutsceneCompleted)) {
+                _breakableFloor.SetActive(false);
+                Destroy(this);
+                return;
+            }
+        }
+        if(caveTimelineId == CaveTimelineId.Id.Both) {
             _breakableFloor.SetActive(false);
             Destroy(this);
             return;
