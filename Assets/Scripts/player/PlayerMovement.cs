@@ -596,6 +596,8 @@ public class PlayerMovement : MonoBehaviour
             startingOnGround = false;
             _frameVelocity = new Vector2(velocityX, Mathf.Clamp(state.velocity.y, -_stats.MaxFallSpeed, _stats.JumpPower));
         }
+        //The floaty platform is normally registered in CheckCollisions together with the moveable, but that is skipped since the moveable is already registered
+        PlayerPush.obj.platform = isOnMoveable && moveableRigidbody != null ? moveableRigidbody.GetComponentInParent<FloatyPlatform>() : null;
         _jumpHeldInput = state.jumpHeld;
         _endedJumpEarly = state.endedJumpEarly;
         _pollTransferredJumpHeld = state.jumpHeld;
