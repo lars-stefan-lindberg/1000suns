@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5807546979980247730
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8881584755706911794}
+  - component: {fileID: 4758759920496050190}
+  m_Layer: 0
+  m_Name: Tentacle
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8881584755706911794
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5807546979980247730}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.375, y: 4.875, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4758759920496050190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5807546979980247730}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a18587d0c66c4f85a07395fdd32b74e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tiers:
+  - prefab: {fileID: 6416233829814911852, guid: 5879e251212f74a3fb636642b3d6485d, type: 3}
+    endsAt: 0.3
+    spacing: 0.5
+  - prefab: {fileID: 3688646927529801884, guid: 6feb9e18abb8d4828bc7566b51fed67e, type: 3}
+    endsAt: 0.55
+    spacing: 0.25
+  - prefab: {fileID: 6310754965792312695, guid: 48ea67ecc4e7e47e18bd19cc8e8d3eb2, type: 3}
+    endsAt: 0.65
+    spacing: 0.25
+  - prefab: {fileID: 2507730538103626406, guid: b785a785e4b9148d8945634a92a75ddd, type: 3}
+    endsAt: 0.8
+    spacing: 0.125
+  - prefab: {fileID: 5408269552847558375, guid: 572cd9070e9074b6daf4a4f136c84356, type: 3}
+    endsAt: 0.97
+    spacing: 0.125
+  - prefab: {fileID: 6791919997841313213, guid: cf952bbd5286b41d488c387541c4ed04, type: 3}
+    endsAt: 1
+    spacing: 0.125
+  autoLength: 1
+  preferredJointLength: 0.5
+  minJoints: 3
+  maxJoints: 64
+  jointCount: 8
+  jointLength: 0.5
+  tipSpeed: 12
+  solverIterations: 2
+  wiggleAmplitude: 0.73
+  wiggleFrequency: 3.67
+  wigglePhasePerJoint: 0.6
+  snapToPixels: 1
+  pixelsPerUnit: 8
+  stampParent: {fileID: 0}
