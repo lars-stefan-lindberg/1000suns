@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4495833667952822754
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1428364077496263897}
+  - component: {fileID: 1488877579654040555}
+  m_Layer: 0
+  m_Name: Tentacle extra small
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1428364077496263897
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4495833667952822754}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1, y: 6.625, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1488877579654040555
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4495833667952822754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a18587d0c66c4f85a07395fdd32b74e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tiers:
+  - prefab: {fileID: 5408269552847558375, guid: fd04195a2cb054ceab92594dd9b3b36c, type: 3}
+    endsAt: 0.9
+    spacing: 0.125
+  - prefab: {fileID: 6791919997841313213, guid: 05ef899de5342467f9d072904ac3b0c1, type: 3}
+    endsAt: 1
+    spacing: 0.125
+  autoLength: 1
+  preferredJointLength: 0.5
+  minJoints: 3
+  maxJoints: 64
+  jointCount: 8
+  jointLength: 0.5
+  tipSpeed: 12
+  solverIterations: 2
+  wiggleAmplitude: 0.73
+  wiggleFrequency: 3.67
+  wigglePhasePerJoint: 0.6
+  tipSpeedVariation: 0.3
+  wiggleAmplitudeVariation: 0.3
+  wiggleFrequencyVariation: 0.3
+  wigglePhasePerJointVariation: 0.2
+  wiggleModulation: 0.3
+  wiggleModulationSpeed: 0.2
+  snapToPixels: 1
+  pixelsPerUnit: 8
+  stampParent: {fileID: 0}

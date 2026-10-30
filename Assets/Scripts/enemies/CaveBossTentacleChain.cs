@@ -43,6 +43,17 @@ public class CaveBossTentacleChain : MonoBehaviour
     public float wiggleFrequency = 2.5f;
     public float wigglePhasePerJoint = 0.6f;
 
+    [Header("Variation (per tentacle)")]
+    [Tooltip("Random +/- fraction picked once per tentacle at start.")]
+    [Range(0f, 1f)] public float tipSpeedVariation = 0.3f;
+    [Range(0f, 1f)] public float wiggleAmplitudeVariation = 0.3f;
+    [Range(0f, 1f)] public float wiggleFrequencyVariation = 0.3f;
+    [Range(0f, 1f)] public float wigglePhasePerJointVariation = 0.2f;
+    [Tooltip("How much wiggle amplitude and frequency slowly drift over time (+/- fraction).")]
+    [Range(0f, 1f)] public float wiggleModulation = 0.3f;
+    [Tooltip("Speed of that drift. Keep low for smooth changes.")]
+    public float wiggleModulationSpeed = 0.2f;
+
     [Header("Pixel look")]
     public bool snapToPixels = true;
     public float pixelsPerUnit = 16f;
@@ -56,10 +67,13 @@ public class CaveBossTentacleChain : MonoBehaviour
     float[] lens;           // length of each drawn piece
     Vector2 targetPoint;
     Vector2 tipPoint;
+    Vector2 rootPoint;      // root position this frame (and last frame, before it's updated)
     List<Transform>[] pools;
     int[] used;
     float segLen;           // current length of each link
     float wigglePhase;      // random per tentacle so copies don't move in sync
+    float tipSpeedScale, amplitudeScale, frequencyScale, phasePerJointScale;
+    float noiseSeed;
 
     float MaxReach => jointLength * (jointCount - 1);
 
@@ -75,7 +89,13 @@ public class CaveBossTentacleChain : MonoBehaviour
             pos[i] = root + Vector2.down * jointLength * i;
 
         tipPoint = pos[n - 1];
+        rootPoint = root;
         wigglePhase = Random.value * Mathf.PI * 2f;
+        tipSpeedScale = RandomScale(tipSpeedVariation);
+        amplitudeScale = RandomScale(wiggleAmplitudeVariation);
+        frequencyScale = RandomScale(wiggleFrequencyVariation);
+        phasePerJointScale = RandomScale(wigglePhasePerJointVariation);
+        noiseSeed = Random.Range(0f, 1000f);
         targetPoint = tipPoint;
 
         pools = new List<Transform>[tiers.Length];
@@ -88,7 +108,14 @@ public class CaveBossTentacleChain : MonoBehaviour
     void LateUpdate()
     {
         Vector2 root = transform.position;
-        float follow = 1f - Mathf.Exp(-tipSpeed * Time.deltaTime);
+
+        // Carry the whole chain with the root so body movement doesn't bend or stretch it
+        Vector2 rootDelta = root - rootPoint;
+        for (int i = 0; i < pos.Length; i++) pos[i] += rootDelta;
+        tipPoint += rootDelta;
+        rootPoint = root;
+
+        float follow = 1f - Mathf.Exp(-tipSpeed * tipSpeedScale * Time.deltaTime);
 
         if (autoLength)
         {
@@ -159,6 +186,15 @@ public class CaveBossTentacleChain : MonoBehaviour
     void ApplyWiggle()
     {
         int last = pos.Length - 1;
+
+        // Slow noise modulation; phase is accumulated so frequency changes never cause jumps
+        float noiseTime = Time.time * wiggleModulationSpeed;
+        float ampMod = 1f + wiggleModulation * (Mathf.PerlinNoise(noiseSeed, noiseTime) * 2f - 1f);
+        float freqMod = 1f + wiggleModulation * (Mathf.PerlinNoise(noiseTime, noiseSeed + 53.7f) * 2f - 1f);
+        wigglePhase += Time.deltaTime * wiggleFrequency * frequencyScale * freqMod;
+        float amplitude = wiggleAmplitude * amplitudeScale * ampMod;
+        float phasePerJoint = wigglePhasePerJoint * phasePerJointScale;
+
         for (int i = 0; i < pos.Length; i++)
         {
             Vector2 a = pos[Mathf.Max(i - 1, 0)];
@@ -167,10 +203,12 @@ public class CaveBossTentacleChain : MonoBehaviour
             Vector2 perp = new Vector2(-dir.y, dir.x);
 
             float t = i / (float)last;
-            float wave = Mathf.Sin(Time.time * wiggleFrequency - i * wigglePhasePerJoint + wigglePhase);
-            draw[i] = pos[i] + perp * wave * wiggleAmplitude * t;
+            float wave = Mathf.Sin(wigglePhase - i * phasePerJoint);
+            draw[i] = pos[i] + perp * wave * amplitude * t;
         }
     }
+
+    static float RandomScale(float variation) => 1f + Random.Range(-variation, variation);
 
     void PlaceStamps()
     {
@@ -223,8 +261,9 @@ public class CaveBossTentacleChain : MonoBehaviour
 
     void Stamp(int tier, Vector2 p)
     {
+        // Snap relative to the snapped root so the tentacle moves as one block, not stamp by stamp
         if (snapToPixels)
-            p = new Vector2(Mathf.Round(p.x * pixelsPerUnit), Mathf.Round(p.y * pixelsPerUnit)) / pixelsPerUnit;
+            p = SnapToPixel(rootPoint) + SnapToPixel(p - rootPoint);
 
         var pool = pools[tier];
         if (used[tier] >= pool.Count)
@@ -233,6 +272,11 @@ public class CaveBossTentacleChain : MonoBehaviour
         var tr = pool[used[tier]++];
         if (!tr.gameObject.activeSelf) tr.gameObject.SetActive(true);
         tr.position = p;
+    }
+
+    Vector2 SnapToPixel(Vector2 p)
+    {
+        return new Vector2(Mathf.Round(p.x * pixelsPerUnit), Mathf.Round(p.y * pixelsPerUnit)) / pixelsPerUnit;
     }
 
     static Vector2 SafeDir(Vector2 v)
