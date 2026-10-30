@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using FMOD.Studio;
+using FMODUnity;
 using UnityEngine;
 
 public class CaveBoss : MonoBehaviour
@@ -12,10 +14,14 @@ public class CaveBoss : MonoBehaviour
 
     [Header("Speeds")]
     [SerializeField] private SpeedLevel _startingSpeed = SpeedLevel.Slow;
-    [Tooltip("Average speed over a full crawl cycle. Burst distance = speed * cycle duration.")]
+    [Tooltip("Average speed gained from the bursts over a full crawl cycle. Burst distance = speed * cycle duration.")]
     [SerializeField] private float _slowSpeed = 1.5f;
     [SerializeField] private float _mediumSpeed = 3f;
     [SerializeField] private float _fastSpeed = 5f;
+    [Tooltip("Constant forward speed added on top of the bursts. Total average speed = burst speed + constant speed.")]
+    [SerializeField] private float _slowConstantSpeed = 0f;
+    [SerializeField] private float _mediumConstantSpeed = 0f;
+    [SerializeField] private float _fastConstantSpeed = 0f;
 
     [Header("Crawl Cycle (Burst -> Rest)")]
     [Tooltip("Time the body spends lunging forward.")]
@@ -71,6 +77,19 @@ public class CaveBoss : MonoBehaviour
     [Tooltip("How far the heads rise mid catch-up.")]
     [SerializeField] private float _headArcHeight = 0.3f;
 
+    [Header("Rumble")]
+    [Tooltip("Whether rumbles occur. Can also be toggled with SetRumbleEnabled().")]
+    [SerializeField] private bool _rumbleEnabled = true;
+    [Tooltip("Minimum seconds between the end of one rumble and the start of the next.")]
+    [SerializeField, Min(0f)] private float _rumbleMinInterval = 5f;
+    [Tooltip("Maximum seconds between the end of one rumble and the start of the next.")]
+    [SerializeField, Min(0f)] private float _rumbleMaxInterval = 10f;
+    [Tooltip("How long the camera shakes and the earthquake sound plays before fading out.")]
+    [SerializeField, Min(0f)] private float _rumbleDuration = 2f;
+    [SerializeField] private float _rumbleShakeAmplitude = 1.94f;
+    [SerializeField] private float _rumbleShakeFrequency = 1.84f;
+    [SerializeField] private EventReference _earthquakeStinger;
+
     [Header("Debug")]
     [Tooltip("Freeze the boss in place (crawl cycle and catch-up paused) while tentacles keep animating. Can be toggled in Play mode.")]
     [SerializeField] private bool _debugStandStill;
@@ -78,6 +97,7 @@ public class CaveBoss : MonoBehaviour
     private Rigidbody2D _rigidBody;
     private SpeedLevel _currentSpeed;
     private bool _isCatchingUp;
+    private bool _stopRequested;
 
     private float _cycleTime;
     private float _burstStartX;
@@ -85,8 +105,14 @@ public class CaveBoss : MonoBehaviour
     private float _nextBurstDistance;
     private int _burstIndex;
 
+    private Coroutine _rumbleCoroutine;
+    private EventInstance _rumbleInstance;
+
     public SpeedLevel CurrentSpeed => _currentSpeed;
     public bool IsCatchingUp => _isCatchingUp;
+    public bool RumbleEnabled => _rumbleEnabled;
+    // True once a requested stop has taken effect (the current burst has finished)
+    public bool IsStopped => _stopRequested && !_isCatchingUp && _cycleTime >= _burstDuration;
 
     private float CycleDuration => _burstDuration + _restDuration;
 
@@ -110,6 +136,16 @@ public class CaveBoss : MonoBehaviour
         ResetCycle();
     }
 
+    void OnEnable() {
+        _rumbleCoroutine = StartCoroutine(RumbleLoop());
+    }
+
+    void OnDisable() {
+        if (_rumbleCoroutine != null) StopCoroutine(_rumbleCoroutine);
+        _rumbleCoroutine = null;
+        AudioUtils.SafeStop(ref _rumbleInstance);
+    }
+
     void Update()
     {
         Vector2 body = transform.position;
@@ -126,7 +162,7 @@ public class CaveBoss : MonoBehaviour
         foreach (var slot in _heads) {
             if (slot.head == null) continue;
             slot.blend *= decay;
-            Vector2 procedural = _isCatchingUp ? Vector2.zero : GetHeadOffset(slot, t, body.x);
+            Vector2 procedural = _isCatchingUp ? Vector2.zero : GetHeadOffset(slot, t);
             SetPosition(slot.head, body + slot.offset + slot.blend + procedural);
             UpdateHeadAnimation(slot, t);
         }
@@ -152,6 +188,20 @@ public class CaveBoss : MonoBehaviour
         _currentSpeed = speed;
     }
 
+    // Comes to a full stop once the current burst has finished (immediately if resting)
+    public void StopMoving() {
+        _stopRequested = true;
+    }
+
+    public void StartMoving() {
+        _stopRequested = false;
+    }
+
+    // Disabling lets a rumble that's already playing finish, but no new ones start
+    public void SetRumbleEnabled(bool enabled) {
+        _rumbleEnabled = enabled;
+    }
+
     public void CatchUp() {
         if (_isCatchingUp) return;
         _isCatchingUp = true;
@@ -175,23 +225,31 @@ public class CaveBoss : MonoBehaviour
     }
 
     private float GetCrawlVelocity() {
+        // When stopped, rest time still runs (so heads finish catching up) but is held at the end of the cycle
+        bool stopped = IsStopped;
         float previous = _cycleTime;
         _cycleTime += Time.fixedDeltaTime;
+        if (stopped) _cycleTime = Mathf.Min(_cycleTime, CycleDuration);
+        // The constant speed moves the burst baseline forward, so bursts are layered on top of it
+        else _burstStartX += GetConstantSpeed(_currentSpeed) * Time.fixedDeltaTime;
 
         // Lock the next burst distance when resting starts, so speed changes never alter a burst in progress
         if (previous < _burstDuration && _cycleTime >= _burstDuration)
             _nextBurstDistance = GetSpeed(_currentSpeed) * CycleDuration;
 
-        if (_cycleTime >= CycleDuration) {
+        if (!stopped && _cycleTime >= CycleDuration) {
             _cycleTime -= CycleDuration;
             _burstStartX = _rigidBody.position.x;
             _burstDistance = _nextBurstDistance;
             _burstIndex++;
         }
 
-        float progress = _cycleTime >= _burstDuration ? 1f : _burstCurve.Evaluate(_cycleTime / _burstDuration);
-        float targetX = _burstStartX + _burstDistance * progress;
+        float targetX = _burstStartX + _burstDistance * GetBurstProgress(_cycleTime);
         return (targetX - _rigidBody.position.x) / Time.fixedDeltaTime;
+    }
+
+    private float GetBurstProgress(float t) {
+        return t >= _burstDuration ? 1f : _burstCurve.Evaluate(t / _burstDuration);
     }
 
     // Start resting in place, as if a zero-length burst just finished
@@ -202,8 +260,9 @@ public class CaveBoss : MonoBehaviour
         _nextBurstDistance = GetSpeed(_currentSpeed) * CycleDuration;
     }
 
-    private Vector2 GetHeadOffset(HeadSlot slot, float t, float bodyX) {
-        float moved = Mathf.Clamp(bodyX - _burstStartX, 0f, _burstDistance);
+    // Heads only lag behind the burst part of the movement, not the constant speed
+    private Vector2 GetHeadOffset(HeadSlot slot, float t) {
+        float moved = _burstDistance * GetBurstProgress(t);
         float lag = moved * _headLag * slot.lagMultiplier;
         if (t < _burstDuration) return new Vector2(-lag, 0f);
 
@@ -225,5 +284,33 @@ public class CaveBoss : MonoBehaviour
             case SpeedLevel.Fast: return _fastSpeed;
             default: return _slowSpeed;
         }
+    }
+
+    private float GetConstantSpeed(SpeedLevel speed) {
+        switch (speed) {
+            case SpeedLevel.Medium: return _mediumConstantSpeed;
+            case SpeedLevel.Fast: return _fastConstantSpeed;
+            default: return _slowConstantSpeed;
+        }
+    }
+
+    private IEnumerator RumbleLoop() {
+        while (true) {
+            float wait = Random.Range(_rumbleMinInterval, _rumbleMaxInterval);
+            // The timer only runs while enabled and restarts when disabled, so enabling always waits a full interval
+            for (float t = 0f; t < wait; t = _rumbleEnabled ? t + Time.deltaTime : 0f)
+                yield return null;
+            yield return Rumble(_rumbleDuration);
+        }
+    }
+
+    //Shakes the camera and plays earthquake sfx
+    private IEnumerator Rumble(float duration) {
+        CameraShakeManager.obj.ShakeCamera(_rumbleShakeAmplitude, _rumbleShakeFrequency, duration);
+        _rumbleInstance = SoundFXManager.obj.CreateAttachedInstance(_earthquakeStinger, gameObject, null);
+        _rumbleInstance.start();
+        _rumbleInstance.release();
+        yield return new WaitForSeconds(duration);
+        AudioUtils.SafeStop(ref _rumbleInstance);
     }
 }

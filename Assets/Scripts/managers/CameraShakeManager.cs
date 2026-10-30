@@ -5,7 +5,15 @@ using DG.Tweening;
 public class CameraShakeManager : MonoBehaviour
 {
     public static CameraShakeManager obj;
+    private const float PushShakeAmplitude = 4f;
+    private const float PushShakeFrequency = 2f;
+    private const float PushShakeDuration = 0.13f;
+
     private float _shakeTimer = 0;
+    private float _shakeAmplitude;
+    private float _shakeFrequency;
+    // Short push shakes play on top of a longer shake, which resumes afterwards
+    private float _pushShakeTimer = 0;
     private CinemachineVirtualCamera _activeVirtualCamera;
     private CinemachineBasicMultiChannelPerlin _cachedPerlin;
 
@@ -18,9 +26,12 @@ public class CameraShakeManager : MonoBehaviour
         _activeVirtualCamera = GetActiveVirtualCamera();
         if (_activeVirtualCamera != null) {
             _cachedPerlin = _activeVirtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
-            _cachedPerlin.m_AmplitudeGain = amplitude;
-            _cachedPerlin.m_FrequencyGain = frequency;
+            _shakeAmplitude = amplitude;
+            _shakeFrequency = frequency;
             _shakeTimer = time;
+            // A zero-length shake is used to cancel all shaking
+            if (time <= 0f) _pushShakeTimer = 0f;
+            ApplyShake();
         }
     }
 
@@ -30,9 +41,8 @@ public class CameraShakeManager : MonoBehaviour
             _activeVirtualCamera.VirtualCameraGameObject.transform.DOShakePosition(0.13f, new Vector3(0.15f, 0.15f, 0), 30, 90, false, true, ShakeRandomnessMode.Harmonic);
         } else {
             _cachedPerlin = _activeVirtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
-            _cachedPerlin.m_AmplitudeGain = 4f;
-            _cachedPerlin.m_FrequencyGain = 2f;
-            _shakeTimer = 0.13f;
+            _pushShakeTimer = PushShakeDuration;
+            ApplyShake();
         }
     }
 
@@ -42,14 +52,22 @@ public class CameraShakeManager : MonoBehaviour
 
     void Update()
     {
-        if(_shakeTimer > 0f) {
-            _shakeTimer -= Time.deltaTime;
-            if(_shakeTimer <= 0f) {
-                _shakeTimer = 0f;
-                if(_cachedPerlin != null) {
-                    _cachedPerlin.m_AmplitudeGain = 0f;
-                }
-            }
+        if(_shakeTimer <= 0f && _pushShakeTimer <= 0f) return;
+        _shakeTimer = Mathf.Max(0f, _shakeTimer - Time.deltaTime);
+        _pushShakeTimer = Mathf.Max(0f, _pushShakeTimer - Time.deltaTime);
+        ApplyShake();
+    }
+
+    private void ApplyShake() {
+        if(_cachedPerlin == null) return;
+        if(_pushShakeTimer > 0f) {
+            _cachedPerlin.m_AmplitudeGain = PushShakeAmplitude;
+            _cachedPerlin.m_FrequencyGain = PushShakeFrequency;
+        } else if(_shakeTimer > 0f) {
+            _cachedPerlin.m_AmplitudeGain = _shakeAmplitude;
+            _cachedPerlin.m_FrequencyGain = _shakeFrequency;
+        } else {
+            _cachedPerlin.m_AmplitudeGain = 0f;
         }
     }
 

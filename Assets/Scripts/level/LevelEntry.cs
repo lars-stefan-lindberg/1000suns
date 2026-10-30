@@ -34,7 +34,6 @@ public class LevelEntry : MonoBehaviour
 
             InitRoom initRoomData = LevelManager.obj.GetInitRoomData(newScene);
             LevelManager.obj.LoadAdjacentRooms(initRoomData);
-            LevelManager.obj.UnloadNonAdjacentRooms(newScene, initRoomData);
 
             SceneManager.SetActiveScene(newScene);
 
@@ -42,6 +41,7 @@ public class LevelEntry : MonoBehaviour
             CinemachineBrain brain = Camera.main.GetComponent<CinemachineBrain>();
             CinemachineVirtualCamera activeVirtualCamera = (CinemachineVirtualCamera) brain.ActiveVirtualCamera;
             StartCoroutine(ActivateNextRoomCameraAndTransitionPlayer(newScene, activeVirtualCamera, playerDirection, playerType));
+            StartCoroutine(UnloadNonAdjacentRoomsAfterBlend(brain, newScene, initRoomData));
 
             GameManager.obj.SetCurrentSpawnPointId(_spawnPoint.SpawnPointID);
 
@@ -95,5 +95,14 @@ public class LevelEntry : MonoBehaviour
         }
 
         yield return null;
+    }
+
+    private IEnumerator UnloadNonAdjacentRoomsAfterBlend(CinemachineBrain brain, Scene newScene, InitRoom initRoomData) {
+        yield return null;
+        while(brain != null && brain.IsBlending)
+            yield return null;
+
+        if(SceneManager.GetActiveScene() == newScene)
+            LevelManager.obj.UnloadNonAdjacentRooms(newScene, initRoomData);
     }
 }
