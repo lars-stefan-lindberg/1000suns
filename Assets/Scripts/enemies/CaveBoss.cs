@@ -50,9 +50,15 @@ public class CaveBoss : MonoBehaviour
         [Range(0f, 2f)] public float lagMultiplier = 1f;
         [Tooltip("Extra seconds after the burst before this head starts catching up.")]
         [Min(0f)] public float catchUpDelay;
+        [Tooltip("Trigger the \"move\" animation on the head's \"Body\" child Animator when the head starts moving forward.")]
+        public bool useBodyAnimation;
         [System.NonSerialized] public Vector2 offset;
         [System.NonSerialized] public Vector2 blend;
+        [System.NonSerialized] public Animator bodyAnimator;
+        [System.NonSerialized] public int lastAnimatedBurst = -1;
     }
+
+    private static readonly int MoveTrigger = Animator.StringToHash("move");
 
     [Header("Heads")]
     [SerializeField] private HeadSlot[] _heads;
@@ -77,6 +83,7 @@ public class CaveBoss : MonoBehaviour
     private float _burstStartX;
     private float _burstDistance;
     private float _nextBurstDistance;
+    private int _burstIndex;
 
     public SpeedLevel CurrentSpeed => _currentSpeed;
     public bool IsCatchingUp => _isCatchingUp;
@@ -90,8 +97,15 @@ public class CaveBoss : MonoBehaviour
         Vector2 body = transform.position;
         foreach (var slot in _tentacles)
             if (slot.target != null) slot.offset = (Vector2)slot.target.position - body;
-        foreach (var slot in _heads)
-            if (slot.head != null) slot.offset = (Vector2)slot.head.position - body;
+        foreach (var slot in _heads) {
+            if (slot.head == null) continue;
+            slot.offset = (Vector2)slot.head.position - body;
+            if (!slot.useBodyAnimation) continue;
+            Transform bodyChild = slot.head.Find("Body");
+            slot.bodyAnimator = bodyChild != null ? bodyChild.GetComponent<Animator>() : null;
+            if (slot.bodyAnimator == null)
+                Debug.LogWarning($"CaveBoss: head '{slot.head.name}' has Use Body Animation enabled but no 'Body' child with an Animator.", slot.head);
+        }
 
         ResetCycle();
     }
@@ -114,7 +128,18 @@ public class CaveBoss : MonoBehaviour
             slot.blend *= decay;
             Vector2 procedural = _isCatchingUp ? Vector2.zero : GetHeadOffset(slot, t, body.x);
             SetPosition(slot.head, body + slot.offset + slot.blend + procedural);
+            UpdateHeadAnimation(slot, t);
         }
+    }
+
+    // Trigger once per burst, when the head starts catching up (moving forward)
+    private void UpdateHeadAnimation(HeadSlot slot, float t) {
+        if (slot.bodyAnimator == null || slot.lastAnimatedBurst == _burstIndex) return;
+        if (_isCatchingUp || _burstDistance <= 0f || _headLag * slot.lagMultiplier <= 0f) return;
+        float delay = Mathf.Min(slot.catchUpDelay, CycleDuration - _burstDuration);
+        if (t < _burstDuration + delay) return;
+        slot.lastAnimatedBurst = _burstIndex;
+        slot.bodyAnimator.SetTrigger(MoveTrigger);
     }
 
     void FixedUpdate()
@@ -161,6 +186,7 @@ public class CaveBoss : MonoBehaviour
             _cycleTime -= CycleDuration;
             _burstStartX = _rigidBody.position.x;
             _burstDistance = _nextBurstDistance;
+            _burstIndex++;
         }
 
         float progress = _cycleTime >= _burstDuration ? 1f : _burstCurve.Evaluate(_cycleTime / _burstDuration);
