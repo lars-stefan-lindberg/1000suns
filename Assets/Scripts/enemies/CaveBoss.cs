@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class CaveBoss : MonoBehaviour
 {
+    public static CaveBoss obj;
+
     public enum SpeedLevel {
         Slow,
         Medium,
@@ -116,7 +118,23 @@ public class CaveBoss : MonoBehaviour
 
     private float CycleDuration => _burstDuration + _restDuration;
 
+    // Returns the boss, spawning it if it doesn't exist yet, placed at the given position.
+    // It's parented to the persistent gameplay objects so it survives room transitions and scene reloads.
+    public static CaveBoss Spawn(CaveBoss prefab, Vector2 position) {
+        if (obj == null)
+            Instantiate(prefab, new Vector3(position.x, position.y, prefab.transform.position.z), Quaternion.identity, PersistenceGameplay.obj.transform);
+        else
+            obj.Teleport(position);
+        return obj;
+    }
+
+    public static void Despawn() {
+        if (obj != null) Destroy(obj.gameObject);
+        obj = null;
+    }
+
     void Awake() {
+        obj = this;
         _rigidBody = GetComponent<Rigidbody2D>();
         _currentSpeed = _startingSpeed;
 
@@ -144,6 +162,10 @@ public class CaveBoss : MonoBehaviour
         if (_rumbleCoroutine != null) StopCoroutine(_rumbleCoroutine);
         _rumbleCoroutine = null;
         AudioUtils.SafeStop(ref _rumbleInstance);
+    }
+
+    void OnDestroy() {
+        if (obj == this) obj = null;
     }
 
     void Update()
@@ -193,8 +215,32 @@ public class CaveBoss : MonoBehaviour
         _stopRequested = true;
     }
 
+    // Stops right away, interrupting a burst or catch-up in progress
+    public void StopImmediately() {
+        _stopRequested = true;
+        _isCatchingUp = false;
+        BlendHeadsFromCurrentPose();
+        _rigidBody.velocity = new Vector2(0f, _rigidBody.velocity.y);
+        ResetCycle();
+    }
+
     public void StartMoving() {
         _stopRequested = false;
+    }
+
+    // Moves the boss instantly, with heads and tentacle targets snapped to their resting pose
+    public void Teleport(Vector2 position) {
+        _rigidBody.position = position;
+        SetPosition(transform, position);
+        _isCatchingUp = false;
+        foreach (var slot in _tentacles)
+            if (slot.target != null) SetPosition(slot.target, position + slot.offset);
+        foreach (var slot in _heads) {
+            if (slot.head == null) continue;
+            slot.blend = Vector2.zero;
+            SetPosition(slot.head, position + slot.offset);
+        }
+        ResetCycle();
     }
 
     // Disabling lets a rumble that's already playing finish, but no new ones start
@@ -202,11 +248,16 @@ public class CaveBoss : MonoBehaviour
         _rumbleEnabled = enabled;
     }
 
+    // Rushes to the player, then resumes the pursuit (also if stopped)
     public void CatchUp() {
+        _stopRequested = false;
         if (_isCatchingUp) return;
         _isCatchingUp = true;
+        BlendHeadsFromCurrentPose();
+    }
 
-        // Keep current positions as a displacement that blends back to the resting offset
+    // Keep current positions as a displacement that blends back to the resting offset
+    private void BlendHeadsFromCurrentPose() {
         Vector2 body = transform.position;
         foreach (var slot in _heads)
             if (slot.head != null) slot.blend = (Vector2)slot.head.position - body - slot.offset;

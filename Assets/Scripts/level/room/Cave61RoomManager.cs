@@ -9,18 +9,30 @@ public class Cave61RoomManager : MonoBehaviour
 {
     [SerializeField] private GameEventId _bossStarted;
     [SerializeField] private SpawnPoint _bossSpawnPoint;
-    [SerializeField] private GameObject _boss;
-    [SerializeField] private CaveBoss _bossComponent;
+    [SerializeField] private CaveBoss _bossPrefab;
+    [Tooltip("Where the boss is spawned when the intro starts (off screen).")]
+    [SerializeField] private Transform _bossIntroStartPosition;
+    [Tooltip("Where the boss is placed when the player respawns in this room after the intro.")]
+    [SerializeField] private Transform _bossChaseStartPosition;
+    [Tooltip("Seconds after respawning before the boss resumes the pursuit.")]
+    [SerializeField] private float _resumeChaseDelay = 1f;
     [SerializeField] private float _waitForBossTime;
     [SerializeField] private EventReference _earthquakeStinger;
     private EventInstance _rumbleInstance;
 
     void Start() {
+        // Also loaded as an adjacent room, only handle the boss when (re)spawning in this room
+        if(gameObject.scene != SceneManager.GetActiveScene())
+            return;
+
         CaveTimelineId.Id caveTimeline = GameManager.obj.GetCaveTimeline().GetCaveTimelineId();
         if(GameManager.obj.HasEvent(_bossStarted) && caveTimeline == CaveTimelineId.Id.Dee) {
-            //Handle boss loading
+            StartCoroutine(ResumeChase());
         } else if(caveTimeline == CaveTimelineId.Id.Both) {
             //Handle both loading, use temporary game event
+        } else {
+            //Intro not completed, make sure it replays from the start
+            CaveBoss.Despawn();
         }
     }
 
@@ -34,16 +46,24 @@ public class Cave61RoomManager : MonoBehaviour
         StartCoroutine(Cutscene(activePlayerType));
     }
 
+    private IEnumerator ResumeChase() {
+        CaveBoss boss = CaveBoss.Spawn(_bossPrefab, _bossChaseStartPosition.position);
+        boss.StopImmediately();
+        boss.SetSpeed(CaveBoss.SpeedLevel.Medium);
+        boss.SetRumbleEnabled(true);
+        yield return new WaitForSeconds(_resumeChaseDelay);
+        boss.StartMoving();
+    }
+
     private IEnumerator Cutscene(PlayerManager.PlayerType activePlayerType) {
-        _bossComponent.SetRumbleEnabled(false);
-        _boss.SetActive(true);
+        CaveBoss boss = CaveBoss.Spawn(_bossPrefab, _bossIntroStartPosition.position);
+        boss.SetRumbleEnabled(false);
         yield return new WaitForSeconds(1);
         PlayerManager.obj.FlipPlayer(activePlayerType);
         yield return new WaitForSeconds(_waitForBossTime);
-        _bossComponent.StopMoving();
+        boss.StopMoving();
         yield return new WaitForSeconds(3f);
 
-        //Stop boss, play "roar", shake camera
         CameraShakeManager.obj.ShakeCamera(1.94f, 1.84f, 3);
         _rumbleInstance = SoundFXManager.obj.CreateAttachedInstance(_earthquakeStinger, gameObject, null);
         _rumbleInstance.start();
@@ -53,9 +73,9 @@ public class Cave61RoomManager : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
         //Start music
-        _bossComponent.SetSpeed(CaveBoss.SpeedLevel.Medium);
-        _bossComponent.SetRumbleEnabled(true);
-        _bossComponent.StartMoving();
+        boss.SetSpeed(CaveBoss.SpeedLevel.Medium);
+        boss.SetRumbleEnabled(true);
+        boss.StartMoving();
 
         PlayerManager.obj.UnfreezePlayer(activePlayerType);
 

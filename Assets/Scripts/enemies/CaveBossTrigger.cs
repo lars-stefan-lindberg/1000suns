@@ -4,9 +4,11 @@ public class CaveBossTrigger : MonoBehaviour
 {
     public enum TriggerAction {
         SetSpeed,
-        CatchUp
+        CatchUp,
+        Stop
     }
 
+    [Tooltip("Leave empty to use the spawned (persistent) boss.")]
     [SerializeField] private CaveBoss _caveBoss;
     [SerializeField] private TriggerAction _action = TriggerAction.SetSpeed;
     [Tooltip("Only used when Action is SetSpeed.")]
@@ -19,10 +21,15 @@ public class CaveBossTrigger : MonoBehaviour
         if (_triggerOnce && _hasTriggered) return;
         if (!other.gameObject.CompareTag("Player")) return;
 
+        CaveBoss caveBoss = _caveBoss != null ? _caveBoss : CaveBoss.obj;
+        if (caveBoss == null) return;
+
         if (_action == TriggerAction.SetSpeed) {
-            _caveBoss.SetSpeed(_speed);
+            caveBoss.SetSpeed(_speed);
+        } else if (_action == TriggerAction.CatchUp) {
+            caveBoss.CatchUp();
         } else {
-            _caveBoss.CatchUp();
+            caveBoss.StopImmediately();
         }
         _hasTriggered = true;
     }

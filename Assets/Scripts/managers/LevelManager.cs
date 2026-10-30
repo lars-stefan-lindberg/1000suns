@@ -157,6 +157,10 @@ public class LevelManager : MonoBehaviour
             if(ShadowTwinPlayer.obj != null) {
                 ShadowTwinPlayer.obj.transform.position = playerSpawnPointCollider.transform.position;
             }
+            if(Player.obj != null && playerType == PlayerManager.PlayerType.HUMAN)
+                Player.obj.transform.position = playerSpawnPointCollider.transform.position;
+            else if(PlayerBlob.obj != null && playerType == PlayerManager.PlayerType.BLOB)
+                PlayerBlob.obj.transform.position = playerSpawnPointCollider.transform.position - new Vector3(0, 0.5f, 0);
         } else if(caveTimelineId == CaveTimelineId.Id.Both) {
             if(playerType == PlayerManager.PlayerType.NONE) {
                 //Default Eli
