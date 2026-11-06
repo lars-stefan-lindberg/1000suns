@@ -1,16 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Cave64RoomManager : MonoBehaviour
 {
-    [SerializeField] private GameObject _camera;
+    [SerializeField] private CaveBoss _bossPrefab;
+    [Tooltip("Position the boss is moved to (stopped) when the player respawns in this room. Should match the Spawn trigger's spawn position.")]
+    [SerializeField] private Transform _bossRespawnPosition;
 
-    public void ActivateCamera() {
-        _camera.SetActive(true);
-    }
+    void Start() {
+        // Also loaded as an adjacent room, only handle the boss when (re)spawning in this room
+        if(gameObject.scene != SceneManager.GetActiveScene())
+            return;
 
-    public void DeactivateCamera() {
-        _camera.SetActive(false);
+        CaveBoss boss = CaveBoss.Spawn(_bossPrefab, _bossRespawnPosition.position);
+        boss.StopImmediately();
+        boss.SetRumbleEnabled(true);
     }
 }
