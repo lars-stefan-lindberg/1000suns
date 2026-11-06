@@ -37,8 +37,12 @@ public class CaveBossTentacleChain : MonoBehaviour
     public float jointLength = 0.5f;
     public float tipSpeed = 12f;
     public int solverIterations = 2;
+    [Tooltip("Start with all joints at the root (zero length, nothing drawn) instead of hanging down.")]
+    public bool startCollapsed = false;
 
     [Header("Wiggle (visual only)")]
+    [Tooltip("Multiplies the wiggle amplitude. 0 = straight. Fade it with SetWiggle().")]
+    [Range(0f, 1f)] public float wiggleWeight = 1f;
     public float wiggleAmplitude = 0.25f;
     public float wiggleFrequency = 2.5f;
     public float wigglePhasePerJoint = 0.6f;
@@ -62,6 +66,11 @@ public class CaveBossTentacleChain : MonoBehaviour
     [Tooltip("Parent for spawned stamps. Leave empty to use this object. Should have scale (1,1,1) and no flip/rotation.")]
     public Transform stampParent;
 
+    [Header("Hazard (optional)")]
+    [Tooltip("Trigger collider kept along the drawn tentacle (wiggle included). Disabled while the tentacle is shorter than Min Collider Length.")]
+    public EdgeCollider2D hazardCollider;
+    public float minColliderLength = 0.1f;
+
     Vector2[] pos;          // simulated joints
     Vector2[] draw;         // joints with wiggle applied
     float[] lens;           // length of each drawn piece
@@ -74,10 +83,21 @@ public class CaveBossTentacleChain : MonoBehaviour
     float wigglePhase;      // random per tentacle so copies don't move in sync
     float tipSpeedScale, amplitudeScale, frequencyScale, phasePerJointScale;
     float noiseSeed;
+    float wiggleWeightTarget;
+    float wiggleWeightSpeed;
+    readonly List<Vector2> colliderPoints = new List<Vector2>();
+
+    // Hazard colliders of all tentacles, so they can be recognized regardless of hierarchy
+    static readonly HashSet<Collider2D> hazardColliders = new HashSet<Collider2D>();
+    public static bool IsHazard(Collider2D collider) => hazardColliders.Contains(collider);
 
     float MaxReach => jointLength * (jointCount - 1);
 
-    void Start()
+    // Simulated tip (without wiggle)
+    public Vector2 TipPosition => tipPoint;
+
+    // Initialized in Awake so SetTip/SetWiggle work right after Instantiate
+    void Awake()
     {
         int n = Mathf.Max(jointCount, 2);
         pos = new Vector2[n];
@@ -86,7 +106,7 @@ public class CaveBossTentacleChain : MonoBehaviour
 
         Vector2 root = transform.position;
         for (int i = 0; i < n; i++)
-            pos[i] = root + Vector2.down * jointLength * i;
+            pos[i] = startCollapsed ? root : root + Vector2.down * jointLength * i;
 
         tipPoint = pos[n - 1];
         rootPoint = root;
@@ -97,16 +117,33 @@ public class CaveBossTentacleChain : MonoBehaviour
         phasePerJointScale = RandomScale(wigglePhasePerJointVariation);
         noiseSeed = Random.Range(0f, 1000f);
         targetPoint = tipPoint;
+        wiggleWeightTarget = wiggleWeight;
 
         pools = new List<Transform>[tiers.Length];
         used = new int[tiers.Length];
         for (int i = 0; i < tiers.Length; i++) pools[i] = new List<Transform>();
+        if (hazardCollider != null) {
+            hazardCollider.enabled = false;
+            hazardColliders.Add(hazardCollider);
+        }
     }
 
     public void SetTarget(Vector2 worldPoint) => targetPoint = worldPoint;
 
+    // Moves the tip instantly (no smoothing), for scripted straight-line movement
+    public void SetTip(Vector2 worldPoint) => targetPoint = tipPoint = worldPoint;
+
+    // Fades the wiggle weight to the given value. A fade time of 0 applies it immediately.
+    public void SetWiggle(float weight, float fadeTime)
+    {
+        wiggleWeightTarget = Mathf.Clamp01(weight);
+        if (fadeTime <= 0f) wiggleWeight = wiggleWeightTarget;
+        wiggleWeightSpeed = fadeTime > 0f ? Mathf.Abs(wiggleWeightTarget - wiggleWeight) / fadeTime : 0f;
+    }
+
     void LateUpdate()
     {
+        wiggleWeight = Mathf.MoveTowards(wiggleWeight, wiggleWeightTarget, wiggleWeightSpeed * Time.deltaTime);
         Vector2 root = transform.position;
 
         // Carry the whole chain with the root so body movement doesn't bend or stretch it
@@ -141,6 +178,23 @@ public class CaveBossTentacleChain : MonoBehaviour
         Solve(root);
         ApplyWiggle();
         PlaceStamps();
+        UpdateCollider();
+    }
+
+    void UpdateCollider()
+    {
+        if (hazardCollider == null) return;
+        float total = 0f;
+        for (int i = 0; i < lens.Length; i++) total += lens[i];
+        bool active = total >= minColliderLength;
+        if (hazardCollider.enabled != active) hazardCollider.enabled = active;
+        if (!active) return;
+
+        Transform space = hazardCollider.transform;
+        colliderPoints.Clear();
+        for (int i = 0; i < draw.Length; i++)
+            colliderPoints.Add(space.InverseTransformPoint(draw[i]));
+        hazardCollider.SetPoints(colliderPoints);
     }
 
     // Resample the current chain shape to a new joint count, keeping its shape
@@ -192,7 +246,7 @@ public class CaveBossTentacleChain : MonoBehaviour
         float ampMod = 1f + wiggleModulation * (Mathf.PerlinNoise(noiseSeed, noiseTime) * 2f - 1f);
         float freqMod = 1f + wiggleModulation * (Mathf.PerlinNoise(noiseTime, noiseSeed + 53.7f) * 2f - 1f);
         wigglePhase += Time.deltaTime * wiggleFrequency * frequencyScale * freqMod;
-        float amplitude = wiggleAmplitude * amplitudeScale * ampMod;
+        float amplitude = wiggleAmplitude * amplitudeScale * ampMod * wiggleWeight;
         float phasePerJoint = wigglePhasePerJoint * phasePerJointScale;
 
         for (int i = 0; i < pos.Length; i++)
@@ -286,6 +340,7 @@ public class CaveBossTentacleChain : MonoBehaviour
 
     void OnDestroy()
     {
+        if (hazardCollider != null) hazardColliders.Remove(hazardCollider);
         if (pools == null) return;
         foreach (var pool in pools)
             foreach (var tr in pool)

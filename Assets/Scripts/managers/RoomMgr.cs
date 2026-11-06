@@ -52,7 +52,7 @@ public class RoomMgr : MonoBehaviour
             if(CustomCameraHandling.GetPersistentEventCount() > 0) {
                 CustomCameraHandling.Invoke();
             } else {
-                StartCoroutine(MaybeActivateMainCamera());
+                ActivateMainCameraIfNeeded();
             }
 
             if(_isSecretRoom) {
@@ -74,6 +74,11 @@ public class RoomMgr : MonoBehaviour
             
             OnRoomExit?.Invoke();
         }
+    }
+
+    //Default camera handling, can also be used as fallback from custom camera handling
+    public void ActivateMainCameraIfNeeded() {
+        StartCoroutine(MaybeActivateMainCamera());
     }
 
     //Used if we hit play mode from within a room

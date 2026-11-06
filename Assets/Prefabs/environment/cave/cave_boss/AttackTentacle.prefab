@@ -1,0 +1,236 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1060841623247582097
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 343199960036770426}
+  - component: {fileID: 5797736664477778211}
+  m_Layer: 0
+  m_Name: Tentacle
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &343199960036770426
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1060841623247582097}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8442056964343067488}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5797736664477778211
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1060841623247582097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a18587d0c66c4f85a07395fdd32b74e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tiers:
+  - prefab: {fileID: 6416233829814911852, guid: cd96b0f7d5b544140a3093c3f8c63cfd, type: 3}
+    endsAt: 0.3
+    spacing: 0.5
+  - prefab: {fileID: 3688646927529801884, guid: 6fbbd7d9bb3e945a2b0bb6561521b638, type: 3}
+    endsAt: 0.55
+    spacing: 0.25
+  - prefab: {fileID: 6310754965792312695, guid: a66f77939723940149301c0b210b12e4, type: 3}
+    endsAt: 0.65
+    spacing: 0.25
+  - prefab: {fileID: 2507730538103626406, guid: 9fda1db30a7a645babbd74b01e681a68, type: 3}
+    endsAt: 0.8
+    spacing: 0.125
+  - prefab: {fileID: 5408269552847558375, guid: fd04195a2cb054ceab92594dd9b3b36c, type: 3}
+    endsAt: 0.97
+    spacing: 0.125
+  - prefab: {fileID: 6791919997841313213, guid: 05ef899de5342467f9d072904ac3b0c1, type: 3}
+    endsAt: 1
+    spacing: 0.125
+  autoLength: 1
+  preferredJointLength: 0.5
+  minJoints: 3
+  maxJoints: 64
+  jointCount: 8
+  jointLength: 0.5
+  tipSpeed: 12
+  solverIterations: 2
+  startCollapsed: 1
+  wiggleWeight: 1
+  wiggleAmplitude: 0.73
+  wiggleFrequency: 3.67
+  wigglePhasePerJoint: 0.6
+  tipSpeedVariation: 0.3
+  wiggleAmplitudeVariation: 0.3
+  wiggleFrequencyVariation: 0.3
+  wigglePhasePerJointVariation: 0.2
+  wiggleModulation: 0.3
+  wiggleModulationSpeed: 0.2
+  snapToPixels: 1
+  pixelsPerUnit: 8
+  stampParent: {fileID: 0}
+  hazardCollider: {fileID: 2013503677920996708}
+  minColliderLength: 0.1
+--- !u!1 &6450380655989072573
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5410084122126603651}
+  - component: {fileID: 2013503677920996708}
+  - component: {fileID: 4379222373533921245}
+  m_Layer: 9
+  m_Name: HazardCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5410084122126603651
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6450380655989072573}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8442056964343067488}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!68 &2013503677920996708
+EdgeCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6450380655989072573}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_EdgeRadius: 0.25
+  m_Points:
+  - {x: -0.5, y: 0}
+  - {x: 0.5, y: 0}
+  m_AdjacentStartPoint: {x: 0, y: 0}
+  m_AdjacentEndPoint: {x: 0, y: 0}
+  m_UseAdjacentStartPoint: 0
+  m_UseAdjacentEndPoint: 0
+--- !u!114 &4379222373533921245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6450380655989072573}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f0af3e600bcc463e9d613e99d0c7a21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _onlyKillPlayer: 1
+  _onKill:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!1 &7643437813670352511
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8442056964343067488}
+  - component: {fileID: 4051289694620931093}
+  m_Layer: 0
+  m_Name: AttackTentacle
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8442056964343067488
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7643437813670352511}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 343199960036770426}
+  - {fileID: 5410084122126603651}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4051289694620931093
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7643437813670352511}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0579d3c885c87420cb3609b8b9035fab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _chain: {fileID: 5797736664477778211}
+  _telegraphDistance: 1
+  _pokeSpeed: 4
+  _telegraphDuration: 0.6
+  _telegraphWiggle: 0.4
+  _straightenDuration: 0.1
+  _lungeSpeed: 25
+  _holdDuration: 0.3
+  _holdWiggle: 0.6
+  _retractSpeed: 10
+  _wiggleFadeDuration: 0.15
