@@ -181,6 +181,18 @@ public static class RoomGenerator
     }
 
     /// <summary>
+    /// Text-based version of <see cref="GenerateAlignedRoom(StandardRoomType, string, RoomAlignmentSide, float, string)"/>.
+    /// Used by tools that cannot reference this assembly directly, such as the optional Bezi actions, which call it by reflection.
+    /// Keep the signature stable. Returns a human-readable summary of the generated room.
+    /// </summary>
+    public static string GenerateAlignedRoomFromText(string roomType, string neighborSceneReference, string side, float offsetInScreens, string newSceneName)
+    {
+        var parsedRoomType = ParseEnum<StandardRoomType>(roomType, nameof(roomType));
+        var parsedSide = ParseEnum<RoomAlignmentSide>(side, nameof(side));
+        return GenerateAlignedRoom(parsedRoomType, neighborSceneReference, parsedSide, offsetInScreens, newSceneName).ToString();
+    }
+
+    /// <summary>
     /// Generates IDs for every SpawnPoint in the scene that does not have one yet, then saves the scene.
     /// Returns the number of IDs generated.
     /// </summary>
@@ -244,6 +256,13 @@ public static class RoomGenerator
     public static Vector3 SnapToPixelGrid(Vector3 position)
     {
         return new Vector3(SnapToPixelGrid(position.x), SnapToPixelGrid(position.y), position.z);
+    }
+
+    private static TEnum ParseEnum<TEnum>(string value, string parameterName) where TEnum : struct, Enum
+    {
+        if (Enum.TryParse(value?.Trim(), true, out TEnum parsed) && Enum.IsDefined(typeof(TEnum), parsed))
+            return parsed;
+        throw new ArgumentException($"Invalid {parameterName} '{value}'. Expected one of: {string.Join(", ", Enum.GetNames(typeof(TEnum)))}.");
     }
 
     private static Vector2 CalculateAlignedOrigin(Rect neighborBounds, Rect newRoomLocalBounds, RoomAlignmentSide side, float offsetInScreens)

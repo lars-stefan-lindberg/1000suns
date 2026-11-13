@@ -1,12 +1,21 @@
 #if UNITY_EDITOR
 using System;
+using System.Reflection;
+using System.Runtime.ExceptionServices;
 using Bezi;
 
 /// <summary>
 /// Bezi actions that let agents generate standard rooms and spawn point IDs.
+/// This file is in its own assembly (Rooms.BeziActions), which Unity only compiles when the Bezi package
+/// (com.bezi.sidekick) is installed, so the project still compiles without Bezi.
+/// Asmdef assemblies cannot reference Assembly-CSharp-Editor, where RoomGenerator lives, so RoomGenerator is called by reflection.
 /// </summary>
 public static class RoomBeziActions
 {
+    private const string RoomGeneratorTypeName = "RoomGenerator, Assembly-CSharp-Editor";
+    private const string GenerateAlignedRoomMethodName = "GenerateAlignedRoomFromText";
+    private const string GenerateMissingSpawnPointIdsMethodName = "GenerateMissingSpawnPointIds";
+
     /// <summary>
     /// Creates a new room scene of a standard type, aligned flush against one side of an existing room scene.
     /// </summary>
@@ -21,9 +30,7 @@ public static class RoomBeziActions
     )]
     public static string GenerateAlignedRoom(string roomType, string neighborScene, string side, float offsetInScreens = 0f, string newSceneName = "")
     {
-        var parsedRoomType = ParseEnum<StandardRoomType>(roomType, nameof(roomType));
-        var parsedSide = ParseEnum<RoomAlignmentSide>(side, nameof(side));
-        return RoomGenerator.GenerateAlignedRoom(parsedRoomType, neighborScene, parsedSide, offsetInScreens, newSceneName).ToString();
+        return (string)InvokeRoomGenerator(GenerateAlignedRoomMethodName, roomType, neighborScene, side, offsetInScreens, newSceneName);
     }
 
     /// <summary>
@@ -36,14 +43,26 @@ public static class RoomBeziActions
     )]
     public static int GenerateMissingSpawnPointIds(string sceneName)
     {
-        return RoomGenerator.GenerateMissingSpawnPointIds(sceneName);
+        return (int)InvokeRoomGenerator(GenerateMissingSpawnPointIdsMethodName, sceneName);
     }
 
-    private static TEnum ParseEnum<TEnum>(string value, string parameterName) where TEnum : struct, Enum
+    private static object InvokeRoomGenerator(string methodName, params object[] arguments)
     {
-        if (Enum.TryParse(value?.Trim(), true, out TEnum parsed) && Enum.IsDefined(typeof(TEnum), parsed))
-            return parsed;
-        throw new ArgumentException($"Invalid {parameterName} '{value}'. Expected one of: {string.Join(", ", Enum.GetNames(typeof(TEnum)))}.");
+        Type roomGeneratorType = Type.GetType(RoomGeneratorTypeName)
+            ?? throw new InvalidOperationException($"Could not find '{RoomGeneratorTypeName}'. Make sure the editor scripts compile.");
+        MethodInfo method = roomGeneratorType.GetMethod(methodName, BindingFlags.Public | BindingFlags.Static)
+            ?? throw new MissingMethodException(roomGeneratorType.Name, methodName);
+
+        try
+        {
+            return method.Invoke(null, arguments);
+        }
+        catch (TargetInvocationException exception) when (exception.InnerException != null)
+        {
+            // Surface the generator's own error message instead of the reflection wrapper.
+            ExceptionDispatchInfo.Capture(exception.InnerException).Throw();
+            throw;
+        }
     }
 }
 #endif

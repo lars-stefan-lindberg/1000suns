@@ -96,7 +96,10 @@ The generator does exactly what you would do by hand: it drags the standard pref
 
 **From the editor:** `Tools > Rooms > Generate Aligned Room...`. The currently active scene is pre-filled as the room to align to.
 
-**From a Bezi agent:**
+**From a Bezi agent** (only when the Bezi plugin is installed):
+- The actions are in `Assets/Editor/Rooms/BeziActions/`, in their own assembly, `Rooms.BeziActions`. Unity only compiles that assembly when the `com.bezi.sidekick` package is present, so the project compiles fine without Bezi.
+- The package folder is gitignored, and every machine installs it through the Bezi app.
+- That assembly calls `RoomGenerator.GenerateAlignedRoomFromText` and `RoomGenerator.GenerateMissingSpawnPointIds` by reflection, so don't rename them or change their signatures.
 - `RoomBeziActions_GenerateAlignedRoom({ roomType, neighborScene, side, offsetInScreens, newSceneName })`, which returns `{ result: string }`.
 - `roomType`: `Standard | Horizontal | Vertical | Big`.
 - `neighborScene`: an existing scene name (`"Cave-60"`) or an asset path.

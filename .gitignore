@@ -1,0 +1,60 @@
+# Never ignore DLLs in the FMOD subfolder.
+!/[Aa]ssets/Plugins/FMOD/**/lib/*
+
+# Don't ignore images and gizmos used by FMOD in the Unity Editor.
+!/[Aa]ssets/Gizmos/FMOD/*
+!/[Aa]ssets/Editor Default Resources/FMOD/*
+
+# Ignore files
+.DS_Store
+1000 suns demo.sln
+Assembly-CSharp.csproj
+Assets/TextMesh Pro.meta
+Assets/FunkyCode.meta
+Assets/Sprite Shaders Ultimate.meta
+
+# Ignore the Cache folder since it is updated locally.
+/[Aa]ssets/Plugins/FMOD/Cache/*
+
+# Ignore bank files in the StreamingAssets folder.
+/[Aa]ssets/StreamingAssets/**/*.bank
+/[Aa]ssets/StreamingAssets/**/*.bank.meta
+
+# If the source bank files are kept outside of the StreamingAssets folder then these can be ignored.
+# Log files can be ignored.
+fmod_editor.log
+
+# Ignore directories
+Library/
+Logs/
+obj/
+Temp/
+UserSettings/
+.vs/
+.vscode/
+Assets/TextMesh Pro
+test_build_mac_BurstDebugInformation_DoNotShip/
+test_build_mac.app/
+Assets/Plugins/
+Assets/FunkyCode/
+Assets/Samples/Input System/1.7.0/Rebinding UI/Icons/
+Assets/Sprite Shaders Ultimate/
+
+# Skip big images and backup separately
+Assets/Art/ui/title_screen/big_size/background_v2.png
+Assets/Art/ui/title_screen/big_size/background_v2.png.meta
+Assets/Art/ui/title_screen/big_size/shadows_fog.png
+Assets/Art/ui/title_screen/big_size/shadows_fog.png.meta
+Assets/Art/ui/title_screen/big_size/title.png
+Assets/Art/ui/title_screen/big_size/title.png.meta
+Assets/Art/ui/title_screen/big_size/twin_fog_v2.png
+Assets/Art/ui/title_screen/big_size/twin_fog_v2.png.meta
+Assets/Art/ui/title_screen/big_size/twin_shadows_game_logo_white_v4.png
+Assets/Art/forest/forest_big_size_assets/forest_concept_zoomed_out.png
+Assets/Art/forest/forest_big_size_assets/forest_zoomed_out_surface.png
+Assets/Controller Icons Pack/DualSense/Resources/Sprite Assets/DualSense-SpriteSheet-Filled.png
+Assets/Controller Icons Pack/Mouse and Keyboard Pack/Resources/Sprite Assets/KeyBoard-Filled.png
+Assets/Controller Icons Pack/Xbox/Resources/Sprite Assets/Xbox-SpriteSheet-Filled.png
+
+# Bezi plugin (embedded package). Optional: installed per machine by the Bezi app.
+Packages/com.bezi.sidekick/
