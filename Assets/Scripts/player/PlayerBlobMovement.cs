@@ -741,10 +741,22 @@ public class PlayerBlobMovement : MonoBehaviour
     {
         _airJumpToConsume = false;
         _airJumpPerformed = true;
-        PlayerBlobCharge.obj.ExecuteForcePushVfx();
+        ExecuteAirJumpVfx();
         _blobAudio.PlayJump();
         StartCoroutine(JumpSqueeze(_jumpSqueezeX, _jumpSqueezeY, _jumpSqueezeTime));
         ExecuteJump(_stats.JumpPower);
+    }
+
+    private const float AirJumpShockwaveTime = 0.2f;
+    private const float AirJumpShockwaveStartPosition = 0.05f;
+    private const float AirJumpShockwaveEndPosition = 0.15f;
+
+    //Shockwave, flash and camera shake played on the extra air jump
+    private void ExecuteAirJumpVfx()
+    {
+        ShockWaveManager.obj.CallShockWave(_collider.bounds.center, AirJumpShockwaveTime, AirJumpShockwaveStartPosition, AirJumpShockwaveEndPosition);
+        PlayerBlob.obj.ForcePushFlash();
+        CameraShakeManager.obj.ForcePushShake();
     }
 
     private void ExecuteRegularJump()
