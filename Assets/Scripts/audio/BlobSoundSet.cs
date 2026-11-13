@@ -8,6 +8,4 @@ public class BlobSoundSet : ScriptableObject
     public EventReference jump;
     public EventReference footstep;
     public EventReference shapeshift;
-    public EventReference chargeStart;
-    public EventReference chargeRelease;
 }
