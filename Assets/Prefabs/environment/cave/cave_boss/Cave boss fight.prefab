@@ -126,6 +126,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4991310613664485506}
+  - component: {fileID: 1144751559473608313}
   m_Layer: 0
   m_Name: Body parts
   m_TagString: Untagged
@@ -157,6 +158,81 @@ Transform:
   - {fileID: 1716839570201625958}
   m_Father: {fileID: 8035721272272471694}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1144751559473608313
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 776065300200705754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39baf525f6418406d8de92cd9e220b43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _parts:
+  - part: {fileID: 3785054443739515635}
+    distanceMultiplier: 1
+    speedMultiplier: 1
+    axisScale: {x: 1, y: 1}
+  - part: {fileID: 1778883233736557905}
+    distanceMultiplier: 1
+    speedMultiplier: 1
+    axisScale: {x: 1, y: 1}
+  - part: {fileID: 5832753347676552148}
+    distanceMultiplier: 1
+    speedMultiplier: 1
+    axisScale: {x: 1, y: 1}
+  - part: {fileID: 656894602933223287}
+    distanceMultiplier: 1
+    speedMultiplier: 1
+    axisScale: {x: 1, y: 1}
+  - part: {fileID: 8455400547869863878}
+    distanceMultiplier: 1
+    speedMultiplier: 1
+    axisScale: {x: 1, y: 1}
+  - part: {fileID: 2059786735825066556}
+    distanceMultiplier: 1
+    speedMultiplier: 1
+    axisScale: {x: 1, y: 1}
+  - part: {fileID: 2602586671073056428}
+    distanceMultiplier: 1
+    speedMultiplier: 1
+    axisScale: {x: 1, y: 1}
+  - part: {fileID: 1716839570201625958}
+    distanceMultiplier: 1
+    speedMultiplier: 1
+    axisScale: {x: 1, y: 1}
+  _radius: 0.5
+  _patternAmplitudeRange: {x: 0.4, y: 1}
+  _cycleDurationRange: {x: 2, y: 6}
+  _patternDurationRange: {x: 4, y: 10}
+  _patternBlendDuration: 1.5
+  _patternWeights:
+  - type: 0
+    weight: 1
+  - type: 1
+    weight: 1
+  - type: 2
+    weight: 1
+  - type: 3
+    weight: 1
+  - type: 4
+    weight: 1
+  - type: 5
+    weight: 1
+  _ellipseRatioRange: {x: 0.3, y: 0.7}
+  _noiseStrength: 0.15
+  _noiseFrequency: 0.3
+  _breathingEnabled: 0
+  _breathingStrength: 0.02
+  _breathingDurationRange: {x: 2.5, y: 4}
+  _hitDistanceMultiplier: 1.5
+  _hitSpeedMultiplier: 2
+  _hitFadeDuration: 2
+  _defeatedDistanceMultiplier: 1.5
+  _defeatedSpeedMultiplier: 2
+  _agitationResponse: 8
 --- !u!1 &1139626209114476122
 GameObject:
   m_ObjectHideFlags: 0
@@ -1530,6 +1606,7 @@ MonoBehaviour:
   _hitShakeStrength: 0.3
   _retreatShakeStrength: 0.15
   _shakeVibrato: 20
+  _floatingParts: {fileID: 1144751559473608313}
   _rumbleMinInterval: 15
   _rumbleMaxInterval: 25
   _rumbleDuration: 2
@@ -1542,6 +1619,7 @@ MonoBehaviour:
       Data3: -1225604733
       Data4: 1374336940
     Path: event:/game/general/earthquake
+  _debugPlayerInvulnerable: 0
 --- !u!1001 &521336982224019423
 PrefabInstance:
   m_ObjectHideFlags: 0

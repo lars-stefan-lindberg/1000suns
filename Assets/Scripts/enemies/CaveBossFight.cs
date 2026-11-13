@@ -54,6 +54,8 @@ public class CaveBossFight : MonoBehaviour
     [SerializeField] private float _hitShakeStrength = 0.3f;
     [SerializeField] private float _retreatShakeStrength = 0.15f;
     [SerializeField] private int _shakeVibrato = 20;
+    [Tooltip("Floating heads and body parts. Agitated on hit, kept agitated after defeat. Optional.")]
+    [SerializeField] private CaveBossFloatingParts _floatingParts;
 
     [Header("Rumble")]
     [Tooltip("Seconds between rumbles while fighting.")]
@@ -147,6 +149,7 @@ public class CaveBossFight : MonoBehaviour
         foreach (var tentacle in _attackTentacles) tentacle.Retract();
 
         StartCoroutine(Flash());
+        if (_floatingParts != null) _floatingParts.Agitate();
         Shake(_hitShakeStrength, _hitReactionDuration, false);
         yield return new WaitForSeconds(_hitReactionDuration);
 
@@ -162,6 +165,7 @@ public class CaveBossFight : MonoBehaviour
 
     private IEnumerator Retreat() {
         _state = State.Retreating;
+        if (_floatingParts != null) _floatingParts.SetDefeated();
         foreach (var stage in _stages)
             foreach (var guard in stage.guardTentacles) guard.Retract();
 
