@@ -64,6 +64,10 @@ public class CaveBossFight : MonoBehaviour
     [SerializeField] private float _rumbleShakeFrequency = 1.84f;
     [SerializeField] private EventReference _earthquakeStinger;
 
+    [Header("Debug")]
+    [Tooltip("When on, the boss's tentacles and other kill triggers can't kill the player. Can be toggled in Play Mode.")]
+    [SerializeField] private bool _debugPlayerInvulnerable;
+
     public event Action Defeated;
 
     private State _state = State.Idle;
@@ -83,6 +87,18 @@ public class CaveBossFight : MonoBehaviour
             _originalMaterials[i] = _flashRenderers[i].sharedMaterial;
         _visualStartPosition = _visual.localPosition;
         CaveBossOrb.SetGrabbingEnabled(false);
+        ApplyDebugPlayerInvulnerability();
+    }
+
+    // Lets the debug toggle be changed from the Inspector during Play Mode
+    void OnValidate() {
+        if (Application.isPlaying) ApplyDebugPlayerInvulnerability();
+    }
+
+    // Updates every kill trigger under the boss (guard tentacles, spawned attack tentacles, body)
+    private void ApplyDebugPlayerInvulnerability() {
+        foreach (var killTrigger in GetComponentsInChildren<KillTrigger>(true))
+            killTrigger.CanKillPlayer = !_debugPlayerInvulnerable;
     }
 
     void OnDisable() {
@@ -169,6 +185,8 @@ public class CaveBossFight : MonoBehaviour
         CaveBossAttackTentacle tentacle = Instantiate(_attackTentaclePrefab, root, Quaternion.identity, transform);
         _attackTentacles.RemoveAll(t => t == null);
         _attackTentacles.Add(tentacle);
+        foreach (var killTrigger in tentacle.GetComponentsInChildren<KillTrigger>(true))
+            killTrigger.CanKillPlayer = !_debugPlayerInvulnerable;
         tentacle.Launch(target);
     }
 

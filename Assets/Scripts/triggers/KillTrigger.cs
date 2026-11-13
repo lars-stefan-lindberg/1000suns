@@ -6,8 +6,13 @@ public class KillTrigger : MonoBehaviour
     [SerializeField] private bool _onlyKillPlayer = false;
     public UnityEvent _onKill;
 
+    /// <summary>
+    /// When false the player is ignored by this trigger (e.g. for debugging). Defaults to true.
+    /// </summary>
+    public bool CanKillPlayer { get; set; } = true;
+
     void OnTriggerEnter2D(Collider2D other) {
-        if(other.gameObject.CompareTag("Player")) {
+        if(CanKillPlayer && other.gameObject.CompareTag("Player")) {
             Reaper.obj.KillPlayerGeneric(PlayerManager.obj.GetPlayerTypeFromCollider(other));
             _onKill?.Invoke();
         }
