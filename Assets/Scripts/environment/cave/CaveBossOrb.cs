@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -40,6 +41,11 @@ public class CaveBossOrb : MonoBehaviour
     private static readonly List<CaveBossOrb> _orbs = new List<CaveBossOrb>();
     private static bool _grabbingEnabled;
     public static CaveBossOrb InPlay { get; private set; }
+
+    /// <summary>
+    /// Raised when the orb in play touches a tentacle hazard and resets. Passes the hazard collider that was touched.
+    /// </summary>
+    public static event Action<Collider2D> HitByTentacle;
 
     private Rigidbody2D _rigidBody;
     private Pullable _pullable;
@@ -156,6 +162,7 @@ public class CaveBossOrb : MonoBehaviour
             if (!_pullable.IsPulled) Launch(other.GetComponent<Projectile>().horizontalDirection);
         } else if (CaveBossTentacleChain.IsHazard(other)) {
             ResetOrb();
+            HitByTentacle?.Invoke(other);
         } else if (_isFlying) {
             CaveBossFight boss = other.GetComponentInParent<CaveBossFight>();
             if (boss == null || !boss.IsHurtbox(other)) return;
