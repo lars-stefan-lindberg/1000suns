@@ -85,6 +85,7 @@ public class CaveBossTentacleChain : MonoBehaviour
     float noiseSeed;
     float wiggleWeightTarget;
     float wiggleWeightSpeed;
+    float wiggleSpeedMultiplier = 1f;
     readonly List<Vector2> colliderPoints = new List<Vector2>();
 
     // Hazard colliders of all tentacles, so they can be recognized regardless of hierarchy
@@ -140,6 +141,9 @@ public class CaveBossTentacleChain : MonoBehaviour
         if (fadeTime <= 0f) wiggleWeight = wiggleWeightTarget;
         wiggleWeightSpeed = fadeTime > 0f ? Mathf.Abs(wiggleWeightTarget - wiggleWeight) / fadeTime : 0f;
     }
+
+    // Multiplies how fast the wiggle moves (1 = normal). Safe to change every frame, the wiggle never jumps.
+    public void SetWiggleSpeed(float multiplier) => wiggleSpeedMultiplier = Mathf.Max(0f, multiplier);
 
     void LateUpdate()
     {
@@ -245,7 +249,7 @@ public class CaveBossTentacleChain : MonoBehaviour
         float noiseTime = Time.time * wiggleModulationSpeed;
         float ampMod = 1f + wiggleModulation * (Mathf.PerlinNoise(noiseSeed, noiseTime) * 2f - 1f);
         float freqMod = 1f + wiggleModulation * (Mathf.PerlinNoise(noiseTime, noiseSeed + 53.7f) * 2f - 1f);
-        wigglePhase += Time.deltaTime * wiggleFrequency * frequencyScale * freqMod;
+        wigglePhase += Time.deltaTime * wiggleFrequency * frequencyScale * freqMod * wiggleSpeedMultiplier;
         float amplitude = wiggleAmplitude * amplitudeScale * ampMod * wiggleWeight;
         float phasePerJoint = wigglePhasePerJoint * phasePerJointScale;
 

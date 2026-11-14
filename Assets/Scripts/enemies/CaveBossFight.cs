@@ -22,6 +22,9 @@ public class CaveBossFight : MonoBehaviour
 
     private enum State { Idle, Entering, Fighting, HitReaction, Retreating }
 
+    private const float NormalWiggleSpeed = 1f;
+    private const float MinimumFadeDuration = 0.01f;
+
     [Header("Movement")]
     [Tooltip("Where the boss stops after entering. Only X is used.")]
     [SerializeField] private Transform _fightPosition;
@@ -41,6 +44,14 @@ public class CaveBossFight : MonoBehaviour
     [Header("Static Tentacles")]
     [Tooltip("Tentacles that stay attached to the body. Each target keeps its offset from the body, so the tentacles follow it when it moves.")]
     [SerializeField] private CaveBoss.TentacleSlot[] _tentacles;
+    [Tooltip("Wiggle speed multiplier of the static tentacles at the peak of a hit.")]
+    [SerializeField, Min(0f)] private float _tentacleHitWiggleSpeed = 3f;
+    [Tooltip("Seconds for the hit wiggle to fade back to normal.")]
+    [SerializeField, Min(MinimumFadeDuration)] private float _tentacleHitWiggleFadeDuration = 1.5f;
+    [Tooltip("Wiggle speed multiplier kept from the final hit until the boss despawns.")]
+    [SerializeField, Min(0f)] private float _tentacleDefeatedWiggleSpeed = 3f;
+    [Tooltip("How quickly the wiggle speed reacts to changes. Higher = snappier.")]
+    [SerializeField, Min(0f)] private float _tentacleWiggleResponse = 8f;
 
     [Header("Hurtbox")]
     [Tooltip("Trigger collider the orbs have to hit.")]
@@ -84,6 +95,9 @@ public class CaveBossFight : MonoBehaviour
     private Coroutine _attackRoutine;
     private Coroutine _rumbleRoutine;
     private EventInstance _rumbleInstance;
+    private float _tentacleHitWeight;
+    private bool _isTentacleWiggleDefeated;
+    private float _currentTentacleWiggleSpeed = NormalWiggleSpeed;
 
     private Stage CurrentStage => _stages[Mathf.Min(_hits, _stages.Length - 1)];
 
@@ -102,7 +116,20 @@ public class CaveBossFight : MonoBehaviour
     }
 
     void Update() {
+        UpdateTentacleWiggleSpeed();
         UpdateTentacles();
+    }
+
+    // Fades the hit wiggle spike, holds the defeated speed once set, and applies the smoothed result to the static tentacles
+    private void UpdateTentacleWiggleSpeed() {
+        _tentacleHitWeight = Mathf.Max(0f, _tentacleHitWeight - Time.deltaTime / _tentacleHitWiggleFadeDuration);
+        float targetSpeed = Mathf.Lerp(NormalWiggleSpeed, _tentacleHitWiggleSpeed, Mathf.SmoothStep(0f, 1f, _tentacleHitWeight));
+        if (_isTentacleWiggleDefeated) targetSpeed = Mathf.Max(targetSpeed, _tentacleDefeatedWiggleSpeed);
+        // Smoothed so the wiggle eases into the faster speed instead of snapping
+        float response = 1f - Mathf.Exp(-_tentacleWiggleResponse * Time.deltaTime);
+        _currentTentacleWiggleSpeed = Mathf.Lerp(_currentTentacleWiggleSpeed, targetSpeed, response);
+        foreach (var slot in _tentacles)
+            if (slot.tentacle != null) slot.tentacle.SetWiggleSpeed(_currentTentacleWiggleSpeed);
     }
 
     // Keeps each static tentacle target at its offset from the body and points the tentacle at it
@@ -166,6 +193,10 @@ public class CaveBossFight : MonoBehaviour
         _hits++;
         bool defeated = _hits >= _stages.Length;
         if (defeated) CaveBossOrb.SetGrabbingEnabled(false);
+
+        // The final hit keeps the static tentacles wiggling fast until the boss despawns
+        _tentacleHitWeight = 1f;
+        if (defeated) _isTentacleWiggleDefeated = true;
 
         if (_attackRoutine != null) StopCoroutine(_attackRoutine);
         _attackTentacles.RemoveAll(t => t == null);
