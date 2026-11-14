@@ -5,7 +5,8 @@ using UnityEngine;
 // Magical orb used against CaveBossFight.
 // Dee grabs it with the shadow pull, which puts it "in play" (the other orbs can't be grabbed meanwhile).
 // Released it hangs in the air. While in play, a force push sends it flying horizontally.
-// Hits the boss -> consumed. Touches a tentacle or gets too far to the right -> back to its start position.
+// Hits the boss -> consumed. Touches a tentacle or gets too far to the right -> back to its home position.
+// The home position is fixed by default, or driven by a CaveBossOrbOrbit (the orb then circles while resting).
 // Setup: Rigidbody2D (Kinematic, gravity 0, rotation frozen), a non trigger collider and a Pullable (on this object or a child).
 public class CaveBossOrb : MonoBehaviour
 {
@@ -17,22 +18,22 @@ public class CaveBossOrb : MonoBehaviour
     [SerializeField] private float _deceleration = 20f;
 
     [Header("Reset")]
-    [Tooltip("The orb is reset if it gets this far to the right of its start position.")]
+    [Tooltip("The orb is reset if it gets this far to the right of its home position.")]
     [SerializeField] private float _maxDistanceRight = 15f;
 
     [Header("Return Movement")]
-    [Tooltip("Normal speed (units per second) the orb flies back to its start position when reset.")]
+    [Tooltip("Normal speed (units per second) the orb flies back to its home position when reset.")]
     [SerializeField] private float _returnSpeed = 10f;
     [Tooltip("Speed (units per second) right after the orb is touched, easing into the normal return speed.")]
     [SerializeField] private float _returnBurstSpeed = 22f;
     [Tooltip("Distance (units) over which the burst speed eases into the normal return speed.")]
     [SerializeField] private float _returnBurstDistance = 3f;
-    [Tooltip("Distance (units) from the start position where the orb starts slowing down.")]
+    [Tooltip("Distance (units) from the home position where the orb starts slowing down.")]
     [SerializeField] private float _returnSlowdownDistance = 1.5f;
-    [Tooltip("Speed (units per second) the orb has slowed down to when it reaches the start position.")]
+    [Tooltip("Speed (units per second) the orb has slowed down to when it reaches the home position.")]
     [SerializeField] private float _returnArrivalSpeed = 4f;
 
-    // Distance at which the returning orb snaps to its start position
+    // Distance at which the returning orb snaps to its home position
     private const float ReturnArrivalThreshold = 0.01f;
     // Lower bound for the return speed so a misconfigured arrival speed can't leave the orb stuck
     private const float MinReturnSpeed = 0.5f;
@@ -50,7 +51,9 @@ public class CaveBossOrb : MonoBehaviour
     private Rigidbody2D _rigidBody;
     private Pullable _pullable;
     private Collider2D[] _colliders;
-    private Vector2 _startPosition;
+    private Vector2 _homePosition;
+    // Speed (units per second) the home position currently moves at, added to the return speed so a moving home can be caught
+    private float _homeSpeed;
     private bool _wasPulled;
     private bool _isFlying;
     private float _flyStartX;
@@ -59,6 +62,12 @@ public class CaveBossOrb : MonoBehaviour
     private Vector2 _returnFromPosition;
 
     private bool IsInPlay => InPlay == this;
+
+    /// <summary>
+    /// True while the orb rests at its home position: not in play, not grabbed, not flying and not returning.
+    /// </summary>
+    public bool IsResting => !_isReturning && !IsInPlay && !_isFlying && !_pullable.IsPulled
+        && _rigidBody.bodyType == RigidbodyType2D.Kinematic;
 
     public static void SetGrabbingEnabled(bool enabled) {
         _grabbingEnabled = enabled;
@@ -78,7 +87,7 @@ public class CaveBossOrb : MonoBehaviour
         _rigidBody = GetComponent<Rigidbody2D>();
         _pullable = GetComponentInChildren<Pullable>();
         _colliders = GetComponentsInChildren<Collider2D>();
-        _startPosition = _rigidBody.position;
+        _homePosition = _rigidBody.position;
         _rigidBody.gravityScale = 0f;
         // Kinematic bodies need this to get trigger callbacks from the boss hurtbox and tentacle colliders
         _rigidBody.useFullKinematicContacts = true;
@@ -95,15 +104,33 @@ public class CaveBossOrb : MonoBehaviour
         if (IsInPlay) SetInPlay(null);
         // Complete an interrupted return instantly so the orb isn't left without colliders
         if (_isReturning) {
-            _rigidBody.position = _startPosition;
-            transform.position = new Vector3(_startPosition.x, _startPosition.y, transform.position.z);
+            TeleportTo(_homePosition);
             FinishReturn();
         }
     }
 
+    /// <summary>
+    /// Instantly moves the home position, and the orb itself if it's resting. Use for the initial placement.
+    /// </summary>
+    public void SnapToHomePosition(Vector2 homePosition) {
+        _homePosition = homePosition;
+        _homeSpeed = 0f;
+        if (IsResting) TeleportTo(homePosition);
+    }
+
+    /// <summary>
+    /// Moves the home position. A resting orb follows it, a returning orb flies towards its new location.
+    /// Call once per FixedUpdate so the home movement speed can be tracked.
+    /// </summary>
+    public void FollowHomePosition(Vector2 homePosition) {
+        _homeSpeed = Vector2.Distance(_homePosition, homePosition) / Time.fixedDeltaTime;
+        _homePosition = homePosition;
+        if (IsResting) _rigidBody.MovePosition(homePosition);
+    }
+
     void FixedUpdate() {
         if (_isReturning) {
-            ReturnToStart();
+            ReturnToHome();
             return;
         }
 
@@ -118,7 +145,7 @@ public class CaveBossOrb : MonoBehaviour
             if (_rigidBody.velocity == Vector2.zero) Hang();
         }
 
-        if (IsInPlay && _rigidBody.position.x > _startPosition.x + _maxDistanceRight)
+        if (IsInPlay && _rigidBody.position.x > _homePosition.x + _maxDistanceRight)
             ResetOrb();
     }
 
@@ -172,7 +199,7 @@ public class CaveBossOrb : MonoBehaviour
     }
 
     /// <summary>
-    /// Takes the orb out of play and makes it fly back to its start position at the return speed.
+    /// Takes the orb out of play and makes it fly back to its home position at the return speed.
     /// The orb can't be grabbed until it has arrived.
     /// </summary>
     public void ResetOrb() {
@@ -187,23 +214,23 @@ public class CaveBossOrb : MonoBehaviour
         SetInPlay(null);
     }
 
-    // Moves the kinematic body towards the start position, finishing the reset on arrival
-    private void ReturnToStart() {
+    // Moves the kinematic body towards the (possibly moving) home position, finishing the reset on arrival
+    private void ReturnToHome() {
         float speed = GetReturnSpeed();
-        Vector2 nextPosition = Vector2.MoveTowards(_rigidBody.position, _startPosition, speed * Time.fixedDeltaTime);
-        if (Vector2.Distance(nextPosition, _startPosition) <= ReturnArrivalThreshold) {
-            _rigidBody.position = _startPosition;
-            transform.position = new Vector3(_startPosition.x, _startPosition.y, transform.position.z);
+        Vector2 nextPosition = Vector2.MoveTowards(_rigidBody.position, _homePosition, speed * Time.fixedDeltaTime);
+        if (Vector2.Distance(nextPosition, _homePosition) <= ReturnArrivalThreshold) {
+            TeleportTo(_homePosition);
             FinishReturn();
             return;
         }
         _rigidBody.MovePosition(nextPosition);
     }
 
-    // Burst speed easing into the normal speed after leaving, then easing down to the arrival speed near the start position
+    // Burst speed easing into the normal speed after leaving, then easing down to the arrival speed near the home position.
+    // The home movement speed is added on top so the orb always closes in on a moving home.
     private float GetReturnSpeed() {
         float travelledDistance = Vector2.Distance(_returnFromPosition, _rigidBody.position);
-        float remainingDistance = Vector2.Distance(_rigidBody.position, _startPosition);
+        float remainingDistance = Vector2.Distance(_rigidBody.position, _homePosition);
 
         float burstProgress = _returnBurstDistance > 0f ? Mathf.Clamp01(travelledDistance / _returnBurstDistance) : 1f;
         float speed = Mathf.Lerp(_returnBurstSpeed, _returnSpeed, Mathf.SmoothStep(0f, 1f, burstProgress));
@@ -213,15 +240,20 @@ public class CaveBossOrb : MonoBehaviour
             speed = Mathf.Lerp(speed, _returnArrivalSpeed, Mathf.SmoothStep(0f, 1f, slowdownProgress));
         }
 
-        // Never stall before reaching the start position
-        return Mathf.Max(speed, MinReturnSpeed);
+        // Never stall before reaching the home position
+        return Mathf.Max(speed, MinReturnSpeed) + _homeSpeed;
     }
 
-    // Restores collisions and grabbing once the orb is back at its start position
+    // Restores collisions and grabbing once the orb is back at its home position
     private void FinishReturn() {
         _isReturning = false;
         SetCollidersEnabled(true);
         UpdateGrabbable();
+    }
+
+    private void TeleportTo(Vector2 position) {
+        _rigidBody.position = position;
+        transform.position = new Vector3(position.x, position.y, transform.position.z);
     }
 
     private void SetCollidersEnabled(bool enabled) {
