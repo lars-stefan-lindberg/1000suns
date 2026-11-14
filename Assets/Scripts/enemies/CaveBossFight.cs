@@ -38,6 +38,10 @@ public class CaveBossFight : MonoBehaviour
     [Tooltip("Attack tentacles spawn at this X (inside the body), at the target's Y.")]
     [SerializeField] private Transform _attackRoot;
 
+    [Header("Static Tentacles")]
+    [Tooltip("Tentacles that stay attached to the body. Each target keeps its offset from the body, so the tentacles follow it when it moves.")]
+    [SerializeField] private CaveBoss.TentacleSlot[] _tentacles;
+
     [Header("Hurtbox")]
     [Tooltip("Trigger collider the orbs have to hit.")]
     [SerializeField] private Collider2D _hurtbox;
@@ -88,8 +92,27 @@ public class CaveBossFight : MonoBehaviour
         for (int i = 0; i < _flashRenderers.Length; i++)
             _originalMaterials[i] = _flashRenderers[i].sharedMaterial;
         _visualStartPosition = _visual.localPosition;
+
+        Vector2 body = transform.position;
+        foreach (var slot in _tentacles)
+            if (slot.target != null) slot.offset = (Vector2)slot.target.position - body;
+
         CaveBossOrb.SetGrabbingEnabled(false);
         ApplyDebugPlayerInvulnerability();
+    }
+
+    void Update() {
+        UpdateTentacles();
+    }
+
+    // Keeps each static tentacle target at its offset from the body and points the tentacle at it
+    private void UpdateTentacles() {
+        Vector2 body = transform.position;
+        foreach (var slot in _tentacles) {
+            if (slot.target == null) continue;
+            slot.target.position = new Vector3(body.x + slot.offset.x, body.y + slot.offset.y, slot.target.position.z);
+            if (slot.tentacle != null) slot.tentacle.SetTarget(slot.target.position);
+        }
     }
 
     // Lets the debug toggle be changed from the Inspector during Play Mode
@@ -242,6 +265,8 @@ public class CaveBossFight : MonoBehaviour
 
     private void SetX(float x) {
         transform.position = new Vector3(x, transform.position.y, transform.position.z);
+        // Movement runs in coroutines after Update, so refresh the targets right away
+        UpdateTentacles();
     }
 
     // Only counts down while fighting
