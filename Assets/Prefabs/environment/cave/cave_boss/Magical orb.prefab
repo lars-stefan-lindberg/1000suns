@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 5512837460192837461}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.125, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -73,7 +73,7 @@ SpriteRenderer:
   m_SortingLayerID: 326891353
   m_SortingLayer: -1
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: bf0fb1c3e0497481cb129d83dce5c2af, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 01b8da641bd084bb28e4066ab9e8660e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -84,6 +84,117 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &6933283414254571942
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6372461857496182164}
+  - component: {fileID: 9209356577505810792}
+  - component: {fileID: 6099032748330943579}
+  m_Layer: 11
+  m_Name: Collider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6372461857496182164
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6933283414254571942}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.0625, y: 0.0625, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1609027920671926814}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9209356577505810792
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6933283414254571942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8474e85f645694566bc60157c22c639b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rigidBody: {fileID: 8204094657485725088}
+  _pullForce: 1
+  _isHeavy: 0
+  _renderer: {fileID: 4620307036853852358}
+  _outlineFadeSpeed: 0.5
+  _glowFadeSpeed: 0.5
+  _useSineGlowFade: 0
+  _heldParticles: {fileID: 0}
+  _grabbedSfx:
+    Guid:
+      Data1: 604283001
+      Data2: 1340815147
+      Data3: -1417714812
+      Data4: -1933988614
+    Path: event:/game/general/floating_platform_impact
+  _shakeDistance: 0.1
+  _shakeDuration: 0.2
+  _shakeVibrato: 10
+  _maxBrightness: 2
+  _pulseFrequency: 1
+  IsImmune: 0
+--- !u!61 &6099032748330943579
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6933283414254571942}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 6200000, guid: adaf2fe0281eb491281a7cffd2c8734c, type: 2}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 0.875, y: 0.875}
+  m_EdgeRadius: 0
 --- !u!1 &7847559532160945043
 GameObject:
   m_ObjectHideFlags: 0
@@ -95,8 +206,6 @@ GameObject:
   - component: {fileID: 1609027920671926814}
   - component: {fileID: 8204094657485725088}
   - component: {fileID: 445957030835981542}
-  - component: {fileID: 3389125087077973971}
-  - component: {fileID: 7272862412741547632}
   m_Layer: 11
   m_Name: Magical orb
   m_TagString: Untagged
@@ -118,6 +227,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2290375610934851275}
+  - {fileID: 6372461857496182164}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &8204094657485725088
@@ -168,71 +278,3 @@ MonoBehaviour:
   _returnBurstDistance: 6
   _returnSlowdownDistance: 4
   _returnArrivalSpeed: 3
---- !u!58 &3389125087077973971
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7847559532160945043}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  serializedVersion: 2
-  m_Radius: 0.5
---- !u!114 &7272862412741547632
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7847559532160945043}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8474e85f645694566bc60157c22c639b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _rigidBody: {fileID: 8204094657485725088}
-  _pullForce: 1
-  _isHeavy: 0
-  _renderer: {fileID: 4620307036853852358}
-  _outlineFadeSpeed: 0.5
-  _glowFadeSpeed: 0.5
-  _useSineGlowFade: 0
-  _heldParticles: {fileID: 0}
-  _grabbedSfx:
-    Guid:
-      Data1: 604283001
-      Data2: 1340815147
-      Data3: -1417714812
-      Data4: -1933988614
-    Path: event:/game/general/floating_platform_impact
-  _shakeDistance: 0.1
-  _shakeDuration: 0.2
-  _shakeVibrato: 10
-  _maxBrightness: 2
-  _pulseFrequency: 1
-  IsImmune: 0
