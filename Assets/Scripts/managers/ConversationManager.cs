@@ -15,6 +15,11 @@ public class ConversationManager : MonoBehaviour
     [SerializeField] private bool _duckMusic = true;
     private int currentDialogueIndex = 0;
 
+    /// <summary>
+    /// True when at least one dialogue is assigned. StartConversation on an empty list never raises OnConversationEnd.
+    /// </summary>
+    public bool HasDialogue => conversationList != null && conversationList.Count > 0;
+
     void OnEnable()
     {
         if (_dialogueController != null)
