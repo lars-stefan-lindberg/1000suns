@@ -16,6 +16,8 @@ public class Cave66RoomManager : MonoBehaviour
     // Used for "no stage" when only grounds of one stage should move, like before the first stage
     private const int NoStageIndex = -1;
     private const float DefaultGroundRumbleLingerDuration = 0.75f;
+    private const float DefaultForcePushHitRadiusMultiplier = 2f;
+    private const float MinForcePushHitRadiusMultiplier = 1f;
 
     [SerializeField] private GameEventId _bossFightStarted;
     [SerializeField] private GameEventId _bossDefeated;
@@ -37,8 +39,11 @@ public class Cave66RoomManager : MonoBehaviour
     [SerializeField] private StageGrounds[] _stageGrounds;
     [Tooltip("Seconds the boss rumble keeps going after the moveable grounds have arrived. The fight continues right away.")]
     [SerializeField, Min(0f)] private float _groundRumbleLingerDuration = DefaultGroundRumbleLingerDuration;
+    [Tooltip("Multiplies Eli's force push projectile hit radius while the fight is active, so the orbs are easier to hit. 1 = normal size.")]
+    [SerializeField, Min(MinForcePushHitRadiusMultiplier)] private float _forcePushHitRadiusMultiplier = DefaultForcePushHitRadiusMultiplier;
 
     private bool _isStarted;
+    private bool _isForcePushHitRadiusIncreased;
     private Coroutine _stopGroundRumbleRoutine;
 
     void Start() {
@@ -63,6 +68,7 @@ public class Cave66RoomManager : MonoBehaviour
             // Dying resets the fight to the first stage, which starts right away, so its grounds are already in place
             foreach(var ground in GetStageGrounds(FirstStageIndex))
                 ground.Spawn(MoveableGround.Position.End);
+            IncreaseForcePushHitRadius();
             _boss.StartFighting(_resumeDelay);
         }
     }
@@ -86,6 +92,7 @@ public class Cave66RoomManager : MonoBehaviour
         // The first stage's grounds move in after the boss has entered, and are in place before it attacks
         yield return ChangeStageGrounds(NoStageIndex, FirstStageIndex);
         PlayerManager.obj.UnfreezePlayer(activePlayerType);
+        IncreaseForcePushHitRadius();
         _boss.StartFighting(_firstAttackDelay);
 
         GameManager.obj.SetCurrentSpawnPointId(_bossSpawnPoint.SpawnPointID);
@@ -111,6 +118,7 @@ public class Cave66RoomManager : MonoBehaviour
 
     // The boss despawns itself after the retreat
     private void EndFight() {
+        RestoreForcePushHitRadius();
         HideFightObjects();
         GameManager.obj.RegisterEvent(_bossDefeated);
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
@@ -182,6 +190,27 @@ public class Cave66RoomManager : MonoBehaviour
         if(_stageGrounds == null || stageIndex < 0 || stageIndex >= _stageGrounds.Length || _stageGrounds[stageIndex].grounds == null)
             return Array.Empty<MoveableGround>();
         return _stageGrounds[stageIndex].grounds.Where(ground => ground != null).ToArray();
+    }
+
+    // ProjectileManager is persistent, so the bigger hit radius must not outlive this room (death reloads, leaving the room)
+    void OnDestroy() {
+        RestoreForcePushHitRadius();
+    }
+
+    private void IncreaseForcePushHitRadius() {
+        if(ProjectileManager.obj == null)
+            return;
+        ProjectileManager.obj.SetHitRadiusMultiplier(_forcePushHitRadiusMultiplier);
+        _isForcePushHitRadiusIncreased = true;
+    }
+
+    // Only restores what this room changed, so an adjacent-room instance never resets another room's setting
+    private void RestoreForcePushHitRadius() {
+        if(!_isForcePushHitRadiusIncreased)
+            return;
+        _isForcePushHitRadiusIncreased = false;
+        if(ProjectileManager.obj != null)
+            ProjectileManager.obj.ResetHitRadiusMultiplier();
     }
 
     private void HideFightObjects() {

@@ -31,6 +31,14 @@ public class Projectile : MonoBehaviour
         Invoke(nameof(StopAndDestroy), maxTravelTime);
     }
 
+    /// <summary>
+    /// Scales the trigger collider's radius (not the visuals), making the projectile easier to land. Call before Shoot.
+    /// </summary>
+    public void ScaleHitRadius(float multiplier)
+    {
+        _collider.radius *= multiplier;
+    }
+
     public void Shoot(int horizontalDirection, float power, bool isPoweredUp)
     {
         this.power = power;
