@@ -18,12 +18,21 @@ public class CaveBossFight : MonoBehaviour
         public CaveBossGuardTentacle[] guardTentacles;
         [Min(0.1f)] public float minAttackInterval = 3f;
         [Min(0.1f)] public float maxAttackInterval = 5f;
+        [Tooltip("Optional, together with Attack Range Max Y. Lowest Y attack tentacles can spawn at during this stage. " +
+                 "Targets outside the range are attacked at this Y.")]
+        public Transform attackRangeMinY;
+        [Tooltip("Optional, together with Attack Range Min Y. Highest Y attack tentacles can spawn at during this stage.")]
+        public Transform attackRangeMaxY;
+
+        public bool HasAttackRange => attackRangeMinY != null && attackRangeMaxY != null;
     }
 
     private enum State { Idle, Entering, Fighting, HitReaction, Retreating }
 
     private const float NormalWiggleSpeed = 1f;
     private const float MinimumFadeDuration = 0.01f;
+    // The continuous rumble re-applies a camera shake of this length every frame, so it stops shortly after the rumble is stopped
+    private const float ContinuousRumbleShakeRefreshDuration = 0.1f;
 
     [Header("Movement")]
     [Tooltip("Where the boss stops after entering. Only X is used.")]
@@ -86,6 +95,8 @@ public class CaveBossFight : MonoBehaviour
     [SerializeField] private bool _debugPlayerInvulnerable;
 
     public event Action Defeated;
+    // Invoked with the index of the stage that just ended, when the boss takes a hit (also for the final hit)
+    public event Action<int> StageCleared;
 
     private State _state = State.Idle;
     private int _hits;
@@ -95,6 +106,9 @@ public class CaveBossFight : MonoBehaviour
     private Coroutine _attackRoutine;
     private Coroutine _rumbleRoutine;
     private EventInstance _rumbleInstance;
+    private Coroutine _continuousRumbleRoutine;
+    private EventInstance _continuousRumbleInstance;
+    private bool _isStageStartHeld;
     private float _tentacleHitWeight;
     private bool _isTentacleWiggleDefeated;
     private float _currentTentacleWiggleSpeed = NormalWiggleSpeed;
@@ -155,6 +169,7 @@ public class CaveBossFight : MonoBehaviour
 
     void OnDisable() {
         AudioUtils.SafeStop(ref _rumbleInstance);
+        StopContinuousRumble();
     }
 
     void OnDestroy() {
@@ -188,11 +203,58 @@ public class CaveBossFight : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// Keeps the next stage from starting, and the boss from attacking, after the current hit reaction until ReleaseStageStart is called.
+    /// Call it from StageCleared, e.g. while the room changes for the next stage.
+    /// </summary>
+    public void HoldStageStart() {
+        _isStageStartHeld = true;
+    }
+
+    /// <summary>Lets the next stage start after HoldStageStart. Starts right away if the hit reaction is already over.</summary>
+    public void ReleaseStageStart() {
+        _isStageStartHeld = false;
+    }
+
+    /// <summary>Starts the rumble (camera shake and earthquake sound) and keeps it going until StopContinuousRumble is called.</summary>
+    public void StartContinuousRumble() {
+        if (_continuousRumbleRoutine != null) return;
+        _continuousRumbleInstance = SoundFXManager.obj.CreateAttachedInstance(_earthquakeStinger, gameObject);
+        _continuousRumbleRoutine = StartCoroutine(ContinuousRumble());
+    }
+
+    /// <summary>Stops the rumble started with StartContinuousRumble. The camera shake ends shortly after and the sound fades out.</summary>
+    public void StopContinuousRumble() {
+        if (_continuousRumbleRoutine != null) {
+            StopCoroutine(_continuousRumbleRoutine);
+            _continuousRumbleRoutine = null;
+        }
+        AudioUtils.SafeStop(ref _continuousRumbleInstance);
+    }
+
+    private IEnumerator ContinuousRumble() {
+        _continuousRumbleInstance.start();
+        bool hasSoundStartedPlaying = false;
+        while (true) {
+            CameraShakeManager.obj.ShakeCamera(_rumbleShakeAmplitude, _rumbleShakeFrequency, ContinuousRumbleShakeRefreshDuration);
+            // Restarts the sound if it's a one-shot that ended before the rumble was stopped.
+            // Only once it has been playing, since the playback state can still read as stopped on the frames right after start
+            bool isSoundPlaying = AudioUtils.IsPlaying(_continuousRumbleInstance);
+            if (isSoundPlaying) hasSoundStartedPlaying = true;
+            else if (hasSoundStartedPlaying) {
+                _continuousRumbleInstance.start();
+                hasSoundStartedPlaying = false;
+            }
+            yield return null;
+        }
+    }
+
     private IEnumerator HitReaction() {
         _state = State.HitReaction;
         _hits++;
         bool defeated = _hits >= _stages.Length;
         if (defeated) CaveBossOrb.SetGrabbingEnabled(false);
+        StageCleared?.Invoke(_hits - 1);
 
         // The final hit keeps the static tentacles wiggling fast until the boss despawns
         _tentacleHitWeight = 1f;
@@ -211,6 +273,9 @@ public class CaveBossFight : MonoBehaviour
             yield return Retreat();
             yield break;
         }
+
+        while (_isStageStartHeld)
+            yield return null;
 
         ActivateStage(_hits);
         _state = State.Fighting;
@@ -238,7 +303,7 @@ public class CaveBossFight : MonoBehaviour
     }
 
     private void SpawnAttack() {
-        Vector2 target = GetAttackTarget();
+        Vector2 target = ApplyAttackRange(GetAttackTarget());
         Vector3 root = new Vector3(_attackRoot.position.x, target.y, _attackRoot.position.z);
         CaveBossAttackTentacle tentacle = Instantiate(_attackTentaclePrefab, root, Quaternion.identity, transform);
         _attackTentacles.RemoveAll(t => t == null);
@@ -254,6 +319,17 @@ public class CaveBossFight : MonoBehaviour
         Transform player = PlayerManager.obj.GetPlayerTransform(PlayerManager.obj.GetActivePlayerType());
         Collider2D collider = player.GetComponent<Collider2D>();
         return collider != null ? (Vector2)collider.bounds.center : (Vector2)player.position;
+    }
+
+    // Keeps the target if it's within the current stage's attack range, otherwise attacks at the bottom of the range.
+    // Only the height is limited, the tentacle still lunges towards the target's X.
+    private Vector2 ApplyAttackRange(Vector2 target) {
+        Stage stage = CurrentStage;
+        if (!stage.HasAttackRange) return target;
+        float minY = Mathf.Min(stage.attackRangeMinY.position.y, stage.attackRangeMaxY.position.y);
+        float maxY = Mathf.Max(stage.attackRangeMinY.position.y, stage.attackRangeMaxY.position.y);
+        if (target.y >= minY && target.y <= maxY) return target;
+        return new Vector2(target.x, minY);
     }
 
     private float GetAttackInterval() {
