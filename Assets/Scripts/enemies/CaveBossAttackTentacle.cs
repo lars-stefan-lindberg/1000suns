@@ -52,12 +52,12 @@ public class CaveBossAttackTentacle : MonoBehaviour
     }
 
     /// <summary>
-    /// Starts the attack towards the given point. The lunge keeps the target's height and overshoots it horizontally,
-    /// unless the player or an orb is hit first.
+    /// Starts the attack towards the given point. The lunge keeps the target's height and, if overshoot is on,
+    /// continues Lunge Overshoot past it horizontally. It stops early if the player or an orb is hit first.
     /// </summary>
-    public void Launch(Vector2 target) {
+    public void Launch(Vector2 target, bool overshoot = true) {
         _chain.SetWiggle(0f, 0f);
-        _routine = StartCoroutine(Attack(target));
+        _routine = StartCoroutine(Attack(target, overshoot ? _lungeOvershoot : 0f));
     }
 
     // Aborts the attack and pulls back from wherever the tip is
@@ -67,12 +67,12 @@ public class CaveBossAttackTentacle : MonoBehaviour
         _routine = StartCoroutine(RetractAndDespawn());
     }
 
-    private IEnumerator Attack(Vector2 target) {
+    private IEnumerator Attack(Vector2 target, float overshootDistance) {
         Vector2 root = transform.position;
         Vector2 toTarget = target - root;
         Vector2 poke = root + Vector2.ClampMagnitude(toTarget, _telegraphDistance);
         float lungeDirection = Mathf.Sign(toTarget.x);
-        Vector2 lungeEnd = new Vector2(target.x + lungeDirection * _lungeOvershoot, target.y);
+        Vector2 lungeEnd = new Vector2(target.x + lungeDirection * overshootDistance, target.y);
 
         yield return MoveTip(poke, _pokeSpeed);
         _chain.SetWiggle(_telegraphWiggle, _wiggleFadeDuration);

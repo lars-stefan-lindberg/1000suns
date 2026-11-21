@@ -35,7 +35,8 @@ public class Cave66RoomManager : MonoBehaviour
     [Tooltip("Seconds before the first attack when respawning mid fight.")]
     [SerializeField] private float _resumeDelay = 2f;
     [Tooltip("Moveable grounds per boss stage (element index = stage, which is the number of hits the boss has taken). " +
-             "Inactive at room start, moved from start to end position when the stage starts, and back to start position and despawned when it ends.")]
+             "Inactive at room start, moved from start to end position when the stage starts, and back to start position and despawned when it ends. " +
+             "A ground assigned to consecutive stages stays up until the last of them ends.")]
     [SerializeField] private StageGrounds[] _stageGrounds;
     [Tooltip("Seconds the boss rumble keeps going after the moveable grounds have arrived. The fight continues right away.")]
     [SerializeField, Min(0f)] private float _groundRumbleLingerDuration = DefaultGroundRumbleLingerDuration;
@@ -139,9 +140,12 @@ public class Cave66RoomManager : MonoBehaviour
 
     // Moves the outgoing stage's grounds to their start position and despawns them, and spawns the incoming stage's grounds
     // at their start position and moves them to their end position. The boss rumbles until all grounds have arrived.
+    // Grounds assigned to both stages stay where they are, so a ground can be kept up over several stages.
     private IEnumerator ChangeStageGrounds(int outgoingStageIndex, int incomingStageIndex) {
-        MoveableGround[] outgoingGrounds = GetStageGrounds(outgoingStageIndex);
-        MoveableGround[] incomingGrounds = GetStageGrounds(incomingStageIndex);
+        MoveableGround[] outgoingStageGrounds = GetStageGrounds(outgoingStageIndex);
+        MoveableGround[] incomingStageGrounds = GetStageGrounds(incomingStageIndex);
+        MoveableGround[] outgoingGrounds = outgoingStageGrounds.Except(incomingStageGrounds).ToArray();
+        MoveableGround[] incomingGrounds = incomingStageGrounds.Except(outgoingStageGrounds).ToArray();
         if(outgoingGrounds.Length == 0 && incomingGrounds.Length == 0)
             yield break;
 

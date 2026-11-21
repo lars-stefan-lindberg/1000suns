@@ -7,9 +7,15 @@ using UnityEngine;
 // Released it hangs in the air. While in play, a force push sends it flying horizontally.
 // Hits the boss -> consumed. Touches a tentacle or gets too far to the right -> back to its home position.
 // The home position is fixed by default, or driven by a CaveBossOrbOrbit (the orb then circles while resting).
+// A reserve orb (e.g. the big orb for the final stage) can't be grabbed until all regular orbs are used up and
+// UnlockReserveOrbsIfRegularOrbsUsedUp is called.
 // Setup: Rigidbody2D (Kinematic, gravity 0, rotation frozen), a non trigger collider and a Pullable (on this object or a child).
 public class CaveBossOrb : MonoBehaviour
 {
+    [Header("Reserve")]
+    [Tooltip("Locked (can't be grabbed) until all regular orbs have been used up and the boss unlocks it, e.g. the big orb for the final stage.")]
+    [SerializeField] private bool _isReserve;
+
     [Header("Push")]
     [Tooltip("Horizontal distance the orb flies when force pushed.")]
     [SerializeField] private float _flyDistance = 8f;
@@ -60,8 +66,10 @@ public class CaveBossOrb : MonoBehaviour
     private int _flyDirection;
     private bool _isReturning;
     private Vector2 _returnFromPosition;
+    private bool _isReserveUnlocked;
 
     private bool IsInPlay => InPlay == this;
+    private bool IsLocked => _isReserve && !_isReserveUnlocked;
 
     /// <summary>
     /// True while the orb rests at its home position: not in play, not grabbed, not flying and not returning.
@@ -74,13 +82,27 @@ public class CaveBossOrb : MonoBehaviour
         foreach (var orb in _orbs) orb.UpdateGrabbable();
     }
 
+    /// <summary>
+    /// Unlocks the reserve orbs if no regular orb is left (consumed orbs are disabled and no longer count).
+    /// Returns true if the reserve orbs are unlocked after the call.
+    /// </summary>
+    public static bool UnlockReserveOrbsIfRegularOrbsUsedUp() {
+        foreach (var orb in _orbs)
+            if (!orb._isReserve) return false;
+        foreach (var orb in _orbs) {
+            orb._isReserveUnlocked = true;
+            orb.UpdateGrabbable();
+        }
+        return true;
+    }
+
     private static void SetInPlay(CaveBossOrb orb) {
         InPlay = orb;
         foreach (var other in _orbs) other.UpdateGrabbable();
     }
 
     private void UpdateGrabbable() {
-        if (!IsInPlay) _pullable.SetImmune(_isReturning || !_grabbingEnabled || InPlay != null);
+        if (!IsInPlay) _pullable.SetImmune(_isReturning || IsLocked || !_grabbingEnabled || InPlay != null);
     }
 
     void Awake() {

@@ -1581,12 +1581,23 @@ MonoBehaviour:
   - guardTentacles: []
     minAttackInterval: 3
     maxAttackInterval: 5
+    attackRangeMinY: {fileID: 0}
+    attackRangeMaxY: {fileID: 0}
   - guardTentacles: []
     minAttackInterval: 3
     maxAttackInterval: 5
+    attackRangeMinY: {fileID: 0}
+    attackRangeMaxY: {fileID: 0}
   - guardTentacles: []
     minAttackInterval: 3
     maxAttackInterval: 5
+    attackRangeMinY: {fileID: 0}
+    attackRangeMaxY: {fileID: 0}
+  - guardTentacles: []
+    minAttackInterval: 3
+    maxAttackInterval: 5
+    attackRangeMinY: {fileID: 0}
+    attackRangeMaxY: {fileID: 0}
   _attackTentaclePrefab: {fileID: 4051289694620931093, guid: 302e59aaa7add4ce5be05fb9e0a0e45d, type: 3}
   _attackRoot: {fileID: 3139378120458841760}
   _tentacles:
@@ -1604,6 +1615,10 @@ MonoBehaviour:
     target: {fileID: 5915988766196953651}
   - tentacle: {fileID: 3018177699578986393}
     target: {fileID: 3759839028469042302}
+  _tentacleHitWiggleSpeed: 3
+  _tentacleHitWiggleFadeDuration: 1.5
+  _tentacleDefeatedWiggleSpeed: 3
+  _tentacleWiggleResponse: 8
   _hurtbox: {fileID: 4101398644746029139}
   _visual: {fileID: 4991310613664485506}
   _flashRenderers:

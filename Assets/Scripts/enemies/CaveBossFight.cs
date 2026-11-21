@@ -24,8 +24,21 @@ public class CaveBossFight : MonoBehaviour
         [Tooltip("Optional, together with Attack Range Min Y. Highest Y attack tentacles can spawn at during this stage.")]
         public Transform attackRangeMaxY;
 
+        [Header("Fixed Attacks (optional)")]
+        [Tooltip("When set, the attack tentacles spawn at these positions instead of aiming at the player or the orb in play. " +
+                 "One attack per interval, in this order, looping. The order restarts with the first position when the stage starts.")]
+        public Transform[] fixedAttackPositions;
+        [Tooltip("Distance (world units) the fixed attack tentacles lunge to the right from their position.")]
+        [Min(0.1f)] public float fixedAttackLength = DefaultFixedAttackLength;
+        [Tooltip("Seconds between two fixed attacks. Replaces Min/Max Attack Interval while fixed attacks are used.")]
+        [Min(0.1f)] public float fixedAttackInterval = DefaultFixedAttackInterval;
+
         public bool HasAttackRange => attackRangeMinY != null && attackRangeMaxY != null;
+        public bool HasFixedAttacks => fixedAttackPositions != null && fixedAttackPositions.Length > 0;
     }
+
+    private const float DefaultFixedAttackLength = 12f;
+    private const float DefaultFixedAttackInterval = 2f;
 
     private enum State { Idle, Entering, Fighting, HitReaction, Retreating }
 
@@ -43,7 +56,7 @@ public class CaveBossFight : MonoBehaviour
     [SerializeField] private float _retreatDistance = 15f;
 
     [Header("Stages (index = hits taken)")]
-    [SerializeField] private Stage[] _stages = new Stage[3];
+    [SerializeField] private Stage[] _stages = new Stage[4];
 
     [Header("Attack")]
     [SerializeField] private CaveBossAttackTentacle _attackTentaclePrefab;
@@ -294,23 +307,44 @@ public class CaveBossFight : MonoBehaviour
         Destroy(gameObject);
     }
 
+    // Restarted for every stage, so fixed attacks always begin with the stage's first position
     private IEnumerator AttackLoop(float firstDelay) {
         yield return new WaitForSeconds(firstDelay);
+        int fixedAttackIndex = 0;
         while (true) {
-            SpawnAttack();
+            Stage stage = CurrentStage;
+            if (stage.HasFixedAttacks) {
+                SpawnFixedAttack(stage, stage.fixedAttackPositions[fixedAttackIndex % stage.fixedAttackPositions.Length]);
+                fixedAttackIndex++;
+            } else {
+                SpawnAimedAttack();
+            }
             yield return new WaitForSeconds(GetAttackInterval());
         }
     }
 
-    private void SpawnAttack() {
+    // Attacks the orb in play or the player, from inside the body at the target's height
+    private void SpawnAimedAttack() {
         Vector2 target = ApplyAttackRange(GetAttackTarget());
         Vector3 root = new Vector3(_attackRoot.position.x, target.y, _attackRoot.position.z);
+        SpawnAttackTentacle(root, target, true);
+    }
+
+    // Attacks straight to the right from a fixed position, with a fixed length and no overshoot
+    private void SpawnFixedAttack(Stage stage, Transform attackPosition) {
+        if (attackPosition == null) return;
+        Vector3 root = attackPosition.position;
+        Vector2 target = (Vector2)root + Vector2.right * stage.fixedAttackLength;
+        SpawnAttackTentacle(root, target, false);
+    }
+
+    private void SpawnAttackTentacle(Vector3 root, Vector2 target, bool overshoot) {
         CaveBossAttackTentacle tentacle = Instantiate(_attackTentaclePrefab, root, Quaternion.identity, transform);
         _attackTentacles.RemoveAll(t => t == null);
         _attackTentacles.Add(tentacle);
         foreach (var killTrigger in tentacle.GetComponentsInChildren<KillTrigger>(true))
             killTrigger.CanKillPlayer = !_debugPlayerInvulnerable;
-        tentacle.Launch(target);
+        tentacle.Launch(target, overshoot);
     }
 
     // The orb in play if there is one, otherwise the active player
@@ -333,12 +367,16 @@ public class CaveBossFight : MonoBehaviour
     }
 
     private float GetAttackInterval() {
-        return Random.Range(CurrentStage.minAttackInterval, CurrentStage.maxAttackInterval);
+        Stage stage = CurrentStage;
+        if (stage.HasFixedAttacks) return stage.fixedAttackInterval;
+        return Random.Range(stage.minAttackInterval, stage.maxAttackInterval);
     }
 
+    // Grows the stage's guard tentacles and unlocks the reserve orb (the big orb) once the regular orbs are used up
     private void ActivateStage(int index) {
         if (index >= _stages.Length) return;
         foreach (var guard in _stages[index].guardTentacles) guard.Activate();
+        CaveBossOrb.UnlockReserveOrbsIfRegularOrbsUsedUp();
     }
 
     private IEnumerator Flash() {
