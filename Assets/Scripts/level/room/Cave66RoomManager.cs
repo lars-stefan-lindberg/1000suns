@@ -16,6 +16,9 @@ public class Cave66RoomManager : MonoBehaviour
     // Used for "no stage" when only grounds of one stage should move, like before the first stage
     private const int NoStageIndex = -1;
     private const float DefaultGroundRumbleLingerDuration = 0.75f;
+    private const float DefaultGroundChangeDelay = 1f;
+    // The intro moves the first stage's grounds in right after the boss has entered, without a rumble lead-in
+    private const float IntroGroundChangeDelay = 0f;
     private const float DefaultForcePushHitRadiusMultiplier = 2f;
     private const float MinForcePushHitRadiusMultiplier = 1f;
 
@@ -38,6 +41,9 @@ public class Cave66RoomManager : MonoBehaviour
              "Inactive at room start, moved from start to end position when the stage starts, and back to start position and despawned when it ends. " +
              "A ground assigned to consecutive stages stays up until the last of them ends.")]
     [SerializeField] private StageGrounds[] _stageGrounds;
+    [Tooltip("Seconds between the boss getting hit (the rumble starts right away) and the grounds starting to move for the next stage. " +
+             "The boss waits until the grounds have arrived before attacking again.")]
+    [SerializeField, Min(0f)] private float _groundChangeDelay = DefaultGroundChangeDelay;
     [Tooltip("Seconds the boss rumble keeps going after the moveable grounds have arrived. The fight continues right away.")]
     [SerializeField, Min(0f)] private float _groundRumbleLingerDuration = DefaultGroundRumbleLingerDuration;
     [Tooltip("Multiplies Eli's force push projectile hit radius while the fight is active, so the orbs are easier to hit. 1 = normal size.")]
@@ -91,7 +97,7 @@ public class Cave66RoomManager : MonoBehaviour
         _boss.StageCleared += OnBossStageCleared;
         yield return _boss.Enter();
         // The first stage's grounds move in after the boss has entered, and are in place before it attacks
-        yield return ChangeStageGrounds(NoStageIndex, FirstStageIndex);
+        yield return ChangeStageGrounds(NoStageIndex, FirstStageIndex, IntroGroundChangeDelay);
         PlayerManager.obj.UnfreezePlayer(activePlayerType);
         IncreaseForcePushHitRadius();
         _boss.StartFighting(_firstAttackDelay);
@@ -125,23 +131,25 @@ public class Cave66RoomManager : MonoBehaviour
         SaveManager.obj.SaveGame(SceneManager.GetActiveScene().name);
     }
 
-    // Holds the boss after its hit reaction until the cleared stage's grounds have moved out and the next stage's grounds have moved in
+    // Called right when the boss gets hit. Holds the boss after its hit reaction until the ground change delay has passed,
+    // the cleared stage's grounds have moved out and the next stage's grounds have moved in
     private void OnBossStageCleared(int clearedStageIndex) {
         _boss.HoldStageStart();
         StartCoroutine(ChangeStageGroundsThenReleaseBoss(clearedStageIndex, clearedStageIndex + 1));
     }
 
     private IEnumerator ChangeStageGroundsThenReleaseBoss(int outgoingStageIndex, int incomingStageIndex) {
-        yield return ChangeStageGrounds(outgoingStageIndex, incomingStageIndex);
+        yield return ChangeStageGrounds(outgoingStageIndex, incomingStageIndex, _groundChangeDelay);
         // The boss destroys itself after the final retreat
         if(_boss != null)
             _boss.ReleaseStageStart();
     }
 
-    // Moves the outgoing stage's grounds to their start position and despawns them, and spawns the incoming stage's grounds
-    // at their start position and moves them to their end position. The boss rumbles until all grounds have arrived.
+    // Starts the rumble, waits delayBeforeMoving seconds, then moves the outgoing stage's grounds to their start position and
+    // despawns them, and spawns the incoming stage's grounds at their start position and moves them to their end position.
+    // Completes when all grounds have arrived; the rumble then lingers for the ground rumble linger duration.
     // Grounds assigned to both stages stay where they are, so a ground can be kept up over several stages.
-    private IEnumerator ChangeStageGrounds(int outgoingStageIndex, int incomingStageIndex) {
+    private IEnumerator ChangeStageGrounds(int outgoingStageIndex, int incomingStageIndex, float delayBeforeMoving) {
         MoveableGround[] outgoingStageGrounds = GetStageGrounds(outgoingStageIndex);
         MoveableGround[] incomingStageGrounds = GetStageGrounds(incomingStageIndex);
         MoveableGround[] outgoingGrounds = outgoingStageGrounds.Except(incomingStageGrounds).ToArray();
@@ -155,6 +163,9 @@ public class Cave66RoomManager : MonoBehaviour
             _stopGroundRumbleRoutine = null;
         }
         _boss.StartContinuousRumble();
+        if(delayBeforeMoving > 0f)
+            yield return new WaitForSeconds(delayBeforeMoving);
+
         foreach(var ground in outgoingGrounds)
             ground.MoveToStart();
         foreach(var ground in incomingGrounds) {
