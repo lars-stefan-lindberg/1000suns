@@ -116,6 +116,7 @@ public class PauseMenuManager : MonoBehaviour
                 
                 // Set the pause state
                 _isPaused = true;
+                CursorManager.SetMenuMode(true);
                 
                 // Set the time scale to 0 to pause the game
                 Time.timeScale = 0f;
@@ -173,6 +174,7 @@ public class PauseMenuManager : MonoBehaviour
         
         // Set the pause state
         _isPaused = true;
+        CursorManager.SetMenuMode(true);
         
         // Enable the pause menu UI
         _pauseMenu.SetActive(true);
@@ -206,6 +208,7 @@ public class PauseMenuManager : MonoBehaviour
             // Set the time scale back to 1 to resume the game
             Time.timeScale = 1f;
             MusicManager.obj.Resume();
+            CursorManager.SetMenuMode(false);
             
             // Reset transition flag immediately since we're not animating
             _isTransitioning = false;
@@ -233,6 +236,7 @@ public class PauseMenuManager : MonoBehaviour
             _isPaused = false;
             // Set the time scale back to 1 to resume the game
             Time.timeScale = 1f;
+            CursorManager.SetMenuMode(false);
             
             // Reset transition flag immediately since we're not animating
             _isTransitioning = false;
@@ -408,6 +412,7 @@ public class PauseMenuManager : MonoBehaviour
             // Set the time scale back to 1 to resume the game
             Time.timeScale = 1f;
             PlayerStatsManager.obj.ResumeTimer();
+            CursorManager.SetMenuMode(false);
             
             // Reset transition flag immediately since we're not animating
             _isTransitioning = false;

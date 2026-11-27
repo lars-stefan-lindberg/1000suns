@@ -149,8 +149,10 @@ public class PowerUpScreen : MonoBehaviour
             // Get direction if available, otherwise use None
             InputIconManager.Direction direction = i < _inputDirections.Count ? _inputDirections[i] : InputIconManager.Direction.None;
             
-            string spriteName = InputIconManager.obj.GetSpriteNameForAction(actionReference, direction);
-            spriteArguments.Add($"<voffset=-4px><sprite name=\"{spriteName}\" tint=1></voffset>");
+            // Plain buttons go through the mouse-aware markup so mouse bindings show a text label instead of a missing sprite
+            spriteArguments.Add(direction == InputIconManager.Direction.None
+                ? InputIconManager.obj.GetActionDisplayMarkup(actionReference, POWER_UP_SPRITE_FORMAT)
+                : string.Format(POWER_UP_SPRITE_FORMAT, InputIconManager.obj.GetSpriteNameForAction(actionReference, direction)));
         }
         
         _inputString.Arguments = spriteArguments.ToArray();
@@ -158,6 +160,8 @@ public class PowerUpScreen : MonoBehaviour
         _inputString.RefreshString();
     }
     
+    private const string POWER_UP_SPRITE_FORMAT = "<voffset=-4px><sprite name=\"{0}\" tint=1></voffset>";
+
     private void UpdateInputText(string value) {
         _inputText.text = value;
     }

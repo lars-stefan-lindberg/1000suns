@@ -179,10 +179,11 @@ public class RebindActionUI : MonoBehaviour
 
         //Update action binding icon
 #if UNITY_EDITOR
-        if (EditorApplication.isPlaying)
+        if (EditorApplication.isPlaying && m_ActionBindingIcon != null)
             m_ActionBindingIcon.SetAction(deviceLayoutName, controlPath);
 #else
-        m_ActionBindingIcon.SetAction(deviceLayoutName, controlPath);
+        if (m_ActionBindingIcon != null)
+            m_ActionBindingIcon.SetAction(deviceLayoutName, controlPath);
 #endif
 
         // Give listeners a chance to configure UI in response.
@@ -283,7 +284,13 @@ public class RebindActionUI : MonoBehaviour
 
         // Configure the rebind.
         m_RebindOperation = action.PerformInteractiveRebinding(bindingIndex)
-            .WithTimeout(5.0f)
+            .WithTimeout(REBIND_TIMEOUT_SECONDS);
+
+        // Never let pointer movement or scrolling be captured as a binding; only mouse buttons are rebindable.
+        foreach (var excludedControlPath in EXCLUDED_POINTER_CONTROL_PATHS)
+            m_RebindOperation.WithControlsExcluding(excludedControlPath);
+
+        m_RebindOperation
             .OnCancel(
                 operation =>
                 {
@@ -307,9 +314,9 @@ public class RebindActionUI : MonoBehaviour
                         
                         // Mirror keyboard directional bindings to UIControls
                         MirrorDirectionalBindingToUIControls(action, bindingIndex);
-                        
-                        // Mirror Jump and Shoot bindings to UIControls Confirm and Cancel
-                        MirrorActionBindingToUIControls(action, bindingIndex);
+
+                        // Warn if a mouse button is now shared with another gameplay action
+                        WarnIfMouseButtonAlreadyUsed(action, bindingIndex);
                     }
                     else
                         m_RebindNotAppliedEvent?.Invoke(this, operation);
@@ -407,90 +414,45 @@ public class RebindActionUI : MonoBehaviour
         }
     }
 
-    private void MirrorActionBindingToUIControls(InputAction sourceAction, int sourceBindingIndex)
+    /// <summary>
+    /// Logs a warning when a keyboard-group binding was rebound to a mouse button that another
+    /// PlayerControls action already uses (e.g. left mouse button on ShadowGrip). No automatic
+    /// conflict resolution is done yet.
+    /// </summary>
+    private void WarnIfMouseButtonAlreadyUsed(InputAction reboundAction, int reboundBindingIndex)
     {
-        var sourceBinding = sourceAction.bindings[sourceBindingIndex];
-        
-        // Only mirror keyboard bindings
-        if (!sourceBinding.groups.Contains("Keyboard"))
+        var reboundBinding = reboundAction.bindings[reboundBindingIndex];
+        if (!reboundBinding.groups.Contains(KEYBOARD_BINDING_GROUP))
             return;
-        
-        // Only mirror non-composite bindings (Jump and Shoot are simple bindings)
-        if (sourceBinding.isPartOfComposite || sourceBinding.isComposite)
+
+        var newEffectivePath = reboundBinding.effectivePath;
+        if (string.IsNullOrEmpty(newEffectivePath) ||
+            !newEffectivePath.StartsWith(MOUSE_PATH_PREFIX, StringComparison.OrdinalIgnoreCase))
             return;
-        
-        // Only mirror from PlayerControls action map
-        if (sourceAction.actionMap.name != "PlayerControls")
+
+        var playerControlsMap = reboundAction.actionMap?.asset?.FindActionMap(PLAYER_CONTROLS_MAP_NAME);
+        if (playerControlsMap == null)
             return;
-        
-        // Determine which action to mirror to based on source action
-        string targetActionName = null;
-        if (sourceAction.name == "Jump")
-            targetActionName = "Confirm";
-        else if (sourceAction.name == "Shoot")
-            targetActionName = "Cancel";
-        else
-            return; // Not an action we want to mirror
-        
-        // Find the UIControls action map
-        var uiControlsMap = sourceAction.actionMap.asset.FindActionMap("UIControls");
-        if (uiControlsMap == null)
+
+        foreach (var otherAction in playerControlsMap.actions)
         {
-            Debug.LogWarning("UIControls action map not found, cannot mirror action binding.");
-            return;
-        }
-        
-        // Find the target action in UIControls
-        var targetAction = uiControlsMap.FindAction(targetActionName);
-        if (targetAction == null)
-        {
-            Debug.LogWarning($"{targetActionName} action not found in UIControls, cannot mirror action binding.");
-            return;
-        }
-        
-        // Find the keyboard binding that is NOT Enter (for Confirm) or Escape (for Cancel)
-        // We need to find the binding that matches the default key (z for Jump/Confirm, x for Shoot/Cancel)
-        var targetBindingIndex = -1;
-        for (int i = 0; i < targetAction.bindings.Count; i++)
-        {
-            var binding = targetAction.bindings[i];
-            
-            // Skip composite bindings
-            if (binding.isComposite || binding.isPartOfComposite)
-                continue;
-            
-            // Must be keyboard binding
-            if (!binding.groups.Contains("Keyboard"))
-                continue;
-            
-            // Skip Enter key for Confirm
-            if (targetActionName == "Confirm" && binding.path == "<Keyboard>/enter")
-                continue;
-            
-            // Skip Escape key for Cancel
-            if (targetActionName == "Cancel" && binding.path == "<Keyboard>/escape")
-                continue;
-            
-            // This is the binding we want to update
-            targetBindingIndex = i;
-            break;
-        }
-        
-        if (targetBindingIndex == -1)
-        {
-            Debug.LogWarning($"Matching keyboard binding not found in UIControls/{targetActionName}, cannot mirror action binding.");
-            return;
-        }
-        
-        // Apply the same override to the UIControls binding
-        var newOverridePath = sourceBinding.overridePath;
-        if (!string.IsNullOrEmpty(newOverridePath))
-        {
-            targetAction.ApplyBindingOverride(targetBindingIndex, new InputBinding
+            var otherBindings = otherAction.bindings;
+            for (var i = 0; i < otherBindings.Count; i++)
             {
-                overridePath = newOverridePath
-            });
-            //Debug.Log($"Mirrored {sourceAction.name} binding to UIControls/{targetActionName}: {newOverridePath}");
+                if (otherAction == reboundAction && i == reboundBindingIndex)
+                    continue;
+
+                var otherBinding = otherBindings[i];
+                if (otherBinding.isComposite || !otherBinding.groups.Contains(KEYBOARD_BINDING_GROUP))
+                    continue;
+
+                if (string.Equals(otherBinding.effectivePath, newEffectivePath, StringComparison.OrdinalIgnoreCase))
+                {
+                    Debug.LogWarning(
+                        $"RebindActionUI: '{reboundAction.name}' is now bound to '{newEffectivePath}', which is also used by " +
+                        $"'{otherAction.name}'. Both actions will trigger from the same mouse button.", this);
+                }
+            }
         }
     }
 
@@ -500,6 +462,9 @@ public class RebindActionUI : MonoBehaviour
         var controlPath = default(string);
         m_Action.action.GetBindingDisplayString(bindingIndex, out deviceLayoutName, out controlPath);
 
+        if (string.IsNullOrEmpty(deviceLayoutName))
+            return false;
+
         if (InputSystem.IsFirstLayoutBasedOnSecond(deviceLayoutName, "Keyboard"))
         {
             return ALLOWED_KEYBOARD_KEYS.Contains(controlPath);
@@ -507,6 +472,12 @@ public class RebindActionUI : MonoBehaviour
         else if (InputSystem.IsFirstLayoutBasedOnSecond(deviceLayoutName, "Gamepad"))
         {
             return ALLOWED_GAMEPAD_BUTTONS.Contains(controlPath);
+        }
+        else if (InputSystem.IsFirstLayoutBasedOnSecond(deviceLayoutName, "Mouse"))
+        {
+            // Mouse buttons are only valid on keyboard-group (Keyboard&Mouse scheme) rows.
+            return m_Action.action.bindings[bindingIndex].groups.Contains(KEYBOARD_BINDING_GROUP) &&
+                   ALLOWED_MOUSE_BUTTONS.Contains(controlPath);
         }
 
         return false;
@@ -778,6 +749,31 @@ public class RebindActionUI : MonoBehaviour
             "leftShoulder",
             "rightShoulder"
         };
+
+    //Contains InputSystem's own names for mouse buttons (only accepted on keyboard-group rows)
+    private static readonly HashSet<string> ALLOWED_MOUSE_BUTTONS = new HashSet<string>
+        {
+            "leftButton",
+            "rightButton",
+            "middleButton",
+            "forwardButton",
+            "backButton"
+        };
+
+    //Pointer controls that must never be captured by an interactive rebind
+    private static readonly string[] EXCLUDED_POINTER_CONTROL_PATHS =
+        {
+            "<Mouse>/position",
+            "<Mouse>/delta",
+            "<Mouse>/scroll",
+            "<Pointer>/position",
+            "<Pointer>/delta"
+        };
+
+    private const float REBIND_TIMEOUT_SECONDS = 5.0f;
+    private const string KEYBOARD_BINDING_GROUP = "Keyboard";
+    private const string PLAYER_CONTROLS_MAP_NAME = "PlayerControls";
+    private const string MOUSE_PATH_PREFIX = "<Mouse>/";
 
     private InputActionRebindingExtensions.RebindingOperation m_RebindOperation;
 

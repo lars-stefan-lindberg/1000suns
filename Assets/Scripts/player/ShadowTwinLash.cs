@@ -122,6 +122,12 @@ public class ShadowTwinLash : MonoBehaviour
                 {
                     return;
                 }
+
+                // Lashing ends an active shadow grip
+                if (ShadowTwinPull.obj != null)
+                {
+                    ShadowTwinPull.obj.ReleaseGrip();
+                }
                 
                 // Cancel any existing directional buffer coroutine
                 if (_activeDirectionalBufferCoroutine != null)

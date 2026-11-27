@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Cinemachine;
 using FMOD.Studio;
 using UnityEngine;
@@ -362,7 +363,8 @@ public class ShadowTwinMovement : MonoBehaviour
             return;
         }
         
-        if (ShadowTwinPull.obj != null && ShadowTwinPull.obj.IsControllingObject)
+        // While gripping, face the held object when standing still; otherwise face the movement direction
+        if (ShadowTwinPull.obj != null && ShadowTwinPull.obj.IsControllingObject && _movementInput.x == 0)
         {
             Rigidbody2D controlledObject = ShadowTwinPull.obj.GetControlledObject();
             if (controlledObject != null)
@@ -492,6 +494,11 @@ public class ShadowTwinMovement : MonoBehaviour
     public bool isMoving = false;
     public bool IsPulling = false;
     private bool _isLatchPulling = false;
+
+    /// <summary>Collider found by the latest ground check, or null when nothing is below Dee.</summary>
+    public Collider2D GroundCollider { get; private set; }
+
+    private const string SHADOW_GRIP_ACTION_NAME = "ShadowGrip";
 
     private void UpdateAnimator()
     {
@@ -628,6 +635,9 @@ public class ShadowTwinMovement : MonoBehaviour
     }
 
     public void TransitionToNextRoom(PlayerManager.PlayerDirection direction) {
+        // A held object can't follow Dee into the next room
+        if (ShadowTwinPull.obj != null)
+            ShadowTwinPull.obj.ReleaseGrip();
         StartCoroutine(TransitionToNextRoomCoroutine(direction));
     }
 
@@ -698,6 +708,7 @@ public class ShadowTwinMovement : MonoBehaviour
             _playerInput.currentActionMap.FindAction("Movement").Disable();
             _playerInput.currentActionMap.FindAction("Jump").Disable();
             _playerInput.currentActionMap.FindAction("Shoot").Disable();
+            _playerInput.currentActionMap.FindAction(SHADOW_GRIP_ACTION_NAME).Disable();
             _playerInput.currentActionMap.FindAction("Lash").Disable();
             _playerInput.currentActionMap.FindAction("Switch").Disable();
             _playerInput.currentActionMap.FindAction("MergeSplit").Disable();
@@ -709,6 +720,7 @@ public class ShadowTwinMovement : MonoBehaviour
             _playerInput.currentActionMap.FindAction("Movement").Enable();
             _playerInput.currentActionMap.FindAction("Jump").Enable();
             _playerInput.currentActionMap.FindAction("Shoot").Enable();
+            _playerInput.currentActionMap.FindAction(SHADOW_GRIP_ACTION_NAME).Enable();
             _playerInput.currentActionMap.FindAction("Lash").Enable();
             _playerInput.currentActionMap.FindAction("Switch").Enable();
             _playerInput.currentActionMap.FindAction("MergeSplit").Enable();
@@ -1221,10 +1233,12 @@ public class ShadowTwinMovement : MonoBehaviour
     private void CheckCollisions()
     {
         Physics2D.queriesStartInColliders = false;
+        GroundCollider = null;
 
         if(!_isLatchPulling && !_isLatchedToSurface && !ShadowTwinLash.obj.ShouldTreatPlayerAsAirborne()) {
             RaycastHit2D groundRaycastResult = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0, Vector2.down, _stats.GrounderDistance, _groundLayerMasks);
             bool groundHit = groundRaycastResult.collider != null;
+            GroundCollider = groundRaycastResult.collider;
 
             if(groundHit) {
                 surface = SurfaceTypeManager.GetSurfaceType(groundRaycastResult.collider.gameObject.tag);
@@ -1252,6 +1266,11 @@ public class ShadowTwinMovement : MonoBehaviour
                 if (ceilingHit && !groundHit && _frameVelocity.y > 0)
                 {
                     HandleCeilingCollisions();
+                }
+                // The object Dee is shadow gripping acts like a ceiling, so jumping into it bumps her head
+                else if (!groundHit && _frameVelocity.y > 0 && IsHeldObjectAbove())
+                {
+                    _frameVelocity.y *= _stats.CeilingBounceBackSpeed;
                 }
             }
 
@@ -1353,6 +1372,24 @@ public class ShadowTwinMovement : MonoBehaviour
         }
     }
 
+    private readonly List<RaycastHit2D> _heldObjectCastHits = new List<RaycastHit2D>();
+
+    /// <summary>True if the object Dee is shadow gripping is right above her head, within roof distance.</summary>
+    private bool IsHeldObjectAbove() {
+        Collider2D heldCollider = ShadowTwinPull.obj != null ? ShadowTwinPull.obj.HeldCollider : null;
+        if (heldCollider == null)
+            return false;
+
+        ContactFilter2D heldObjectFilter = new ContactFilter2D { useTriggers = false };
+        heldObjectFilter.SetLayerMask(1 << heldCollider.gameObject.layer);
+        int hitCount = _collider.Cast(Vector2.up, heldObjectFilter, _heldObjectCastHits, _stats.RoofDistance);
+        for (int i = 0; i < hitCount; i++) {
+            if (_heldObjectCastHits[i].collider == heldCollider)
+                return true;
+        }
+        return false;
+    }
+
     private void HandleCeilingCollisions() {
         //Check for ceiling hits from top right and left corner of collider
         Bounds playerBounds = _collider.bounds;
@@ -1449,11 +1486,7 @@ public class ShadowTwinMovement : MonoBehaviour
 
     private void ExecuteRegularJump()
     {
-        if(IsPulling) {
-            ShadowTwinPull.obj.CancelPulling();
-            ShadowTwinPull.obj.OnShootButtonCanceled();
-        }
-        
+        // Dee keeps her shadow grip while jumping
         ExecuteJump(_stats.JumpPower);
         
         // Activate jump kick start
@@ -2294,11 +2327,7 @@ public class ShadowTwinMovement : MonoBehaviour
             return;
         }
 
-        // When controlling an object, stop player movement
-        if(ShadowTwinPull.obj != null && ShadowTwinPull.obj.IsControllingObject) {
-            _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, _stats.GroundDeceleration * Time.fixedDeltaTime);
-            return;
-        }
+        // Dee keeps full horizontal control while gripping an object
 
         // During propel through platform, maintain horizontal velocity
         if(_isPropellingThroughPlatform) {
@@ -2394,12 +2423,6 @@ public class ShadowTwinMovement : MonoBehaviour
 
         //Apply ground deceleration even no matter if player is grounded or not, since ground deceleration "feels" better in the air
         if(_isLatchPulling) {
-            _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, _stats.GroundDeceleration * Time.fixedDeltaTime);
-            return;
-        }
-        
-        // Prevent horizontal movement during shadow pull
-        if(IsPulling) {
             _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, _stats.GroundDeceleration * Time.fixedDeltaTime);
             return;
         }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
@@ -27,6 +28,81 @@ public class InputIconManager : MonoBehaviour
 
     void Awake() {
         obj = this;
+    }
+
+    private const string MOUSE_LAYOUT_NAME = "Mouse";
+    private const string KEYBOARD_BINDING_GROUP = "Keyboard";
+    private const string UNKNOWN_MOUSE_CONTROL_LABEL = "Mouse";
+
+    // Placeholder text labels for mouse controls until real mouse glyphs exist in the keyboard sprite asset.
+    private static readonly Dictionary<string, string> MOUSE_CONTROL_LABELS =
+        new Dictionary<string, string>
+        {
+            { "leftButton", "LMB" },
+            { "rightButton", "RMB" },
+            { "middleButton", "MMB" },
+            { "backButton", "M4" },
+            { "forwardButton", "M5" }
+        };
+
+    /// <summary>
+    /// Returns true if the given device layout is a mouse (or derived from the Mouse layout).
+    /// </summary>
+    public bool IsMouseLayout(string deviceLayout)
+    {
+        if (string.IsNullOrEmpty(deviceLayout))
+            return false;
+
+        return InputSystem.IsFirstLayoutBasedOnSecond(deviceLayout, MOUSE_LAYOUT_NAME);
+    }
+
+    /// <summary>
+    /// Returns the placeholder text label (e.g. "LMB") for a mouse control path such as "leftButton".
+    /// </summary>
+    public string GetMouseControlLabel(string controlPath)
+    {
+        if (string.IsNullOrEmpty(controlPath))
+            return UNKNOWN_MOUSE_CONTROL_LABEL;
+
+        return MOUSE_CONTROL_LABELS.TryGetValue(controlPath, out var label) ? label : controlPath;
+    }
+
+    /// <summary>
+    /// Builds the TMP rich text used to display a binding: a sprite tag for keyboard and gamepad controls,
+    /// or a plain text placeholder for mouse controls (no mouse sprites exist yet).
+    /// <paramref name="spriteFormat"/> must contain "{0}" for the sprite name.
+    /// </summary>
+    public string GetBindingDisplayMarkup(string deviceLayout, string controlPath, string spriteFormat)
+    {
+        if (string.IsNullOrEmpty(controlPath))
+            return string.Empty;
+
+        if (IsMouseLayout(deviceLayout))
+            return GetMouseControlLabel(controlPath);
+
+        return string.Format(spriteFormat, GetIconName(controlPath));
+    }
+
+    /// <summary>
+    /// Returns display markup for the current device's binding of an action. Unlike
+    /// <see cref="GetSpriteNameForAction(InputActionReference)"/>, this handles mouse bindings by returning a
+    /// text placeholder instead of a sprite name that does not exist in the sprite asset.
+    /// </summary>
+    public string GetActionDisplayMarkup(InputActionReference actionReference, string spriteFormat)
+    {
+        var action = actionReference.action;
+        if (InputDeviceListener.obj.GetCurrentInputDevice() == InputDeviceListener.Device.Keyboard)
+        {
+            var bindingIndex = action.bindings.IndexOf(x => x.groups.Contains(KEYBOARD_BINDING_GROUP));
+            if (bindingIndex != -1)
+            {
+                action.GetBindingDisplayString(bindingIndex, out var deviceLayoutName, out var controlPath);
+                if (IsMouseLayout(deviceLayoutName))
+                    return GetMouseControlLabel(controlPath);
+            }
+        }
+
+        return string.Format(spriteFormat, GetSpriteNameForAction(actionReference));
     }
 
     public TMP_SpriteAsset GetSpriteAsset(string deviceLayout)

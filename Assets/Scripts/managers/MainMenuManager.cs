@@ -51,6 +51,7 @@ public class MainMenuManager : MonoBehaviour
 
     void Awake() {
         obj = this;
+        CursorManager.SetMenuMode(true);
     }
 
     void Start() {
@@ -101,6 +102,7 @@ public class MainMenuManager : MonoBehaviour
     }
 
     public void OnReturn() {
+        CursorManager.SetMenuMode(true);
         StartCoroutine(OnReturnSequence());
     }
 
@@ -282,6 +284,7 @@ public class MainMenuManager : MonoBehaviour
             yield return null;
         }
         GameManager.obj.IsPauseAllowed = false;
+        CursorManager.SetMenuMode(false);
 
         //Reset game state
         Player.obj.SetAnimatorLayerAndHasCape(false);
@@ -324,6 +327,7 @@ public class MainMenuManager : MonoBehaviour
         }
         GameManager.obj.IsPauseAllowed = false;
         GameManager.obj.ResumeTimerOnContinueGame = true;
+        CursorManager.SetMenuMode(false);
 
         Player.obj.gameObject.SetActive(false);
         ShadowTwinPlayer.obj.gameObject.SetActive(false);

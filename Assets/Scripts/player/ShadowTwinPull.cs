@@ -80,13 +80,75 @@ public class ShadowTwinPull : MonoBehaviour
     public float controlledObjectAcceleration = 15f;
     public float controlledObjectMaxSpeed = 5f;
     public float controlledObjectDeceleration = 10f;
+    // Steering velocity of the held object. X is relative to Dee (a lagged copy of her horizontal velocity is added
+    // on top so the object follows her sideways). Y is world space, so Dee jumping or falling doesn't move the object vertically.
     private Vector2 _controlledObjectVelocity = Vector2.zero;
+    // World-space vertical velocity the object gets while Dee drags it along at the vertical range edge
+    private float _verticalFollowVelocity = 0f;
+    // Velocity set on the object last physics step, used to detect when geometry blocked it
+    private Vector2 _lastAppliedObjectVelocity = Vector2.zero;
     private float _originalGravityScale = 0f;
     private bool _isControllingObject = false;
     private bool _isOutOfRange = false;
+    [Tooltip("How far past the pull box edge the held object can end up before the grip is released. Applies horizontally, and vertically only when geometry blocks the object.")]
+    [SerializeField] private float _releaseDistanceBeyondRange = 0.25f;
+    [Tooltip("How quickly the held object speeds up when following Dee vertically at the range edge (units/s²). Keep it below Dee's fall acceleration so the object eases into the fall instead of dropping in sync with her.")]
+    [SerializeField] private float _verticalFollowAcceleration = 35f;
+    [Tooltip("How quickly the vertical follow slows down again, e.g. when Dee lands (units/s²).")]
+    [SerializeField] private float _verticalFollowDeceleration = 80f;
+    [Tooltip("How strongly an object that lagged past the vertical range edge is pulled back to it (1/s).")]
+    [SerializeField] private float _verticalFollowCatchUpRate = 8f;
+    private bool _isVerticallyBlocked = false;
+
+    [Header("Horizontal Follow Lag")]
+    [Tooltip("How far the held object trails behind while Dee runs, as seconds of her speed (0.1 at a run speed of 9 trails by 0.9 units).")]
+    [SerializeField] private float _horizontalLagTime = 0.1f;
+    [Tooltip("How quickly the held object speeds up to follow Dee sideways (units/s²). Lower values make it trail further behind when she starts running.")]
+    [SerializeField] private float _horizontalFollowAcceleration = 35f;
+    [Tooltip("How quickly the sideways follow slows down, e.g. when Dee stops and the object catches up (units/s²).")]
+    [SerializeField] private float _horizontalFollowDeceleration = 60f;
+    [Tooltip("How strongly a trailing object catches back up to its position relative to Dee (1/s).")]
+    [SerializeField] private float _horizontalFollowCatchUpRate = 6f;
+    [Tooltip("The furthest the held object may trail behind its position relative to Dee (units).")]
+    [SerializeField] private float _maxHorizontalLag = 1.25f;
+    // World-space horizontal velocity the object follows Dee with (steering is added on top)
+    private float _horizontalFollowVelocity = 0f;
+    // How far the object trails its resting position relative to Dee (positive = to the right of it)
+    private float _horizontalLag = 0f;
+
+    [Header("Object Steering Input")]
+    [SerializeField] private float _mouseAimSensitivity = 1f;
+    [SerializeField] private float _mouseAimSteeringGain = 6f;
+    [SerializeField] private SpriteRenderer _mouseAimIndicator;
+
+    private const string SHADOW_GRIP_AIM_ACTION_NAME = "ShadowGripAim";
+    private const string SHADOW_GRIP_POINTER_ACTION_NAME = "ShadowGripPointer";
+    private const string KEYBOARD_CONTROL_SCHEME_NAME = "Keyboard";
+    private const float STICK_AIM_DEAD_ZONE = 0.15f;
+    private const float MOUSE_AIM_ARRIVAL_DISTANCE = 0.05f;
+    private const float FALLBACK_WORLD_UNITS_PER_PIXEL = 0.01f;
+    private const float RANGE_SAFETY_MARGIN = 0.2f;
+    private const float MOVING_VELOCITY_EPSILON = 0.01f;
+    private const float VELOCITY_SYNC_THRESHOLD = 0.3f;
+    private const float VERTICAL_EDGE_TOLERANCE = 0.05f;
+
+    private PlayerInput _playerInput;
+    private InputAction _shadowGripAimAction;
+    private InputAction _shadowGripPointerAction;
+    // Mouse aim point: X is relative to the pull box center (follows Dee sideways), Y is world space
+    // (only dragged along vertically when Dee moves far enough to push it to the range edge)
+    private float _mouseAimOffsetX = 0f;
+    private float _mouseAimWorldY = 0f;
+    private bool _wasIdleGroundedWhilePulling = false;
 
     public bool IsControllingObject => _isControllingObject;
+
+    /// <summary>True for the whole duration of a shadow grip, whether or not an object is held.</summary>
+    public bool IsGripping => _isPullingObject;
     public Rigidbody2D GetControlledObject() => _targetRb;
+
+    /// <summary>Collider of the object Dee is currently steering, or null when she isn't holding one.</summary>
+    public Collider2D HeldCollider => _isControllingObject ? _pulledCollider : null;
     
     public Vector2 GetControlBoxSize() => _pullBoxSize;
     public Vector2 GetHighlightBoxSize() => Vector2.Max(Vector2.zero, _pullBoxSize - Vector2.one * _detectionMargin * 2f);
@@ -122,6 +184,8 @@ public class ShadowTwinPull : MonoBehaviour
         _collider = GetComponent<BoxCollider2D>();
         _pullableDetector = GetComponentInChildren<PullableDetector>();
         _deeAudio = GetComponent<DeeAudio>();
+        _playerInput = GetComponent<PlayerInput>();
+        SetMouseAimIndicatorVisible(false);
 
         if (_pullRangeGuide != null)
         {
@@ -138,7 +202,8 @@ public class ShadowTwinPull : MonoBehaviour
         _detectionMargin = Mathf.Clamp(_detectionMargin, 0f, minBoxDimension * 0.5f);
     }
 
-    public void OnShoot(InputAction.CallbackContext context)
+    /// <summary>Input callback for Dee's ShadowGrip action (wired from PlayerInput events).</summary>
+    public void OnShadowGrip(InputAction.CallbackContext context)
     {
         // Prevent shadow pull during shadow lash
         if (ShadowTwinLash.obj != null && ShadowTwinLash.obj.IsShadowLashing())
@@ -151,12 +216,13 @@ public class ShadowTwinPull : MonoBehaviour
                 Pull();
             }
             if(context.canceled) {
-                OnShootButtonCanceled();
+                OnShadowGripButtonReleased();
             }
         }
     }
 
-    public void OnShootButtonCanceled() {
+    /// <summary>Ends the grip when the button is released, unless the grip is held for a character switch.</summary>
+    public void OnShadowGripButtonReleased() {
         if(HoldPull)
             return;
         CancelPulling();
@@ -164,20 +230,25 @@ public class ShadowTwinPull : MonoBehaviour
         ShadowTwinPlayer.obj.EndFullyChargedVfx();
     }
 
+    /// <summary>Force-ends an active grip (lash, room transition, landing on the held object), ignoring HoldPull.</summary>
+    public void ReleaseGrip() {
+        if (!_isPullingObject)
+            return;
+        HoldPull = false;
+        OnShadowGripButtonReleased();
+    }
+
     private void Update()
     {
         // Check if currently pulled pullable became immune - release it immediately
         if (_isPullingObject && _pulledPullable != null && _pulledPullable.IsImmune)
         {
-            OnShootButtonCanceled();
+            OnShadowGripButtonReleased();
             return;
         }
-        
-        // Enable control when player lands while holding a grabbed pullable
-        if (_isPullingObject && !_isControllingObject && _pulledPullable != null && ShadowTwinMovement.obj.isGrounded)
-        {
-            _isControllingObject = true;
-        }
+
+        UpdatePullStartAnimationReplay();
+        UpdateMouseAim();
         
         // Skip detection if we have a grabbed pullable (whether controlling it or not)
         if (_isPullingObject && _pulledPullable != null)
@@ -283,6 +354,13 @@ public class ShadowTwinPull : MonoBehaviour
         _isPullingObject = false;
         _isControllingObject = false;
         _isOutOfRange = false;
+        _wasIdleGroundedWhilePulling = false;
+        _lastAppliedObjectVelocity = Vector2.zero;
+        _verticalFollowVelocity = 0f;
+        _horizontalFollowVelocity = 0f;
+        _horizontalLag = 0f;
+        _isVerticallyBlocked = false;
+        SetMouseAimIndicatorVisible(false);
 
         ShadowTwinMovement.obj.IsPulling = false;
         ShadowTwinMovement.obj.UpdateAnimatorIsPulling(false);
@@ -366,9 +444,18 @@ public class ShadowTwinPull : MonoBehaviour
             _originalGravityScale = _targetRb.gravityScale;
             _targetRb.gravityScale = 0f;
             _controlledObjectVelocity = Vector2.zero;
+            _verticalFollowVelocity = 0f;
+            // The object starts at rest, so grabbing it while running makes it trail behind and then catch up
+            _horizontalFollowVelocity = 0f;
+            _horizontalLag = 0f;
+            _isVerticallyBlocked = false;
+            _lastAppliedObjectVelocity = Vector2.zero;
             
-            // Only enable control if player is grounded
-            _isControllingObject = ShadowTwinMovement.obj.isGrounded;
+            // Dee can steer and carry the object right away, grounded or airborne
+            _isControllingObject = true;
+
+            // Start the mouse aim point on the grabbed object so it doesn't jump on grab
+            SetMouseAimPoint(_targetRb.position);
 
             // Reset loop tracking
             _isObectMovingLoopPlaying = false;
@@ -482,35 +569,40 @@ public class ShadowTwinPull : MonoBehaviour
         // Check if pullable became immune - stop controlling immediately
         if (_pulledPullable.IsImmune)
         {
-            OnShootButtonCanceled();
+            OnShadowGripButtonReleased();
             return;
         }
-        
-        // Only allow control movement when player is grounded
-        if (!ShadowTwinMovement.obj.isGrounded)
+
+        // Standing on the held object would let Dee ride it, so let go of it
+        if (IsDeeStandingOnHeldObject())
+        {
+            ReleaseGrip();
             return;
+        }
 
         Vector2 playerPosition = transform.position;
         Vector2 objectPosition = _targetRb.position;
-        Vector2 boxCenter = playerPosition + _pullBoxOffset;
-        Vector2 offsetFromPlayer = objectPosition - boxCenter;
+        Vector2 offsetFromPlayer = objectPosition - GetBoxCenter();
+        Vector2 effectiveBoxHalfSize = GetEffectiveBoxHalfSize();
+        Vector2 deeVelocity = ShadowTwinPlayer.obj.rigidBody.velocity;
         
-        // Safety margin to prevent jitter at the boundary
-        float safetyMargin = 0.2f;
-        Vector2 effectiveBoxHalfSize = (_pullBoxSize - Vector2.one * safetyMargin * 2f) * 0.5f;
-        
-        // Track if pullable is out of range (outside box bounds), but keep it grabbed
         _isOutOfRange = Mathf.Abs(offsetFromPlayer.x) > effectiveBoxHalfSize.x || 
                         Mathf.Abs(offsetFromPlayer.y) > effectiveBoxHalfSize.y;
 
-        // Get movement input from ShadowTwinMovement
-        Vector2 movementInput = ShadowTwinMovement.obj.GetMovementInput();
+        // The object got left outside the pull range (blocked by geometry, or Dee moved away faster than it
+        // can follow), so let go of it
+        if (IsBeyondReleaseRange(offsetFromPlayer))
+        {
+            ReleaseGrip();
+            return;
+        }
+
+        // Steering comes from the right stick (gamepad) or the mouse aim point (keyboard + mouse)
+        Vector2 steerTargetVelocity = GetSteerTargetVelocity(objectPosition);
+        bool hasSteerInput = steerTargetVelocity.sqrMagnitude > MOVING_VELOCITY_EPSILON * MOVING_VELOCITY_EPSILON;
         
         // Check proximity using actual collider geometry so it adapts to each pullable's size.
-        // This lets pullables pass tightly around the player without their colliders touching.
-        // Broad-phase gate: skip the precise (costlier) Distance call unless the centers are
-        // close enough that the colliders could possibly be within the gap. Computed regardless
-        // of input so the no-input deceleration branch can also respect the dead zone.
+        // Broad-phase gate: skip the precise (costlier) Distance call unless the centers are close.
         Vector2 separationOutward = Vector2.zero;
         bool tooCloseToPlayer = false;
         if (_pulledCollider != null && _collider != null &&
@@ -525,169 +617,80 @@ public class ShadowTwinPull : MonoBehaviour
             if (Vector2.Dot(separationOutward, centerDir) < 0f)
                 separationOutward = -separationOutward;
         }
-        
-        // Apply acceleration or deceleration based on input
-        if (movementInput.magnitude > 0.01f)
-        {
-            Vector2 targetVelocity = movementInput.normalized * controlledObjectMaxSpeed;
-            
-            // If out of range, restrict target velocity to prevent moving further away
-            if (_isOutOfRange)
-            {
-                Vector2 restrictedVelocity = targetVelocity;
-                
-                // Block velocity that would increase distance from box on each axis independently
-                if (offsetFromPlayer.x < -effectiveBoxHalfSize.x && targetVelocity.x < 0)
-                    restrictedVelocity.x = 0;  // too far left, don't allow further left movement
-                if (offsetFromPlayer.x > effectiveBoxHalfSize.x && targetVelocity.x > 0)
-                    restrictedVelocity.x = 0;  // too far right, don't allow further right movement
-                if (offsetFromPlayer.y < -effectiveBoxHalfSize.y && targetVelocity.y < 0)
-                    restrictedVelocity.y = 0;  // too far down, don't allow further down movement
-                if (offsetFromPlayer.y > effectiveBoxHalfSize.y && targetVelocity.y > 0)
-                    restrictedVelocity.y = 0;  // too far up, don't allow further up movement
-                
-                targetVelocity = restrictedVelocity;
-            }
-            Vector2 potentialVelocity = Vector2.MoveTowards(
-                _controlledObjectVelocity,
-                targetVelocity,
-                controlledObjectAcceleration * Time.fixedDeltaTime
-            );
-            
-            // Calculate potential new position
-            Vector2 potentialNewPosition = objectPosition + potentialVelocity * Time.fixedDeltaTime;
-            Vector2 potentialOffset = potentialNewPosition - boxCenter;
 
-            // Check box constraints (only enforce when NOT out of range, to allow recovery)
-            bool exceedsLeft = !_isOutOfRange && potentialOffset.x < -effectiveBoxHalfSize.x;
-            bool exceedsRight = !_isOutOfRange && potentialOffset.x > effectiveBoxHalfSize.x;
-            bool exceedsTop = !_isOutOfRange && potentialOffset.y > effectiveBoxHalfSize.y;
-            bool exceedsBottom = !_isOutOfRange && potentialOffset.y < -effectiveBoxHalfSize.y;
-            bool exceedsBox = exceedsLeft || exceedsRight || exceedsTop || exceedsBottom;
-            
-            if (exceedsBox || tooCloseToPlayer)
-            {
-                // Movement would violate constraints
-                if (exceedsBox)
-                {
-                    // At box edge - only allow movement that doesn't push further out
-                    Vector2 allowedVelocity = potentialVelocity;
-                    
-                    // Clamp X velocity if at horizontal edges
-                    if (exceedsLeft && potentialVelocity.x < 0)
-                        allowedVelocity.x = 0;
-                    else if (exceedsRight && potentialVelocity.x > 0)
-                        allowedVelocity.x = 0;
-                    
-                    // Clamp Y velocity if at vertical edges
-                    if (exceedsBottom && potentialVelocity.y < 0)
-                        allowedVelocity.y = 0;
-                    else if (exceedsTop && potentialVelocity.y > 0)
-                        allowedVelocity.y = 0;
-                    
-                    _controlledObjectVelocity = allowedVelocity;
-                }
-                else if (tooCloseToPlayer)
-                {
-                    // Too close to player - strip only the velocity component pushing the colliders together,
-                    // measured along the actual surface separation normal. Tangential movement is preserved,
-                    // so the pullable can slide tightly around the player without the colliders touching.
-                    float inwardComponent = Vector2.Dot(potentialVelocity, -separationOutward);
-                    
-                    if (inwardComponent > 0f)
-                    {
-                        // Remove the inward (toward-player) component, keep tangential motion
-                        _controlledObjectVelocity = potentialVelocity + inwardComponent * separationOutward;
-                    }
-                    else
-                    {
-                        // Already moving apart or tangential - allow full movement
-                        _controlledObjectVelocity = potentialVelocity;
-                    }
-                }
-            }
-            else
-            {
-                // Normal movement within constraints
-                _controlledObjectVelocity = potentialVelocity;
-            }
+        // Accelerate towards the steering velocity, or decelerate when there is no steering input
+        float velocityChangeRate = hasSteerInput ? controlledObjectAcceleration : controlledObjectDeceleration;
+        Vector2 steerVelocity = Vector2.MoveTowards(
+            _controlledObjectVelocity,
+            steerTargetVelocity,
+            velocityChangeRate * Time.fixedDeltaTime
+        );
+
+        // Horizontally the object follows Dee with a slight lag. Vertically it only moves from steering, plus a
+        // smoothed follow velocity that kicks in when Dee's jump/fall drags it against the vertical range edge.
+        _horizontalFollowVelocity = GetSmoothedHorizontalFollowVelocity(
+            _horizontalFollowVelocity, deeVelocity.x, hasSteerInput);
+        _verticalFollowVelocity = GetSmoothedVerticalFollowVelocity(
+            _verticalFollowVelocity, deeVelocity.y, offsetFromPlayer.y, effectiveBoxHalfSize.y);
+
+        // Range limit per axis: block steering that would take the object further out of the box.
+        // Motion back towards the box is always allowed, so an object left behind by geometry can recover.
+        float predictedOffsetX = offsetFromPlayer.x
+            + (steerVelocity.x + _horizontalFollowVelocity - deeVelocity.x) * Time.fixedDeltaTime;
+        steerVelocity.x = LimitOutwardAxisVelocity(steerVelocity.x, predictedOffsetX, effectiveBoxHalfSize.x);
+        // The follow lag must never trail the object out of range either, so at the edge it keeps pace with Dee
+        float laggedOffsetX = offsetFromPlayer.x
+            + (steerVelocity.x + _horizontalFollowVelocity - deeVelocity.x) * Time.fixedDeltaTime;
+        if (Mathf.Abs(laggedOffsetX) > effectiveBoxHalfSize.x
+            && (_horizontalFollowVelocity - deeVelocity.x) * laggedOffsetX > 0f)
+        {
+            _horizontalFollowVelocity = deeVelocity.x;
         }
+        float predictedOffsetY = offsetFromPlayer.y
+            + (steerVelocity.y + _verticalFollowVelocity - deeVelocity.y) * Time.fixedDeltaTime;
+        steerVelocity.y = LimitOutwardAxisVelocity(steerVelocity.y, predictedOffsetY, effectiveBoxHalfSize.y);
+
+        Vector2 objectVelocity = new Vector2(
+            steerVelocity.x + _horizontalFollowVelocity, steerVelocity.y + _verticalFollowVelocity);
+
+        // Too close to player - strip only the part of the object's own motion (steering, follow lag and vertical
+        // follow) that pushes it into Dee, so it can slide tightly around her without the colliders touching. Dee's
+        // own motion is not passed on, so jumping into the object makes her bump her head on it instead of carrying it.
+        if (tooCloseToPlayer)
+        {
+            Vector2 objectOwnVelocity = new Vector2(
+                steerVelocity.x + _horizontalFollowVelocity - deeVelocity.x, steerVelocity.y + _verticalFollowVelocity);
+            float inwardComponent = Vector2.Dot(objectOwnVelocity, -separationOutward);
+            if (inwardComponent > 0f)
+                objectVelocity += inwardComponent * separationOutward;
+        }
+
+        // Track how far the object trails behind its resting position relative to Dee. Steering re-bases that
+        // position, so lag built up before steering is dropped instead of being caught up later.
+        _horizontalFollowVelocity = objectVelocity.x - steerVelocity.x;
+        if (hasSteerInput)
+            _horizontalLag = 0f;
         else
-        {
-            // No input - decelerate
-            if (_isOutOfRange)
-            {
-                // Out of range - apply smooth deceleration but immediately stop movement that would go further away
-                Vector2 deceleratedVelocity = Vector2.MoveTowards(
-                    _controlledObjectVelocity,
-                    Vector2.zero,
-                    controlledObjectDeceleration * Time.fixedDeltaTime
-                );
-                
-                // Block any velocity that would increase distance from box on each axis
-                if (offsetFromPlayer.x < -effectiveBoxHalfSize.x && deceleratedVelocity.x < 0)
-                    deceleratedVelocity.x = 0;  // too far left, stop leftward drift
-                if (offsetFromPlayer.x > effectiveBoxHalfSize.x && deceleratedVelocity.x > 0)
-                    deceleratedVelocity.x = 0;  // too far right, stop rightward drift
-                if (offsetFromPlayer.y < -effectiveBoxHalfSize.y && deceleratedVelocity.y < 0)
-                    deceleratedVelocity.y = 0;  // too far down, stop downward drift
-                if (offsetFromPlayer.y > effectiveBoxHalfSize.y && deceleratedVelocity.y > 0)
-                    deceleratedVelocity.y = 0;  // too far up, stop upward drift
-                
-                _controlledObjectVelocity = deceleratedVelocity;
-            }
-            else
-            {
-                // Check if at box boundary
-                bool atBoundary = Mathf.Abs(offsetFromPlayer.x) >= effectiveBoxHalfSize.x || 
-                                  Mathf.Abs(offsetFromPlayer.y) >= effectiveBoxHalfSize.y;
-                
-                if (atBoundary)
-                {
-                    // At boundary - hard stop
-                    _controlledObjectVelocity = Vector2.zero;
-                }
-                else
-                {
-                    // Within valid area - normal deceleration
-                    Vector2 deceleratedVelocity = Vector2.MoveTowards(
-                        _controlledObjectVelocity,
-                        Vector2.zero,
-                        controlledObjectDeceleration * Time.fixedDeltaTime
-                    );
-                    
-                    // If too close to the player, strip any residual inward component so the
-                    // graceful stop can't carry the pullable into the player. Tangential drift
-                    // is preserved so it still decelerates naturally along the surface.
-                    if (tooCloseToPlayer)
-                    {
-                        float inwardComponent = Vector2.Dot(deceleratedVelocity, -separationOutward);
-                        if (inwardComponent > 0f)
-                            deceleratedVelocity += inwardComponent * separationOutward;
-                    }
-                    
-                    _controlledObjectVelocity = deceleratedVelocity;
-                }
-            }
-        }
+            _horizontalLag += (_horizontalFollowVelocity - deeVelocity.x) * Time.fixedDeltaTime;
 
-        // Apply velocity to the rigidbody
+        _controlledObjectVelocity = steerVelocity;
+        _lastAppliedObjectVelocity = objectVelocity;
+
+        // Apply velocity to the rigidbody until geometry blocks it
         if (_targetRb.bodyType == RigidbodyType2D.Dynamic || _targetRb.bodyType == RigidbodyType2D.Kinematic)
         {
-            _targetRb.velocity = _controlledObjectVelocity;
+            _targetRb.velocity = objectVelocity;
             
-            // Sync our internal velocity with actual rigidbody velocity after physics resolution
-            // This prevents desync when the rigidbody is blocked by walls/collisions
-            // We check this on the next frame by comparing what we set vs what actually happened
+            // Sync our internal velocity with actual rigidbody velocity after physics resolution.
+            // This prevents desync when the rigidbody is blocked by walls/collisions.
             StartCoroutine(SyncVelocityAfterPhysics());
         }
         
-        // Control static loop based on movement
-        bool hasInput = movementInput.magnitude > 0.01f;
-        bool objectIsMoving = _controlledObjectVelocity.magnitude > 0.01f;
-        if (hasInput && objectIsMoving)
+        // Control the object moving loop based on whether the object is actually being moved
+        bool isDeeMoving = deeVelocity.magnitude > MOVING_VELOCITY_EPSILON;
+        bool objectIsMoving = objectVelocity.magnitude > MOVING_VELOCITY_EPSILON;
+        if ((hasSteerInput || isDeeMoving) && objectIsMoving)
         {
-            // Start static loop if not already playing
             if (!_isObectMovingLoopPlaying)
             {
                 _shadowPullObjectMovingLoopInstance = _deeAudio.StartShadowPullMoveLoop();
@@ -696,10 +699,105 @@ public class ShadowTwinPull : MonoBehaviour
         }
         else if (_isObectMovingLoopPlaying)
         {
-            // Stop static loop when movement stops
             _deeAudio.StopInstanceWithFadeOut(ref _shadowPullObjectMovingLoopInstance);
             _isObectMovingLoopPlaying = false;
         }
+    }
+
+    /// <summary>Zeroes an axis velocity that would move the object past the box edge on that axis.</summary>
+    private static float LimitOutwardAxisVelocity(float axisVelocity, float predictedAxisOffset, float axisHalfSize)
+    {
+        if (predictedAxisOffset > axisHalfSize && axisVelocity > 0f)
+            return 0f;
+        if (predictedAxisOffset < -axisHalfSize && axisVelocity < 0f)
+            return 0f;
+        return axisVelocity;
+    }
+
+    /// <summary>
+    /// Smooths the sideways follow so the object trails a little behind Dee while she runs and catches up when she
+    /// slows down or stops. The catch-up speed is capped by the braking distance so it settles at its resting
+    /// position without swinging past it. While the player steers, it just matches Dee's velocity.
+    /// </summary>
+    private float GetSmoothedHorizontalFollowVelocity(float currentFollowVelocity, float deeVelocityX,
+        bool hasSteerInput)
+    {
+        if (hasSteerInput)
+        {
+            float steeringRate = Mathf.Max(_horizontalFollowAcceleration, _horizontalFollowDeceleration);
+            return Mathf.MoveTowards(currentFollowVelocity, deeVelocityX, steeringRate * Time.fixedDeltaTime);
+        }
+
+        // Already trailing as far as allowed, and falling further behind: keep pace with Dee
+        bool isFallingFurtherBehind = (currentFollowVelocity - deeVelocityX) * _horizontalLag > 0f;
+        if (Mathf.Abs(_horizontalLag) >= _maxHorizontalLag && isFallingFurtherBehind)
+            return deeVelocityX;
+
+        // The object trails by an amount that scales with Dee's speed, so it hangs back while she runs and catches
+        // up when she stops
+        float targetLag = Mathf.Clamp(-deeVelocityX * _horizontalLagTime, -_maxHorizontalLag, _maxHorizontalLag);
+        float lagError = _horizontalLag - targetLag;
+        float lagErrorDistance = Mathf.Abs(lagError);
+        float catchUpSpeed = Mathf.Min(lagErrorDistance * _horizontalFollowCatchUpRate,
+            Mathf.Sqrt(2f * _horizontalFollowDeceleration * lagErrorDistance));
+        float targetFollowVelocity = deeVelocityX - Mathf.Sign(lagError) * catchUpSpeed;
+
+        bool isSpeedingUp = targetFollowVelocity * currentFollowVelocity >= 0f
+            && Mathf.Abs(targetFollowVelocity) > Mathf.Abs(currentFollowVelocity);
+        float changeRate = isSpeedingUp ? _horizontalFollowAcceleration : _horizontalFollowDeceleration;
+        return Mathf.MoveTowards(currentFollowVelocity, targetFollowVelocity, changeRate * Time.fixedDeltaTime);
+    }
+
+    /// <summary>
+    /// Smooths the vertical follow velocity. While the object is at (or past) the vertical range edge and Dee moves
+    /// away from it, it targets Dee's vertical velocity, plus a catch-up term that pulls a lagging object back to
+    /// max range. Otherwise it eases back to zero. Speeding up is gentler than slowing down.
+    /// </summary>
+    private float GetSmoothedVerticalFollowVelocity(float currentFollowVelocity, float deeVelocityY, float offsetY,
+        float halfSizeY)
+    {
+        bool isAtVerticalEdge = Mathf.Abs(offsetY) >= halfSizeY - VERTICAL_EDGE_TOLERANCE;
+        // Dee moving away from the object means her vertical velocity points opposite to the object's offset.
+        // Ignored while grounded so the small ground-snapping velocity doesn't drag the object down.
+        bool isDeeMovingAway = !ShadowTwinMovement.obj.isGrounded && deeVelocityY * offsetY < 0f;
+
+        float targetFollowVelocity = 0f;
+        if (isAtVerticalEdge && isDeeMovingAway)
+            targetFollowVelocity = deeVelocityY;
+
+        // An object that lagged past the edge is pulled back towards it (towards Dee)
+        float distanceBeyondEdge = Mathf.Abs(offsetY) - halfSizeY;
+        if (distanceBeyondEdge > 0f)
+            targetFollowVelocity -= Mathf.Sign(offsetY) * distanceBeyondEdge * _verticalFollowCatchUpRate;
+
+        bool isSpeedingUp = targetFollowVelocity * currentFollowVelocity >= 0f
+            && Mathf.Abs(targetFollowVelocity) > Mathf.Abs(currentFollowVelocity);
+        float changeRate = isSpeedingUp ? _verticalFollowAcceleration : _verticalFollowDeceleration;
+        float followVelocity = Mathf.MoveTowards(currentFollowVelocity, targetFollowVelocity,
+            changeRate * Time.fixedDeltaTime);
+
+        // Once Dee stops dragging it, the follow may only bring the object back to the range edge, never past it
+        // towards Dee. This stops leftover follow speed (e.g. when she lands) from overshooting into the range.
+        if (!isDeeMovingAway)
+        {
+            float speedTowardsDee = -Mathf.Sign(offsetY) * followVelocity;
+            float maxSpeedTowardsDee = Mathf.Max(0f, distanceBeyondEdge) / Time.fixedDeltaTime;
+            if (speedTowardsDee > maxSpeedTowardsDee)
+                followVelocity = -Mathf.Sign(offsetY) * maxSpeedTowardsDee;
+        }
+        return followVelocity;
+    }
+
+    /// <summary>
+    /// True when the object should be let go: it's outside the full pull box by more than the release margin
+    /// horizontally, or vertically while geometry is blocking it (a vertical lag alone is caught up instead).
+    /// </summary>
+    private bool IsBeyondReleaseRange(Vector2 offsetFromBoxCenter)
+    {
+        Vector2 releaseHalfSize = _pullBoxSize * 0.5f + Vector2.one * _releaseDistanceBeyondRange;
+        bool isBeyondHorizontally = Mathf.Abs(offsetFromBoxCenter.x) > releaseHalfSize.x;
+        bool isBeyondVertically = Mathf.Abs(offsetFromBoxCenter.y) > releaseHalfSize.y;
+        return isBeyondHorizontally || (isBeyondVertically && _isVerticallyBlocked);
     }
     
     private IEnumerator SyncVelocityAfterPhysics()
@@ -709,18 +807,134 @@ public class ShadowTwinPull : MonoBehaviour
         
         if (_targetRb != null && _isControllingObject)
         {
-            // If actual velocity is significantly different from our intended velocity,
-            // it means physics blocked the movement (wall collision, etc.)
-            Vector2 actualVelocity = _targetRb.velocity;
-            float velocityDifference = (_controlledObjectVelocity - actualVelocity).sqrMagnitude;
-            float threshold = 0.1f; // Small threshold to account for minor physics variations
-            
-            if (velocityDifference > threshold)
+            // If physics blocked the movement on an axis (wall, floor, ceiling), drop the built-up velocity on that
+            // axis so the object doesn't shoot off once it's free again
+            Vector2 blockedVelocity = _lastAppliedObjectVelocity - _targetRb.velocity;
+            if (Mathf.Abs(blockedVelocity.x) > VELOCITY_SYNC_THRESHOLD)
             {
-                // Sync our internal state to match reality
-                _controlledObjectVelocity = actualVelocity;
+                _controlledObjectVelocity.x = 0f;
+                // A blocked object can't keep its lag, so follow from where it actually ended up
+                _horizontalFollowVelocity = _targetRb.velocity.x;
+                _horizontalLag = 0f;
+            }
+            _isVerticallyBlocked = Mathf.Abs(blockedVelocity.y) > VELOCITY_SYNC_THRESHOLD;
+            if (_isVerticallyBlocked)
+            {
+                _controlledObjectVelocity.y = 0f;
             }
         }
+    }
+
+    private Vector2 GetBoxCenter() => (Vector2)transform.position + _pullBoxOffset;
+
+    private Vector2 GetEffectiveBoxHalfSize() => (_pullBoxSize - Vector2.one * RANGE_SAFETY_MARGIN * 2f) * 0.5f;
+
+    private Vector2 ClampToEffectiveBox(Vector2 offsetFromBoxCenter)
+    {
+        Vector2 halfSize = GetEffectiveBoxHalfSize();
+        return new Vector2(
+            Mathf.Clamp(offsetFromBoxCenter.x, -halfSize.x, halfSize.x),
+            Mathf.Clamp(offsetFromBoxCenter.y, -halfSize.y, halfSize.y));
+    }
+
+    private bool IsDeeStandingOnHeldObject()
+    {
+        Collider2D groundCollider = ShadowTwinMovement.obj.GroundCollider;
+        return ShadowTwinMovement.obj.isGrounded && groundCollider != null
+            && (groundCollider == _pulledCollider || groundCollider.attachedRigidbody == _targetRb);
+    }
+
+    private bool IsUsingMouseAim()
+    {
+        return _playerInput != null && _playerInput.currentControlScheme == KEYBOARD_CONTROL_SCHEME_NAME;
+    }
+
+    private InputAction GetPlayerAction(ref InputAction cachedAction, string actionName)
+    {
+        if (cachedAction == null && _playerInput != null && _playerInput.actions != null)
+            cachedAction = _playerInput.actions.FindAction(actionName);
+        return cachedAction;
+    }
+
+    /// <summary>Desired object velocity relative to Dee, from the right stick or the mouse aim point.</summary>
+    private Vector2 GetSteerTargetVelocity(Vector2 objectPosition)
+    {
+        if (IsUsingMouseAim())
+        {
+            Vector2 toAimPoint = GetMouseAimPoint() - objectPosition;
+            if (toAimPoint.magnitude <= MOUSE_AIM_ARRIVAL_DISTANCE)
+                return Vector2.zero;
+            return Vector2.ClampMagnitude(toAimPoint * _mouseAimSteeringGain, controlledObjectMaxSpeed);
+        }
+
+        InputAction aimAction = GetPlayerAction(ref _shadowGripAimAction, SHADOW_GRIP_AIM_ACTION_NAME);
+        Vector2 stickInput = aimAction != null ? aimAction.ReadValue<Vector2>() : Vector2.zero;
+        if (stickInput.magnitude < STICK_AIM_DEAD_ZONE)
+            return Vector2.zero;
+        return Vector2.ClampMagnitude(stickInput, 1f) * controlledObjectMaxSpeed;
+    }
+
+    /// <summary>Moves the mouse aim point with mouse movement and keeps the indicator on it.</summary>
+    private void UpdateMouseAim()
+    {
+        bool isAimingWithMouse = _isControllingObject && _targetRb != null && _pulledPullable != null
+            && !_pulledPullable.IsHeavy() && IsUsingMouseAim();
+        SetMouseAimIndicatorVisible(isAimingWithMouse);
+        if (!isAimingWithMouse)
+            return;
+
+        InputAction pointerAction = GetPlayerAction(ref _shadowGripPointerAction, SHADOW_GRIP_POINTER_ACTION_NAME);
+        Vector2 mouseDelta = pointerAction != null ? pointerAction.ReadValue<Vector2>() : Vector2.zero;
+        SetMouseAimPoint(GetMouseAimPoint() + mouseDelta * GetWorldUnitsPerScreenPixel() * _mouseAimSensitivity);
+    }
+
+    /// <summary>World position of the mouse aim point, kept inside the pull range around Dee.</summary>
+    private Vector2 GetMouseAimPoint()
+    {
+        Vector2 boxCenter = GetBoxCenter();
+        Vector2 offsetFromBoxCenter = new Vector2(_mouseAimOffsetX, _mouseAimWorldY - boxCenter.y);
+        return boxCenter + ClampToEffectiveBox(offsetFromBoxCenter);
+    }
+
+    /// <summary>Stores a world aim point, clamped to the pull range around Dee.</summary>
+    private void SetMouseAimPoint(Vector2 worldPoint)
+    {
+        Vector2 boxCenter = GetBoxCenter();
+        Vector2 clampedOffset = ClampToEffectiveBox(worldPoint - boxCenter);
+        _mouseAimOffsetX = clampedOffset.x;
+        _mouseAimWorldY = boxCenter.y + clampedOffset.y;
+    }
+
+    private void LateUpdate()
+    {
+        // Positioned after Dee has moved this frame so the indicator doesn't lag behind
+        if (_mouseAimIndicator != null && _mouseAimIndicator.enabled)
+            _mouseAimIndicator.transform.position = GetMouseAimPoint();
+    }
+
+    private static float GetWorldUnitsPerScreenPixel()
+    {
+        Camera mainCamera = Camera.main;
+        if (mainCamera == null || !mainCamera.orthographic || Screen.height <= 0)
+            return FALLBACK_WORLD_UNITS_PER_PIXEL;
+        return mainCamera.orthographicSize * 2f / Screen.height;
+    }
+
+    private void SetMouseAimIndicatorVisible(bool isVisible)
+    {
+        if (_mouseAimIndicator != null && _mouseAimIndicator.enabled != isVisible)
+            _mouseAimIndicator.enabled = isVisible;
+    }
+
+    /// <summary>Replays the pull-start animation whenever Dee comes to a grounded stop while gripping.</summary>
+    private void UpdatePullStartAnimationReplay()
+    {
+        if (!_isPullingObject)
+            return;
+        bool isIdleGrounded = ShadowTwinMovement.obj.isGrounded && !ShadowTwinMovement.obj.isMoving;
+        if (isIdleGrounded && !_wasIdleGroundedWhilePulling)
+            ShadowTwinMovement.obj.TriggerForcePullAnimation();
+        _wasIdleGroundedWhilePulling = isIdleGrounded;
     }
 
     void Pull()
@@ -743,6 +957,8 @@ public class ShadowTwinPull : MonoBehaviour
         ShadowTwinMovement.obj.IsPulling = true;
         ShadowTwinMovement.obj.UpdateAnimatorIsPulling(true);
         ShadowTwinMovement.obj.TriggerForcePullAnimation();
+        // The start animation was just triggered, so only replay it after Dee moves or leaves the ground
+        _wasIdleGroundedWhilePulling = ShadowTwinMovement.obj.isGrounded && !ShadowTwinMovement.obj.isMoving;
         PullPowerType chargePowerType = GetChargePowerType();
         ExecuteForcePushVfx(chargePowerType);
     }

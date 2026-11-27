@@ -106,6 +106,14 @@ public class CameraLookaheadController : MonoBehaviour
             return;
         }
         
+        // The right stick steers the held object during a shadow grip, so camera look is suppressed for the whole grip
+        if (IsShadowGripActive())
+        {
+            cameraLookInput = Vector2.zero;
+            isLookaheadActive = false;
+            return;
+        }
+        
         // Poll the input action directly for continuous input
         if (cameraLookAction != null)
         {
@@ -244,6 +252,13 @@ public class CameraLookaheadController : MonoBehaviour
     public void SetInTopLock(bool inTopLock)
     {
         isInTopLock = inTopLock;
+    }
+
+    private bool IsShadowGripActive()
+    {
+        return ShadowTwinPull.obj != null && ShadowTwinPull.obj.IsGripping
+            && PlayerManager.obj != null
+            && PlayerManager.obj.GetActivePlayerType() == PlayerManager.PlayerType.SHADOW_TWIN;
     }
 
     private bool IsPlayerFrozen()

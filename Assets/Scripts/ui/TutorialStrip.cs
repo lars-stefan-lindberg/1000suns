@@ -353,8 +353,7 @@ public class TutorialStrip : MonoBehaviour
             // Get stick type if available, otherwise use None
             InputIconManager.StickType stickType = i < _inputStickTypes.Count ? _inputStickTypes[i] : InputIconManager.StickType.None;
             
-            string spriteName = InputIconManager.obj.GetSpriteNameForAction(actionReference, direction, stickType);
-            spriteArguments.Add($"<size=150%><voffset=-1px><sprite name=\"{spriteName}\" tint=1></voffset></size>");
+            spriteArguments.Add(GetInputIconMarkup(actionReference, direction, stickType));
         }
         
         _tutorialLocalizedString.Arguments = spriteArguments.ToArray();
@@ -388,13 +387,22 @@ public class TutorialStrip : MonoBehaviour
             // Get stick type if available, otherwise use None
             InputIconManager.StickType stickType = i < step.inputStickTypes.Count ? step.inputStickTypes[i] : InputIconManager.StickType.None;
             
-            string spriteName = InputIconManager.obj.GetSpriteNameForAction(actionReference, direction, stickType);
-            spriteArguments.Add($"<size=150%><voffset=-1px><sprite name=\"{spriteName}\" tint=1></voffset></size>");
+            spriteArguments.Add(GetInputIconMarkup(actionReference, direction, stickType));
         }
         
         step.localizedString.Arguments = spriteArguments.ToArray();
         step.localizedString.StringChanged += UpdateInputText;
         step.localizedString.RefreshString();
+    }
+
+    private const string TUTORIAL_SPRITE_FORMAT = "<size=150%><voffset=-1px><sprite name=\"{0}\" tint=1></voffset></size>";
+
+    // Plain buttons go through the mouse-aware markup so mouse bindings show a text label instead of a missing sprite
+    private static string GetInputIconMarkup(InputActionReference actionReference, InputIconManager.Direction direction, InputIconManager.StickType stickType) {
+        if (direction == InputIconManager.Direction.None && stickType == InputIconManager.StickType.None)
+            return InputIconManager.obj.GetActionDisplayMarkup(actionReference, TUTORIAL_SPRITE_FORMAT);
+        string spriteName = InputIconManager.obj.GetSpriteNameForAction(actionReference, direction, stickType);
+        return string.Format(TUTORIAL_SPRITE_FORMAT, spriteName);
     }
 
     private void UpdateInputText(string value) {

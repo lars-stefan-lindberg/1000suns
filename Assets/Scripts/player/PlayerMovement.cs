@@ -819,7 +819,7 @@ public class PlayerMovement : MonoBehaviour
         ShadowTwinPlayer.obj.FlashOnce();
         if(ShadowTwinPull.obj.HoldPull) {
             ShadowTwinPull.obj.HoldPull = false;  //Reset any current pulling
-            ShadowTwinPull.obj.OnShootButtonCanceled();
+            ShadowTwinPull.obj.OnShadowGripButtonReleased();
         }
         PlayerSwitcher.obj.SwitchToDee();
         Destroy(soul);

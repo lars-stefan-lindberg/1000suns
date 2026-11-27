@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 
 public class InputDeviceListener : MonoBehaviour
 {
@@ -18,6 +19,9 @@ public class InputDeviceListener : MonoBehaviour
         Keyboard,
         Gamepad
     }
+
+    // Minimum mouse delta (pixels per frame) that counts as deliberate movement rather than sensor noise.
+    private const float MOUSE_DELTA_SWITCH_THRESHOLD = 4f;
 
     private Device _currentDevice = Device.None;
     private Gamepad _activeGamepad = null;
@@ -79,6 +83,10 @@ public class InputDeviceListener : MonoBehaviour
             {
                 newDevice = Device.Keyboard;
             }
+            else if (lastDevice is Mouse mouse && IsIntentionalMouseInput(receivedInputAction, mouse))
+            {
+                newDevice = Device.Keyboard;
+            }
             else if (lastDevice is Gamepad currentGamepad)
             {
                 newDevice = Device.Gamepad;
@@ -98,6 +106,26 @@ public class InputDeviceListener : MonoBehaviour
                 OnInputDeviceStream?.Invoke(_currentDevice);
             }
         }
+    }
+
+    /// <summary>
+    /// Returns true for mouse button presses and for mouse delta movement above the noise threshold.
+    /// Other mouse controls (position, scroll) and tiny movements are ignored so they cannot steal a gamepad player.
+    /// </summary>
+    private bool IsIntentionalMouseInput(InputAction action, Mouse mouse)
+    {
+        InputControl control = action.activeControl;
+        if (control is ButtonControl)
+        {
+            return true;
+        }
+
+        if (control == mouse.delta || control.parent == mouse.delta)
+        {
+            return mouse.delta.ReadValue().magnitude >= MOUSE_DELTA_SWITCH_THRESHOLD;
+        }
+
+        return false;
     }
 
     private void OnDeviceChange(InputDevice device, InputDeviceChange change)
