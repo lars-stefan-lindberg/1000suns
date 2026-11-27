@@ -117,13 +117,6 @@ public class PlayerPush : MonoBehaviour
         //Need to check that we are building power before we can push. If not the push will be executed on button release.
         if(_buildingUpPower && _buildUpPowerTime >= minBuildUpPowerTime)
         {
-            if(PlayerPowersManager.obj.EliCanShadowDash && !PlayerMovement.obj.isGrounded && PlayerMovement.obj.IsHorizontalInput())
-            {
-                Dash();
-                ResetBuiltUpPower();
-                return;
-            }
-
             if(platform != null) {
                 float power = Player.obj.hasPowerUp && IsFullyCharged() ? powerUpMaxForce : _buildUpPower;
                 StartCoroutine(DelayedMovePlatform(projectileDelay, power));
@@ -226,13 +219,6 @@ public class PlayerPush : MonoBehaviour
         StartCoroutine(DelayedProjectile(projectileDelay, power, chargePowerType));
     }
 
-    void Dash() {
-        ChargePowerType chargePowerType = GetChargePowerType();
-        PlayerMovement.obj.ExecuteDash(chargePowerType);
-        ExecuteDashVfx(chargePowerType);
-        _eliAudio.PlayForcePushRelease();
-    }
-
     private ChargePowerType GetChargePowerType() {
         bool isFullyCharged = IsFullyCharged();
         if(isFullyCharged && Player.obj.hasPowerUp) 
@@ -241,14 +227,6 @@ public class PlayerPush : MonoBehaviour
             return ChargePowerType.Full;
         else
             return ChargePowerType.Partial;
-    }
-
-    public void ExecuteDashVfx(ChargePowerType chargePower) {
-        if(chargePower == ChargePowerType.Powered || chargePower == ChargePowerType.Full) {    
-            ShockWaveManager.obj.CallShockWave(_collider.bounds.center, 0.2f, 0.05f, 0.15f);
-            CameraShakeManager.obj.ForcePushShake();
-        }
-        Player.obj.ForcePushFlash();
     }
 
     public void ExecuteForcePushVfx(ChargePowerType chargePowerType) {

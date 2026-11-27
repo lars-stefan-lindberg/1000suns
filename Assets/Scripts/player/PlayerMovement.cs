@@ -48,9 +48,19 @@ public class PlayerMovement : MonoBehaviour
     private bool _jumpHeldInput; 
     private Vector2 _movementInput;
 
-    public bool _isDashing = false;
-    public float dashDecelerationTime = 160f;
-    public float initialDashSpeed = 40f;
+    [Header("Air Force Push Recoil")]
+    [Tooltip("Backwards speed after a partially charged force push in the air")]
+    [SerializeField] private float _partialRecoilSpeed = 6f;
+    [Tooltip("Backwards speed after a fully charged force push in the air")]
+    [SerializeField] private float _fullRecoilSpeed = 9f;
+    [Tooltip("Backwards speed after a powered force push in the air")]
+    [SerializeField] private float _poweredRecoilSpeed = 12f;
+    [Tooltip("How fast the recoil speed decays. Recoil distance = speed^2 / (2 * deceleration), duration = speed / deceleration")]
+    [SerializeField] private float _recoilDeceleration = 60f;
+    //While recoiling, vertical movement is paused and horizontal speed decays from the recoil speed
+    private bool _isRecoiling = false;
+    //-1 = recoiling left, 1 = recoiling right
+    private float _recoilDirection = 0f;
 
     //Moveables are used to move the player along with the moveable. Like if a floating platform or block is moving and the player is on top
     public bool isOnMoveable = false;
@@ -93,7 +103,7 @@ public class PlayerMovement : MonoBehaviour
         isOnMoveable = false;
         moveableRigidbody = null;
         jumpThroughPlatform = null;
-        _isDashing = false;
+        EndRecoil();
     }
 
     private void FixedUpdate()
@@ -195,22 +205,33 @@ public class PlayerMovement : MonoBehaviour
         return spriteRenderer.flipX;
     }
 
-    public float _poweredDashMultiplier = 1.2f;
-    public float partialDashPower = 35;
-    public void ExecuteDash(PlayerPush.ChargePowerType chargePower)
-    {        
-        _isDashing = true;
-        float speed = 0;
-        if(chargePower == PlayerPush.ChargePowerType.Powered) {
-            speed = initialDashSpeed * _poweredDashMultiplier;
+    //Recoil from a force push in the air: stops vertical movement and pushes Eli a short distance away from the facing direction
+    private void ExecuteRecoil(PlayerPush.ChargePowerType chargePower)
+    {
+        float recoilSpeed = GetRecoilSpeed(chargePower);
+        if(chargePower == PlayerPush.ChargePowerType.Powered)
             Player.obj.SetHasPowerUp(false);
-        } else if(chargePower == PlayerPush.ChargePowerType.Partial) {
-            speed = partialDashPower;
-        } else if(chargePower == PlayerPush.ChargePowerType.Full) {
-            speed = initialDashSpeed;
+        _recoilDirection = IsFacingLeft() ? 1f : -1f;
+        _frameVelocity = new Vector2(_recoilDirection * recoilSpeed, 0f);
+        _isRecoiling = true;
+    }
+
+    private float GetRecoilSpeed(PlayerPush.ChargePowerType chargePower)
+    {
+        switch(chargePower) {
+            case PlayerPush.ChargePowerType.Powered:
+                return _poweredRecoilSpeed;
+            case PlayerPush.ChargePowerType.Full:
+                return _fullRecoilSpeed;
+            default:
+                return _partialRecoilSpeed;
         }
-        _frameVelocity.x = IsFacingLeft() ? -speed : speed;
-        _ghostTrail.ShowGhosts();
+    }
+
+    private void EndRecoil()
+    {
+        _isRecoiling = false;
+        _recoilDirection = 0f;
     }
 
     public void TriggerForcePushAnimation() {
@@ -230,16 +251,13 @@ public class PlayerMovement : MonoBehaviour
         _isBreathingOnKnees = isBreathingOnKnees;
     }
 
+    /// <summary>
+    /// Applies the force push's knockback when the projectile is fired.
+    /// In the air Eli recoils (vertical movement stops and he moves a short distance backwards). On the ground he is pushed back.
+    /// </summary>
     public void ExecuteForcePushWithProjectile(PlayerPush.ChargePowerType chargePowerType) {
         if(!isGrounded) {
-            if(chargePowerType == PlayerPush.ChargePowerType.Partial) {
-                _frameVelocity.x = IsFacingLeft() ? partialForcePushPushBackSpeed : -partialForcePushPushBackSpeed;
-            } else if(chargePowerType == PlayerPush.ChargePowerType.Full) {
-                _frameVelocity.x = IsFacingLeft() ? normalForcePushPushBackSpeed : -normalForcePushPushBackSpeed;
-            } else if(chargePowerType == PlayerPush.ChargePowerType.Powered) {
-                _frameVelocity.x = IsFacingLeft() ? fullyPoweredForcePushPushBackSpeed : -fullyPoweredForcePushPushBackSpeed;
-                Player.obj.SetHasPowerUp(false);
-            }
+            ExecuteRecoil(chargePowerType);
         } else if(isGrounded) {
             if(chargePowerType == PlayerPush.ChargePowerType.Powered) {
                 _frameVelocity.x = IsFacingLeft() ? fullyPoweredForcePushGroundedPushBackSpeed : -fullyPoweredForcePushGroundedPushBackSpeed;
@@ -256,7 +274,6 @@ public class PlayerMovement : MonoBehaviour
     //[SerializeField] private float _movingVelocityEpsilon = 0.05f;
     private void UpdateAnimator()
     {
-        _animator.SetBool("isDashing", _isDashing);
         _animator.SetBool("isGrounded", isGrounded || CanUseCoyote);
         // Keep moving during short grace to avoid triggering stop animation on quick direction changes
         // Velocity is not enough to check though, since player can have velocity, but there's no movement input
@@ -282,7 +299,7 @@ public class PlayerMovement : MonoBehaviour
     public void Freeze(float freezeDuration) {
         DisablePlayerMovement();
         _freezePlayer = true;
-        _isDashing = false; //Stop any dash when frozen
+        EndRecoil(); //Stop any recoil when frozen
         _movementInput = new Vector2(0,0);
         StartCoroutine(FreezeDuration(freezeDuration));
     }
@@ -294,7 +311,7 @@ public class PlayerMovement : MonoBehaviour
     public void Freeze() {
         DisablePlayerMovement();
         _freezePlayer = true;
-        _isDashing = false; //Stop any dash when frozen
+        EndRecoil(); //Stop any recoil when frozen
         _movementInput = new Vector2(0,0);
     }
 
@@ -1215,10 +1232,8 @@ public class PlayerMovement : MonoBehaviour
     #region Jumping
     
     public float initialPoweredForcePushGroundedSpeed = 30f;
-    public float fullyPoweredForcePushPushBackSpeed = 10f;
     public float fullyPoweredForcePushGroundedPushBackSpeed = 10f;
     public float partialForcePushPushBackSpeed = 5f;
-    public float normalForcePushPushBackSpeed = 10f;
 
     private bool _jumpToConsume;
     private bool _pollTransferredJumpHeld = false; //Jump held carried over from a character switch. Polled until released, since no canceled event fires for it
@@ -1275,20 +1290,16 @@ public class PlayerMovement : MonoBehaviour
         
         // Activate jump kick start
         // Disabled for now due to horizontal scrolling issue
-        // if(!_isDashing && Mathf.Abs(_frameVelocity.x) >= _stats.MaxSpeed) {
+        // if(!_isRecoiling && Mathf.Abs(_frameVelocity.x) >= _stats.MaxSpeed) {
         //     _isJumpKickActive = true;
         //     _jumpKickTimer = _jumpKickDuration;
         //     _jumpKickDirection = isFacingLeft() ? -1f : 1f;
         // }
 
-        if(_isDashing) {
-            //Reset the high speed of the dash
-            if(_frameVelocity.x > _stats.MaxSpeed) {
-                _frameVelocity.x = _stats.MaxSpeed;  
-            } else if(_frameVelocity.x < -_stats.MaxSpeed) {
-                _frameVelocity.x = -_stats.MaxSpeed;
-            }
-            _isDashing = false;
+        if(_isRecoiling) {
+            //Reset the high speed of the recoil
+            _frameVelocity.x = Mathf.Clamp(_frameVelocity.x, -_stats.MaxSpeed, _stats.MaxSpeed);
+            EndRecoil();
         }
         
         //If coyote time is used, skip dust since it looks weird with jump dust in the air
@@ -1355,6 +1366,12 @@ public class PlayerMovement : MonoBehaviour
             _frameVelocity.x = 0;
             return;
         }
+
+        //Checked before the shadow jump, since the recoil pauses gravity and must always run out
+        if (_isRecoiling) {
+            HandleRecoilMovement();
+            return;
+        }
         
         if (_isShadowJumping) {
             _shadowJumpHorizontalDistanceTraveled = Mathf.Abs(transform.position.x - _shadowJumpStartX);
@@ -1407,19 +1424,6 @@ public class PlayerMovement : MonoBehaviour
                 {
                     _frameVelocity.x = _movementInput.x * _walkSpeed;
                 }
-            } else if(_isDashing) {
-                if (_movementInput.x == 0)
-                {
-                    _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, dashDecelerationTime * Time.fixedDeltaTime);
-                    if(_frameVelocity.x == 0)
-                        _isDashing = false;
-                }
-                else
-                {
-                    _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, _movementInput.x * _stats.MaxSpeed, dashDecelerationTime * Time.fixedDeltaTime);
-                    if(_frameVelocity.x == _movementInput.x * _stats.MaxSpeed)
-                        _isDashing = false;
-                }
             } else {
                 if (_movementInput.x == 0)
                 {
@@ -1442,6 +1446,22 @@ public class PlayerMovement : MonoBehaviour
         // {
         //     _frameVelocity.x += _jumpKickHorizontal * _jumpKickDirection;
         // }
+    }
+
+    //Decays the backwards recoil speed. Holding against the recoil only brakes it to zero, so the paused gravity never outlasts
+    //the backwards motion. Holding in the recoil direction hands over to regular air movement once the speed reaches max run speed
+    private void HandleRecoilMovement()
+    {
+        float targetVelocityX = _movementInput.x * _stats.MaxSpeed;
+        bool isSteeringWithRecoil = targetVelocityX * _recoilDirection > 0f;
+        if (!isSteeringWithRecoil)
+            targetVelocityX = 0f;
+
+        _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, targetVelocityX, _recoilDeceleration * Time.fixedDeltaTime);
+
+        bool isRecoilSpeedUsedUp = _frameVelocity.x * _recoilDirection <= targetVelocityX * _recoilDirection;
+        if (isRecoilSpeedUsedUp)
+            EndRecoil();
     }
     
     private void HandleBalancingMovement()
@@ -1513,9 +1533,9 @@ public class PlayerMovement : MonoBehaviour
                 //Brake the fall during the to blob animation, so the blob doesn't end up lower than feels natural
                 _frameVelocity.y = Mathf.MoveTowards(_frameVelocity.y, 0, _switchToBlobFallDeceleration * Time.fixedDeltaTime);
             }
-            else if (_isDashing)
+            else if (_isRecoiling)
             {
-                //Just keep horizontal movement
+                //Vertical movement is paused for the duration of the recoil
                 _frameVelocity.y = 0;
             }
             else if (_isShadowJumping)
