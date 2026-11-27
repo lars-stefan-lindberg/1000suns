@@ -379,6 +379,11 @@ public class LevelManager : MonoBehaviour
                     ShadowTwinPlayer.obj.SetAnimatorLayerAndHasCrown(false);
                 }
             }
+            //In dev mode the room can be started directly, skipping the Cave 56 cutscene that gives Eli the cape.
+            //Eli is inactive here; the flag is stored and Player.OnEnable applies the cape layer when he's enabled.
+            if(Player.obj != null && GameManager.obj.isDevMode) {
+                Player.obj.SetAnimatorLayerAndHasCape(true);
+            }
         } else if(caveTimelineId == CaveTimelineId.Id.Both) {
             Player.obj.SetAnimatorLayerAndHasCape(true);
             ShadowTwinPlayer.obj.SetAnimatorLayerAndHasCrown(true);
