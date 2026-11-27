@@ -93,6 +93,16 @@ public class PlayerBlobMovement : MonoBehaviour
         }
         
         if(_movementInput.y > 0 && value.performed) {
+            //A blob made by Dee pressing down turns back into Dee
+            if(PlayerManager.obj.IsBlobOwnedByDee() && CanTurnBackIntoDee()) {
+                if(isTransformingToTwin || !IsEnoughSpaceForPlayer()) {
+                    return;
+                }
+                _blobAudio.PlayShapeshift();
+                isTransformingToTwin = true;
+                ToTwin();
+                return;
+            }
             if(!PlayerPowersManager.obj.EliCanTurnFromBlobToHuman) {
                 return;
             }
@@ -101,6 +111,12 @@ public class PlayerBlobMovement : MonoBehaviour
             }
             ToHuman();
         }
+    }
+
+    //Turning back into Dee is a merged twin switch, so it needs the same conditions as the Switch button
+    private bool CanTurnBackIntoDee() {
+        return !PlayerManager.obj.IsCoopActive && !PlayerManager.obj.IsSeparated
+            && PlayerPowersManager.obj.CanSwitchBetweenTwinsMerged;
     }
 
     public bool isTransformingToTwin = false;
@@ -244,7 +260,8 @@ public class PlayerBlobMovement : MonoBehaviour
             isOnMoveable = isOnMoveable,
             moveableRigidbody = moveableRigidbody,
             jumpHeld = _jumpHeldInput,
-            endedJumpEarly = _endedJumpEarly
+            endedJumpEarly = _endedJumpEarly,
+            movementInput = _movementInput
         };
     }
 
@@ -308,6 +325,9 @@ public class PlayerBlobMovement : MonoBehaviour
         _playerTwin.GetComponent<ShadowTwinPlayer>().PlayToPlayerAnimation();
         ShadowTwinPull.obj.EnablePull();
         ShadowTwinLash.obj.EnableLash();
+        //If Dee made this blob, Eli goes back to the form he had before
+        PlayerManager.obj.RegisterBlobReturnedToDee();
+        PlayerManager.obj.RegisterTwinSwitch();
         isTransformingToTwin = false;
     }
 
@@ -378,7 +398,7 @@ public class PlayerBlobMovement : MonoBehaviour
         _player.GetComponent<PlayerMovement>().spriteRenderer.flipX = IsFacingLeft();
         _player.GetComponent<PlayerMovement>().CancelJumping();
         _player.SetActive(true);
-        PlayerManager.obj.elisLastForm = PlayerManager.PlayerType.HUMAN;
+        PlayerManager.obj.RegisterBlobReturnedToEli();
         PlayerSwitcher.obj.SwitchToEli();
         _player.GetComponent<PlayerMovement>().ApplySwitchState(switchState);
         if(IsFrozen()) {

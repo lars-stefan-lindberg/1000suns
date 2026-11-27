@@ -354,6 +354,9 @@ public class ShadowTwinMovement : MonoBehaviour
         //             _isJumpKickActive = false;
         //     }
         // }
+
+        //Last, since a switch deactivates this GameObject
+        HandleAutoSwitchInput();
     }
 
     private void HandleFlipPlayer() {
@@ -499,6 +502,7 @@ public class ShadowTwinMovement : MonoBehaviour
     public Collider2D GroundCollider { get; private set; }
 
     private const string SHADOW_GRIP_ACTION_NAME = "ShadowGrip";
+    private const string SHOOT_ACTION_NAME = "Shoot";
 
     private void UpdateAnimator()
     {
@@ -750,6 +754,11 @@ public class ShadowTwinMovement : MonoBehaviour
         {
             _movementInput.y = Mathf.Abs(_movementInput.y) < _stats.VerticalDeadZoneThreshold ? 0 : Mathf.Sign(_movementInput.y);
         }
+
+        //Automatic switch: pressing down as Dee turns into Eli's blob form (same rule as Eli's down-to-blob)
+        if(_movementInput.y < 0 && value.performed) {
+            TryAutoSwitchToBlob();
+        }
     } 
 
     private float GetHorizontalInput(float originInput) {
@@ -863,24 +872,72 @@ public class ShadowTwinMovement : MonoBehaviour
         if(PlayerPowersManager.obj.CanSwitchBetweenTwinsMerged && !PlayerManager.obj.IsSeparated) {
             //Switch to shadow twin
             _sharedPlayerAudio.PlayShapeshift();
-            isTransforming = true;
-            ShadowTwinPull.obj.CancelPulling();
-            ShadowTwinPlayer.obj.RestorePlayerPullLight();
-            ShadowTwinPlayer.obj.EndFullyChargedVfx();
-            ShadowTwinPull.obj.DisablePull();
-            ShadowTwinLash.obj.HardCancel();
-            ShadowTwinLash.obj.DisableLash();
-            
             if(PlayerManager.obj.IsEliInBlobForm()) {
-                //The execution for actually transforming to twin blob is done from the animation events 
-                ShadowTwinPlayer.obj.PlayToTwinBlobAnimation();
+                StartTransformToBlob();
             } else {
-                //The execution for actually transforming to twin is done from the animation events 
-                ShadowTwinPlayer.obj.PlayToTwinAnimation();
+                SwitchToEliInstantly();
             }
         } else if(PlayerPowersManager.obj.CanSeparate) {
             StartCoroutine(SwitchTo(PlayerManager.obj.IsEliInBlobForm()));
         }
+    }
+
+    /// <summary>Ends any active grip, lash or latch and disables Dee's powers. Called before Dee hands over to Eli or the blob.</summary>
+    public void CancelActivePowers() {
+        ShadowTwinPull.obj.CancelPulling();
+        ShadowTwinPlayer.obj.RestorePlayerPullLight();
+        ShadowTwinPlayer.obj.EndFullyChargedVfx();
+        ShadowTwinPull.obj.DisablePull();
+        ShadowTwinLash.obj.HardCancel();
+        ShadowTwinLash.obj.DisableLash();
+    }
+
+    //Cancels Dee's powers and swaps to Eli in place. Dee's GameObject is inactive afterwards, so don't start coroutines on it after calling this
+    private void SwitchToEliInstantly() {
+        isTransforming = true;
+        CancelActivePowers();
+        ToTwin();
+        Player.obj.FlashOnce();
+    }
+
+    //True while Dee transforms into the blob because she pressed down (her own blob), false when switching to Eli's blob form
+    private bool _isTransformingIntoOwnBlob = false;
+
+    //The blob transform keeps its animation. The actual switch is done from the toTwinBlob animation event (ShadowTwinPlayerAnimationEvents.ToTwinBlob)
+    private void StartTransformToBlob(bool isOwnBlob = false) {
+        isTransforming = true;
+        _isTransformingIntoOwnBlob = isOwnBlob;
+        CancelActivePowers();
+        ShadowTwinPlayer.obj.PlayToTwinBlobAnimation();
+    }
+
+    //Automatic switch: using Eli's force push as Dee swaps to Eli and starts charging
+    private void HandleAutoSwitchInput() {
+        if(PlayerManager.WasActionPerformedThisFrame(_playerInput, SHOOT_ACTION_NAME)) {
+            TryAutoSwitchToEli();
+        }
+    }
+
+    private bool CanStartAutoSwitch() {
+        return !isTransforming && !IsFrozen() && !IsTransitioningBetweenLevels() && PlayerManager.obj.CanAutoSwitch();
+    }
+
+    private void TryAutoSwitchToEli() {
+        //Blob has no force push, so only auto switch when Eli is in human form
+        if(!CanStartAutoSwitch() || PlayerManager.obj.IsEliInBlobForm() || !PlayerPowersManager.obj.EliCanForcePush)
+            return;
+
+        _sharedPlayerAudio.PlayShapeshift();
+        SwitchToEliInstantly();
+        PlayerPush.obj.StartChargeFromSwitch();
+    }
+
+    private void TryAutoSwitchToBlob() {
+        if(!CanStartAutoSwitch() || !PlayerPowersManager.obj.EliCanTurnFromHumanToBlob)
+            return;
+
+        _sharedPlayerAudio.PlayShapeshift();
+        StartTransformToBlob(true);
     }
 
     private IEnumerator SwitchTo(bool isEliInBlobForm) {
@@ -1022,14 +1079,17 @@ public class ShadowTwinMovement : MonoBehaviour
 
     //Captures the state to carry over to the new character when switching. Must be called before this character is disabled
     public PlayerManager.SwitchState GetSwitchState() {
-        return new PlayerManager.SwitchState {
+        PlayerManager.SwitchState state = new PlayerManager.SwitchState {
             velocity = _frameVelocity,
             isGrounded = isGrounded,
             isOnMoveable = isOnMoveable,
             moveableRigidbody = moveableRigidbody,
             jumpHeld = _jumpHeldInput,
-            endedJumpEarly = _endedJumpEarly
+            endedJumpEarly = _endedJumpEarly,
+            movementInput = _movementInput
         };
+        PlayerManager.CaptureAnimatorState(_animator, ref state);
+        return state;
     }
 
     //Applies the state from the previous character when switching. Velocity is clamped to regular movement limits,
@@ -1053,6 +1113,12 @@ public class ShadowTwinMovement : MonoBehaviour
         if(ShadowTwinPlayer.obj.rigidBody.bodyType != RigidbodyType2D.Static) {
             ShadowTwinPlayer.obj.rigidBody.velocity = _frameVelocity;
         }
+        //Carry over the movement input and push the animator parameters right away. The animator resets when the GameObject is
+        //reactivated, and the new PlayerInput only reports the held direction on the next input update, so the first frame would otherwise show idle
+        _movementInput = state.movementInput;
+        UpdateAnimator();
+        //Continue the previous character's run/jump/fall animation at the same point instead of starting from idle
+        PlayerManager.RestoreAnimatorState(_animator, state);
     }
 
     public void ToTwin() {
@@ -1074,6 +1140,7 @@ public class ShadowTwinMovement : MonoBehaviour
             _playerTwin.GetComponent<PlayerMovement>().UnFreeze();
         }
         PlayerPush.obj.EnableCharge();
+        PlayerManager.obj.RegisterTwinSwitch();
         isTransforming = false;
     }
 
@@ -1113,6 +1180,13 @@ public class ShadowTwinMovement : MonoBehaviour
         _playerBlob.transform.position = transform.position - new Vector3(0, 0.5f, 0);
         _playerBlob.GetComponent<PlayerBlobMovement>().spriteRenderer.flipX = IsFacingLeft();
         _playerBlob.SetActive(true);
+        //Pressing down makes Dee's own blob (turns back into Dee). Switching to Eli while Eli is in blob form keeps it Eli's blob
+        if(_isTransformingIntoOwnBlob) {
+            PlayerManager.obj.RegisterDeeTurnedIntoBlob();
+        } else {
+            PlayerManager.obj.RegisterEliTurnedIntoBlob();
+        }
+        _isTransformingIntoOwnBlob = false;
         PlayerSwitcher.obj.SwitchToBlob();
         _playerBlob.GetComponent<PlayerBlobMovement>().ApplySwitchState(switchState);
         if(IsFrozen()) {
@@ -1120,6 +1194,7 @@ public class ShadowTwinMovement : MonoBehaviour
         } else {
             _playerBlob.GetComponent<PlayerBlobMovement>().UnFreeze();
         }
+        PlayerManager.obj.RegisterTwinSwitch();
         isTransforming = false;
     }
 
@@ -2509,7 +2584,8 @@ public class ShadowTwinMovement : MonoBehaviour
         }
         else
         {
-            if (isTransforming && PlayerManager.obj.IsEliInBlobForm() && _frameVelocity.y < 0)
+            //Only the blob transform keeps an animation (the switch to Eli is instant), so isTransforming means Dee is turning into the blob
+            if (isTransforming && _frameVelocity.y < 0)
             {
                 //Brake the fall during the to blob animation, so the blob doesn't end up lower than feels natural
                 _frameVelocity.y = Mathf.MoveTowards(_frameVelocity.y, 0, _switchToBlobFallDeceleration * Time.fixedDeltaTime);

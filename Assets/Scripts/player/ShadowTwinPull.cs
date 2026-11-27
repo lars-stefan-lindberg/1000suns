@@ -122,6 +122,7 @@ public class ShadowTwinPull : MonoBehaviour
     [SerializeField] private SpriteRenderer _mouseAimIndicator;
 
     private const string SHADOW_GRIP_AIM_ACTION_NAME = "ShadowGripAim";
+    private const string SHADOW_GRIP_ACTION_NAME = "ShadowGrip";
     private const string SHADOW_GRIP_POINTER_ACTION_NAME = "ShadowGripPointer";
     private const string KEYBOARD_CONTROL_SCHEME_NAME = "Keyboard";
     private const float STICK_AIM_DEAD_ZONE = 0.15f;
@@ -140,6 +141,8 @@ public class ShadowTwinPull : MonoBehaviour
     private float _mouseAimOffsetX = 0f;
     private float _mouseAimWorldY = 0f;
     private bool _wasIdleGroundedWhilePulling = false;
+    //Set when the grip was started by an automatic switch, so the button release has to be polled
+    private bool _pollShadowGripButtonRelease = false;
 
     public bool IsControllingObject => _isControllingObject;
 
@@ -205,6 +208,12 @@ public class ShadowTwinPull : MonoBehaviour
     /// <summary>Input callback for Dee's ShadowGrip action (wired from PlayerInput events).</summary>
     public void OnShadowGrip(InputAction.CallbackContext context)
     {
+        //After an automatic switch the held button (e.g. an analog trigger) can still send started/performed.
+        //The grip is already running from that press, so keep polling and only react to the release
+        if (_pollShadowGripButtonRelease && !context.canceled)
+            return;
+        //A real input event takes over from the polling started by an automatic switch
+        _pollShadowGripButtonRelease = false;
         // Prevent shadow pull during shadow lash
         if (ShadowTwinLash.obj != null && ShadowTwinLash.obj.IsShadowLashing())
         {
@@ -219,6 +228,25 @@ public class ShadowTwinPull : MonoBehaviour
                 OnShadowGripButtonReleased();
             }
         }
+    }
+
+    /// <summary>True if Dee is allowed to start a shadow grip right now.</summary>
+    public bool CanStartGrip() {
+        bool isLashing = ShadowTwinLash.obj != null && ShadowTwinLash.obj.IsShadowLashing();
+        return PlayerPowersManager.obj.DeeCanForcePull && !_isPullDisabled && !isLashing && !_isPullingObject;
+    }
+
+    /// <summary>
+    /// Starts a shadow grip after an automatic switch from Eli, where the ShadowGrip button is already held.
+    /// The release is polled, since a button held when the PlayerInput got enabled never sends canceled.
+    /// </summary>
+    public void StartGripFromSwitch() {
+        if(!CanStartGrip())
+            return;
+        //Highlighting doesn't run while Dee is inactive. Force a fresh detection next frame so the existing auto-grab picks up a pullable in range right away
+        _lastDetectionTime = float.MinValue;
+        Pull();
+        _pollShadowGripButtonRelease = true;
     }
 
     /// <summary>Ends the grip when the button is released, unless the grip is held for a character switch.</summary>
@@ -240,6 +268,12 @@ public class ShadowTwinPull : MonoBehaviour
 
     private void Update()
     {
+        if (_pollShadowGripButtonRelease && !PlayerManager.IsActionPressed(_playerInput, SHADOW_GRIP_ACTION_NAME))
+        {
+            _pollShadowGripButtonRelease = false;
+            OnShadowGripButtonReleased();
+        }
+
         // Check if currently pulled pullable became immune - release it immediately
         if (_isPullingObject && _pulledPullable != null && _pulledPullable.IsImmune)
         {
@@ -351,6 +385,7 @@ public class ShadowTwinPull : MonoBehaviour
     }
 
     public void CancelPulling() {
+        _pollShadowGripButtonRelease = false;
         _isPullingObject = false;
         _isControllingObject = false;
         _isOutOfRange = false;
@@ -415,6 +450,10 @@ public class ShadowTwinPull : MonoBehaviour
     }
 
     private void SetPullable(Pullable pullable) {
+        //Grabbing the object that's already held would store its zeroed grip gravity as the original gravity,
+        //and the object would float away when released
+        if(pullable != null && pullable == _pulledPullable)
+            return;
         if(pullable != null) {
             _pulledPullable = pullable;
             _targetRb = _pulledPullable.GetRigidbody();
@@ -941,7 +980,8 @@ public class ShadowTwinPull : MonoBehaviour
     {
         _isPullingObject = true;
         
-        // Start shadow pull loop (plays regardless of pullable)
+        // Start shadow pull loop (plays regardless of pullable). Stop any previous loop first so its handle is never lost
+        _deeAudio.StopInstanceWithFadeOut(ref _shadowPullLoopInstance);
         _shadowPullLoopInstance = _deeAudio.StartShadowPullLoop();
         
         if(_highlightedPullable != null) {

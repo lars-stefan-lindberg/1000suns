@@ -36,6 +36,11 @@ public class PlayerPush : MonoBehaviour
     private bool _startedChargeAnimation = false;
     private bool _startedFullyChargedAnimation = false;
     private EliAudio _eliAudio;
+    private PlayerInput _playerInput;
+
+    private const string SHOOT_ACTION_NAME = "Shoot";
+    //Set when charging was started by an automatic switch, so the button release has to be polled
+    private bool _pollShootButtonRelease = false;
 
     public enum ChargePowerType {
         Partial,
@@ -48,50 +53,89 @@ public class PlayerPush : MonoBehaviour
         obj = this;
         _collider = GetComponent<BoxCollider2D>();
         _eliAudio = GetComponent<EliAudio>();
+        _playerInput = GetComponent<PlayerInput>();
     }
 
     public void OnShoot(InputAction.CallbackContext context)
     {
+        //After an automatic switch the held button (e.g. an analog trigger) can still send started/performed.
+        //The charge is already running from that press, so keep polling and only react to the release
+        if(_pollShootButtonRelease && !context.canceled)
+            return;
+        //A real input event takes over from the polling started by an automatic switch
+        _pollShootButtonRelease = false;
         if(PlayerPowersManager.obj.EliCanForcePush && !_isChargeDisabled) {
             if (context.performed)
             {
-                pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().HardCancel();
-                _eliAudio.PlayForcePushStart(ref _forcePushStartSfxInstance);
-                _buildUpPower = defaultPower;
-                _buildingUpPower = true;
-                _buildUpPowerTime = 0;
-                Player.obj.StartChargeFlash();
-                Player.obj.PlayerPushLight();
+                StartCharge();
             }
             if(context.canceled) {
-                if(PlayerMovement.obj.IsTransitioningBetweenLevels()) {
-                    ResetBuiltUpPower();
-                    return;
-                }
-                //Need to check that we are building power before we can push. If not the push will be executed on button release.
-                if(_buildingUpPower && _buildUpPowerTime >= minBuildUpPowerTime)
-                {
-                    if(PlayerPowersManager.obj.EliCanShadowDash && !PlayerMovement.obj.isGrounded && PlayerMovement.obj.IsHorizontalInput())
-                    {
-                        Dash();
-                        ResetBuiltUpPower();
-                        return;
-                    }
-
-                    if(platform != null) {
-                        float power = Player.obj.hasPowerUp && IsFullyCharged() ? powerUpMaxForce : _buildUpPower;
-                        StartCoroutine(DelayedMovePlatform(projectileDelay, power));
-                    }
-
-                    if(CanUsePoweredForcePush) 
-                        PoweredForcePush(powerUpMaxForce);
-                    else
-                        ForcePush(_buildUpPower);
-                }
-                
-                ResetBuiltUpPower();
+                ReleaseCharge();
             }
         }
+    }
+
+    /// <summary>True if Eli is allowed to start charging the force push right now.</summary>
+    public bool CanStartCharge() {
+        return PlayerPowersManager.obj.EliCanForcePush && !_isChargeDisabled;
+    }
+
+    /// <summary>
+    /// Starts charging after an automatic switch from Dee, where the Shoot button is already held.
+    /// The release is polled, since a button held when the PlayerInput got enabled never sends canceled.
+    /// </summary>
+    public void StartChargeFromSwitch() {
+        if(!CanStartCharge())
+            return;
+        StartCharge();
+        _pollShootButtonRelease = true;
+    }
+
+    private void Update()
+    {
+        if(_pollShootButtonRelease && !PlayerManager.IsActionPressed(_playerInput, SHOOT_ACTION_NAME)) {
+            _pollShootButtonRelease = false;
+            ReleaseCharge();
+        }
+    }
+
+    private void StartCharge() {
+        pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().HardCancel();
+        _eliAudio.PlayForcePushStart(ref _forcePushStartSfxInstance);
+        _buildUpPower = defaultPower;
+        _buildingUpPower = true;
+        _buildUpPowerTime = 0;
+        Player.obj.StartChargeFlash();
+        Player.obj.PlayerPushLight();
+    }
+
+    private void ReleaseCharge() {
+        if(PlayerMovement.obj.IsTransitioningBetweenLevels()) {
+            ResetBuiltUpPower();
+            return;
+        }
+        //Need to check that we are building power before we can push. If not the push will be executed on button release.
+        if(_buildingUpPower && _buildUpPowerTime >= minBuildUpPowerTime)
+        {
+            if(PlayerPowersManager.obj.EliCanShadowDash && !PlayerMovement.obj.isGrounded && PlayerMovement.obj.IsHorizontalInput())
+            {
+                Dash();
+                ResetBuiltUpPower();
+                return;
+            }
+
+            if(platform != null) {
+                float power = Player.obj.hasPowerUp && IsFullyCharged() ? powerUpMaxForce : _buildUpPower;
+                StartCoroutine(DelayedMovePlatform(projectileDelay, power));
+            }
+
+            if(CanUsePoweredForcePush) 
+                PoweredForcePush(powerUpMaxForce);
+            else
+                ForcePush(_buildUpPower);
+        }
+        
+        ResetBuiltUpPower();
     }
 
     public bool IsFullyCharged() {
@@ -104,6 +148,7 @@ public class PlayerPush : MonoBehaviour
     }
 
     public void ResetBuiltUpPower() {
+        _pollShootButtonRelease = false;
         pushPowerUpAnimation.GetComponent<ChargeAnimationMgr>().Cancel();
         Player.obj.AbortFlash();
         Player.obj.EndFullyChargedVfx();

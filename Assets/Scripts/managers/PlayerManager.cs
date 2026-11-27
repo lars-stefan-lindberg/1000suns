@@ -13,6 +13,73 @@ public class PlayerManager : MonoBehaviour
         public Rigidbody2D moveableRigidbody;
         public bool jumpHeld;
         public bool endedJumpEarly;
+        public Vector2 movementInput;
+        //Base layer animator state (0 when not transferable) and its normalized time, so the new character continues the same animation
+        public int animatorStateHash;
+        public float animatorNormalizedTime;
+    }
+
+    private const int ANIMATOR_BASE_LAYER = 0;
+
+    //Movement states that exist with the same name in both Eli's (Player.controller) and Dee's (ShadowTwinPlayer.controller) animators.
+    //Only these are carried over on a switch; anything else (powers, cutscene states) falls back to the animator parameters
+    private static readonly int[] TRANSFERABLE_ANIMATOR_STATES = {
+        Animator.StringToHash("main_character_with_cape_idle"),
+        Animator.StringToHash("start_running"),
+        Animator.StringToHash("main_character_with_cloak_running"),
+        Animator.StringToHash("stop_running"),
+        Animator.StringToHash("turn_around"),
+        Animator.StringToHash("main_character_with_cape_jump"),
+        Animator.StringToHash("jump_to_fall"),
+        Animator.StringToHash("falling"),
+        Animator.StringToHash("fall_to_land"),
+        Animator.StringToHash("jump_to_land"),
+    };
+
+    /// <summary>Stores the outgoing character's base layer animation state in the switch state, if it's a transferable movement state.</summary>
+    public static void CaptureAnimatorState(Animator animator, ref SwitchState state) {
+        state.animatorStateHash = 0;
+        state.animatorNormalizedTime = 0f;
+        if(animator == null || !animator.isActiveAndEnabled)
+            return;
+        //Mid transition, the destination state is what the player is about to see
+        AnimatorStateInfo stateInfo = animator.IsInTransition(ANIMATOR_BASE_LAYER)
+            ? animator.GetNextAnimatorStateInfo(ANIMATOR_BASE_LAYER)
+            : animator.GetCurrentAnimatorStateInfo(ANIMATOR_BASE_LAYER);
+        if(System.Array.IndexOf(TRANSFERABLE_ANIMATOR_STATES, stateInfo.shortNameHash) < 0)
+            return;
+        state.animatorStateHash = stateInfo.shortNameHash;
+        //Looping states keep their cycle phase. Finished one-shot states stay on their last frame
+        state.animatorNormalizedTime = stateInfo.loop ? Mathf.Repeat(stateInfo.normalizedTime, 1f) : Mathf.Min(stateInfo.normalizedTime, 1f);
+    }
+
+    /// <summary>
+    /// Puts the incoming character's animator directly into the captured state at the same time, instead of starting from idle.
+    /// Call after the animator parameters are updated. Does nothing if no state was captured or the animator lacks it.
+    /// </summary>
+    public static void RestoreAnimatorState(Animator animator, SwitchState state) {
+        if(animator == null || state.animatorStateHash == 0 || !animator.HasState(ANIMATOR_BASE_LAYER, state.animatorStateHash))
+            return;
+        animator.Play(state.animatorStateHash, ANIMATOR_BASE_LAYER, state.animatorNormalizedTime);
+        //Evaluate now so the first rendered frame already shows the new pose
+        animator.Update(0f);
+    }
+
+    [Tooltip("Minimum time in seconds after a twin switch before an automatic switch (using the other twin's power) is allowed again. Prevents spamming auto switches.")]
+    [SerializeField] private float _autoSwitchCooldown = 0.2f;
+    private float _lastTwinSwitchTime = float.MinValue;
+
+    /// <summary>Records that the active twin just changed. Starts the automatic switch cooldown.</summary>
+    public void RegisterTwinSwitch() {
+        _lastTwinSwitchTime = Time.time;
+    }
+
+    /// <summary>True when an automatic switch is allowed: single player, merged twins, merged switching unlocked and the cooldown has passed.</summary>
+    public bool CanAutoSwitch() {
+        return !IsCoopActive
+            && !IsSeparated
+            && PlayerPowersManager.obj.CanSwitchBetweenTwinsMerged
+            && Time.time - _lastTwinSwitchTime >= _autoSwitchCooldown;
     }
 
     //Reads the actual button state of an action's controls. Used when an action was already held when its PlayerInput got enabled,
@@ -26,6 +93,14 @@ public class PlayerManager : MonoBehaviour
                 return true;
         }
         return false;
+    }
+
+    /// <summary>True if the action on an enabled PlayerInput was performed this frame. Used to poll the other twin's power actions for automatic switching.</summary>
+    public static bool WasActionPerformedThisFrame(PlayerInput playerInput, string actionName) {
+        if(playerInput == null || !playerInput.enabled || playerInput.currentActionMap == null)
+            return false;
+        InputAction action = playerInput.currentActionMap.FindAction(actionName);
+        return action != null && action.enabled && action.WasPerformedThisFrame();
     }
 
     public enum PlayerDirection {
@@ -78,6 +153,42 @@ public class PlayerManager : MonoBehaviour
     
     public bool IsEliInBlobForm() {
         return elisLastForm == PlayerType.BLOB;
+    }
+
+    //Who turned into the blob. SHADOW_TWIN when Dee pressed down to turn into the blob, HUMAN for every other way into blob form
+    private PlayerType _blobOwner = PlayerType.HUMAN;
+    //Eli's form right before Dee turned into the blob, restored when that blob turns back into Dee
+    private PlayerType _elisFormBeforeDeeBlob = PlayerType.HUMAN;
+
+    /// <summary>Records that Eli turned into the blob (or the blob was restored for Eli). Turning back up returns to Eli.</summary>
+    public void RegisterEliTurnedIntoBlob() {
+        _blobOwner = PlayerType.HUMAN;
+        elisLastForm = PlayerType.BLOB;
+    }
+
+    /// <summary>Records that Dee turned into the blob herself. Turning back up returns to Dee.</summary>
+    public void RegisterDeeTurnedIntoBlob() {
+        _elisFormBeforeDeeBlob = elisLastForm;
+        _blobOwner = PlayerType.SHADOW_TWIN;
+        elisLastForm = PlayerType.BLOB;
+    }
+
+    /// <summary>True when the current blob was made by Dee pressing down, so it should turn back into Dee.</summary>
+    public bool IsBlobOwnedByDee() {
+        return _blobOwner == PlayerType.SHADOW_TWIN;
+    }
+
+    /// <summary>Called when the blob turns back into Dee. Restores Eli's form from before Dee turned into the blob.</summary>
+    public void RegisterBlobReturnedToDee() {
+        if(_blobOwner == PlayerType.SHADOW_TWIN)
+            elisLastForm = _elisFormBeforeDeeBlob;
+        _blobOwner = PlayerType.HUMAN;
+    }
+
+    /// <summary>Called when the blob turns into human Eli. Clears any Dee ownership of the blob.</summary>
+    public void RegisterBlobReturnedToEli() {
+        _blobOwner = PlayerType.HUMAN;
+        elisLastForm = PlayerType.HUMAN;
     }
     
     public void DisablePlayerMovement(PlayerType playerType) {

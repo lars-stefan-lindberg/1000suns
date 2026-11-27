@@ -61,6 +61,9 @@ public class PlayerMovement : MonoBehaviour
     private bool _isWalking = false;
     [SerializeField] private float _walkSpeed = 2f;
 
+    private const string LASH_ACTION_NAME = "Lash";
+    private const string SHADOW_GRIP_ACTION_NAME = "ShadowGrip";
+
     private void Awake()
     {
         obj = this;
@@ -131,6 +134,8 @@ public class PlayerMovement : MonoBehaviour
                 PerformMergeSplit();
             }
         }
+        //Last, since a switch deactivates this GameObject
+        HandleAutoSwitchInput();
         // Update jump kick timer
         //Note: disabled for now due to horizontal scrolling gets weird since camera is following player rigidly
         // if (_isJumpKickActive)
@@ -456,6 +461,8 @@ public class PlayerMovement : MonoBehaviour
             _playerInput.currentActionMap.FindAction("Movement").Disable();
             _playerInput.currentActionMap.FindAction("Jump").Disable();
             _playerInput.currentActionMap.FindAction("Shoot").Disable();
+            _playerInput.currentActionMap.FindAction(SHADOW_GRIP_ACTION_NAME).Disable();
+            _playerInput.currentActionMap.FindAction(LASH_ACTION_NAME).Disable();
             _playerInput.currentActionMap.FindAction("Switch").Disable();
             _playerInput.currentActionMap.FindAction("MergeSplit").Disable();
         }
@@ -466,6 +473,8 @@ public class PlayerMovement : MonoBehaviour
             _playerInput.currentActionMap.FindAction("Movement").Enable();
             _playerInput.currentActionMap.FindAction("Jump").Enable();
             _playerInput.currentActionMap.FindAction("Shoot").Enable();
+            _playerInput.currentActionMap.FindAction(SHADOW_GRIP_ACTION_NAME).Enable();
+            _playerInput.currentActionMap.FindAction(LASH_ACTION_NAME).Enable();
             _playerInput.currentActionMap.FindAction("Switch").Enable();
             _playerInput.currentActionMap.FindAction("MergeSplit").Enable();
         }
@@ -571,14 +580,17 @@ public class PlayerMovement : MonoBehaviour
 
     //Captures the state to carry over to the new character when switching. Must be called before this character is disabled
     public PlayerManager.SwitchState GetSwitchState() {
-        return new PlayerManager.SwitchState {
+        PlayerManager.SwitchState state = new PlayerManager.SwitchState {
             velocity = _frameVelocity,
             isGrounded = isGrounded,
             isOnMoveable = isOnMoveable,
             moveableRigidbody = moveableRigidbody,
             jumpHeld = _jumpHeldInput,
-            endedJumpEarly = _endedJumpEarly
+            endedJumpEarly = _endedJumpEarly,
+            movementInput = _movementInput
         };
+        PlayerManager.CaptureAnimatorState(_animator, ref state);
+        return state;
     }
 
     //Applies the state from the previous character when switching. Velocity is clamped to regular movement limits,
@@ -604,6 +616,12 @@ public class PlayerMovement : MonoBehaviour
         if(Player.obj.rigidBody.bodyType != RigidbodyType2D.Static) {
             Player.obj.rigidBody.velocity = _frameVelocity;
         }
+        //Carry over the movement input and push the animator parameters right away. The animator resets when the GameObject is
+        //reactivated, and the new PlayerInput only reports the held direction on the next input update, so the first frame would otherwise show idle
+        _movementInput = state.movementInput;
+        UpdateAnimator();
+        //Continue the previous character's run/jump/fall animation at the same point instead of starting from idle
+        PlayerManager.RestoreAnimatorState(_animator, state);
     }
 
     public void ToBlob() {
@@ -617,7 +635,7 @@ public class PlayerMovement : MonoBehaviour
         PlayerBlobMovement playerBlobMovement = _playerBlob.GetComponent<PlayerBlobMovement>();
         playerBlobMovement.spriteRenderer.flipX = IsFacingLeft();
         _playerBlob.SetActive(true);
-        PlayerManager.obj.elisLastForm = PlayerManager.PlayerType.BLOB;
+        PlayerManager.obj.RegisterEliTurnedIntoBlob();
         PlayerSwitcher.obj.SwitchToBlob();
         playerBlobMovement.ApplySwitchState(switchState);
         if(IsFrozen()) {
@@ -647,6 +665,7 @@ public class PlayerMovement : MonoBehaviour
         }
         ShadowTwinPull.obj.EnablePull();
         ShadowTwinLash.obj.EnableLash();
+        PlayerManager.obj.RegisterTwinSwitch();
         isTransformingToTwin = false;
     }
 
@@ -795,15 +814,56 @@ public class PlayerMovement : MonoBehaviour
 
         if(PlayerPowersManager.obj.CanSwitchBetweenTwinsMerged && !PlayerManager.obj.IsSeparated)
         {    
-            //Switch "form" to shadow twin
+            //Switch "form" to shadow twin instantly, without a transform animation
             _sharedPlayerAudio.PlayShapeshift();
-            isTransformingToTwin = true;
-            PlayerPush.obj.ResetBuiltUpPower();
-            PlayerPush.obj.DisableCharge();
-            Player.obj.PlayToShadowTwinAnimation();
+            SwitchToTwinInstantly();
         }
         else if(PlayerPowersManager.obj.CanSeparate) {
             StartCoroutine(SwitchToDee());
+        }
+    }
+
+    //Cancels Eli's charge and swaps to Dee in place. Eli's GameObject is inactive afterwards, so don't start coroutines on it after calling this
+    private void SwitchToTwinInstantly() {
+        isTransformingToTwin = true;
+        PlayerPush.obj.ResetBuiltUpPower();
+        PlayerPush.obj.DisableCharge();
+        ToTwin();
+        ShadowTwinPlayer.obj.FlashOnce();
+    }
+
+    private enum DeePower {
+        Lash,
+        ShadowGrip
+    }
+
+    //Automatic switch: using one of Dee's powers as Eli swaps to Dee and starts that power
+    private void HandleAutoSwitchInput() {
+        if(PlayerManager.WasActionPerformedThisFrame(_playerInput, LASH_ACTION_NAME)) {
+            TryAutoSwitchToTwin(DeePower.Lash);
+        } else if(PlayerManager.WasActionPerformedThisFrame(_playerInput, SHADOW_GRIP_ACTION_NAME)) {
+            TryAutoSwitchToTwin(DeePower.ShadowGrip);
+        }
+    }
+
+    private void TryAutoSwitchToTwin(DeePower power) {
+        if(isTransformingToTwin || isTransformingToBlob || IsFrozen() || IsTransitioningBetweenLevels() || _isBalancing)
+            return;
+        if(!PlayerManager.obj.CanAutoSwitch())
+            return;
+        //Only switch if the power can actually be used, so the player never ends up as Dee with nothing happening
+        bool canUsePower = power == DeePower.Lash
+            ? PlayerPowersManager.obj.DeeCanShadowLash && ShadowTwinLash.obj.IsOffCooldown()
+            : PlayerPowersManager.obj.DeeCanForcePull;
+        if(!canUsePower)
+            return;
+
+        _sharedPlayerAudio.PlayShapeshift();
+        SwitchToTwinInstantly();
+        if(power == DeePower.Lash) {
+            ShadowTwinLash.obj.StartLashFromSwitch();
+        } else {
+            ShadowTwinPull.obj.StartGripFromSwitch();
         }
     }
 

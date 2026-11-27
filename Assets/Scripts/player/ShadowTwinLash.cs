@@ -23,14 +23,21 @@ public class ShadowTwinLash : MonoBehaviour
     private Coroutine _activeDirectionalBufferCoroutine;
     private Coroutine _activeLashCoroutine;
     private Vector2 _currentLashDirection;
-    private float _lashCooldownTimer = 0f;
+    // Time when the lash cooldown ends. A timestamp instead of a countdown, so it stays correct while Dee is inactive
+    private float _lashCooldownEndTime = float.MinValue;
     private DeeAudio _deeAudio;
+    private PlayerInput _playerInput;
+
+    private const string LASH_ACTION_NAME = "Lash";
+    // Set when the lash was started by an automatic switch, so the button release has to be polled
+    private bool _pollLashButtonRelease = false;
 
     private void Awake()
     {
         obj = this;
 
         _deeAudio = GetComponent<DeeAudio>();
+        _playerInput = GetComponent<PlayerInput>();
     }
 
     private void OnDestroy()
@@ -40,10 +47,10 @@ public class ShadowTwinLash : MonoBehaviour
 
     private void Update()
     {
-        // Update cooldown timer
-        if (_lashCooldownTimer > 0f)
+        if (_pollLashButtonRelease && !PlayerManager.IsActionPressed(_playerInput, LASH_ACTION_NAME))
         {
-            _lashCooldownTimer -= Time.deltaTime;
+            _pollLashButtonRelease = false;
+            OnLashButtonCanceled();
         }
     }
 
@@ -71,6 +78,7 @@ public class ShadowTwinLash : MonoBehaviour
         // Reset state
         _isShadowLashing = false;
         _lashButtonReleased = false;
+        _pollLashButtonRelease = false;
 
         // Restore gravity if it was disabled
         if (ShadowTwinPlayer.obj != null)
@@ -95,6 +103,15 @@ public class ShadowTwinLash : MonoBehaviour
 
     public void OnLash(InputAction.CallbackContext context)
     {
+        // After an automatic switch the held button (e.g. an analog trigger) can still send started/performed.
+        // The lash is already running from that press, so keep polling and only react to the release
+        if (_pollLashButtonRelease && !context.canceled)
+        {
+            return;
+        }
+        // A real input event takes over from the polling started by an automatic switch
+        _pollLashButtonRelease = false;
+
         // Prevent shadow lash while transforming to another character
         if (ShadowTwinMovement.obj != null && ShadowTwinMovement.obj.isTransforming)
         {
@@ -118,46 +135,82 @@ public class ShadowTwinLash : MonoBehaviour
             if (context.performed)
             {
                 // Prevent shadow lash during cooldown
-                if (_lashCooldownTimer > 0f)
+                if (!IsOffCooldown())
                 {
                     return;
                 }
 
-                // Lashing ends an active shadow grip
-                if (ShadowTwinPull.obj != null)
-                {
-                    ShadowTwinPull.obj.ReleaseGrip();
-                }
-                
-                // Cancel any existing directional buffer coroutine
-                if (_activeDirectionalBufferCoroutine != null)
-                {
-                    StopCoroutine(_activeDirectionalBufferCoroutine);
-                }
-                
-                // Immediately freeze the player for instant response
-                _pausedVelocity = ShadowTwinPlayer.obj.rigidBody.velocity;
-                ShadowTwinMovement.obj.PauseInAir();
-                ShadowTwinPlayer.obj.DisableGravity();
-                _isShadowLashing = true;
-                _lashButtonReleased = false;
-                
-                // Clear any buffered jump inputs when starting shadow lash
-                // This prevents jump inputs from being "saved" and executed later
-                ShadowTwinMovement.obj.ClearLatchedJumpInput();
-                ShadowTwinMovement.obj.CancelJumping();
-
-                // Start cooldown
-                _lashCooldownTimer = _lashCooldownDuration;
-
-                // Start directional input buffer
-                _activeDirectionalBufferCoroutine = StartCoroutine(DirectionalInputBuffer());
+                StartLash();
             }
             if(context.canceled)
             {
                 OnLashButtonCanceled();
             }
         }
+    }
+
+    /// <summary>True when the lash cooldown has passed.</summary>
+    public bool IsOffCooldown()
+    {
+        return Time.time >= _lashCooldownEndTime;
+    }
+
+    /// <summary>True if Dee is allowed to start a shadow lash right now (unlocked, enabled, off cooldown and not busy with another move).</summary>
+    public bool CanStartLash()
+    {
+        if (!PlayerPowersManager.obj.DeeCanShadowLash || _isLashDisabled || !IsOffCooldown())
+        {
+            return false;
+        }
+        ShadowTwinMovement movement = ShadowTwinMovement.obj;
+        return movement == null || (!movement.IsPulling && !movement.IsHorizontalPropelling());
+    }
+
+    /// <summary>
+    /// Starts a shadow lash after an automatic switch from Eli, where the Lash button is already held.
+    /// The release is polled, since a button held when the PlayerInput got enabled never sends canceled.
+    /// </summary>
+    public void StartLashFromSwitch()
+    {
+        if (!CanStartLash())
+        {
+            return;
+        }
+        StartLash();
+        _pollLashButtonRelease = true;
+    }
+
+    private void StartLash()
+    {
+        // Lashing ends an active shadow grip
+        if (ShadowTwinPull.obj != null)
+        {
+            ShadowTwinPull.obj.ReleaseGrip();
+        }
+        
+        // Cancel any existing directional buffer coroutine
+        if (_activeDirectionalBufferCoroutine != null)
+        {
+            StopCoroutine(_activeDirectionalBufferCoroutine);
+        }
+        
+        // Immediately freeze the player for instant response
+        _pausedVelocity = ShadowTwinPlayer.obj.rigidBody.velocity;
+        ShadowTwinMovement.obj.PauseInAir();
+        ShadowTwinPlayer.obj.DisableGravity();
+        _isShadowLashing = true;
+        _lashButtonReleased = false;
+        
+        // Clear any buffered jump inputs when starting shadow lash
+        // This prevents jump inputs from being "saved" and executed later
+        ShadowTwinMovement.obj.ClearLatchedJumpInput();
+        ShadowTwinMovement.obj.CancelJumping();
+
+        // Start cooldown
+        _lashCooldownEndTime = Time.time + _lashCooldownDuration;
+
+        // Start directional input buffer
+        _activeDirectionalBufferCoroutine = StartCoroutine(DirectionalInputBuffer());
     }
 
     public void ShootShadowLashBeam() {
