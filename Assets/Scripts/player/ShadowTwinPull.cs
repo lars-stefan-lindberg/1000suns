@@ -725,10 +725,11 @@ public class ShadowTwinPull : MonoBehaviour
             StartCoroutine(SyncVelocityAfterPhysics());
         }
         
-        // Control the object moving loop based on whether the object is actually being moved
-        bool isDeeMoving = deeVelocity.magnitude > MOVING_VELOCITY_EPSILON;
-        bool objectIsMoving = objectVelocity.magnitude > MOVING_VELOCITY_EPSILON;
-        if ((hasSteerInput || isDeeMoving) && objectIsMoving)
+        // Control the object moving loop: only play it while the player is steering the object. Motion that
+        // comes purely from following Dee (horizontal follow lag, vertical follow at the range edge) stays silent.
+        // steerVelocity has already been range limited, so steering into the range edge doesn't play it either.
+        bool isSteeringObject = hasSteerInput && steerVelocity.magnitude > MOVING_VELOCITY_EPSILON;
+        if (isSteeringObject)
         {
             if (!_isObectMovingLoopPlaying)
             {
