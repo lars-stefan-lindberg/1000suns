@@ -131,7 +131,6 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 512
-  _wallCheckCastDistance: 1.05
   _minVelocityForWallHit: 5
   _wallDetectionDistance: 0.15
   _wallDetectionBoxWidthMultiplier: 0.7
@@ -267,7 +266,6 @@ MonoBehaviour:
   _shakeVibrato: 30
   _maxBrightness: 3
   _pulseFrequency: 0.8
-  _velocityThreshold: 0.1
   IsImmune: 0
 --- !u!114 &9073241685110087293
 MonoBehaviour:
@@ -5079,7 +5077,7 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 326891353
   m_SortingLayer: -1
-  m_SortingOrder: 2
+  m_SortingOrder: 8
   m_RenderMode: 0
   m_MeshDistribution: 0
   m_SortMode: 0
