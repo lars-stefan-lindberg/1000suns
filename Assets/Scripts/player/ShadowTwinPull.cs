@@ -971,7 +971,7 @@ public class ShadowTwinPull : MonoBehaviour
     {
         if (!_isPullingObject)
             return;
-        bool isIdleGrounded = ShadowTwinMovement.obj.isGrounded && !ShadowTwinMovement.obj.isMoving;
+        bool isIdleGrounded = ShadowTwinMovement.obj.IsIdleGrounded();
         if (isIdleGrounded && !_wasIdleGroundedWhilePulling)
             ShadowTwinMovement.obj.TriggerForcePullAnimation();
         _wasIdleGroundedWhilePulling = isIdleGrounded;
@@ -997,9 +997,12 @@ public class ShadowTwinPull : MonoBehaviour
         ShadowTwinPlayer.obj.StartFullyChargedVfx();
         ShadowTwinMovement.obj.IsPulling = true;
         ShadowTwinMovement.obj.UpdateAnimatorIsPulling(true);
-        ShadowTwinMovement.obj.TriggerForcePullAnimation();
-        // The start animation was just triggered, so only replay it after Dee moves or leaves the ground
-        _wasIdleGroundedWhilePulling = ShadowTwinMovement.obj.isGrounded && !ShadowTwinMovement.obj.isMoving;
+        // Only play the pull-start animation when Dee is standing still on the ground; while running, jumping or
+        // falling, the movement animation keeps playing. UpdatePullStartAnimationReplay plays it once Dee comes to a grounded stop.
+        bool isIdleGrounded = ShadowTwinMovement.obj.IsIdleGrounded();
+        if (isIdleGrounded)
+            ShadowTwinMovement.obj.TriggerForcePullAnimation();
+        _wasIdleGroundedWhilePulling = isIdleGrounded;
         PullPowerType chargePowerType = GetChargePowerType();
         ExecuteForcePushVfx(chargePowerType);
     }

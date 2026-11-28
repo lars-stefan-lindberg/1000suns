@@ -493,6 +493,11 @@ public class ShadowTwinMovement : MonoBehaviour
         _animator.SetTrigger("forcePush");
     }
 
+    /// <summary>True when Dee is on the ground with no horizontal movement input, the only time the pull-start animation should play.</summary>
+    public bool IsIdleGrounded() {
+        return isGrounded && !isMoving;
+    }
+
     public bool isFalling = false;
     public bool isMoving = false;
     public bool IsPulling = false;
